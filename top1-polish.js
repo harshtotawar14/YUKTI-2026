@@ -13,6 +13,77 @@
       .connected-trust-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px;border:1px solid #ead8a8;background:#fff9ea;border-radius:11px}
       .connected-trust-row.done{border-color:#c4e8d5;background:#eef9f3}
       .connected-payment-success{line-height:1.65}
+
+      /* Keep the complete evaluator message visible together on laptop/desktop screens. */
+      @media (min-width:961px){
+        #landing .eval-nav .navin{height:62px!important}
+        #landing .eval-nav.nav-compact .navin{height:56px!important}
+        #landing #home.eval-hero{padding:34px 0 0!important}
+        #landing #home .eval-hero-grid{
+          grid-template-columns:minmax(0,1.08fr) minmax(370px,.92fr)!important;
+          gap:44px!important;
+          align-items:center!important;
+        }
+        #landing #home .eval-badge{padding:5px 8px!important;font-size:9px!important}
+        #landing #home h1{
+          margin:12px 0 10px!important;
+          font-size:clamp(40px,4.25vw,56px)!important;
+          line-height:1.02!important;
+          letter-spacing:-.045em!important;
+        }
+        #landing #home .lead{
+          max-width:650px!important;
+          font-size:14px!important;
+          line-height:1.5!important;
+        }
+        #landing #home .hero-master-flow{margin-top:15px!important;gap:6px!important;flex-wrap:nowrap!important}
+        #landing #home .hero-master-flow span{padding:5px 7px!important;font-size:9.5px!important;white-space:nowrap}
+        #landing #home .hero-master-flow i{font-size:10px!important}
+        #landing #home .hero-ctas{margin:16px 0 7px!important;gap:7px!important;flex-wrap:nowrap!important}
+        #landing #home .hero-ctas .btn{
+          min-height:40px!important;
+          padding:8px 12px!important;
+          font-size:10.5px!important;
+          white-space:nowrap;
+        }
+        #landing #home .eval-hero-principle{margin-top:7px!important;gap:6px!important;font-size:9.5px!important}
+        #landing #home .selector-home-note{margin:5px 0 0!important}
+        #landing #home .selector-proof-line{font-size:9.5px!important;line-height:1.3!important}
+
+        #landing .eval-hero-system{padding:15px!important;border-radius:20px!important}
+        #landing .eval-system-top{margin-bottom:9px!important}
+        #landing .eval-mini-request{padding:9px 10px!important}
+        #landing .eval-mini-request b{font-size:11.5px!important}
+        #landing .eval-mini-workers{gap:6px!important;margin:7px 0!important}
+        #landing .hero-worker{min-height:44px!important;font-size:10px!important}
+        #landing .eval-mini-gate{padding:8px!important;gap:5px!important}
+        #landing .eval-mini-gate strong{font-size:14px!important}
+        #landing .eval-mini-rank{margin-top:7px!important;padding:8px!important}
+        #landing .eval-mini-rank span{padding:5px!important;font-size:9px!important}
+        #landing .eval-mini-offer{margin-top:7px!important;padding:8px 10px!important}
+        #landing .eval-mini-offer b{margin:2px 0 5px!important;font-size:10.5px!important}
+        #landing .eval-mini-audit{margin-top:7px!important;padding:8px 10px!important}
+        #landing .eval-system-progress{margin-top:9px!important}
+        #landing #home>.eval-trust{margin-top:28px!important}
+        #landing #home>.eval-trust .trustin{min-height:44px!important}
+      }
+
+      @media (min-width:961px) and (max-height:760px){
+        #landing #home.eval-hero{padding-top:24px!important}
+        #landing #home .eval-hero-grid{gap:36px!important}
+        #landing #home h1{margin:9px 0 8px!important;font-size:clamp(37px,3.9vw,49px)!important}
+        #landing #home .lead{font-size:13px!important;line-height:1.42!important}
+        #landing #home .hero-master-flow{margin-top:11px!important}
+        #landing #home .hero-ctas{margin:12px 0 5px!important}
+        #landing #home .hero-ctas .btn{min-height:37px!important;padding:7px 10px!important;font-size:10px!important}
+        #landing #home .eval-hero-principle{margin-top:5px!important;font-size:9px!important}
+        #landing #home .selector-proof-line{font-size:9px!important}
+        #landing .eval-hero-system{padding:12px!important}
+        #landing .hero-worker{min-height:40px!important}
+        #landing #home>.eval-trust{margin-top:20px!important}
+        #landing #home>.eval-trust .trustin{min-height:40px!important}
+      }
+
       @media print{
         body>*{display:none!important}
         #connectedShell{display:block!important;position:static!important;background:#fff!important}
