@@ -1,0 +1,700 @@
+# ================================================================
+# SANPAID — BACKEND, DATABASE, API & SYSTEM INTEGRATION MASTER PROMPT
+# SMART INDIA HACKATHON 2026
+# PS ID: 26089
+# Cooperative Gig Services Platform for Household & Community Services
+# ================================================================
+
+You are now the PRINCIPAL BACKEND + SYSTEM INTEGRATION ENGINEER
+for the existing SanPaid project.
+
+IMPORTANT CONTEXT:
+
+Another developer/AI has already created the website frontend using:
+
+- HTML
+- CSS
+- JavaScript
+
+Those frontend files are the UI handoff.
+
+YOUR JOB IS NOT TO CREATE THE WEBSITE DESIGN AGAIN.
+
+YOUR JOB IS TO:
+
+1. deeply analyse the existing SanPaid repository,
+2. deeply analyse the provided HTML/CSS/JavaScript frontend,
+3. understand every screen, form, button, action and workflow,
+4. identify what backend functionality each frontend interaction requires,
+5. build the complete backend/database/API/integration system,
+6. connect the existing frontend to real backend functionality,
+7. preserve all useful existing functionality,
+8. make the complete SIH demo actually work end-to-end.
+
+===============================================================
+A. CRITICAL FRONTEND HANDOFF RULE
+===============================================================
+
+The HTML/CSS/JavaScript frontend has already been created.
+
+DO NOT:
+
+- redesign the website
+- regenerate HTML pages
+- rewrite the CSS design
+- replace the frontend with React/Next.js
+- create another frontend
+- remove working frontend sections
+- change visual design unnecessarily
+- create duplicate frontend pages
+
+Treat the existing frontend as the PRODUCT UI CONTRACT.
+
+FIRST analyse it.
+
+Identify:
+
+- every page
+- every form
+- every button
+- every modal
+- every dashboard
+- every data table
+- every status
+- every card
+- every search/filter
+- every booking action
+- every worker action
+- every admin action
+- every API-looking JavaScript call
+- every localStorage/sessionStorage dependency
+- every mock object
+- every hardcoded dataset
+- every temporary demo action
+- every place where real server data is required
+
+Create an internal FRONTEND → BACKEND CONTRACT MAP.
+
+Example:
+
+Frontend Action:
+"Book Service"
+
+Required backend:
+POST /api/bookings
+
+Frontend fields:
+service
+problem description
+location
+schedule
+urgency
+
+Backend responsibilities:
+validate
+save booking
+generate booking ID
+start eligibility/matching
+return booking state
+
+Do this for the ENTIRE frontend.
+
+===============================================================
+B. FRONTEND MODIFICATION POLICY
+===============================================================
+
+Do not recreate HTML/CSS/JS.
+
+Whenever possible:
+
+make the backend conform to the existing frontend.
+
+If a small JavaScript integration patch is absolutely necessary to
+connect a real API:
+
+make the smallest possible change.
+
+Examples of acceptable integration-only changes:
+
+- replacing mock data with fetch()
+- adding Authorization header
+- calling real API endpoint
+- saving returned booking ID
+- handling API errors
+- consuming WebSocket/SSE updates
+
+Do NOT rewrite the frontend architecture.
+
+Do NOT change visual appearance unless required to fix a broken
+integration.
+
+===============================================================
+C. PRODUCT SINGLE SOURCE OF TRUTH
+===============================================================
+
+Product:
+
+SANPAID
+
+Problem Statement:
+
+SIH 2026
+PS ID 26089
+
+Cooperative Gig Services Platform for Household & Community Services
+
+Final positioning:
+
+"SanPaid is an AI-assisted cooperative workforce operating network
+that connects verified local demand and supply, distributes qualified
+opportunities fairly, supports trusted service delivery, protects
+worker earnings and welfare, and helps cooperatives prepare for
+future demand."
+
+Short positioning:
+
+"Not another home-service app —
+a cooperative workforce operating network."
+
+Primary stakeholders:
+
+CUSTOMER
+
+WORKER / SERVICE PROVIDER
+
+COOPERATIVE ADMIN
+
+FEDERATION ADMIN
+
+Optional internal roles:
+
+SUPPORT
+
+SUPER ADMIN
+
+===============================================================
+D. DO NOT START CODING IMMEDIATELY
+===============================================================
+
+FIRST audit the complete repository.
+
+Analyse:
+
+Frontend handoff
+Existing backend
+Database
+Existing APIs
+Package files
+Environment configuration
+Deployment configuration
+Authentication
+Roles
+Routes
+Existing services
+Existing schemas
+Migrations
+Seed scripts
+Static mock data
+Existing API calls
+File uploads
+Worker verification
+Matching
+Payments
+Complaints
+AI
+Maps
+Notifications
+Logging
+Tests
+
+Classify every major module as:
+
+WORKING
+
+PARTIALLY WORKING
+
+BROKEN
+
+MOCK ONLY
+
+MISSING
+
+DUPLICATED
+
+DEPRECATED
+
+INTEGRATION READY
+
+Do not guess.
+
+Inspect the real source code.
+
+===============================================================
+E. PRESERVE EXISTING WORK
+===============================================================
+
+Never destroy already-working functionality.
+
+Never rewrite a working backend just because building another one is
+easier.
+
+Never create duplicate:
+
+auth systems
+
+user tables
+
+booking systems
+
+worker tables
+
+payment modules
+
+complaint systems
+
+admin systems
+
+APIs
+
+databases
+
+If a partially working implementation exists:
+
+repair and extend it.
+
+If a good implementation exists:
+
+reuse it.
+
+If something is actually missing:
+
+implement it cleanly.
+
+===============================================================
+F. TARGET BACKEND ARCHITECTURE
+===============================================================
+
+Prefer the existing backend stack if it already works.
+
+If no usable backend exists, preferred architecture is:
+
+Node.js
+Express.js
+
+Database:
+
+PostgreSQL
+
+Geo:
+
+PostGIS
+
+Optional caching/session/queue layer:
+
+Redis
+
+Object/media storage:
+
+S3-compatible object storage
+or current configured cloud storage
+
+Optional AI service:
+
+Python
+FastAPI
+
+only where AI/ML actually benefits from being separated.
+
+Architecture:
+
+Frontend HTML/CSS/JS
+        ↓
+API Gateway / Backend API
+        ↓
+Authentication / RBAC
+        ↓
+Core Services
+        ↓
+PostgreSQL / PostGIS
+        ↓
+Redis / Storage / External Integrations
+
+===============================================================
+G. CORE BACKEND SERVICES
+===============================================================
+
+Create/reuse logical services for:
+
+AUTH SERVICE
+
+USER SERVICE
+
+CUSTOMER SERVICE
+
+WORKER SERVICE
+
+COOPERATIVE SERVICE
+
+FEDERATION SERVICE
+
+SERVICE CATALOG
+
+BOOKING SERVICE
+
+POLICY SERVICE
+
+ELIGIBILITY SERVICE
+
+GEO MATCHING SERVICE
+
+FAIR RANKING SERVICE
+
+WORKER OFFER SERVICE
+
+REPLACEMENT SERVICE
+
+WORKER VERIFICATION SERVICE
+
+SERVICE START VERIFICATION SERVICE
+
+SERVICE EXECUTION SERVICE
+
+EVIDENCE SERVICE
+
+PRICING SERVICE
+
+PAYMENT SERVICE
+
+SETTLEMENT SERVICE
+
+INVOICE SERVICE
+
+RATING SERVICE
+
+WORKER PASSPORT SERVICE
+
+WELFARE SERVICE
+
+TRAINING SERVICE
+
+COMPLAINT SERVICE
+
+SLA / ESCALATION SERVICE
+
+CAPACITY EXCHANGE SERVICE
+
+NOTIFICATION SERVICE
+
+ANALYTICS SERVICE
+
+DEMAND FORECAST SERVICE
+
+VOICE / TRANSLATION INTEGRATION
+
+AI DIAGNOSIS SERVICE
+
+AUDIT SERVICE
+
+FRAUD/RISK MONITORING
+
+Do not split everything into microservices unnecessarily.
+
+A modular monolith is acceptable for the SIH prototype if it is clean,
+testable and scalable.
+
+===============================================================
+H. AUTHENTICATION & ACCOUNT MODEL
+===============================================================
+
+Implement/reuse:
+
+Registration
+
+Login
+
+Logout
+
+Forgot password
+
+Password reset
+
+OTP verification where required
+
+Session expiry
+
+Secure authentication
+
+Possible model:
+
+JWT access token
++
+refresh token
+
+or existing secure session architecture.
+
+Passwords:
+
+must be hashed securely.
+
+Never store plaintext passwords.
+
+Use bcrypt/argon2 or appropriate secure hashing.
+
+===============================================================
+I. MULTI-ROLE ACCOUNT SYSTEM
+===============================================================
+
+One person may be:
+
+CUSTOMER
+
+and
+
+WORKER
+
+Do NOT create duplicate login identities.
+
+Use:
+
+users
+
+roles
+
+user_roles
+
+Example:
+
+users
+-----
+id
+name
+email
+phone
+password_hash
+status
+created_at
+updated_at
+
+roles
+-----
+id
+name
+
+user_roles
+----------
+user_id
+role_id
+
+Roles:
+
+CUSTOMER
+WORKER
+COOPERATIVE_ADMIN
+FEDERATION_ADMIN
+SUPPORT
+SUPER_ADMIN
+
+===============================================================
+J. RBAC
+===============================================================
+
+Enforce RBAC SERVER-SIDE.
+
+Do not trust:
+
+frontend button visibility
+
+frontend role
+
+localStorage role
+
+client claims
+
+Each backend endpoint must validate permissions.
+
+Customer:
+
+own bookings
+own payments
+own complaints
+safe worker public information
+
+Worker:
+
+own jobs
+own profile
+own availability
+own earnings
+assigned booking details
+
+Cooperative Admin:
+
+own cooperative workers
+verification
+bookings
+complaints
+payments
+analytics
+policies
+
+Federation Admin:
+
+authorized cross-cooperative data
+capacity exchange
+policy governance
+regional analytics
+appeals
+
+===============================================================
+K. CONTINUOUS WORKER TRUST SYSTEM
+===============================================================
+
+Worker onboarding backend must support:
+
+personal information
+
+cooperative affiliation
+
+profile photo
+
+identity documents
+
+address
+
+skills
+
+certificates
+
+experience
+
+service categories
+
+payout information
+
+document validity
+
+Worker verification states:
+
+DRAFT
+
+SUBMITTED
+
+UNDER_REVIEW
+
+MORE_INFORMATION_REQUIRED
+
+VERIFIED
+
+REJECTED
+
+SUSPENDED
+
+EXPIRED
+
+An unverified worker:
+
+MUST NOT appear in eligible booking matching.
+
+Public worker profile:
+
+MUST remain unavailable until verification.
+
+===============================================================
+L. DOCUMENT & CERTIFICATE VALIDITY
+===============================================================
+
+Track:
+
+issued date
+
+expiry date
+
+verification status
+
+reviewer
+
+review timestamp
+
+rejection reason
+
+Document expiry job should periodically check validity.
+
+Expired mandatory documents:
+
+must automatically make worker ineligible according to policy.
+
+Do not silently delete documents.
+
+===============================================================
+M. DIGITAL WORKER ID BACKEND
+===============================================================
+
+Provide an API for safe Digital Worker ID.
+
+Public-safe response:
+
+worker name
+
+worker ID
+
+profile photo
+
+skills
+
+cooperative
+
+verification status
+
+verification validity
+
+rating
+
+completed jobs where appropriate
+
+Do NOT expose:
+
+Aadhaar number
+
+private IDs
+
+bank data
+
+private address
+
+internal risk flags
+
+===============================================================
+N. BOOKING SYSTEM
+===============================================================
+
+Booking creation should receive data from the Claude-created frontend.
+
+Support:
+
+service
+
+problem description
+
+optional uploaded image
+
+voice-derived structured description
+
+customer
+
+address
+
+latitude/longitude
+
+schedule
+
+urgency
+
+number of workers if crew booking
+
+Booking ID format may be:
+
+SAN-2026-XXXXX
+
+Use a unique generated identifier.
+
+===============================================================
