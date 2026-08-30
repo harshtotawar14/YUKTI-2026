@@ -6,110 +6,163 @@ Smart India Hackathon 2026 prototype for **PS ID 26089 — Cooperative Gig Servi
 
 - `index.html` — SanPaid landing/app shell with mobile/PWA + Connected SIH Demo entry.
 - `styles.css` — shared desktop/base styling.
-- `mobile.css` — mobile-first responsive layout, touch-target, modal, bottom-nav and dashboard overrides.
-- `mobile-fix.css` — final drawer scrolling/header-alignment mobile hotfixes.
-- `connected-demo.css` — responsive two-device connected-demo UI.
-- `app.js` — browser-local fallback/demo application logic.
-- `voice-request.js` — browser-local customer voice capture + worker delivery enhancement.
-- `mobile.js` — mobile landing drawer, role-aware navigation, bottom navigation, connectivity, install flow and service-worker registration.
-- `connected-demo.js` — shared-backend Customer/Worker two-device workflow using `/api/connected/*`.
+- `mobile.css` / `mobile-fix.css` — mobile-first responsive and dashboard behaviour.
+- `connected-demo.css` — responsive connected-demo UI.
+- `app.js` / `voice-request.js` — browser-local fallback/rehearsal demo.
+- `mobile.js` — mobile navigation/PWA/connectivity runtime.
+- `connected-demo.js` — shared-backend Customer/Worker booking, voice, matching, offer and SSE flow.
+- `connected-service-ui.js` — connected travel/arrival/dual-verification/service/completion UI.
+- `connected-commerce-ui.js` — connected extra-charge approval, sandbox checkout, invoice and rating UI.
 - `vercel.json` — same-origin `/api/*` proxy to the shared SanPaid Render backend.
-- `manifest.webmanifest` — PWA metadata.
-- `service-worker.js` — versioned app-shell cache; `/api/*` is never served from cache.
-- `app-icon.svg` — PWA/app icon.
+- `manifest.webmanifest` / `service-worker.js` / `app-icon.svg` — PWA shell.
 - `docs/final-sih-demo-hardening/` — final SIH hardening specification.
 
-## Connected SIH implementation now present
+## Connected SIH implementation present in source + database
 
-The repository now contains two modes:
+The repository has two modes:
 
-1. **Main prototype/fallback mode** — browser-local state for rehearsals and offline-safe UI demonstrations.
-2. **Connected Two-Device Demo** — shared backend/PostgreSQL workflow for cross-browser/customer-worker proof.
+1. **Main fallback/rehearsal mode** — browser-local state.
+2. **Connected Two-Device Demo** — shared PostgreSQL backend path for separate Customer and Worker sessions/devices.
 
-Connected flow implemented in the frontend:
+Connected Golden Demo source flow now reaches:
 
-`Customer Device → backend login → Voice/Text Request → POST /api/connected/bookings → eligibility-first matching → worker-scoped offer → Worker Device → Listen → Accept/Reject → shared booking update → SSE snapshot → Customer Device update`
+`Customer Device → backend login → Voice/Text Request → PostgreSQL Booking → Eligibility Gate → Worker A Offer → Listen → Accept/Reject → Worker B fallback when rejected → Customer shared update → Travel → Arrive → SANDBOX Identity Check → One-Time Booking Token → Customer Confirms Booked Worker → backend-enforced Start Service → optional Additional Work Approval → Completion Request → Customer Completion Confirmation → SANDBOX Payment → Persisted Invoice → Rating`
 
-Backend implementation lives in the existing `harshtotawar14/SanPaid-sih-2026` backend and uses the already-existing PostgreSQL/Supabase database. The connected API layer adds:
+The backend implementation lives in `harshtotawar14/SanPaid-sih-2026` and uses the existing SanPaid PostgreSQL/Supabase database.
 
-- `/api/connected/health`
-- `/api/connected/me`
+## Connected API families
+
+Core two-device booking:
+
+- `GET /api/connected/health`
 - `POST /api/connected/bookings`
 - `GET /api/connected/customer/bookings/:id`
 - `GET /api/connected/worker/offers`
 - `POST /api/connected/worker/offers/:id/respond`
-- `GET /api/connected/events` (SSE snapshots)
+- `GET /api/connected/events` — SSE snapshots
 
-The connected flow uses verified + available + skill-verified workers before deterministic ranking. Worker rejection records the reason, keeps the same booking/voice context, and sends the next eligible worker a new offer. Acceptance is transaction-protected so the booking cannot be casually reassigned by the browser alone.
+Connected service lifecycle:
+
+- `POST /api/connected/jobs/:id/travel`
+- `POST /api/connected/jobs/:id/arrive`
+- `POST /api/connected/jobs/:id/identity`
+- `GET /api/connected/service-start/:token`
+- `POST /api/connected/service-start/:token/confirm`
+- `POST /api/connected/jobs/:id/start`
+- `POST /api/connected/jobs/:id/completion-request`
+- `POST /api/connected/customer/bookings/:id/complete`
+
+Connected commerce:
+
+- `POST /api/connected/worker/jobs/:id/extra-charge`
+- `GET /api/connected/customer/bookings/:id/charges`
+- `POST /api/connected/customer/charges/:id/decision`
+- `GET /api/connected/customer/bookings/:id/checkout`
+- `POST /api/connected/customer/bookings/:id/pay`
+- `POST /api/connected/customer/bookings/:id/rating`
 
 ## Connected demo accounts
 
-These are isolated SIH demo identities only. They are not real team/customer credentials.
+Isolated SIH demo identities only:
 
 - Customer: `customer.connected@sanpaid.demo`
 - Worker A: `worker1.connected@sanpaid.demo`
 - Worker B: `worker2.connected@sanpaid.demo`
-- Demo password: `Demo@2026`
+- Password: `Demo@2026`
 
-Worker A and Worker B are verified Electrician demo workers in `Karad Zone 1`. Worker A ranks first; rejecting the offer demonstrates fallback to the next eligible worker.
+Worker A and Worker B are VERIFIED + AVAILABLE Electrician workers in `Karad Zone 1`.
 
-## Database hardening added for connected flow
+Database ranking smoke check confirms:
 
-The shared database now stores connected request metadata needed for the two-device demo:
+1. Worker A — 2.3 KM, rating 4.8
+2. Worker B — 4.1 KM, rating 4.6
 
-- request source (`TEXT` / `VOICE`)
-- request language
-- voice transcript
-- worker rejection reason
+Therefore the intended judge fallback scenario is deterministic: Worker A receives the first offer; if rejected, Worker B is next among the exact-zone connected demo workers.
 
-Supporting indexes were added for booking updates and worker-offer lookup.
+## Database hardening completed
 
-## Mobile implementation
+Connected request fields:
 
-Implemented mobile-shell behaviour includes:
+- `bookings.request_source`
+- `bookings.request_language`
+- `bookings.voice_transcript`
+- `booking_assignment_offers.rejection_reason`
 
-- `viewport-fit=cover` and safe areas;
-- responsive hero/search/cards;
-- page-level horizontal-overflow protection;
-- touch-friendly primary actions;
-- mobile landing menu;
-- role-aware dashboard drawer;
-- Customer / Worker bottom navigation;
-- mobile-safe modals and 16px inputs;
-- mobile voice controls;
-- responsive QR/toast/timeline/KPI/table handling;
-- connectivity feedback;
-- PWA install metadata;
-- app-shell caching.
+Dual service-start verification:
 
-The Connected SIH Demo is also responsive and designed for separate Customer and Worker phones/browsers.
+- `job_verifications.identity_verified_at`
+- `job_verifications.customer_confirmed_at`
+- `job_verifications.identity_mode`
+- `service_start_tokens` with hashed token, booking/worker binding, expiry, used state
 
-## Deployment truth
+Booking status constraint was safely extended without removing legacy statuses to support:
 
-**Do not claim the connected flow is live until both deployments are verified.**
+- `FINDING_REPLACEMENT`
+- `IDENTITY_VERIFIED`
+- `CUSTOMER_CONFIRMED`
 
-Current source wiring is:
+Indexes were verified for worker-offer lookup and `(booking_id, worker_id)` uniqueness.
 
-`YUKTI-2026 frontend → /api proxy → https://sanpaid-sih-2026.onrender.com → shared PostgreSQL database`
+## Backend safety in the connected Golden Demo
 
-The backend source was updated in `SanPaid-sih-2026`. Render is configured with auto-deploy from that repository, but the new deployment must be observed as live before SIH rehearsal.
+- authenticated server-side sessions;
+- role checks on Customer/Worker actions;
+- eligibility before ranking;
+- verified + available + verified-skill gate;
+- deterministic exact-zone ranking;
+- offer rejection reason persisted;
+- same booking/voice request preserved through fallback;
+- transaction-protected worker Accept/Reject;
+- one-time service-start token stored only as a hash;
+- token expiry and one-use enforcement;
+- Start Service blocked on backend unless both identity and customer confirmation exist;
+- additional work changes checkout only when customer APPROVES it;
+- sandbox payment is idempotent for an already successful booking payment;
+- invoice is persisted by booking;
+- duplicate rating prevented by booking uniqueness;
+- API/SSE requests are excluded from PWA cache.
 
-The current Vercel project historically points to `SanPaid-sih-2026`, not `YUKTI-2026`. The YUKTI frontend therefore still needs to be imported/linked to Vercel (or otherwise deployed) before the new Connected Two-Device Demo can be tested from its live URL.
+## Database smoke test
 
-## Final hardening priorities
+A rollback-only full lifecycle smoke transaction successfully passed the shared database schema/constraints for:
 
-Do not add random features. Continue in this order:
+`booking → Worker A reject → Worker B accept → on the way → arrived → identity → token → customer confirm → in progress → approved extra charge → completion → sandbox payment → invoice → rating`
 
-1. Verify backend deploy + connected API health.
+The transaction ended with `ROLLBACK`, so no permanent smoke booking/payment/rating record was left behind.
+
+## Mobile / PWA
+
+The connected screens are responsive for phone use, with touch-friendly actions, voice fallback, worker Listen controls, full-width forms and same-origin API proxy design.
+
+The service worker caches only the static application shell. `/api/*` and SSE requests always use the network/shared backend.
+
+## Deployment truth — important
+
+**Source implementation and database migrations are ready, but do not call the new connected path live until deployment is verified.**
+
+Expected wiring:
+
+`YUKTI-2026 frontend → same-origin /api proxy → sanpaid-sih-2026.onrender.com → shared PostgreSQL database`
+
+At the latest deployment check, Render was still reporting the older live backend commit, so the new connected routers were **not yet observed as deployed live**.
+
+The current Vercel project also historically points to `SanPaid-sih-2026`, not `YUKTI-2026`. `YUKTI-2026` therefore still needs to be imported/linked/deployed before the new frontend connected screens can be verified on a public YUKTI URL.
+
+Do not claim production/live cross-device behaviour until both sides are deployed and a real two-browser/two-phone run passes.
+
+## Next hardening priorities
+
+P1–P5 core connected implementation is now present in source/database. Next priorities are:
+
+1. Verify Render backend deployment and `/api/connected/health`.
 2. Deploy/link `YUKTI-2026` frontend.
-3. Run two-browser/two-phone Customer → Worker A → Reject → Worker B → Accept test.
-4. Connect the remaining service lifecycle to the shared backend: Traveling → Arrived → sandbox identity → booking token/QR → customer confirmation → service start.
-5. Connect extra-charge approval, completion, sandbox payment, invoice and rating.
-6. Deepen Cooperative Command Center with backend-derived KPIs.
-7. Connect Capacity Exchange with worker consent.
-8. Connect Complaint/SLA and Federation escalation.
-9. Connect Demand → Capacity → Skill Gap → Action.
-10. Run final mobile/click/console/network QA.
+3. Run real two-browser/two-phone Golden Demo and fix any runtime/network/cookie issue.
+4. Deepen Cooperative Command Center with DB-derived KPIs and verification actions.
+5. Connect Cooperative/Federation Capacity Exchange with worker consent.
+6. Connect Complaint + L1→L2→L3 SLA + audit timeline.
+7. Connect Demand → Capacity → Skill Gap → operational action.
+8. Add before/after evidence object-storage adapter if time permits.
+9. Run final mobile/click/console/network QA.
 
 ## Critical voice-flow rule
 
@@ -117,28 +170,10 @@ A microphone button alone is not a completed voice feature.
 
 Connected proof is:
 
-`Customer speaks → transcript → customer confirms → backend booking stores voice context → eligibility → worker-scoped offer on another session/device → worker reads/listens → Accept/Reject → shared state update`
-
-If Worker A rejects, Worker B must receive the **same booking and original confirmed voice context**, not a recreated local request.
-
-## Final SIH quality rule
-
-Every important SanPaid claim must have working proof:
-
-- Verified Workers → Worker Verification Workflow
-- Fair Opportunities → Eligibility + Explainable Ranking + Worker Choice
-- Customer Trust → Dual Service-Start Verification
-- Reliability → Reject fallback + Replacement
-- Cooperative Governance → Command Center
-- Federation Governance → Capacity Exchange
-- Accountability → Complaint + SLA + Audit
-- Worker Growth → Service Passport + Training
-- Planning → Demand → Capacity → Skill Gap → Action
-- Inclusive Access → Marathi/Hindi/English Voice
-- Mobile Accessibility → Customer + Worker two-device demonstration
+`Customer speaks → transcript → backend booking stores confirmed voice context → eligibility → worker-scoped offer on another session/device → worker reads/listens → Accept/Reject → same request survives fallback → shared state update`
 
 ## Product positioning
 
 SanPaid is an **AI-assisted cooperative workforce operating network**, not another generic home-service marketplace.
 
-> Payment, identity/liveness and other external integrations must remain honestly labelled `SANDBOX`, `PROTOTYPE`, or `INTEGRATION READY` until the real provider is connected and verified.
+> Payment and identity/liveness remain explicitly **SANDBOX**. Do not present them as production payment or production biometric verification until real providers are connected and verified.
