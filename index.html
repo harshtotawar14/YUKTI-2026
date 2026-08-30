@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="SanPaid — AI-assisted cooperative workforce operating network for verified local services, explainable opportunity allocation, worker choice and cooperative governance.">
-<meta name="theme-color" content="#0b1930">
+<meta name="description" content="SanPaid — AI-assisted cooperative workforce operating network for verified local services, eligibility-first matching, worker choice and cooperative governance.">
+<meta name="theme-color" content="#f5f8fb">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>SanPaid — SIH 2026 Cooperative Workforce Network</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="app-icon.svg" type="image/svg+xml">
@@ -31,302 +31,348 @@
 <div id="landing">
   <div class="ribbon">Smart India Hackathon 2026 · PS ID <b>26089</b> · Cooperative Gig Services Platform</div>
 
-  <nav class="nav">
+  <nav class="nav eval-nav" aria-label="SanPaid evaluator navigation">
     <div class="wrap navin">
-      <a class="brand" href="#home">San<span>Paid</span></a>
+      <a class="brand" href="#home" aria-label="SanPaid home">San<span>Paid</span></a>
       <div class="navlinks">
-        <a href="#home">Home</a>
+        <a href="#home">Overview</a>
         <a href="#how">How It Works</a>
-        <a href="#matching">Prototype</a>
-        <a href="#impact">Impact / Evidence</a>
-        <a href="#status">Architecture / Research</a>
+        <a href="#matching">Live Prototype</a>
+        <a href="#impact">Impact</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#research">Research</a>
       </div>
       <div class="actions">
-        <button class="btn primary desktop-only" type="button" data-open-selector="0">▶ 3-Minute Overview</button>
-        <button class="btn ghost desktop-only" id="getStarted">Role Demo</button>
-        <button class="btn secondary hidden" id="resumeDemo">Resume Demo</button>
+        <span class="eval-sih-chip desktop-only">SIH 2026</span>
+        <button class="btn primary desktop-only" id="connectedDemoBtn" type="button">TRY LIVE PROTOTYPE</button>
+        <button class="btn ghost desktop-only" id="getStarted" type="button">Role Demos</button>
+        <button class="btn secondary hidden" id="resumeDemo" type="button">Resume Demo</button>
         <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileDrawer">☰</button>
       </div>
     </div>
     <div id="mobileDrawer" class="mobile-drawer hidden" aria-hidden="true">
-      <button type="button" data-open-selector="0">▶ 3-Minute SIH Overview</button>
+      <a href="#home">Overview</a>
       <a href="#how">How It Works</a>
-      <a href="#matching">Prototype</a>
-      <a href="#impact">Impact / Evidence</a>
-      <a href="#status">Architecture / Research</a>
-      <button type="button" onclick="SanPaidDemo.showRoles()">Role Demo</button>
+      <a href="#matching">Live Prototype</a>
+      <a href="#impact">Impact</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#research">Research</a>
+      <button type="button" class="btn primary" data-eval-open-connected>TRY LIVE PROTOTYPE</button>
+      <button type="button" class="btn secondary" data-open-selector="0">Guided Demo</button>
     </div>
   </nav>
 
-  <header class="hero" id="home">
-    <div class="wrap hero-grid">
-      <div>
+  <header class="hero eval-hero" id="home">
+    <div class="wrap hero-grid eval-hero-grid">
+      <div class="eval-hero-copy" data-reveal>
         <span class="eyebrow eval-badge">SIH 2026 • Cooperative Workforce Network</span>
         <h1>Trusted Local Services.<br><em>Fair Worker Opportunities.</em><br>Stronger Cooperatives.</h1>
         <p class="lead">SanPaid connects verified cooperative workers with local service demand through eligibility-first matching, explainable opportunity allocation, worker choice and cooperative governance.</p>
 
         <div class="hero-master-flow" aria-label="SanPaid core decision logic">
-          <span>Verified Eligibility</span><i>→</i><span>Fair &amp; Explainable Ranking</span><i>→</i><span>Worker Choice</span><i>→</i><span>Auditable Service</span>
+          <span>Verified Eligibility</span><i>→</i><span>Fair Ranking</span><i>→</i><span>Worker Choice</span><i>→</i><span>Auditable Service</span>
         </div>
 
         <div class="hero-ctas">
-          <button class="btn primary eval-primary" id="connectedDemoBtn" type="button">TRY LIVE PROTOTYPE</button>
-          <button class="btn secondary eval-secondary" id="heroMatchingCta" type="button">SEE HOW MATCHING WORKS</button>
-          <button class="btn hero-tertiary-link" id="selectorResearchBtn" type="button" data-open-selector="0">3-Minute SIH Overview →</button>
+          <button class="btn primary eval-primary" type="button" data-eval-open-connected>TRY LIVE PROTOTYPE</button>
+          <button class="btn secondary eval-secondary" id="heroMatchingCta" type="button">SEE MATCHING LOGIC</button>
+          <button class="btn tertiary" id="selectorResearchBtn" type="button" data-open-selector="0">GUIDED DEMO →</button>
         </div>
-
-        <div class="selector-home-note">
-          <span class="selector-proof-line">✓ Guided overview needs no login · Connected prototype uses isolated demo accounts</span>
-        </div>
-
-        <div class="eval-system-rule"><b>RULES FIRST → AI-ASSISTED → WORKER CHOICE → AUDITABLE OUTCOME</b><br>Booking, payments, ratings and notifications support the network; they are not the primary USP.</div>
+        <div class="eval-hero-principle"><b>Rules First</b><span>•</span><b>AI-Assisted</b><span>•</span><b>Auditable</b></div>
+        <div class="selector-home-note"><span class="selector-proof-line">Guided overview needs no login. Connected prototype uses isolated SIH demo accounts.</span></div>
 
         <details class="quick-booking-details">
           <summary>Quick booking / role options</summary>
           <div class="searchbox">
             <select id="heroService" aria-label="Service"></select>
             <input id="heroArea" aria-label="Area" placeholder="e.g. Karad Zone 1">
-            <button class="btn primary" id="heroSearch">Find Local Service</button>
+            <button class="btn primary" id="heroSearch" type="button">Find Local Service</button>
           </div>
           <div class="hero-secondary-actions">
-            <button class="btn secondary small" id="bookServiceHero">Book Verified Service</button>
-            <button class="btn ghost small" id="joinWorker">Join as Worker</button>
-            <button class="btn ghost small" id="coopLogin">Cooperative Login</button>
+            <button class="btn secondary small" id="bookServiceHero" type="button">Book Verified Service</button>
+            <button class="btn ghost small" id="joinWorker" type="button">Join as Worker</button>
+            <button class="btn ghost small" id="coopLogin" type="button">Cooperative Login</button>
           </div>
         </details>
       </div>
 
-      <div class="loop-card">
-        <span class="loop-title">SANPAID DECISION LOGIC</span>
-        <div class="loop" style="margin-top:15px">
-          <div class="loop-step" aria-label="01 Service Request"><span class="loop-no">01</span><span class="loop-label">Service Request</span></div>
-          <div class="loop-step" aria-label="02 Eligibility Gate"><span class="loop-no">02</span><span class="loop-label">Eligibility Gate</span></div>
-          <div class="loop-step" aria-label="03 Fair and Explainable Ranking"><span class="loop-no">03</span><span class="loop-label">Fair &amp; Explainable Ranking</span></div>
-          <div class="loop-step" aria-label="04 Worker Choice"><span class="loop-no">04</span><span class="loop-label">Worker Choice</span></div>
-          <div class="loop-step" aria-label="05 Service Verification"><span class="loop-no">05</span><span class="loop-label">Service Verification</span></div>
-          <div class="loop-step" aria-label="06 Payment"><span class="loop-no">06</span><span class="loop-label">Payment</span></div>
-          <div class="loop-step" aria-label="07 Audit and Outcome"><span class="loop-no">07</span><span class="loop-label">Audit &amp; Outcome</span></div>
+      <div class="eval-hero-system" id="evalHeroSystem" aria-label="Animated SanPaid matching system" data-reveal>
+        <div class="eval-system-top"><span class="eval-system-label">LIVE SYSTEM VISUAL</span><span class="eval-system-demo">DEMO LOGIC</span></div>
+        <div class="eval-mini-request hero-seq" data-hero-seq="request"><small>Customer Request</small><b>Electrician · Example Local Area</b><span>Today · Demo Policy Example: 20 km</span></div>
+        <div class="eval-mini-workers hero-seq" data-hero-seq="workers">
+          <span class="hero-worker bad">R<span>1.8 km</span></span>
+          <span class="hero-worker good">A<span>2.3 km</span></span>
+          <span class="hero-worker bad">S<span>3.1 km</span></span>
+          <span class="hero-worker good">P<span>4.0 km</span></span>
+          <span class="hero-worker bad">S<span>6.2 km</span></span>
         </div>
-        <div class="loop-message">Only eligible workers reach ranking. Opportunities are offered, not forced. Service outcomes remain traceable.</div>
+        <div class="eval-mini-gate hero-seq" data-hero-seq="gate">
+          <div><small>Eligibility Gate</small><strong>5 Workers</strong></div><i>→</i><div class="bad"><small>Removed</small><strong>3</strong></div><i>→</i><div class="good"><small>Eligible</small><strong>2</strong></div>
+        </div>
+        <div class="eval-mini-rank hero-seq" data-hero-seq="rank"><span>#1 <b>Amit</b></span><span>#2 <b>Priya</b></span><small>Distance · Workload · Suitability · Policy</small></div>
+        <div class="eval-mini-offer hero-seq" data-hero-seq="offer"><small>Opportunity Offered</small><b>Amit · Electrician</b><div><span class="accept">ACCEPT</span><span>DECLINE</span></div></div>
+        <div class="eval-mini-audit hero-seq" data-hero-seq="audit"><span>✓</span><div><small>Audit &amp; Outcome</small><b>Reason codes recorded</b></div></div>
+        <div class="eval-system-progress" aria-hidden="true"><i id="evalHeroProgress"></i></div>
       </div>
     </div>
-
-    <div class="trust" id="trust">
+    <div class="trust eval-trust" id="trust">
       <div class="wrap trustin">
         <span>Cooperative Governance</span>
         <span>Eligibility Gate</span>
         <span>Worker Choice</span>
-        <span>Cross-Cooperative Capacity</span>
+        <span>Cross-Cooperative Capacity Exchange</span>
       </div>
     </div>
   </header>
 
-  <section class="section" id="problem">
-    <div class="wrap">
-      <div class="head">
-        <span class="tag">02 — Current Gap</span>
-        <h2>Skilled cooperative workers exist — trusted digital coordination is fragmented</h2>
-        <p>Customers need verifiable trust, workers need fair access to opportunities, and cooperatives need one operational view for assignments, complaints, capacity and workforce decisions.</p>
+  <main>
+    <section class="section eval-gap" id="problem">
+      <div class="wrap">
+        <div class="head" data-reveal>
+          <span class="tag">02 — Current Gap</span>
+          <h2>Workers exist. Demand exists. <em>The operating network is missing.</em></h2>
+          <p>Cooperative labour is skilled, but discovery, trust, opportunity allocation and operational visibility remain fragmented.</p>
+        </div>
+        <div class="problem-grid final-problem-grid eval-problem-grid">
+          <article class="card problem-card" data-reveal><span class="problem-no">01</span><h3>Discovery Gap</h3><p>Skilled cooperative workers remain difficult for customers to discover digitally.</p></article>
+          <article class="card problem-card" data-reveal><span class="problem-no">02</span><h3>Trust Gap</h3><p>Customers lack consistent verification and service-start assurance before work begins.</p></article>
+          <article class="card problem-card" data-reveal><span class="problem-no">03</span><h3>Allocation Gap</h3><p>Nearest-only matching can ignore eligibility, fairness, availability and worker choice.</p></article>
+          <article class="card problem-card" data-reveal><span class="problem-no">04</span><h3>Management Gap</h3><p>Cooperatives need unified booking, SLA, capacity, payment and workforce visibility.</p></article>
+        </div>
       </div>
-      <div class="problem-grid final-problem-grid">
-        <div class="card problem-card"><span class="problem-no">01</span><h3>Trust Gap</h3><p>Identity, skill and current verification are difficult to confirm before service.</p></div>
-        <div class="card problem-card"><span class="problem-no">02</span><h3>Discovery Gap</h3><p>Verified cooperative workers have limited digital visibility while local demand remains fragmented.</p></div>
-        <div class="card problem-card"><span class="problem-no">03</span><h3>Opportunity Gap</h3><p>Nearest-only logic can ignore eligibility, workload balance, availability and worker choice.</p></div>
-        <div class="card problem-card"><span class="problem-no">04</span><h3>Governance Gap</h3><p>Bookings, complaints, payments, capacity and planning are often managed in disconnected records.</p></div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="section white" id="how">
-    <div class="wrap">
-      <div class="head">
-        <span class="tag">03 — Working Differentiator</span>
-        <h2>More than a marketplace: a cooperative workforce operating network</h2>
-        <p>SanPaid keeps verification, opportunity allocation, worker consent, capacity coordination and workforce planning under cooperative/federation governance.</p>
+    <section class="section white eval-core" id="how">
+      <div class="wrap">
+        <div class="head" data-reveal>
+          <span class="tag">03 — Core Differentiator</span>
+          <h2>Eligibility first. Explainable ranking second. Worker choice always.</h2>
+          <p>This is the decision logic that separates SanPaid from a nearest-provider marketplace.</p>
+        </div>
+        <div class="eval-core-grid">
+          <article class="eval-core-card eligibility" data-reveal>
+            <span class="eval-no">01</span><h3>Eligibility Gate</h3>
+            <div class="eval-check-stack"><span>✓ Verified</span><span>✓ Required Skill</span><span>✓ Available</span><span>✓ Service Area</span></div>
+            <b>Only eligible workers proceed.</b>
+          </article>
+          <div class="eval-core-arrow" aria-hidden="true">→</div>
+          <article class="eval-core-card ranking" data-reveal>
+            <span class="eval-no">02</span><h3>Fair &amp; Explainable Ranking</h3>
+            <div class="eval-factor-grid"><span>Distance</span><span>Workload Balance</span><span>Service Suitability</span><span>Configurable Policy</span></div>
+            <b>Ranking factors stay visible.</b>
+          </article>
+          <div class="eval-core-arrow" aria-hidden="true">→</div>
+          <article class="eval-core-card choice" data-reveal>
+            <span class="eval-no">03</span><h3>Worker Choice</h3>
+            <div class="eval-choice-preview"><span class="good">ACCEPT</span><span>DECLINE</span></div>
+            <b>Opportunity is offered — not forced.</b>
+          </article>
+        </div>
+        <div class="eval-core-line" data-reveal>Not nearest-first. <span>Not forced assignment.</span> <b>Eligibility first.</b></div>
+        <div class="eval-master-chain" data-reveal>
+          <span>Service Request</span><i>→</i><span>Eligibility Gate</span><i>→</i><span>Fair &amp; Explainable Ranking</span><i>→</i><span>Worker Choice</span><i>→</i><span>Service-Start Verification</span><i>→</i><span>Payment</span><i>→</i><span>Audit &amp; Outcome</span>
+        </div>
       </div>
-      <div class="eval-differentiator-grid" id="whyDifferent">
-        <article class="eval-differentiator"><span class="eval-no">01</span><h3>Cooperative / Federation Governance</h3><p>Verification, complaints, capacity and operational policies remain accountable to authorized roles.</p></article>
-        <article class="eval-differentiator"><span class="eval-no">02</span><h3>Eligibility Gate</h3><p>Verified + required skill + available + within configured service area. Only eligible workers proceed.</p></article>
-        <article class="eval-differentiator"><span class="eval-no">03</span><h3>Fair &amp; Explainable Ranking</h3><p>Distance, workload balance, service suitability and cooperative rules are considered only after eligibility.</p></article>
-        <article class="eval-differentiator"><span class="eval-no">04</span><h3>Worker Choice + Auditable Outcome</h3><p>An opportunity is offered. Accept or decline remains explicit, and the service lifecycle stays traceable.</p></article>
-      </div>
-      <div class="eval-decision-chain" aria-label="Master SanPaid workflow">
-        <span>SERVICE REQUEST</span><i>↓</i><span>ELIGIBILITY GATE</span><i>↓</i><span>FAIR &amp; EXPLAINABLE RANKING</span><i>↓</i><span>WORKER CHOICE</span><i>↓</i><span>SERVICE-START VERIFICATION</span><i>↓</i><span>PAYMENT</span><i>↓</i><span>AUDIT &amp; OUTCOME</span>
-      </div>
-      <p class="eval-section-note"><b>Architecture principle:</b> Rules First → AI-Assisted → Worker Choice → Auditable Outcome.</p>
-    </div>
-  </section>
+    </section>
 
-  <section class="section" id="matching">
-    <div class="wrap">
-      <div class="match eval-match">
-        <div class="eval-match-head">
-          <div>
-            <span class="tag dark-tag">04 — Interactive Matching Proof</span>
-            <h2>Nearest does not automatically mean eligible</h2>
-            <p class="muted-light">Run a deterministic prototype example: five candidates enter the Eligibility Gate, only eligible workers proceed to Fair &amp; Explainable Ranking, then an opportunity is offered with explicit worker choice.</p>
+    <section class="section eval-live-section" id="matching">
+      <div class="wrap">
+        <div class="head eval-live-head" data-reveal>
+          <span class="tag">04 — Interactive Matching Proof</span>
+          <h2>See fair matching in action</h2>
+          <p>Distance alone does not decide eligibility. Run the actual demo sequence and inspect every exclusion and rank reason.</p>
+        </div>
+        <div class="eval-match" data-reveal>
+          <div class="eval-request-bar">
+            <div class="eval-request-item"><small>Request</small><b>Electrician</b><span>Today</span></div>
+            <div class="eval-request-item"><small>Location</small><b>Example Local Area</b><span>Demo-safe request</span></div>
+            <div class="eval-request-item"><small>Required</small><b>Verified · Skilled · Available</b><span>Eligibility rules</span></div>
+            <div class="eval-request-item eval-radius-control"><small>Configurable Local Service Radius</small><select id="evalRadius" aria-label="Configured demo service radius"><option value="2">2 km</option><option value="5">5 km</option><option value="10">10 km</option><option value="20" selected>20 km — demo policy</option><option value="30">30 km</option></select><span>Demo Policy Example: 20 km</span></div>
           </div>
-          <span class="eval-demo-truth">PROTOTYPE-DEMO · DEMO-SAFE DATA</span>
-        </div>
+          <div class="eval-radius-copy">The local service radius can be configured by geography, cooperative policy and service type. The 20 km value is only the current demo policy example.</div>
 
-        <div class="eval-request-bar">
-          <div class="eval-request-item"><small>Service Request</small><b>Electrician</b></div>
-          <div class="eval-request-item"><small>Location</small><b>Example Local Area</b></div>
-          <div class="eval-request-item"><small>Required</small><b>Verified · Skilled · Available</b></div>
-          <div class="eval-request-item eval-radius-control"><small>Configured Service Radius</small><select id="evalRadius" aria-label="Configured demo service radius"><option value="10">10 km</option><option value="20" selected>20 km — current demo</option><option value="30">30 km</option></select></div>
-        </div>
-        <div class="eval-radius-copy">Current demo configuration: 20 km. The service radius is configurable by local geography, cooperative policy and service type; it is not a universal hard-coded rule.</div>
-
-        <div class="eval-proof-body">
-          <div class="eval-proof-panel">
-            <h3>Eligibility Gate</h3>
-            <p>Verification, required skill, availability and configured service area are hard gates.</p>
-            <div class="eval-stage-summary" id="evalEligibilitySummary"><span>5 Candidates</span><i>→</i><span>Eligibility Gate</span><i>→</i><span>2 Eligible</span></div>
-            <div class="eval-candidate-list" id="evalCandidateList"></div>
+          <div class="eval-proof-body">
+            <div class="eval-proof-panel">
+              <div class="eval-panel-heading"><div><small>STEP 1</small><h3>Eligibility Gate</h3></div><span id="evalEligibilityBadge">WAITING</span></div>
+              <div class="eval-stage-summary" id="evalEligibilitySummary"><span>5 Candidates</span><i>→</i><span>Run Eligibility</span></div>
+              <div class="eval-candidate-list" id="evalCandidateList" aria-live="polite"></div>
+            </div>
+            <div class="eval-proof-panel">
+              <div class="eval-panel-heading"><div><small>STEP 2–3</small><h3>Fair Ranking → Worker Choice</h3></div><span id="evalRankingBadge">LOCKED</span></div>
+              <div class="eval-ranking-list" id="evalRankingList" aria-live="polite"></div>
+              <div id="evalOfferRoot" aria-live="polite"></div>
+              <div class="eval-worker-message" id="evalWorkerMessage" hidden></div>
+              <div class="eval-audit-head"><small>Audit &amp; Outcome</small><span>Reason-coded demo trail</span></div>
+              <div class="eval-audit" id="evalAudit" aria-live="polite"></div>
+            </div>
           </div>
-          <div class="eval-proof-panel">
-            <h3>Fair &amp; Explainable Ranking → Worker Choice</h3>
-            <p>No mysterious AI score. Ranking factors are visible, and an eligible worker can accept or decline.</p>
-            <div class="eval-ranking-list" id="evalRankingList"></div>
-            <div id="evalOfferRoot"></div>
-            <div class="eval-worker-message" id="evalWorkerMessage" hidden></div>
-            <h3 style="margin-top:16px">Audit &amp; Outcome</h3>
-            <div class="eval-audit" id="evalAudit"></div>
+
+          <div class="eval-actions-row">
+            <button class="btn primary" id="runMatchBtn" type="button">RUN ELIGIBILITY CHECK</button>
+            <button class="btn secondary" id="evalRunRanking" type="button" disabled>RUN FAIR RANKING</button>
+            <button class="btn tertiary" id="evalResetMatch" type="button">Reset Demo</button>
+            <span id="evalMatchState" class="eval-demo-truth">PROTOTYPE-DEMO · Ready</span>
           </div>
         </div>
-
-        <div class="eval-actions-row">
-          <button class="btn primary" id="runMatchBtn" type="button">RUN MATCHING DEMO</button>
-          <button class="btn secondary" id="evalOpenConnected" type="button">VERIFY WITH CONNECTED PROTOTYPE</button>
-          <button class="btn ghost eval-reset" id="evalResetMatch" type="button">Reset Matching Demo</button>
-          <span id="evalMatchState" class="eval-demo-truth">Ready — current demo configuration: 20 km</span>
-        </div>
+        <div class="eval-proof-bridge" data-reveal><div><b>Want backend proof?</b><span>Run the same request across separate customer and worker sessions.</span></div><button class="btn secondary" id="evalOpenConnected" type="button">VERIFY WITH CONNECTED PROTOTYPE</button></div>
         <div id="matchResults" hidden></div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="section selector-invite" id="guidedDemo">
-    <div class="wrap selector-invite-inner">
-      <div>
-        <span class="tag">Evaluator Guide</span>
-        <h2>Understand the full SanPaid story in about 3 minutes — no login required.</h2>
-        <p>Problem → differentiation → eligibility + ranking → worker choice → trust → governance → capacity → planning → research → impact.</p>
+    <section class="section white eval-worker-experience" id="connectedDemoSection">
+      <div class="wrap eval-split">
+        <div data-reveal>
+          <span class="tag">05 — Worker Experience</span>
+          <h2>Workers retain control over every opportunity.</h2>
+          <p>The worker sees the service, distance, schedule, earnings context and why the opportunity was offered before choosing Accept or Decline.</p>
+          <div class="eval-worker-principles"><span>Verified opportunity</span><span>Transparent context</span><span>Accept / Decline</span><span>No demo penalty for decline</span></div>
+          <div class="eval-inline-actions"><button class="btn primary" type="button" data-eval-connected-persona="WORKER_A">OPEN WORKER A</button><button class="btn secondary" type="button" data-eval-connected-persona="WORKER_B">OPEN WORKER B</button></div>
+        </div>
+        <div class="eval-phone" data-reveal aria-label="Worker opportunity preview">
+          <div class="eval-phone-top"><span>SanPaid Worker</span><small>DEMO PREVIEW</small></div>
+          <div class="eval-phone-body">
+            <small class="eval-phone-kicker">NEW OPPORTUNITY</small>
+            <h3>Electrician Service</h3>
+            <div class="eval-phone-grid"><span><small>Distance</small><b>2.3 km</b></span><span><small>Schedule</small><b>4:00 PM</b></span><span><small>Expected Earnings</small><b>Demo estimate</b></span><span><small>Cooperative</small><b>Karad</b></span></div>
+            <div class="eval-why-box"><b>Why you received this</b><span>✓ Verified</span><span>✓ Skill Match</span><span>✓ Available</span><span>✓ Service Area Match</span></div>
+            <div class="eval-phone-actions"><button type="button" class="good" data-eval-connected-persona="WORKER_A">ACCEPT</button><button type="button" data-eval-connected-persona="WORKER_A">DECLINE</button></div>
+            <p>Workers retain control over whether they accept an opportunity.</p>
+          </div>
+        </div>
       </div>
-      <div class="selector-invite-actions">
-        <button class="btn primary" type="button" data-open-selector="0">▶ Start 3-Minute Guided Overview</button>
-        <button class="btn secondary" id="evalOpenConnected" type="button" onclick="window.ConnectedSanPaid?.open?.()">Open Working Prototype</button>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="section white" id="capacity">
-    <div class="wrap">
-      <div class="head">
-        <span class="tag">05 — Cross-Cooperative Capacity</span>
-        <h2>Share capacity without automatically transferring workers</h2>
-        <p>When one cooperative has a demand gap, SanPaid can suggest nearby verified capacity. Authorized approval and worker acceptance remain required.</p>
+    <section class="section eval-operating-model" id="operatingModel">
+      <div class="wrap">
+        <div class="head" data-reveal><span class="tag">06 — Cooperative Operating Model</span><h2>Platform coordination without removing cooperative governance.</h2><p>Each role stays responsible for a different part of the service and workforce lifecycle.</p></div>
+        <div class="eval-role-chain" data-reveal>
+          <article><span>01</span><h3>Customer</h3><p>Service Request</p></article><i>→</i>
+          <article class="active"><span>02</span><h3>SanPaid</h3><p>Eligibility · Ranking · Audit</p></article><i>→</i>
+          <article><span>03</span><h3>Worker</h3><p>Choice · Service Delivery</p></article><i>→</i>
+          <article><span>04</span><h3>Cooperative</h3><p>Verification · SLA · Complaints</p></article><i>→</i>
+          <article><span>05</span><h3>Federation</h3><p>Policy · Capacity · Planning</p></article>
+        </div>
+        <div class="eval-governance-note" data-reveal><b>Governance remains visible:</b> worker verification, complaints, capacity decisions and cross-cooperative accountability are not hidden behind platform automation.</div>
       </div>
-      <div class="eval-capacity-wrap">
-        <div class="eval-capacity-grid">
-          <article class="eval-capacity-card"><small>Cooperative A</small><h3>High Demand · Low Available Capacity</h3><p>Local eligible capacity is insufficient for the current demo scenario.</p></article>
-          <div class="eval-capacity-arrow">→</div>
-          <article class="eval-capacity-card"><small>Cooperative B</small><h3>Available Verified Capacity</h3><p>Capacity may be offered only through governed exchange; workers are never silently moved.</p></article>
-        </div>
-        <div class="eval-governed-flow"><span>DEMAND GAP</span><i>→</i><span>CAPACITY DISCOVERY</span><i>→</i><span>SUGGEST EXCHANGE</span><i>→</i><span>WORKER ACCEPTANCE</span><i>→</i><span>AUTHORIZED APPROVAL</span><i>→</i><span>ASSIGNMENT</span></div>
-        <div class="eval-accountability">
-          <div><small>Home Cooperative</small><b>Recorded</b></div>
-          <div><small>Serving Cooperative</small><b>Recorded</b></div>
-          <div><small>Assignment ID</small><b>Traceable</b></div>
-          <div><small>Payment Ownership</small><b>Explicit</b></div>
-          <div><small>Complaint Ownership</small><b>Explicit</b></div>
-        </div>
-        <div class="eval-actions-row">
-          <button class="btn primary" id="evalCapacityAction" type="button">Suggest Capacity Exchange</button>
-          <button class="btn secondary" id="evalCapacityConnected" type="button">Open Connected Proof</button>
-          <div class="eval-worker-message" id="evalCapacityStatus" hidden></div>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="section" id="governance">
-    <div class="wrap">
-      <div class="head">
-        <span class="tag">06 — Governance &amp; Planning</span>
-        <h2>Decision support — not dashboard decoration</h2>
-        <p>Cooperative Admins should see what requires action: capacity gaps, SLA risk and opportunity distribution. Federation Admins focus on cross-cooperative demand, capacity and policy visibility.</p>
-      </div>
-      <div class="eval-governance-wrap">
-        <div class="eval-decision-grid">
-          <article class="eval-decision-card"><h3>Capacity Gap</h3><p>Demand exceeds currently available verified capacity. Review local options before requesting governed cross-cooperative support.</p><button class="btn secondary" id="evalAdminPrototype" type="button">View Role Demo</button></article>
-          <article class="eval-decision-card"><h3>SLA Risk</h3><p>Services approaching configured SLA thresholds should be reviewed before escalation. No fake SLA results are claimed.</p><button class="btn secondary" type="button" data-open-selector="5">Review Governance Flow</button></article>
-          <article class="eval-decision-card"><h3>Worker Opportunity Distribution</h3><p>Review whether opportunities are concentrated among too few eligible workers; fairness never overrides eligibility.</p><button class="btn secondary" type="button" data-open-selector="7">View Planning Logic</button></article>
+    <section class="section white eval-capacity" id="capacity">
+      <div class="wrap">
+        <div class="head" data-reveal><span class="tag">07 — Cross-Cooperative Capacity Exchange</span><h2>Share capacity without automatically transferring workers.</h2><p>When local eligible capacity is insufficient, SanPaid can suggest verified capacity from another cooperative — but worker acceptance and authorized approval remain required.</p></div>
+        <div class="eval-capacity-stage" data-reveal>
+          <article class="eval-coop-card shortage"><small>COOPERATIVE A · DEMO SCENARIO</small><h3>Demand: High</h3><p>Available eligible capacity: Low</p><span>CAPACITY GAP</span></article>
+          <div class="eval-capacity-network">
+            <span class="eval-network-label">SANPAID CAPACITY EXCHANGE</span>
+            <div class="eval-network-line"><i></i></div>
+            <div class="eval-capacity-steps"><span>Demand Gap Detected</span><span>Available Capacity Found</span><span>Exchange Suggested</span><span>Worker Acceptance</span><span>Authorized Approval</span><span>Assignment Confirmed</span></div>
+          </div>
+          <article class="eval-coop-card available"><small>COOPERATIVE B · DEMO SCENARIO</small><h3>Demand: Normal</h3><p>Available verified capacity: Available</p><span>CONSENT REQUIRED</span></article>
         </div>
-        <div class="eval-baseline-flow"><span>Historical Demand</span><i>→</i><span>Baseline</span><i>→</i><span>Trend Analysis</span><i>→</i><span>Forecast</span><i>→</i><span>Capacity Planning</span></div>
-        <p class="eval-section-note" style="padding:0 22px 22px;margin:0"><b>Baseline First → ML Later.</b> Early-stage pilot estimates remain baseline-led until enough historical demand data exists. No prediction-accuracy percentage is claimed.</p>
+        <div class="eval-accountability" data-reveal>
+          <div><small>Home Cooperative</small><b>Recorded</b></div><div><small>Serving Cooperative</small><b>Recorded</b></div><div><small>Assignment ID</small><b>Traceable</b></div><div><small>Payment Ownership</small><b>Explicit</b></div><div><small>Complaint Ownership</small><b>Explicit</b></div>
+        </div>
+        <div class="eval-actions-row" data-reveal><button class="btn primary" id="evalCapacityAction" type="button">CHECK CAPACITY EXCHANGE</button><button class="btn secondary" id="evalCapacityConnected" type="button">OPEN CONNECTED PROOF</button><div class="eval-worker-message" id="evalCapacityStatus" hidden></div></div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="section white" id="impact">
-    <div class="wrap">
-      <div class="head">
-        <span class="tag">07 — Measurable Impact</span>
-        <h2>Define the baseline first. Measure before claiming impact.</h2>
-        <p>SanPaid does not invent income, speed or satisfaction percentages. Pilot outcomes are measured against a documented baseline.</p>
-      </div>
-      <div class="eval-impact-wrap">
-        <div class="eval-impact-audience">
-          <article><b>Customers</b><p>Verified cooperative workers, clearer service status, service-start confirmation and transparent billing.</p></article>
-          <article><b>Workers</b><p>Eligibility-based opportunities, explicit Accept / Decline choice, work visibility and traceable earnings records.</p></article>
-          <article><b>Cooperative Admin</b><p>Unified verification, assignments, payments, complaints, SLA and capacity decisions.</p></article>
-          <article><b>Federation / Community</b><p>Cross-cooperative capacity coordination, skill-gap visibility and regional workforce planning.</p></article>
+    <section class="section eval-intelligence" id="governance">
+      <div class="wrap">
+        <div class="head" data-reveal><span class="tag">08 — Admin &amp; Federation Intelligence</span><h2>Dashboards should answer: what needs attention next?</h2><p>SanPaid separates cooperative operations from federation-level capacity and policy visibility. Any numbers shown below are explicitly demo scenario data.</p></div>
+        <div class="eval-dashboard-showcase" data-reveal>
+          <div class="eval-dashboard-tabs" role="tablist" aria-label="Dashboard preview"><button type="button" class="active" data-eval-dashboard="coop">Cooperative Admin</button><button type="button" data-eval-dashboard="federation">Federation Admin</button><span>DEMO DATA</span></div>
+          <div class="eval-dashboard-panel active" id="evalDashboardCoop" data-eval-panel="coop">
+            <div class="eval-metric-strip"><span><small>Active Workers</small><b>Operational view</b></span><span><small>Service Requests</small><b>Live workflow</b></span><span><small>Assignment Time</small><b>Measure in pilot</b></span><span><small>SLA Compliance</small><b>Track by policy</b></span></div>
+            <div class="eval-decision-grid">
+              <article class="eval-decision-card warn"><span>CAPACITY GAP</span><h3>Demand exceeds eligible local capacity</h3><p>Review nearby capacity before approving a cross-cooperative request.</p><button class="btn secondary" type="button" data-scroll-target="capacity">VIEW CAPACITY OPTIONS</button></article>
+              <article class="eval-decision-card risk"><span>SLA RISK · DEMO SCENARIO</span><h3>3 services approaching threshold</h3><p>Prioritize review before configured escalation occurs.</p><button class="btn secondary" type="button" data-open-selector="5">REVIEW SERVICES</button></article>
+              <article class="eval-decision-card"><span>WORKER UTILIZATION</span><h3>Review distribution, not one average</h3><p>Opportunity concentration can be monitored without overriding eligibility.</p><button class="btn secondary" type="button" data-open-selector="7">VIEW PLANNING</button></article>
+            </div>
+          </div>
+          <div class="eval-dashboard-panel" id="evalDashboardFederation" data-eval-panel="federation" hidden>
+            <div class="eval-federation-network"><article><b>Karad Cooperative</b><span>Demand ↑</span><span>Capacity ↓</span></article><i>↔</i><article><b>Satara Cooperative</b><span>Demand →</span><span>Capacity ↑</span></article><i>↔</i><article><b>Sahyadri Society</b><span>Skill gap review</span><span>Policy visible</span></article></div>
+            <div class="eval-federation-grid"><span>Cross-Cooperative Demand</span><span>Capacity Availability</span><span>Exchange Requests</span><span>Skill Gaps</span><span>SLA Trends</span><span>Federation Policy Visibility</span></div>
+            <p class="eval-section-note">DEMO SCHEMATIC — not a production geographic map or live federation statistic.</p>
+          </div>
+          <div class="eval-dashboard-footer"><button class="btn primary" id="evalAdminPrototype" type="button">OPEN ROLE DEMOS</button><button class="btn secondary" type="button" data-open-selector="5">VIEW GOVERNANCE PROOF</button></div>
         </div>
+      </div>
+    </section>
+
+    <section class="section white eval-ai" id="intelligence">
+      <div class="wrap">
+        <div class="head" data-reveal><span class="tag">09 — AI-Assisted Intelligence</span><h2>AI assists decisions — it does not remove worker or cooperative control.</h2><p>Safety and eligibility remain deterministic. AI-assisted components support ranking context, demand forecasting and capacity recommendations.</p></div>
+        <div class="eval-ai-control" data-reveal>
+          <article><small>RULES FIRST</small><h3>Eligibility Rules</h3><p>Verification · skill · availability · service area · policy</p></article><i>→</i>
+          <article class="accent"><small>AI-ASSISTED</small><h3>Decision Support</h3><p>Ranking context · demand forecast · capacity recommendations</p></article><i>→</i>
+          <article><small>HUMAN / WORKER CONTROL</small><h3>Choice &amp; Approval</h3><p>Worker choice · Cooperative Admin approval</p></article><i>→</i>
+          <article><small>AUDITABLE OUTCOME</small><h3>Traceability</h3><p>Logs · reason codes · KPIs</p></article>
+        </div>
+        <div class="eval-forecast" data-reveal><div><span>Historical Demand</span><i>→</i><span>Baseline</span><i>→</i><span>Trend</span><i>→</i><span>Forecast</span><i>→</i><span>Capacity Planning</span></div><b>Baseline First → ML Later</b><p>Early-stage pilot estimates stay baseline-led until sufficient historical demand data exists. No prediction accuracy is claimed.</p></div>
+      </div>
+    </section>
+
+    <section class="section eval-impact" id="impact">
+      <div class="wrap">
+        <div class="head" data-reveal><span class="tag">10 — Measurable Impact</span><h2>Measure before claiming impact.</h2><p>No unsupported income, speed or satisfaction percentages. Pilot outcomes are measured against a documented baseline.</p></div>
         <div class="eval-kpi-grid">
-          <article class="eval-kpi-card"><h4>SERVICE ACCESS</h4><span>Median Assignment Time</span><span>P90 Assignment Time</span><span>Booking Success Rate</span></article>
-          <article class="eval-kpi-card"><h4>WORKER OPPORTUNITY</h4><span>Worker Utilization</span><span>Job Opportunity Concentration</span><span>Travel Burden</span></article>
-          <article class="eval-kpi-card"><h4>TRUST &amp; GOVERNANCE</h4><span>SLA Compliance</span><span>Price Dispute Rate</span><span>Payment Traceability</span></article>
-          <article class="eval-kpi-card"><h4>WORKFORCE PLANNING</h4><span>Capacity Gap</span><span>Forecast Error vs Baseline</span><span>Skill → Job Conversion</span></article>
+          <article class="eval-kpi-card" data-reveal><small>SERVICE ACCESS</small><h3>Can valid demand reach eligible capacity?</h3><span>Median Assignment Time</span><span>P90 Assignment Time</span><span>Booking Success Rate</span></article>
+          <article class="eval-kpi-card" data-reveal><small>WORKER OPPORTUNITY</small><h3>Are opportunities distributed responsibly?</h3><span>Worker Utilization</span><span>Opportunity Concentration</span><span>Travel Burden</span></article>
+          <article class="eval-kpi-card" data-reveal><small>TRUST &amp; GOVERNANCE</small><h3>Are services traceable and accountable?</h3><span>SLA Compliance</span><span>Price Dispute Rate</span><span>Payment Traceability</span></article>
+          <article class="eval-kpi-card" data-reveal><small>WORKFORCE PLANNING</small><h3>Where are capacity and skill gaps?</h3><span>Capacity Gap</span><span>Forecast Error vs Baseline</span><span>Skill-to-Job Conversion</span></article>
         </div>
-        <div class="eval-measure-flow"><span>BASELINE</span><i>→</i><span>PILOT</span><i>→</i><span>MEASURE</span><i>→</i><span>VALIDATE</span><i>→</i><span>SCALE</span></div>
+        <div class="eval-measure-flow" data-reveal><span>BASELINE</span><i>→</i><span>PILOT</span><i>→</i><span>MEASURE</span><i>→</i><span>VALIDATE</span><i>→</i><span>SCALE</span></div>
+        <p class="eval-impact-note" data-reveal>Impact measured against pilot baseline.</p>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="section white" id="status">
-    <div class="wrap" id="researchProof">
-      <div class="head">
-        <span class="tag">08 — Prototype Truth + Research</span>
-        <h2>What works today is separated from sandbox and future integration</h2>
-        <p>Credibility is stronger when implemented, prototype-demo and future capabilities are visibly separated.</p>
-      </div>
-      <div class="eval-truth-wrap">
-        <div class="eval-truth-grid">
-          <div class="eval-truth-col implemented"><h3>IMPLEMENTED</h3><ul><li>Role-based prototype flows</li><li>Service booking</li><li>Eligibility logic and explainable ranking demonstration</li><li>Worker Accept / Decline</li><li>Booking status flow</li><li>Admin visibility</li><li>Capacity / SLA demonstration</li></ul></div>
-          <div class="eval-truth-col prototype"><h3>PROTOTYPE / DEMO</h3><ul><li>QR / identity service-start verification</li><li>Payment flow / sandbox</li><li>Time-advanced SLA simulation</li><li>Demand baseline / forecast visualization</li></ul></div>
-          <div class="eval-truth-col future"><h3>FUTURE / AUTHORIZED INTEGRATION</h3><ul><li>Production KYC / biometric provider</li><li>Insurance / welfare integrations</li><li>Production payment infrastructure</li><li>Federation-scale production deployment</li></ul></div>
-        </div>
-        <div class="eval-actions-row" style="padding-top:20px">
-          <button class="btn primary" id="evalResearch" type="button">Explore Research &amp; Architecture</button>
-          <button class="btn ghost eval-reset" id="evalResetLocal" type="button">Reset Local Demo</button>
+    <section class="section white eval-truth" id="status">
+      <div class="wrap">
+        <div class="head" data-reveal><span class="tag">11 — Prototype Truth</span><h2>What works today</h2><p>We separate working prototype, simulated integrations and future deployment scope.</p></div>
+        <div class="eval-truth-grid" data-reveal>
+          <article class="eval-truth-col implemented"><small>WORKING NOW</small><h3>IMPLEMENTED</h3><ul><li>Booking Flow</li><li>Eligibility Logic</li><li>Fair Ranking Demonstration</li><li>Worker Accept / Reject</li><li>Booking Status Flow</li><li>Admin Visibility</li><li>Capacity / SLA Demonstration</li></ul></article>
+          <article class="eval-truth-col prototype"><small>CONTROLLED DEMO</small><h3>PROTOTYPE / DEMO</h3><ul><li>QR / OTP Service-Start Verification</li><li>Payment Sandbox</li><li>SLA Time Simulation</li><li>Forecast Visualization</li></ul></article>
+          <article class="eval-truth-col future"><small>AUTHORIZED NEXT PHASE</small><h3>FUTURE INTEGRATION</h3><ul><li>Production KYC</li><li>Insurance / Welfare</li><li>Production Payment Infrastructure</li><li>Federation-Scale Integrations</li></ul></article>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="eval-final-cta" aria-label="Final prototype call to action">
-    <h2>See the cooperative workforce logic working</h2>
-    <p>Start with the connected prototype, or rerun the explainable matching proof. The deeper evaluator journey remains available without forcing a login.</p>
-    <div class="eval-final-cta-actions"><button class="btn primary" id="evalFinalPrototype" type="button">TRY LIVE PROTOTYPE</button><button class="btn secondary" id="evalFinalMatching" type="button">SEE MATCHING LOGIC</button><button class="btn ghost" type="button" data-open-selector="0">3-Minute Overview</button></div>
-  </section>
+    <section class="section eval-architecture" id="architecture">
+      <div class="wrap">
+        <div class="head" data-reveal><span class="tag">12 — Architecture Preview</span><h2>Secure, modular and explainable — without pretending every scale component is already deployed.</h2><p>The evaluator gets the system shape first; deeper research and security detail remain one click away.</p></div>
+        <div class="eval-architecture-preview" data-reveal>
+          <div class="eval-arch-layer"><small>USERS</small><div><span>Customer</span><span>Worker</span><span>Cooperative Admin</span><span>Federation Admin</span></div></div>
+          <i>↓</i>
+          <div class="eval-arch-layer primary"><small>APPLICATION</small><div><span>Booking</span><span>Eligibility Gate</span><span>Fair Ranking</span><span>Worker Choice</span><span>Payment</span><span>Governance</span></div></div>
+          <i>↓</i>
+          <div class="eval-arch-layer"><small>DATA</small><div><span>PostgreSQL</span><span>PostGIS</span><span>Audit Logs</span></div></div>
+          <i>↓</i>
+          <div class="eval-arch-layer"><small>INTEGRATIONS</small><div><span>Maps</span><span>Payments</span><span>OTP</span><span>Identity Verification</span></div></div>
+          <aside><small>DECISION INTELLIGENCE</small><span>Demand Baseline &amp; Forecast</span><span>Cross-Cooperative Capacity Exchange</span><span>Analytics</span></aside>
+        </div>
+        <div class="eval-research-block" id="research" data-reveal>
+          <div><small>RESEARCH FOUNDATION</small><h3>Research → design decision → visible proof</h3><p>OWASP security guidance, PostgreSQL/PostGIS, Maps/Routes, cooperative ecosystem sources and workforce-matching research inform specific architecture and product choices.</p></div>
+          <div class="eval-research-chips"><span>OWASP API Security</span><span>PostgreSQL / PostGIS</span><span>Maps / Routes</span><span>Cooperative Ecosystem</span><span>Workforce Matching</span></div>
+          <button class="btn secondary" id="evalResearch" type="button" data-open-selector="8">VIEW FULL ARCHITECTURE &amp; RESEARCH</button>
+        </div>
+        <div class="eval-actions-row" data-reveal><button class="btn tertiary" id="evalResetLocal" type="button">RESET LOCAL DEMO</button><span class="eval-demo-truth">Reset affects local prototype state only; it does not claim or alter production data.</span></div>
+      </div>
+    </section>
+
+    <section class="eval-final-cta" aria-label="Final prototype call to action">
+      <div class="wrap" data-reveal>
+        <span class="tag">Final Proof</span>
+        <h2>From isolated worker pools<br>to a connected cooperative workforce network.</h2>
+        <p>Fair access. Trusted work. Stronger communities.</p>
+        <div class="eval-final-cta-actions"><button class="btn primary" id="evalFinalPrototype" type="button">TRY LIVE PROTOTYPE</button><button class="btn secondary" type="button" data-eval-connected-persona="WORKER_A">EXPLORE WORKER FLOW</button><button class="btn tertiary" id="evalFinalArchitecture" type="button">VIEW ARCHITECTURE</button></div>
+      </div>
+    </section>
+  </main>
 
   <footer class="footer">
-    <div class="wrap">
-      <div class="brand">San<span>Paid</span></div>
-      <p>SIH 2026 Prototype · PS 26089</p>
-      <p>Eligibility Gate → Fair &amp; Explainable Ranking → Worker Choice → Service-Start Verification → Audit &amp; Outcome.</p>
-      <p>Payment and identity/liveness remain sandboxed. SLA breach advancement is explicitly a demo simulation.</p>
+    <div class="wrap eval-footer-grid">
+      <div><div class="brand">San<span>Paid</span></div><p>AI-Assisted Cooperative Workforce Operating Network</p></div>
+      <div><b>Core Logic</b><p>Eligibility Gate → Fair &amp; Explainable Ranking → Worker Choice → Service-Start Verification → Audit &amp; Outcome.</p></div>
+      <div><b>Prototype Truth</b><p>Payment and identity/liveness remain sandboxed. SLA time advancement and forecast views are explicitly demo/prototype scope.</p></div>
     </div>
   </footer>
 </div>
