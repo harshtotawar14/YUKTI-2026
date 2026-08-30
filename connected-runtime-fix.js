@@ -22,7 +22,7 @@
 
   function structuredSummaryOnly(text = '') {
     const markers = ['ग्राहक की रिक्वेस्ट:', 'ग्राहकाची विनंती:', 'Customer request:'];
-    let clean = String(text).trim();
+    const clean = String(text).trim();
     for (const marker of markers) {
       const i = clean.indexOf(marker);
       if (i >= 0) return clean.slice(0, i).trim();
@@ -36,16 +36,25 @@
     return match ? match[1].toLowerCase() : 'en';
   }
 
+  function setTextIfChanged(node, value) {
+    if (node && node.textContent !== value) node.textContent = value;
+  }
+
+  function setStyleIfChanged(node, prop, value) {
+    if (node && node.style[prop] !== value) node.style[prop] = value;
+  }
+
   function setStatusRow(label, badgeText, detail, tone = 'orange') {
     document.querySelectorAll('#status tbody tr').forEach(row => {
       const cells = row.querySelectorAll('td');
       if (!cells.length || !cells[0].textContent.includes(label)) return;
       const badge = cells[1]?.querySelector('.badge');
+      const className = `badge ${tone === 'green' ? 'b-green' : tone === 'purple' ? 'b-purple' : 'b-orange'}`;
       if (badge) {
-        badge.textContent = badgeText;
-        badge.className = `badge ${tone === 'green' ? 'b-green' : tone === 'purple' ? 'b-purple' : 'b-orange'}`;
+        setTextIfChanged(badge, badgeText);
+        if (badge.className !== className) badge.className = className;
       }
-      if (detail && cells[2]) cells[2].textContent = detail;
+      if (detail && cells[2]) setTextIfChanged(cells[2], detail);
     });
   }
 
@@ -55,6 +64,8 @@
       setStatusRow('Connected two-device booking', 'BACKEND CONNECTED', 'Shared PostgreSQL booking, worker-scoped offer, Accept/Reject fallback and SSE status stream', 'green');
       setStatusRow('Eligibility-first matching', 'CONNECTED DEMO', 'Verified/available/skill-verified workers are gated before deterministic ranking', 'green');
       setStatusRow('Worker accept/reject', 'BACKEND CONNECTED', 'Atomic offer response; Reject creates next eligible worker offer with same booking context', 'green');
+      setStatusRow('Dual service-start verification', 'CONNECTED SANDBOX', 'Backend-enforced arrival → sandbox identity → one-time token → customer confirmation → service-start lock', 'orange');
+      setStatusRow('Payment & invoice', 'CONNECTED SANDBOX', 'Approved extra work + sandbox payment + persisted invoice + rating flow', 'orange');
       setStatusRow('PostgreSQL backend', 'CONNECTED', 'Shared SanPaid PostgreSQL backend is reachable from this deployment', 'green');
     } else {
       const pending = 'Connected source/database are ready, but the currently served backend deployment has not exposed /api/connected/health yet.';
@@ -81,13 +92,16 @@
     const top = document.getElementById('connectedTopStatus');
     if (!top) return;
     const offline = /not reachable|unavailable/i.test(top.textContent || '');
-    const chooserBadges = document.querySelectorAll('#connectedShell .connected-badge');
-    chooserBadges.forEach(badge => {
+    const targetText = offline ? 'DEPLOYMENT PENDING' : 'CONNECTED BACKEND';
+    const targetColor = offline ? '#9a5b00' : '#176b46';
+    const targetBackground = offline ? '#fff6e8' : '#eaf8f1';
+    const targetBorder = offline ? '#f0d29d' : '#c4e8d5';
+    document.querySelectorAll('#connectedShell .connected-badge').forEach(badge => {
       if (!/CONNECTED BACKEND|DEPLOYMENT PENDING|BACKEND OFFLINE/.test(badge.textContent || '')) return;
-      badge.textContent = offline ? 'DEPLOYMENT PENDING' : 'CONNECTED BACKEND';
-      badge.style.color = offline ? '#9a5b00' : '#176b46';
-      badge.style.background = offline ? '#fff6e8' : '#eaf8f1';
-      badge.style.borderColor = offline ? '#f0d29d' : '#c4e8d5';
+      setTextIfChanged(badge, targetText);
+      setStyleIfChanged(badge, 'color', targetColor);
+      setStyleIfChanged(badge, 'background', targetBackground);
+      setStyleIfChanged(badge, 'borderColor', targetBorder);
     });
   }
 
@@ -114,7 +128,15 @@
     }
   }, true);
 
-  const observer = new MutationObserver(() => syncConnectedShellTruth());
+  let observerScheduled = false;
+  const observer = new MutationObserver(() => {
+    if (observerScheduled) return;
+    observerScheduled = true;
+    requestAnimationFrame(() => {
+      observerScheduled = false;
+      syncConnectedShellTruth();
+    });
+  });
 
   function start() {
     observer.observe(document.body, { childList: true, subtree: true, characterData: true });
