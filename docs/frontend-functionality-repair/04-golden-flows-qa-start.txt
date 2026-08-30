@@ -1,0 +1,255 @@
+60. GOLDEN FRONTEND DEMO FLOW
+============================================================
+
+The frontend-only demo must support:
+
+HOME PAGE
+
+↓
+GET STARTED
+
+↓
+CUSTOMER LOGIN
+
+↓
+BOOK ELECTRICIAN
+
+↓
+ENTER KARAD LOCATION
+
+↓
+CONFIRM BOOKING
+
+↓
+FAIR MATCHING
+
+↓
+VERIFIED WORKER ASSIGNED
+
+↓
+WORKER ACCEPTS
+
+↓
+WORKER ARRIVES
+
+↓
+SANDBOX IDENTITY VERIFICATION
+
+↓
+CUSTOMER CONFIRMS QR
+
+↓
+SERVICE STARTS
+
+↓
+EXTRA WORK REQUEST
+
+↓
+CUSTOMER APPROVES
+
+↓
+SERVICE COMPLETES
+
+↓
+SANDBOX PAYMENT
+
+↓
+INVOICE
+
+↓
+RATING
+
+↓
+BOOKING HISTORY UPDATED
+
+This entire demo must work without page reload errors.
+
+============================================================
+61. SECOND GOLDEN FLOW
+============================================================
+
+WORKER OFFER
+
+↓
+WORKER REJECTS
+
+↓
+NEXT VERIFIED WORKER
+
+↓
+ACCEPTS
+
+↓
+CUSTOMER ASSIGNMENT UPDATES
+
+============================================================
+62. THIRD GOLDEN FLOW
+============================================================
+
+COMPLETED SERVICE
+
+↓
+RAISE COMPLAINT
+
+↓
+COMPLAINT CREATED
+
+↓
+ADMIN DASHBOARD
+
+↓
+SLA SIMULATION
+
+↓
+L2 ESCALATION
+
+============================================================
+63. FOURTH GOLDEN FLOW
+============================================================
+
+COOPERATIVE ADMIN
+
+↓
+FORECAST SHORTAGE DEMO
+
+↓
+CAPACITY EXCHANGE
+
+↓
+REQUEST COOPERATIVE B
+
+↓
+APPROVE
+
+↓
+AVAILABLE WORKER SHOWN
+
+============================================================
+64. SAVE DEMO STATE
+============================================================
+
+Refresh should not destroy all demo data.
+
+Persist suitable state:
+
+logged-in demo user
+
+bookings
+
+worker statuses
+
+complaints
+
+payments
+
+notifications
+
+capacity request
+
+Use versioned localStorage key.
+
+Example:
+
+sanpaid_demo_state_v1
+
+Provide reset demo data function.
+
+============================================================
+65. ADD RESET DEMO BUTTON
+============================================================
+
+For SIH demonstration provide safe option:
+
+Reset Demo Data
+
+Place under:
+
+Demo Settings
+
+not prominently on normal customer screen.
+
+It should reset only browser demo state.
+
+============================================================
+66. FINAL QA
+============================================================
+
+After making changes:
+
+DO NOT stop after writing code.
+
+Open/test the site.
+
+Click every meaningful action.
+
+Fix every failure.
+
+Test:
+
+desktop
+
+mobile
+
+refresh
+
+login/logout
+
+booking
+
+worker flow
+
+admin flow
+
+modals
+
+forms
+
+navigation
+
+localStorage
+
+console
+
+============================================================
+67. FINAL RESPONSE FORMAT
+============================================================
+
+After completing the repair, report:
+
+1. Files changed
+2. Dead buttons fixed
+3. New interactive flows added
+4. Demo state implemented
+5. Remaining backend-only integrations
+6. Any known limitations
+7. Exact Golden Demo steps to test
+
+Do NOT merely explain what should be fixed.
+
+ACTUALLY MODIFY THE CODE.
+
+============================================================
+68. START NOW
+============================================================
+
+Start with the existing SanPaid code.
+
+Preserve its current professional navy/green visual design.
+
+Do not rebuild the landing page.
+
+First audit every clickable element.
+
+Then fix them systematically.
+
+Highest priority:
+
+NO DEAD BUTTONS.
+
+NO PLACEHOLDER href="#".
+
+NO FAKE ALERT-ONLY ACTIONS.
+
+NO CONSOLE ERRORS.
+
+MAKE THE SANPAID FRONTEND DEMO ACTUALLY USABLE.
