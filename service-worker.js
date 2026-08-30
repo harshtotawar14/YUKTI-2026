@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v19';
+const CACHE_NAME = 'sanpaid-shell-v20';
 const APP_SHELL = [
   './',
   './index.html',
@@ -9,6 +9,7 @@ const APP_SHELL = [
   './judge-demo.css',
   './sih-final.css',
   './selector-mode.css',
+  './credibility-layer.css',
   './app.js',
   './voice-lazy-loader.js',
   './voice-request.js',
@@ -20,6 +21,7 @@ const APP_SHELL = [
   './capacity-worker-ui.js',
   './judge-demo.js',
   './selector-mode.js',
+  './credibility-layer.js',
   './top1-polish.js',
   './manifest.webmanifest',
   './app-icon.svg'
@@ -84,11 +86,13 @@ self.addEventListener('fetch', event => {
     '/sih-final.css',
     '/selector-mode.js',
     '/selector-mode.css',
+    '/credibility-layer.js',
+    '/credibility-layer.css',
     '/top1-polish.js'
   ].some(path => url.pathname.endsWith(path));
 
-  // Critical selector/demo/Judge code is network-first so installed PWAs do not
-  // keep stale workflow, research-proof or guided-selection assets after deployment.
+  // Critical selector/demo/Judge/credibility code is network-first so installed PWAs do not
+  // keep stale workflow, proof or research assets after deployment.
   if (connectedCritical) {
     event.respondWith(
       fetch(request, { cache: 'no-store' })
