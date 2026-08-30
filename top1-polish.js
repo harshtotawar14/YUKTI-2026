@@ -8,6 +8,7 @@
     const style=document.createElement('style');
     style.id='sanpaidFinalPolishStyles';
     style.textContent=`
+      .ribbon{display:none!important}
       .connected-trust-checks{display:grid;gap:8px;margin:12px 0}
       .connected-trust-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px;border:1px solid #ead8a8;background:#fff9ea;border-radius:11px}
       .connected-trust-row.done{border-color:#c4e8d5;background:#eef9f3}
@@ -38,7 +39,7 @@
     if(!landing||!hero)return;
 
     const ribbon=landing.querySelector('.ribbon');
-    if(ribbon)ribbon.innerHTML='Smart India Hackathon 2026 · PS ID <b>26089</b> · Cooperative Gig Services Platform';
+    if(ribbon)ribbon.remove();
 
     const productBadge=hero.querySelector('.hero-grid>div:first-child>.eyebrow');
     if(productBadge){
