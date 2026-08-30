@@ -32,6 +32,29 @@
     document.head.appendChild(link);
   }
 
+  function polishLandingCopy(){
+    const ribbon=document.querySelector('#landing .ribbon');
+    if(ribbon)ribbon.innerHTML='Smart India Hackathon 2026 · PS ID <b>26089</b> · Cooperative Gig Services Platform';
+
+    const note=document.querySelector('#home .selector-home-note');
+    if(note){
+      const title=note.querySelector('b');
+      const text=note.querySelector('span');
+      if(title)title.textContent='Selector Guide';
+      if(text)text.textContent='3-minute guided overview · no login required';
+    }
+
+    const trust=[
+      'Verified Workforce',
+      'Eligibility-First Matching',
+      'Worker Choice',
+      'Cooperative Governance'
+    ];
+    document.querySelectorAll('#landing .trust span').forEach((node,index)=>{
+      if(trust[index])node.textContent=trust[index];
+    });
+  }
+
   function loadCredibilityLayer(){
     if(!document.getElementById('sanpaidCredibilityStyles')){
       const link=document.createElement('link');
@@ -75,6 +98,7 @@
   function start(){
     injectStyles();
     loadHeroViewportFix();
+    polishLandingCopy();
     loadCredibilityLayer();
 
     document.addEventListener('keydown',event=>{
