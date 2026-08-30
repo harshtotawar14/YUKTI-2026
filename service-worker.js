@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v10';
+const CACHE_NAME = 'sanpaid-shell-v11';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const APP_SHELL = [
   './mobile.css',
   './mobile-fix.css',
   './connected-demo.css',
+  './judge-demo.css',
   './app.js',
   './voice-request.js',
   './mobile.js',
@@ -13,6 +14,9 @@ const APP_SHELL = [
   './connected-service-ui.js',
   './connected-commerce-ui.js',
   './connected-runtime-fix.js',
+  './capacity-worker-ui.js',
+  './judge-demo.js',
+  './top1-polish.js',
   './manifest.webmanifest',
   './app-icon.svg'
 ];
@@ -61,13 +65,17 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Connected demo code is network-first so SIH hotfixes are not trapped in
-  // an older mobile/PWA cache during rehearsals or judging.
+  // Connected and judge-demo code is network-first so SIH hotfixes are not
+  // trapped in an older browser/PWA cache during rehearsals or judging.
   const connectedCritical = [
     '/connected-demo.js',
     '/connected-service-ui.js',
     '/connected-commerce-ui.js',
-    '/connected-runtime-fix.js'
+    '/connected-runtime-fix.js',
+    '/capacity-worker-ui.js',
+    '/judge-demo.js',
+    '/judge-demo.css',
+    '/top1-polish.js'
   ].some(path => url.pathname.endsWith(path));
 
   if (connectedCritical) {
