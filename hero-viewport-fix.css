@@ -1,258 +1,445 @@
-/* SanPaid professional selector hero.
-   Keeps the complete first decision surface above the fold on common laptops
-   without compressing typography into a demo/dashboard look. */
+/* SanPaid authoritative hero / nav / trust-strip presentation layer.
+   This is the single final override for the public landing hero.
+   It does not modify Connected Demo, Selector Mode or Judge Mode behavior. */
 
-@media (min-width: 961px) {
-  #landing .ribbon {
-    padding: 7px 12px;
-    font-size: 11px;
-    letter-spacing: .01em;
-    color: #a9e7ca;
-    background: #071426;
+/* Shared hero cleanup */
+#home .quick-booking-details{display:none!important}
+#home #selectorResearchBtn.hero-tertiary-link{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  color:#b8c9dc!important;
+  min-height:auto!important;
+  padding:6px 2px!important;
+  border-radius:0!important;
+  font-weight:700!important;
+  text-decoration:none;
+}
+#home #selectorResearchBtn.hero-tertiary-link:hover,
+#home #selectorResearchBtn.hero-tertiary-link:focus-visible{
+  color:#fff!important;
+  transform:none!important;
+  text-decoration:underline;
+  text-underline-offset:4px;
+}
+#home .selector-home-note{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+#home .selector-home-note .selector-proof-line{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  color:#9fb2c8;
+  font-weight:600;
+}
+#home .loop-step.active{
+  color:inherit!important;
+  border-color:transparent!important;
+  border-left-color:transparent!important;
+  background:rgba(255,255,255,.045)!important;
+}
+
+@media (min-width:961px){
+  #landing .ribbon{
+    min-height:28px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:6px 12px;
+    background:#071426;
+    color:#a8dfc5;
+    font-size:10.5px;
+    line-height:1.2;
+    letter-spacing:.01em;
   }
 
-  #landing .navin { height: 66px; }
-  #landing .navlinks { gap: 27px; }
-  #landing .navlinks a { font-size: 13px; font-weight: 500; }
-  #landing .nav .actions .btn {
-    min-height: 42px;
-    padding: 10px 18px;
-    font-size: 13px;
+  #landing .navin{
+    height:62px;
+    max-width:1240px;
+  }
+  #landing .brand{font-size:21px}
+  #landing .navlinks{gap:28px}
+  #landing .navlinks a{
+    font-size:13px;
+    font-weight:500;
+    color:#bdcadd;
+  }
+  #landing .nav .actions .btn{
+    min-height:40px;
+    padding:9px 17px;
+    font-size:12.5px;
   }
 
-  #home.hero {
-    min-height: 0 !important;
-    padding: 30px 0 34px !important;
-    display: block !important;
+  #landing #home.hero{
+    min-height:0!important;
+    display:block!important;
+    padding:34px 0 0!important;
+  }
+  #landing #home .hero-grid{
+    max-width:1240px;
+    width:100%;
+    grid-template-columns:minmax(0,1fr) 420px!important;
+    gap:60px!important;
+    align-items:start!important;
+  }
+  #landing #home .hero-grid>div:first-child{
+    min-width:0;
+    padding-top:2px;
   }
 
-  #home .hero-grid {
-    width: 100%;
-    grid-template-columns: minmax(0, 1.10fr) minmax(400px, .90fr) !important;
-    gap: 54px !important;
-    align-items: center !important;
+  #landing #home .hero-grid>div:first-child>.eyebrow{
+    display:inline-flex;
+    width:max-content;
+    max-width:100%;
+    padding:6px 9px!important;
+    border-radius:8px!important;
+    border:1px solid rgba(111,226,169,.24)!important;
+    background:rgba(43,194,123,.07)!important;
+    color:#91dfb8!important;
+    font-size:10.5px!important;
+    line-height:1.2;
+    letter-spacing:.015em;
   }
 
-  #home .hero-grid > div:first-child { min-width: 0; }
+  #landing #home h1{
+    max-width:none!important;
+    margin:16px 0 13px!important;
+    font-size:clamp(44px,3vw,54px)!important;
+    line-height:1.045!important;
+    letter-spacing:-.032em!important;
+    font-weight:800;
+    white-space:nowrap;
+  }
+  #landing #home h1 em{color:#82dfad!important}
 
-  #home .eyebrow {
-    padding: 7px 12px !important;
-    font-size: 11px !important;
-    line-height: 1.2;
-    letter-spacing: .015em;
-    background: rgba(43,194,123,.09);
-    border-color: rgba(71,214,148,.32);
+  #landing #home .lead{
+    max-width:665px!important;
+    margin:0!important;
+    color:#c5d2e2;
+    font-size:15px!important;
+    line-height:1.58!important;
   }
 
-  #home h1 {
-    max-width: 730px;
-    margin: 15px 0 12px !important;
-    font-size: clamp(44px, 3.55vw, 56px) !important;
-    line-height: 1.025 !important;
-    letter-spacing: -.035em !important;
-    font-weight: 800;
+  #landing #home .hero-ctas{
+    display:flex!important;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px!important;
+    margin:22px 0 10px!important;
+  }
+  #landing #home .hero-ctas .btn:not(.hero-tertiary-link){
+    min-height:47px;
+    padding:0 20px!important;
+    font-size:13px!important;
+    line-height:1.2;
+    border-radius:12px!important;
+    white-space:nowrap;
+  }
+  #landing #home .selector-hero-primary{
+    box-shadow:0 12px 28px -20px rgba(43,194,123,.95)!important;
+  }
+  #landing #home .selector-home-note{
+    margin:0!important;
+    padding:0!important;
+    min-height:auto!important;
+  }
+  #landing #home .selector-home-note .selector-proof-line{
+    font-size:11.5px;
+    line-height:1.35;
   }
 
-  #home h1 em { color: #8ce3b6; }
-
-  #home .lead {
-    max-width: 680px;
-    margin: 0 !important;
-    color: #c7d4e4;
-    font-size: 14px !important;
-    line-height: 1.6 !important;
+  #landing #home .loop-card{
+    width:100%;
+    align-self:start!important;
+    margin-top:0;
+    padding:26px!important;
+    border-radius:22px!important;
+    border:1px solid rgba(255,255,255,.12)!important;
+    background:rgba(255,255,255,.045)!important;
+    box-shadow:0 24px 55px -42px rgba(0,0,0,.85)!important;
+  }
+  #landing #home .loop-title{
+    display:block;
+    margin:0 0 17px;
+    color:#94dcb7;
+    font-size:10px;
+    line-height:1.2;
+    font-weight:800;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+  }
+  #landing #home .loop{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:9px!important;
+    margin:0!important;
+  }
+  #landing #home .loop-step{
+    position:relative;
+    min-width:0;
+    min-height:66px;
+    display:grid!important;
+    align-content:center;
+    gap:5px;
+    padding:12px 14px!important;
+    border:0!important;
+    border-radius:11px!important;
+    background:rgba(255,255,255,.045)!important;
+    color:#d7e2ee!important;
+    box-shadow:none!important;
+  }
+  #landing #home .loop-no{
+    display:block;
+    color:#6fd7a2;
+    font-size:9.5px;
+    line-height:1;
+    font-weight:800;
+    letter-spacing:.08em;
+  }
+  #landing #home .loop-label{
+    display:block;
+    color:#dce6f1;
+    font-size:12px;
+    line-height:1.25;
+    font-weight:650;
+  }
+  #landing #home .loop-message{
+    margin:15px 0 0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    color:#9eafc3!important;
+    font-size:10.8px!important;
+    line-height:1.5!important;
   }
 
-  #home .hero-ctas {
-    display: flex !important;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px !important;
-    margin: 20px 0 14px !important;
+  /* Trust proof is visually part of the hero, not a competing section. */
+  #landing #home>.trust{
+    margin-top:32px;
+    background:transparent!important;
+    border-top:1px solid rgba(255,255,255,.075);
+    border-bottom:0!important;
   }
-
-  #home .hero-ctas .btn {
-    min-height: 44px;
-    padding: 11px 17px !important;
-    font-size: 12.5px !important;
-    line-height: 1.2;
-    white-space: nowrap;
-    box-shadow: none;
+  #landing #home>.trust .trustin{
+    max-width:1240px;
+    min-height:43px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    align-items:center;
+    gap:20px;
+    padding-top:0!important;
+    padding-bottom:0!important;
   }
-
-  #home .selector-hero-primary {
-    box-shadow: 0 12px 30px -18px rgba(43,194,123,.85) !important;
+  #landing #home>.trust span{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:#aebfd2;
+    font-size:11px!important;
+    line-height:1.2;
+    font-weight:600;
   }
-
-  #home #selectorResearchBtn {
-    background: transparent;
-    border-color: rgba(255,255,255,.24);
-  }
-
-  /* Keep selector guidance, but make it feel like product metadata instead of an alert. */
-  #home .selector-home-note {
-    display: inline-flex !important;
-    align-items: center;
-    gap: 10px;
-    max-width: 680px;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-    border: 0 !important;
-    color: #9fb2c9 !important;
-  }
-
-  #home .selector-home-note b {
-    display: inline-flex;
-    align-items: center;
-    padding: 5px 9px;
-    border-radius: 999px;
-    background: rgba(255,255,255,.08);
-    border: 1px solid rgba(255,255,255,.12);
-    color: #dce7f3 !important;
-    font-size: 10px !important;
-    white-space: nowrap;
-  }
-
-  #home .selector-home-note span {
-    color: #9fb2c9 !important;
-    font-size: 10.5px !important;
-    line-height: 1.35 !important;
-  }
-
-  /* Booking tools remain available through the primary CTA; do not clutter the selector hero. */
-  #home .quick-booking-details { display: none !important; }
-
-  #home .loop-card {
-    width: 100%;
-    align-self: center !important;
-    padding: 22px !important;
-    border-radius: 22px !important;
-    background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.045)) !important;
-    border: 1px solid rgba(255,255,255,.15) !important;
-    box-shadow: 0 24px 60px -38px rgba(0,0,0,.75);
-  }
-
-  #home .loop-card > .eyebrow {
-    margin-bottom: 0;
-    background: rgba(43,194,123,.10) !important;
-    color: #9be8c2 !important;
-    font-size: 10.5px !important;
-  }
-
-  #home .loop-card .loop {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px !important;
-    margin-top: 14px !important;
-  }
-
-  #home .loop-step {
-    min-width: 0;
-    min-height: 46px;
-    display: flex;
-    align-items: center;
-    padding: 11px 13px !important;
-    border-radius: 12px !important;
-    border: 1px solid rgba(255,255,255,.065);
-    border-left: 3px solid rgba(255,255,255,.15);
-    background: rgba(255,255,255,.055) !important;
-    color: #c4d0df !important;
-    font-size: 12px !important;
-    line-height: 1.3 !important;
-    font-weight: 600;
-  }
-
-  #home .loop-step.active {
-    color: #fff !important;
-    border-color: rgba(43,194,123,.24) !important;
-    border-left-color: #2bc27b !important;
-    background: linear-gradient(90deg, rgba(43,194,123,.17), rgba(43,194,123,.08)) !important;
-  }
-
-  #home .loop-message {
-    margin-top: 12px !important;
-    padding: 12px 13px !important;
-    border-radius: 12px !important;
-    border: 1px solid rgba(255,255,255,.07);
-    background: rgba(7,20,38,.28) !important;
-    color: #aebed1 !important;
-    font-size: 10.5px !important;
-    line-height: 1.45 !important;
-  }
-
-  #landing .trust {
-    background: #081629;
-    border-top: 1px solid rgba(255,255,255,.06);
-    border-bottom: 1px solid rgba(255,255,255,.06);
-  }
-
-  #landing .trustin {
-    padding-top: 16px !important;
-    padding-bottom: 16px !important;
-    gap: 18px !important;
-  }
-
-  #landing .trust span {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    color: #c6d3e2;
-    font-size: 11.5px !important;
-    font-weight: 600;
-  }
-
-  #landing .trust span::before {
-    content: '';
-    width: 7px;
-    height: 7px;
-    flex: 0 0 7px;
-    border-radius: 50%;
-    background: #2bc27b;
-    box-shadow: 0 0 0 4px rgba(43,194,123,.08);
+  #landing #home>.trust span::before{
+    content:'';
+    width:6px;
+    height:6px;
+    flex:0 0 6px;
+    border-radius:50%;
+    background:#35c984;
+    box-shadow:0 0 0 4px rgba(53,201,132,.07);
   }
 }
 
-@media (min-width: 961px) and (max-width: 1180px) {
-  #home .hero-grid {
-    grid-template-columns: minmax(0, 1.05fr) minmax(370px, .95fr) !important;
-    gap: 28px !important;
+/* Common 1366–1440 laptop widths: preserve the exact three-line value proposition. */
+@media (min-width:1200px) and (max-width:1450px){
+  #landing #home .hero-grid{
+    grid-template-columns:minmax(0,1fr) 390px!important;
+    gap:46px!important;
   }
-  #home h1 { font-size: clamp(39px, 4vw, 48px) !important; }
-  #home .loop-step { font-size: 10.8px !important; }
+  #landing #home h1{
+    font-size:44px!important;
+  }
+  #landing #home .lead{
+    max-width:640px!important;
+    font-size:14px!important;
+  }
+  #landing #home .loop-card{padding:22px!important}
+  #landing #home .loop-step{min-height:61px}
 }
 
-/* Short laptop screens: compact carefully, never crush the visual hierarchy. */
-@media (min-width: 961px) and (max-height: 760px) {
-  #home.hero { padding: 23px 0 26px !important; }
-  #home .hero-grid { gap: 42px !important; }
-  #home h1 {
-    font-size: clamp(40px, 3.25vw, 49px) !important;
-    margin: 12px 0 10px !important;
+/* Narrow desktop/tablet landscape: keep two columns without forcing dashboard-like compression. */
+@media (min-width:961px) and (max-width:1199px){
+  #landing #home .hero-grid{
+    grid-template-columns:minmax(0,1fr) 350px!important;
+    gap:34px!important;
   }
-  #home .lead { font-size: 13px !important; line-height: 1.5 !important; }
-  #home .hero-ctas { margin: 16px 0 11px !important; }
-  #home .hero-ctas .btn {
-    min-height: 40px;
-    padding: 9px 14px !important;
-    font-size: 11.5px !important;
+  #landing #home h1{
+    font-size:clamp(37px,3.75vw,43px)!important;
   }
-  #home .loop-card { padding: 18px !important; }
-  #home .loop-card .loop { gap: 8px !important; margin-top: 11px !important; }
-  #home .loop-step {
-    min-height: 40px;
-    padding: 9px 11px !important;
-    font-size: 11px !important;
+  #landing #home .lead{
+    font-size:13.5px!important;
+    line-height:1.5!important;
   }
-  #home .loop-message {
-    margin-top: 9px !important;
-    padding: 9px 11px !important;
-    font-size: 9.8px !important;
+  #landing #home .hero-ctas .btn:not(.hero-tertiary-link){
+    min-height:43px;
+    padding:0 15px!important;
+    font-size:12px!important;
+  }
+  #landing #home .loop-card{padding:19px!important}
+  #landing #home .loop-step{
+    min-height:57px;
+    padding:10px 12px!important;
+  }
+  #landing #home .loop-label{font-size:11px}
+}
+
+/* Short screens: reduce vertical gaps, not information quality. */
+@media (min-width:961px) and (max-height:760px){
+  #landing #home.hero{padding-top:24px!important}
+  #landing #home .hero-grid{gap:42px!important}
+  #landing #home .hero-grid>div:first-child>.eyebrow{font-size:10px!important}
+  #landing #home h1{
+    margin:11px 0 9px!important;
+    font-size:clamp(40px,2.85vw,46px)!important;
+  }
+  #landing #home .lead{
+    font-size:13.5px!important;
+    line-height:1.48!important;
+  }
+  #landing #home .hero-ctas{margin:16px 0 8px!important}
+  #landing #home .hero-ctas .btn:not(.hero-tertiary-link){
+    min-height:42px;
+    padding:0 16px!important;
+    font-size:12px!important;
+  }
+  #landing #home .selector-home-note .selector-proof-line{font-size:10.8px}
+  #landing #home .loop-card{padding:19px!important}
+  #landing #home .loop-title{margin-bottom:11px}
+  #landing #home .loop{gap:7px!important}
+  #landing #home .loop-step{
+    min-height:53px;
+    padding:9px 11px!important;
+  }
+  #landing #home .loop-message{
+    margin-top:10px!important;
+    font-size:9.9px!important;
+  }
+  #landing #home>.trust{margin-top:22px}
+  #landing #home>.trust .trustin{min-height:39px}
+}
+
+@media (min-width:1500px){
+  #landing #home .hero-grid{
+    grid-template-columns:minmax(0,1fr) 430px!important;
+    gap:66px!important;
   }
 }
 
-@media (min-width: 1500px) and (min-height: 761px) {
-  #home .hero-grid {
-    grid-template-columns: minmax(0, 1.12fr) minmax(430px, .88fr) !important;
+/* Mobile/tablet: simple product-first order, no squeezed desktop rules. */
+@media (max-width:960px){
+  #landing #home.hero{padding:52px 0 0}
+  #landing #home .hero-grid{gap:30px}
+  #landing #home .hero-grid>div:first-child>.eyebrow{
+    border-radius:8px;
+    padding:6px 9px;
+    font-size:10.5px;
   }
+  #landing #home h1{
+    margin:14px 0 12px;
+    white-space:normal;
+  }
+  #landing #home .lead{font-size:15px;line-height:1.6}
+  #landing #home .hero-ctas{
+    display:flex;
+    gap:10px;
+    margin:20px 0 10px;
+  }
+  #landing #home .hero-ctas .btn:not(.hero-tertiary-link){
+    min-height:48px;
+    border-radius:12px;
+  }
+  #landing #home #selectorResearchBtn.hero-tertiary-link{
+    width:auto;
+    justify-content:flex-start;
+    font-size:13px;
+  }
+  #landing #home .selector-home-note{padding:0;margin:0}
+  #landing #home .selector-home-note .selector-proof-line{font-size:11.5px}
+  #landing #home .loop-card{
+    padding:20px;
+    border-radius:18px;
+    background:rgba(255,255,255,.045);
+  }
+  #landing #home .loop-title{
+    display:block;
+    margin-bottom:13px;
+    color:#94dcb7;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+  }
+  #landing #home .loop-card .loop{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    margin:0!important;
+  }
+  #landing #home .loop-step{
+    display:grid;
+    gap:4px;
+    padding:11px;
+    border:0;
+    border-radius:10px;
+    background:rgba(255,255,255,.045)!important;
+  }
+  #landing #home .loop-no{color:#6fd7a2;font-size:9px;font-weight:800}
+  #landing #home .loop-label{color:#dce6f1;font-size:11px;font-weight:650}
+  #landing #home .loop-message{
+    margin:12px 0 0!important;
+    padding:0!important;
+    border:0!important;
+    background:transparent!important;
+    color:#9eafc3!important;
+    font-size:10.5px!important;
+    line-height:1.45!important;
+  }
+  #landing #home>.trust{
+    margin-top:28px;
+    background:transparent;
+    border-top:1px solid rgba(255,255,255,.075);
+  }
+  #landing #home>.trust .trustin{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px 18px;
+    padding-top:14px;
+    padding-bottom:14px;
+  }
+  #landing #home>.trust span{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#afc0d2;
+    font-size:11px;
+  }
+  #landing #home>.trust span::before{
+    content:'';
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#35c984;
+  }
+}
+
+@media (max-width:520px){
+  #landing #home .loop-card .loop{grid-template-columns:1fr}
+  #landing #home>.trust .trustin{grid-template-columns:1fr 1fr}
+}
+
+@media (prefers-reduced-motion:reduce){
+  #home #selectorResearchBtn.hero-tertiary-link{transition:none!important}
 }
