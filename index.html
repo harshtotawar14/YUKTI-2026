@@ -22,10 +22,13 @@
 <link rel="stylesheet" href="judge-demo.css">
 <link rel="stylesheet" href="sih-final.css">
 <link rel="stylesheet" href="selector-mode.css">
+<link rel="stylesheet" id="sanpaidHeroViewportFix" href="hero-viewport-fix.css">
+<link rel="stylesheet" id="sanpaidCredibilityStyles" href="credibility-layer.css">
+<link rel="stylesheet" id="sanpaidWorkforceIntelligenceStyles" href="workforce-intelligence.css">
 </head>
 <body>
 <div id="landing">
-  <div class="ribbon">Smart India Hackathon 2026 · PS ID <b>26089</b> · Selector-ready Research-backed Working Prototype</div>
+  <div class="ribbon">Smart India Hackathon 2026 · PS ID <b>26089</b> · Cooperative Gig Services Platform</div>
 
   <nav class="nav">
     <div class="wrap navin">
@@ -58,19 +61,18 @@
   <header class="hero" id="home">
     <div class="wrap hero-grid">
       <div>
-        <span class="eyebrow">AI-Assisted · Cooperative-Governed Workforce Operating Network</span>
+        <span class="eyebrow">AI-Assisted Cooperative Workforce Network</span>
         <h1>Trusted Local Services.<br><em>Fair Worker Opportunities.</em><br>Stronger Cooperatives.</h1>
         <p class="lead">SanPaid connects customers with verified cooperative workers while helping cooperatives manage trust, fair opportunity, service capacity and workforce planning.</p>
 
         <div class="hero-ctas">
           <button class="btn primary selector-hero-primary" id="selectorDemoBtn" type="button" data-open-selector="0">▶ View 3-Minute SIH Demo</button>
           <button class="btn secondary" id="bookServiceHero">Book Verified Service</button>
-          <button class="btn ghost" id="selectorResearchBtn" type="button" data-open-selector="8">Explore Research & Proof</button>
+          <button class="btn hero-tertiary-link" id="selectorResearchBtn" type="button" data-open-selector="8">Explore Research & Proof →</button>
         </div>
 
         <div class="selector-home-note">
-          <b>Opening from the SIH PPT?</b>
-          <span>Start with the 3-minute guided demo. No login is required to understand the solution.</span>
+          <span class="selector-proof-line">✓ No login required for the guided SIH overview</span>
         </div>
 
         <details class="quick-booking-details">
@@ -88,28 +90,28 @@
       </div>
 
       <div class="loop-card">
-        <span class="eyebrow">SanPaid Operating Loop</span>
+        <span class="loop-title">SANPAID OPERATING MODEL</span>
         <div class="loop" style="margin-top:15px">
-          <div class="loop-step active">1. Customer Demand</div>
-          <div class="loop-step">2. Verified Eligibility</div>
-          <div class="loop-step">3. Fair Allocation</div>
-          <div class="loop-step">4. Worker Choice</div>
-          <div class="loop-step">5. Trusted Service</div>
-          <div class="loop-step">6. Governance & Planning</div>
+          <div class="loop-step" aria-label="01 Customer Demand"><span class="loop-no">01</span><span class="loop-label">Customer Demand</span></div>
+          <div class="loop-step" aria-label="02 Verified Eligibility"><span class="loop-no">02</span><span class="loop-label">Verified Eligibility</span></div>
+          <div class="loop-step" aria-label="03 Fair Allocation"><span class="loop-no">03</span><span class="loop-label">Fair Allocation</span></div>
+          <div class="loop-step" aria-label="04 Worker Choice"><span class="loop-no">04</span><span class="loop-label">Worker Choice</span></div>
+          <div class="loop-step" aria-label="05 Trusted Service"><span class="loop-no">05</span><span class="loop-label">Trusted Service</span></div>
+          <div class="loop-step" aria-label="06 Govern and Plan"><span class="loop-no">06</span><span class="loop-label">Govern & Plan</span></div>
         </div>
-        <div class="loop-message">Not just Customer → Worker. SanPaid continues into cooperative governance, capacity and workforce planning.</div>
+        <div class="loop-message">Service delivery continues into cooperative governance, capacity coordination and workforce planning.</div>
+      </div>
+    </div>
+
+    <div class="trust" id="trust">
+      <div class="wrap trustin">
+        <span>Verified Workforce</span>
+        <span>Eligibility-First</span>
+        <span>Worker Choice</span>
+        <span>Cooperative Governance</span>
       </div>
     </div>
   </header>
-
-  <div class="trust" id="trust">
-    <div class="wrap trustin">
-      <span>✅ Verified Workforce</span>
-      <span>⚖️ Eligibility First</span>
-      <span>🤝 Worker Choice</span>
-      <span>🏢 Cooperative Governance</span>
-    </div>
-  </div>
 
   <section class="section" id="problem">
     <div class="wrap">
@@ -284,6 +286,10 @@
 <script src="capacity-worker-ui.js"></script>
 <script src="judge-demo.js"></script>
 <script src="selector-mode.js"></script>
+<script id="sanpaidCredibilityScript" src="credibility-layer.js"></script>
+<script id="sanpaidWorkforceIntelligenceScript" src="workforce-intelligence.js"></script>
+<script id="sanpaidWorkerTrustPassportScript" src="worker-trust-passport-ui.js"></script>
 <script src="top1-polish.js"></script>
+<script src="demo-preflight.js"></script>
 </body>
 </html>
