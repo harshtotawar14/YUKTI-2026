@@ -14,27 +14,28 @@ Smart India Hackathon 2026 prototype for **PS ID 26089 — Cooperative Gig Servi
 - `manifest.webmanifest` — installable SanPaid PWA metadata.
 - `service-worker.js` — versioned static app-shell cache and offline navigation fallback.
 - `app-icon.svg` — SanPaid PWA/app icon asset.
-- `docs/final-research-grounded-frontend-master-prompt.md` — **PRIMARY research-grounded frontend execution prompt**.
+- `docs/final-research-grounded-frontend-master-prompt.md` — **PRIMARY research-grounded frontend specification**.
 - `docs/voice-request-worker-delivery-addendum.md` — **MANDATORY voice-flow addendum**.
-- `docs/mobile-first-pwa-upgrade/` — mobile-first/PWA upgrade specification, preserved as ordered parts `01` through `04`.
-- `docs/frontend-functionality-repair/` — earlier detailed frontend repair prompt; keep as supporting QA/reference material.
-- `docs/backend-master-prompt/` — backend, PostgreSQL/PostGIS, API and system-integration prompt.
+- `docs/mobile-first-pwa-upgrade/` — mobile-first/PWA specification and QA reference.
+- `docs/final-sih-demo-hardening/` — **NEW FINAL SIH HARDENING PHASE**: shared backend, two-device realtime workflow, deep booking lifecycle, governance, capacity exchange, SLA, demand planning and final acceptance QA.
+- `docs/frontend-functionality-repair/` — supporting frontend repair/QA reference.
+- `docs/backend-master-prompt/` — detailed backend/PostgreSQL/PostGIS/API/system-integration reference.
 
 ## Mobile implementation now present
 
-The repository now includes an actual mobile runtime rather than only a mobile prompt.
+The repository includes an actual mobile runtime rather than only a mobile prompt.
 
 Implemented mobile-shell behaviour includes:
 
 - `viewport-fit=cover` and safe-area-aware layout;
 - responsive hero/search/cards at phone/tablet widths;
-- zero page-level horizontal overflow protection;
-- minimum mobile touch targets for primary controls;
-- full mobile landing menu instead of desktop-only navigation;
-- functional mobile dashboard drawer generated from the current role's real sidebar views;
+- page-level horizontal overflow protection;
+- mobile touch targets for primary controls;
+- full mobile landing menu;
+- functional role-aware mobile dashboard drawer;
 - Customer bottom navigation: Home / Book / Active / History / More;
 - Worker bottom navigation: Home / Offers / Active / Earnings / More;
-- Admin/Federation mobile navigation through the real dashboard drawer;
+- Admin/Federation navigation through the real dashboard drawer;
 - mobile-safe full-width/bottom-sheet-style modals and 16px form inputs for iOS;
 - mobile voice controls and worker voice-offer controls sized for touch;
 - responsive QR, toast, timeline, KPI and table handling;
@@ -42,15 +43,15 @@ Implemented mobile-shell behaviour includes:
 - installable PWA metadata where browser support permits;
 - service-worker app-shell caching with an update path.
 
-## Important architecture limitation
+## Important current architecture limitation
 
-The current demo application state is still browser-local (`localStorage`). This means Customer and Worker flows can be demonstrated sequentially on the **same browser/device**, but two separate phones do **not** share bookings, offers or voice requests yet.
+The current demo application state is still browser-local (`localStorage`). Customer and Worker flows can be demonstrated sequentially on the same browser/device, but two separate phones do **not** share bookings, offers or voice requests yet.
 
-Real cross-device behaviour requires the backend phase:
+The final hardening target is:
 
-`Customer phone → API/database/realtime event → matched Worker phone`
+`Customer phone → API → PostgreSQL/shared backend → matching/business rules → realtime event → Worker phone`
 
-Do not claim cross-device realtime delivery until the shared backend/database is connected.
+Do not claim cross-device realtime delivery until this shared backend path is actually connected.
 
 ## Recommended execution order
 
@@ -61,67 +62,66 @@ Use:
 1. `docs/final-research-grounded-frontend-master-prompt.md`
 2. `docs/voice-request-worker-delivery-addendum.md`
 
-Core requirements:
+Keep the core product rules intact: eligibility before fairness, worker choice mandatory, continuous trust, dual service-start verification, honest sandbox labels, connected role state and claim-safe UI.
 
-- audit the real repository before editing;
-- preserve good existing SanPaid design/code;
-- remove dead buttons, broken links and fake CTA behaviour;
-- replace disconnected/random values with deterministic connected demo state;
-- make Customer, Worker, Cooperative Admin and Federation Admin dashboards operational;
-- keep eligibility before fairness and worker choice mandatory;
-- implement continuous worker trust, Digital Worker ID and dual service-start verification;
-- deliver Customer Voice → transcript → booking → eligible worker offer → worker-language text/listen → Accept/Reject;
-- preserve the voice-request context when the first worker rejects or times out;
-- keep payment/biometric integrations honestly sandboxed;
-- synchronize affected dashboards and persist state.
+### Phase 2 — Mobile-first + PWA
 
-### Phase 2 — Mobile-first + PWA upgrade
-
-Reference specification:
+Follow/reference:
 
 1. `docs/mobile-first-pwa-upgrade/01-audit-layout-navigation-voice.txt`
 2. `docs/mobile-first-pwa-upgrade/02-voice-booking-mobile-workflows.txt`
 3. `docs/mobile-first-pwa-upgrade/03-pwa-offline-performance-golden-demo.txt`
 4. `docs/mobile-first-pwa-upgrade/04-permissions-breakpoints-qa-start.txt`
 
-A first implementation pass is now present in `mobile.css`, `mobile-fix.css` and `mobile.js`. Continue testing against the acceptance goals below rather than creating a second mobile website.
+A first implementation pass is present in `mobile.css`, `mobile-fix.css` and `mobile.js`.
 
-Mobile acceptance goals:
+### Phase 3 — Final SIH Demo Hardening — NEXT MAIN IMPLEMENTATION PHASE
 
-- same SanPaid product works on Android, iPhone, tablet and desktop;
-- zero horizontal page scrolling;
-- proper mobile landing navigation and dashboard navigation;
-- Customer and Worker flows are fully usable from a phone without desktop dependency;
-- Worker Job Offers preserve the mobile voice request + Listen + Accept/Reject flow;
-- voice fallback works when SpeechRecognition or TTS is unavailable;
-- mobile location/camera permission failure never crashes booking;
-- mobile-safe touch targets, bottom sheets/modals, forms, filters and admin tables;
-- PWA manifest/service-worker/install flow where supported;
-- offline app shell with honest local/offline semantics;
-- refresh preserves booking, voice request, offer, worker acceptance, service state, payment and complaint;
-- zero dead mobile buttons and zero critical mobile console/runtime errors.
+Follow strictly in order:
 
-### Phase 3 — Supporting frontend QA
+1. `docs/final-sih-demo-hardening/01-backend-two-device-matching.txt`
+2. `docs/final-sih-demo-hardening/02-trust-service-capacity-sla.txt`
+3. `docs/final-sih-demo-hardening/03-demand-mobile-realtime-demo.txt`
+4. `docs/final-sih-demo-hardening/04-qa-security-acceptance-start.txt`
 
-If extra repair detail is needed, follow:
+Main objective:
+
+**Do not add random features. Turn the current feature-rich prototype into a connected, two-device, backend-backed SIH demonstration.**
+
+Priority order:
+
+`Shared Backend + PostgreSQL → Cross-device Customer/Worker booking → Realtime Offer/Accept/Reject → One flawless booking lifecycle → Dual Verification → Explainable Fair Matching → Cooperative Command Center → Capacity Exchange → Complaint/SLA → Demand→Capacity→Skill Gap → Service Passport → final mobile/QA polish`
+
+Critical target flow:
+
+`Customer Phone → Voice/Text Request → Backend Booking → Eligibility → Fair Ranking → Worker Offer on Another Phone → Listen → Accept/Reject → Customer Realtime Update → Arrival → Sandbox Identity → One-Time QR → Customer Confirmation → Service → Extra Charge Approval → Completion → Sandbox Payment → Invoice → Rating → Passport/Audit/Analytics`
+
+The hardening phase also requires:
+
+- deterministic, connected and believable seed data;
+- no fake/random KPI values;
+- realtime cross-device events for critical booking/service actions;
+- worker reject fallback and replacement;
+- server-side service-start lock;
+- capacity exchange with worker consent;
+- complaint L1→L2→L3 SLA workflow;
+- forecast confidence with actionable capacity/training recommendations;
+- transactions/idempotency/race protection for sensitive operations;
+- one-click SIH demo reset;
+- final two-browser/two-device QA and zero critical dead buttons.
+
+### Phase 4 — Supporting frontend QA
+
+Use if additional repair detail is needed:
 
 1. `docs/frontend-functionality-repair/01-audit-state-booking-customer.txt`
 2. `docs/frontend-functionality-repair/02-worker-admin-service-payment.txt`
 3. `docs/frontend-functionality-repair/03-validation-responsive-click-audit.txt`
 4. `docs/frontend-functionality-repair/04-golden-flows-qa-start.txt`
 
-### Phase 4 — Backend / database / API integration
+### Phase 5 — Detailed backend reference
 
-Then follow:
-
-1. `docs/backend-master-prompt/01-foundation-auth-booking.txt`
-2. `docs/backend-master-prompt/02-booking-matching-verification-payment.txt`
-3. `docs/backend-master-prompt/03-payments-complaints-governance-ai.txt`
-4. `docs/backend-master-prompt/04-forecast-database-api-security.txt`
-5. `docs/backend-master-prompt/05-reliability-golden-demo-testing.txt`
-6. `docs/backend-master-prompt/06-integration-deployment-definition-done.txt`
-
-The backend phase must treat the final responsive frontend as the UI contract, replace remaining demo adapters with real APIs, and connect PostgreSQL/PostGIS, authentication/RBAC, booking/matching, worker verification, voice-request delivery, service-start verification, payments, complaints/SLA, cooperative/federation governance, capacity exchange, AI/forecasting, audit/security, testing and deployment.
+Use `docs/backend-master-prompt/` as the deeper PostgreSQL/PostGIS/API/security/reliability implementation reference while executing Phase 3.
 
 ## Critical voice-flow rule
 
@@ -129,9 +129,25 @@ A microphone button alone is **not** a completed voice feature.
 
 The feature is complete only when:
 
-`Customer speaks → transcript is captured → customer confirms critical fields → booking stores the voice-derived request → eligibility/fair matching selects a worker → a worker-scoped offer is created → the worker can read/listen in a supported preferred language → the worker Accepts/Rejects → all affected role views update and persist.`
+`Customer speaks → transcript is captured → customer confirms critical fields → backend booking stores the request → eligibility/fair matching selects a worker → worker-scoped offer reaches the matched worker on another session/device → worker can read/listen in a supported preferred language → Accept/Reject → all affected role views update and persist.`
 
 If the first worker rejects or times out, create a new offer for the next eligible worker while carrying the same confirmed voice-request context forward.
+
+## Final SIH quality rule
+
+Every important SanPaid claim must have working proof:
+
+- Verified Workers → Worker Verification Workflow
+- Fair Opportunities → Eligibility + Explainable Ranking + Worker Choice
+- Customer Trust → Dual Service-Start Verification
+- Reliability → Reject fallback + Replacement
+- Cooperative Governance → Command Center
+- Federation Governance → Capacity Exchange
+- Accountability → Complaint + SLA + Audit
+- Worker Growth → Service Passport + Training
+- Planning → Demand → Capacity → Skill Gap → Action
+- Inclusive Access → Marathi/Hindi/English Voice
+- Mobile Accessibility → Customer + Worker two-device demonstration
 
 ## Product positioning
 
