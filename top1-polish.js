@@ -51,67 +51,46 @@
     }
 
     const note=hero.querySelector('.selector-home-note');
-    if(note){
-      note.innerHTML='<span class="selector-proof-line">✓ No login required for the guided SIH overview</span>';
-    }
+    if(note)note.innerHTML='<span class="selector-proof-line">✓ No login required for the guided SIH overview</span>';
 
     const loopCard=hero.querySelector('.loop-card');
     if(loopCard){
       const title=loopCard.querySelector(':scope > .eyebrow, :scope > .loop-title');
-      if(title){
-        title.textContent='SANPAID OPERATING MODEL';
-        title.classList.remove('eyebrow');
-        title.classList.add('loop-title');
-      }
-
-      const labels=[
-        'Customer Demand',
-        'Verified Eligibility',
-        'Fair Allocation',
-        'Worker Choice',
-        'Trusted Service',
-        'Govern & Plan'
-      ];
+      if(title){title.textContent='SANPAID OPERATING MODEL';title.classList.remove('eyebrow');title.classList.add('loop-title');}
+      const labels=['Customer Demand','Verified Eligibility','Fair Allocation','Worker Choice','Trusted Service','Govern & Plan'];
       loopCard.querySelectorAll('.loop-step').forEach((step,index)=>{
         const number=String(index+1).padStart(2,'0');
         step.classList.remove('active');
         step.setAttribute('aria-label',`${number} ${labels[index]||''}`.trim());
         step.innerHTML=`<span class="loop-no">${number}</span><span class="loop-label">${labels[index]||''}</span>`;
       });
-
       const message=loopCard.querySelector('.loop-message');
       if(message)message.textContent='Service delivery continues into cooperative governance, capacity coordination and workforce planning.';
     }
 
     const trust=landing.querySelector('#trust');
     if(trust){
-      const trustLabels=[
-        'Verified Workforce',
-        'Eligibility-First',
-        'Worker Choice',
-        'Cooperative Governance'
-      ];
-      trust.querySelectorAll('span').forEach((node,index)=>{
-        if(trustLabels[index])node.textContent=trustLabels[index];
-      });
+      const trustLabels=['Verified Workforce','Eligibility-First','Worker Choice','Cooperative Governance'];
+      trust.querySelectorAll('span').forEach((node,index)=>{if(trustLabels[index])node.textContent=trustLabels[index];});
       if(trust.parentElement!==hero)hero.appendChild(trust);
     }
   }
 
   function loadCredibilityLayer(){
     if(!document.getElementById('sanpaidCredibilityStyles')){
-      const link=document.createElement('link');
-      link.id='sanpaidCredibilityStyles';
-      link.rel='stylesheet';
-      link.href='credibility-layer.css';
-      document.head.appendChild(link);
+      const link=document.createElement('link');link.id='sanpaidCredibilityStyles';link.rel='stylesheet';link.href='credibility-layer.css';document.head.appendChild(link);
     }
     if(!document.getElementById('sanpaidCredibilityScript')){
-      const script=document.createElement('script');
-      script.id='sanpaidCredibilityScript';
-      script.src='credibility-layer.js';
-      script.defer=true;
-      document.body.appendChild(script);
+      const script=document.createElement('script');script.id='sanpaidCredibilityScript';script.src='credibility-layer.js';script.defer=true;document.body.appendChild(script);
+    }
+  }
+
+  function loadWorkforceIntelligence(){
+    if(!document.getElementById('sanpaidWorkforceIntelligenceStyles')){
+      const link=document.createElement('link');link.id='sanpaidWorkforceIntelligenceStyles';link.rel='stylesheet';link.href='workforce-intelligence.css';document.head.appendChild(link);
+    }
+    if(!document.getElementById('sanpaidWorkforceIntelligenceScript')){
+      const script=document.createElement('script');script.id='sanpaidWorkforceIntelligenceScript';script.src='workforce-intelligence.js';script.defer=true;document.body.appendChild(script);
     }
   }
 
@@ -124,32 +103,19 @@
     },delay));
   }
 
-  function focusable(root){
-    return [...root.querySelectorAll('button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')]
-      .filter(el=>!el.hidden&&el.getClientRects().length);
-  }
-
-  function trapFocus(event,root){
-    if(event.key!=='Tab')return;
-    const nodes=focusable(root);
-    if(!nodes.length)return;
-    const first=nodes[0],last=nodes[nodes.length-1];
-    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
-    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
-  }
+  function focusable(root){return [...root.querySelectorAll('button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter(el=>!el.hidden&&el.getClientRects().length);}
+  function trapFocus(event,root){if(event.key!=='Tab')return;const nodes=focusable(root);if(!nodes.length)return;const first=nodes[0],last=nodes[nodes.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}
 
   function start(){
     injectStyles();
     loadHeroViewportFix();
     polishLandingHero();
     loadCredibilityLayer();
+    loadWorkforceIntelligence();
 
     document.addEventListener('keydown',event=>{
       const connectedDialog=document.querySelector('#connectedModalRoot [role="dialog"]');
-      if(event.key==='Tab'&&connectedDialog){
-        trapFocus(event,connectedDialog);
-        return;
-      }
+      if(event.key==='Tab'&&connectedDialog){trapFocus(event,connectedDialog);return;}
       if(event.key!=='Escape')return;
       const connectedCancel=document.querySelector('#connectedModalRoot [data-modal-cancel]');
       if(connectedCancel)connectedCancel.click();
@@ -157,23 +123,10 @@
 
     document.addEventListener('click',event=>{
       if(event.target.closest?.('[data-judge-role]'))scheduleJudgeCredibility();
-
       const decline=event.target.closest?.('[data-reject-offer]');
-      if(decline){
-        declineReturnFocus=decline;
-        setTimeout(()=>{
-          const first=document.querySelector('#connectedModalRoot input[name="declineReason"]');
-          first?.focus();
-        },0);
-        return;
-      }
-
+      if(decline){declineReturnFocus=decline;setTimeout(()=>{document.querySelector('#connectedModalRoot input[name="declineReason"]')?.focus();},0);return;}
       const connectedCancel=event.target.closest?.('#connectedModalRoot [data-modal-cancel]');
-      if(connectedCancel&&declineReturnFocus){
-        const target=declineReturnFocus;
-        declineReturnFocus=null;
-        setTimeout(()=>{if(target.isConnected)target.focus();},0);
-      }
+      if(connectedCancel&&declineReturnFocus){const target=declineReturnFocus;declineReturnFocus=null;setTimeout(()=>{if(target.isConnected)target.focus();},0);}
     },true);
   }
 
