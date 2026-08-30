@@ -135,7 +135,15 @@
   function renderFallback(data){
     const f=data.fallback;
     if(!f?.available)return `<div class="cred-unavailable">${esc(f?.message||'Run the Connected Demo to create fallback evidence.')}</div>`;
-    return `${originBadge()}<div class="cred-booking-code">Booking: <b>${esc(f.bookingCode)}</b> · preserved across offers</div><div class="cred-event-list">${(f.offers||[]).map(o=>`<div><span>Attempt ${o.attempt}</span><b>${esc(o.worker)}</b><strong class="${o.status==='REJECTED'?'bad-text':o.status==='ACCEPTED'?'good-text':''}">${esc(o.status)}</strong>${o.rejectionReason?`<small>${esc(o.rejectionReason)}</small>`:''}</div>`).join('')}</div><div class="cred-proof-message">SAME BOOKING. NEW ELIGIBLE OFFER.</div>`;
+    const offers=f.offers||[];
+    const first=offers[0],second=offers[1];
+    return `${originBadge()}<div class="cred-booking-code">Booking: <b>${esc(f.bookingCode)}</b> · preserved across offers</div><div class="cred-device-flow"><span><b>Customer Device</b><small>One service request</small></span><i>→</i><span><b>Shared Backend</b><small>${esc(f.bookingCode)}</small></span><i>→</i><span><b>${esc(first?.worker||'Worker A')}</b><small>${esc(first?.status||'Offer')}</small></span><i>→</i><span><b>Same Backend Booking</b><small>No new booking created</small></span><i>→</i><span><b>${esc(second?.worker||'Worker B')}</b><small>${esc(second?.status||'Second offer')}</small></span></div><div class="cred-event-list">${offers.map(o=>`<div><span>Attempt ${o.attempt}</span><b>${esc(o.worker)}</b><strong class="${o.status==='REJECTED'?'bad-text':o.status==='ACCEPTED'?'good-text':''}">${esc(o.status)}</strong>${o.rejectionReason?`<small>${esc(o.rejectionReason)}</small>`:''}</div>`).join('')}</div><div class="cred-proof-message">SAME BOOKING. NEW ELIGIBLE OFFER.</div>`;
+  }
+
+  function renderWorkerGrowth(data){
+    const w=data.workerGrowth;
+    if(!w?.available)return '<div class="cred-unavailable">Worker growth proof is unavailable.</div>';
+    return `${originBadge()}<div class="cred-live-grid"><span><b>${esc(w.worker)}</b><small>${esc(w.verificationStatus)}</small></span><span><b>${Number(w.completedJobs||0)}</b><small>Recorded completed jobs</small></span><span><b>₹${Number(w.recordedDemoEarnings||0).toFixed(0)}</b><small>Recorded demo earnings</small></span><span><b>${Number(w.trainingRecommendations||0)}</b><small>Training recommendations</small></span></div><div class="cred-worker-roadmap"><span>Verified work history <b>Implemented</b></span><span>Training recommendation <b>Prototype-Demo</b></span><span>Certificate expiry automation <b>${esc(w.certificateExpiryAutomation)}</b></span><span>Insurance / welfare APIs <b>${esc(w.insuranceIntegration)}</b></span></div>`;
   }
 
   function renderCommand(data){
@@ -193,7 +201,7 @@
     button.disabled=true;
     try{
       const data=await fetchProof(true);
-      root.innerHTML=`<div class="cred-judge-proof-grid"><div><b>Fair Matching</b>${renderMatching(data)}</div><div><b>Same Booking Fallback</b>${renderFallback(data)}</div><div><b>Command Center</b>${renderCommand(data)}</div><div><b>Capacity Exchange</b>${renderCapacity(data)}</div></div>`;
+      root.innerHTML=`<div class="cred-judge-proof-grid"><div><b>Fair Matching</b>${renderMatching(data)}</div><div><b>Same Booking / Cross-Device Flow</b>${renderFallback(data)}</div><div><b>Command Center</b>${renderCommand(data)}</div><div><b>Capacity Exchange</b>${renderCapacity(data)}</div><div><b>Worker Welfare / Growth Record</b>${renderWorkerGrowth(data)}</div></div>`;
     }catch{
       root.innerHTML='<div class="cred-unavailable">Public proof is temporarily starting. No guided content is blocked.</div>';
     }finally{button.disabled=false;}
@@ -227,13 +235,18 @@
     const original=window.SanPaidJudgeMode.open.bind(window.SanPaidJudgeMode);
     window.SanPaidJudgeMode.open=async(...args)=>{
       const result=await original(...args);
-      setTimeout(installJudgeTab,0);
+      scheduleJudgeInstall();
       return result;
     };
     judgeWrapped=true;
   }
 
+  function scheduleJudgeInstall(){
+    [0,450,1200,2600].forEach(ms=>setTimeout(installJudgeTab,ms));
+  }
+
   function onClick(event){
+    if(event.target.closest?.('#sihJudgeShell'))scheduleJudgeInstall();
     const load=event.target.closest?.('[data-cred-load]');
     if(load){
       event.preventDefault();
@@ -249,7 +262,8 @@
     wrapJudgeOpen();
     document.addEventListener('click',onClick);
     document.addEventListener('keydown',event=>{if(event.target.closest?.('#selectorModeShell'))setTimeout(enhanceSelector,0);});
-    setTimeout(()=>{enhanceSelector();installJudgeTab();},180);
+    setTimeout(()=>{enhanceSelector();scheduleJudgeInstall();},180);
+    window.SanPaidCredibility={enhanceSelector,installJudgeTab,fetchProof};
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
