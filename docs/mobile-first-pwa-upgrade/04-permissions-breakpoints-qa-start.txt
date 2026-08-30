@@ -1,0 +1,445 @@
+Chrome Android
+
+Safari iOS
+
+Microsoft Edge Android if possible
+
+Important:
+
+SpeechRecognition support may differ.
+
+Never assume microphone support.
+
+Fallback must always work.
+
+============================================================
+55. PERMISSION HANDLING
+============================================================
+
+Microphone:
+
+user denied
+
+microphone missing
+
+browser unsupported
+
+recognition error
+
+must show useful message.
+
+Location:
+
+same.
+
+Camera:
+
+same.
+
+Do not crash the booking wizard.
+
+============================================================
+56. RESPONSIVE CSS BREAKPOINTS
+============================================================
+
+Do not create dozens of random breakpoints.
+
+Suggested:
+
+<= 480px
+phones
+
+481–768px
+large phones / tablets
+
+769–1024px
+tablet
+
+>1024px
+desktop
+
+Use content-driven breakpoints when necessary.
+
+============================================================
+57. CSS GRID RULE
+============================================================
+
+Use responsive patterns like:
+
+grid-template-columns:
+repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+
+for card grids where appropriate.
+
+============================================================
+58. MOBILE SAFE ACTIONS
+============================================================
+
+Destructive actions such as:
+
+Reject Worker
+
+Cancel Booking
+
+Reject Verification
+
+must require explicit confirmation where necessary.
+
+Prevent accidental taps.
+
+============================================================
+59. PULL-TO-REFRESH SAFETY
+============================================================
+
+Do not rely on in-memory-only data.
+
+All current demo state must persist before UI transitions.
+
+Refresh must preserve:
+
+booking
+
+voice request
+
+offer
+
+worker acceptance
+
+service status
+
+payment
+
+complaint
+
+============================================================
+60. MOBILE APP HEADER
+============================================================
+
+Customer:
+
+SanPaid
+notification icon
+profile
+
+Worker:
+
+SanPaid Worker
+online/offline status
+notification icon
+
+Admin:
+
+SanPaid Cooperative
+menu
+search/profile
+
+Keep header height compact.
+
+============================================================
+61. MOBILE WORKER ONLINE STATUS
+============================================================
+
+Worker home:
+
+large ONLINE/OFFLINE toggle.
+
+Must be obvious.
+
+When OFFLINE:
+
+worker excluded from new matching.
+
+Show:
+
+You will not receive new job offers while offline.
+
+============================================================
+62. MOBILE LANGUAGE SWITCH
+============================================================
+
+Support:
+
+EN
+हिंदी
+मराठी
+
+Do not hide language control deep inside desktop settings only.
+
+Worker language affects voice request playback.
+
+============================================================
+63. MOBILE LOADING STATES
+============================================================
+
+Use compact states:
+
+Checking available workers...
+
+Matching verified workers...
+
+Sending offer...
+
+Loading job...
+
+Listening...
+
+Processing sandbox payment...
+
+No giant blocking spinner for every action.
+
+============================================================
+64. MOBILE EMPTY STATES
+============================================================
+
+Examples:
+
+No new job offers
+
+You're all caught up.
+
+No active service
+
+Start accepting available job offers.
+
+No active booking
+
+Book a verified local service.
+
+Add action buttons.
+
+============================================================
+65. MOBILE ERROR RECOVERY
+============================================================
+
+Every error screen must offer next action.
+
+Example:
+
+Microphone unavailable
+
+[ Type Request Instead ]
+
+Location permission denied
+
+[ Enter Location Manually ]
+
+No worker found
+
+[ Expand Search ]
+[ Choose Another Time ]
+
+============================================================
+66. PWA UPDATE HANDLING
+============================================================
+
+When a new service worker version exists:
+
+show subtle:
+
+New SanPaid version available.
+
+[Update]
+
+Do not silently create broken stale cache.
+
+============================================================
+67. MOBILE SECURITY / PRIVACY UX
+============================================================
+
+Do not expose private worker fields on small screens just because
+space is limited.
+
+Preserve role-based visibility.
+
+Never show:
+
+Aadhaar
+
+bank details
+
+private documents
+
+sensitive admin notes.
+
+============================================================
+68. TEST CHECKLIST
+============================================================
+
+Manually test on mobile viewport:
+
+Landing
+
+Mobile menu
+
+Role selector
+
+Login
+
+Book Service
+
+Service cards
+
+Voice input
+
+Text fallback
+
+Location
+
+Booking Next/Back
+
+Estimate
+
+Matching
+
+Worker offer
+
+Voice Listen
+
+Worker Accept
+
+Worker Reject
+
+Worker Offline
+
+Active Job
+
+Arrival
+
+Verification
+
+Customer confirmation
+
+Extra charge
+
+Completion
+
+Payment
+
+Invoice
+
+Rating
+
+Complaint
+
+Notifications
+
+Admin drawer
+
+Filters
+
+Capacity Exchange
+
+Federation
+
+Logout
+
+Install PWA
+
+Offline mode
+
+Refresh persistence
+
+============================================================
+69. ZERO DEAD MOBILE BUTTONS
+============================================================
+
+Every visible mobile button must perform a real action.
+
+Do NOT:
+
+hide broken buttons only on mobile.
+
+Fix them.
+
+============================================================
+70. FINAL MOBILE QA
+============================================================
+
+Before saying complete:
+
+verify:
+
+No horizontal scroll
+
+No clipped buttons
+
+No offscreen modals
+
+No tiny text
+
+No inaccessible actions
+
+No broken voice capture
+
+No broken worker voice delivery
+
+No dead mobile nav
+
+No broken sidebar replacement
+
+No console errors
+
+No state loss after refresh
+
+No unusable tables
+
+No keyboard-covered submit button
+
+No microphone crash
+
+No location crash
+
+No offline crash
+
+============================================================
+71. FINAL RESPONSE
+============================================================
+
+After implementing, report:
+
+1. Mobile files changed
+2. Breakpoints implemented
+3. Customer mobile flow
+4. Worker mobile flow
+5. Voice mobile flow
+6. Admin/Federation mobile navigation
+7. PWA files added
+8. Offline support
+9. Browser limitations
+10. Exact mobile Golden Demo steps
+
+Do NOT respond with only suggestions.
+
+ACTUALLY MODIFY THE EXISTING SANPAID REPOSITORY.
+
+============================================================
+72. START NOW
+============================================================
+
+Open the current YUKTI-2026 / SanPaid repository.
+
+Preserve existing working features.
+
+Make the same product fully usable on mobile.
+
+Highest priorities:
+
+MOBILE-FIRST UX
+
+NO HORIZONTAL SCROLL
+
+WORKING MOBILE NAVIGATION
+
+WORKING CUSTOMER BOOKING
+
+WORKING WORKER DASHBOARD
+
+WORKING MOBILE VOICE REQUEST
+
+WORKING LISTEN BUTTON
+
+PWA INSTALLABILITY
+
+SAFE OFFLINE FALLBACK
+
+ZERO DEAD BUTTONS
