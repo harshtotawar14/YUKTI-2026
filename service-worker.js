@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v28';
+const CACHE_NAME = 'sanpaid-shell-v29';
 const APP_SHELL = [
   './',
   './index.html',
@@ -12,6 +12,7 @@ const APP_SHELL = [
   './credibility-layer.css',
   './workforce-intelligence.css',
   './hero-viewport-fix.css',
+  './evaluator-final.css',
   './app.js',
   './voice-lazy-loader.js',
   './voice-request.js',
@@ -28,6 +29,7 @@ const APP_SHELL = [
   './worker-trust-passport-ui.js',
   './top1-polish.js',
   './demo-preflight.js',
+  './evaluator-final.js',
   './manifest.webmanifest',
   './app-icon.svg'
 ];
@@ -59,7 +61,6 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
-
   if (url.pathname.startsWith('/api/')) return;
 
   if (request.mode === 'navigate') {
@@ -96,8 +97,10 @@ self.addEventListener('fetch', event => {
     '/workforce-intelligence.css',
     '/worker-trust-passport-ui.js',
     '/hero-viewport-fix.css',
+    '/evaluator-final.css',
     '/top1-polish.js',
-    '/demo-preflight.js'
+    '/demo-preflight.js',
+    '/evaluator-final.js'
   ].some(path => url.pathname.endsWith(path));
 
   if (connectedCritical) {
