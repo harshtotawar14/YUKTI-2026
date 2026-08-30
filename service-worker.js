@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v13';
+const CACHE_NAME = 'sanpaid-shell-v14';
 const APP_SHELL = [
   './',
   './index.html',
@@ -8,6 +8,7 @@ const APP_SHELL = [
   './connected-demo.css',
   './judge-demo.css',
   './app.js',
+  './voice-lazy-loader.js',
   './voice-request.js',
   './mobile.js',
   './connected-demo.js',
@@ -70,6 +71,8 @@ self.addEventListener('fetch', event => {
     '/connected-service-ui.js',
     '/connected-commerce-ui.js',
     '/connected-runtime-fix.js',
+    '/connected-demo.css',
+    '/voice-lazy-loader.js',
     '/capacity-worker-ui.js',
     '/judge-demo.js',
     '/judge-actions-polish.js',
