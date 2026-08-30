@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="SanPaid — AI-assisted cooperative workforce operating network for verified local services, fair worker opportunity and cooperative governance.">
+<meta name="description" content="SanPaid — AI-assisted cooperative-governed workforce operating network for verified local services, fair worker opportunity and cooperative workforce planning.">
 <meta name="theme-color" content="#0b1930">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>SanPaid — SIH 2026 Working Prototype</title>
+<title>SanPaid — SIH 2026 Cooperative Workforce Network</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="app-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="app-icon.svg">
@@ -21,55 +21,70 @@
 <link rel="stylesheet" href="connected-demo.css">
 <link rel="stylesheet" href="judge-demo.css">
 <link rel="stylesheet" href="sih-final.css">
+<link rel="stylesheet" href="selector-mode.css">
 </head>
 <body>
 <div id="landing">
-  <div class="ribbon">Smart India Hackathon 2026 · PS ID <b>26089</b> · Research-backed Working Prototype</div>
+  <div class="ribbon">Smart India Hackathon 2026 · PS ID <b>26089</b> · Selector-ready Research-backed Working Prototype</div>
 
   <nav class="nav">
     <div class="wrap navin">
       <a class="brand" href="#home">San<span>Paid</span></a>
       <div class="navlinks">
         <a href="#problem">Problem</a>
-        <a href="#solution">Solution</a>
         <a href="#how">How It Works</a>
         <a href="#whyDifferent">Why Different</a>
         <a href="#matching">Fair Matching</a>
         <a href="#impact">Impact</a>
       </div>
       <div class="actions">
-        <button class="btn ghost desktop-only" id="coopLogin">Cooperative Login</button>
-        <button class="btn primary desktop-only" id="getStarted">Get Started</button>
+        <button class="btn primary desktop-only" type="button" data-open-selector="0">▶ 3-Minute Demo</button>
+        <button class="btn ghost desktop-only" id="getStarted">Try Prototype</button>
         <button class="btn secondary hidden" id="resumeDemo">Resume Demo</button>
         <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileDrawer">☰</button>
       </div>
     </div>
     <div id="mobileDrawer" class="mobile-drawer hidden" aria-hidden="true">
+      <button type="button" data-open-selector="0">▶ 3-Minute SIH Demo</button>
       <a href="#problem">Problem</a>
-      <a href="#solution">Solution</a>
       <a href="#how">How It Works</a>
       <a href="#whyDifferent">Why Different</a>
       <a href="#matching">Fair Matching</a>
       <a href="#impact">Impact</a>
-      <button type="button" onclick="SanPaidDemo.showRoles()">Get Started</button>
+      <button type="button" onclick="SanPaidDemo.showRoles()">Try Prototype</button>
     </div>
   </nav>
 
   <header class="hero" id="home">
     <div class="wrap hero-grid">
       <div>
-        <span class="eyebrow">AI-Assisted · Cooperative-Governed Workforce Network</span>
+        <span class="eyebrow">AI-Assisted · Cooperative-Governed Workforce Operating Network</span>
         <h1>Trusted Local Services.<br><em>Fair Worker Opportunities.</em><br>Stronger Cooperatives.</h1>
-        <p class="lead">SanPaid connects customers with verified cooperative workers while helping cooperatives manage trust, fair opportunity, capacity and workforce planning in one auditable service network.</p>
+        <p class="lead">SanPaid connects customers with verified cooperative workers while helping cooperatives manage trust, fair opportunity, service capacity and workforce planning.</p>
+
         <div class="hero-ctas">
-          <button class="btn primary" id="bookServiceHero">Book Verified Service</button>
-          <button class="btn ghost" id="joinWorker">Join as Worker</button>
+          <button class="btn primary selector-hero-primary" id="selectorDemoBtn" type="button" data-open-selector="0">▶ View 3-Minute SIH Demo</button>
+          <button class="btn secondary" id="bookServiceHero">Book Verified Service</button>
+          <button class="btn ghost" id="selectorResearchBtn" type="button" data-open-selector="8">Explore Research & Proof</button>
         </div>
-        <div class="searchbox">
-          <select id="heroService" aria-label="Service"></select>
-          <input id="heroArea" aria-label="Area" placeholder="e.g. Karad Zone 1">
-          <button class="btn primary" id="heroSearch">Find Local Service</button>
+
+        <div class="selector-home-note">
+          <b>Opening from the SIH PPT?</b>
+          <span>Start with the 3-minute guided demo. No login is required to understand the solution.</span>
         </div>
+
+        <details class="quick-booking-details">
+          <summary>Quick booking / worker options</summary>
+          <div class="searchbox">
+            <select id="heroService" aria-label="Service"></select>
+            <input id="heroArea" aria-label="Area" placeholder="e.g. Karad Zone 1">
+            <button class="btn primary" id="heroSearch">Find Local Service</button>
+          </div>
+          <div class="hero-secondary-actions">
+            <button class="btn ghost small" id="joinWorker">Join as Worker</button>
+            <button class="btn ghost small" id="coopLogin">Cooperative Login</button>
+          </div>
+        </details>
       </div>
 
       <div class="loop-card">
@@ -82,6 +97,7 @@
           <div class="loop-step">5. Trusted Service</div>
           <div class="loop-step">6. Governance & Planning</div>
         </div>
+        <div class="loop-message">Not just Customer → Worker. SanPaid continues into cooperative governance, capacity and workforce planning.</div>
       </div>
     </div>
   </header>
@@ -103,10 +119,10 @@
         <p>Customers need trust, workers need fair access to demand, and cooperatives need one operational view instead of disconnected records and manual coordination.</p>
       </div>
       <div class="problem-grid final-problem-grid">
-        <div class="card problem-card"><span class="problem-no">01</span><h3>Trust Gap</h3><p>Customers cannot easily verify who is arriving, whether the worker is skilled, or whether credentials remain valid.</p></div>
-        <div class="card problem-card"><span class="problem-no">02</span><h3>Fragmented Discovery</h3><p>Verified cooperative workers have limited digital visibility while nearby customers struggle to discover them quickly.</p></div>
-        <div class="card problem-card"><span class="problem-no">03</span><h3>Inefficient Allocation</h3><p>Nearest-only allocation can ignore eligibility, availability, workload balance, worker choice and cooperative capacity.</p></div>
-        <div class="card problem-card"><span class="problem-no">04</span><h3>Management Blind Spots</h3><p>Worker data, bookings, complaints, capacity, payments and workforce planning are often scattered across separate processes.</p></div>
+        <div class="card problem-card"><span class="problem-no">01</span><h3>Trust Gap</h3><p>Customers cannot easily verify identity, skill or current worker verification before service.</p></div>
+        <div class="card problem-card"><span class="problem-no">02</span><h3>Discovery Gap</h3><p>Verified cooperative workers have limited digital visibility while nearby demand remains fragmented.</p></div>
+        <div class="card problem-card"><span class="problem-no">03</span><h3>Allocation Gap</h3><p>Nearest-only allocation can ignore eligibility, fairness, availability and worker choice.</p></div>
+        <div class="card problem-card"><span class="problem-no">04</span><h3>Management Gap</h3><p>Workers, bookings, complaints, capacity, payments and planning are often handled separately.</p></div>
       </div>
     </div>
   </section>
@@ -116,13 +132,13 @@
       <div class="head">
         <span class="tag">The SanPaid Solution</span>
         <h2>Five pillars connect service delivery with workforce governance</h2>
-        <p>The prototype is intentionally focused on the operating system cooperatives need — not only another booking marketplace.</p>
+        <p>SanPaid is designed as a cooperative workforce operating network — not only a booking marketplace.</p>
       </div>
       <div class="solution-pillar-grid">
-        <article class="solution-pillar"><span>01</span><h3>Connect</h3><p>One cooperative service marketplace for customers, workers, societies and federations.</p></article>
-        <article class="solution-pillar"><span>02</span><h3>Trust</h3><p>Identity, skill and document verification plus ratings, service history and dual service-start confirmation.</p></article>
-        <article class="solution-pillar"><span>03</span><h3>Allocate Fairly</h3><p>Eligibility first, explainable ranking second, and worker choice preserved through Accept / Decline.</p></article>
-        <article class="solution-pillar"><span>04</span><h3>Protect & Grow</h3><p>Verified work history, earnings visibility and a research-backed roadmap for training, welfare, insurance and renewal alerts.</p></article>
+        <article class="solution-pillar"><span>01</span><h3>Connect</h3><p>One network for customers, workers, cooperatives and federations.</p></article>
+        <article class="solution-pillar"><span>02</span><h3>Trust</h3><p>Identity, skill and document verification plus trusted service-start confirmation.</p></article>
+        <article class="solution-pillar"><span>03</span><h3>Allocate Fairly</h3><p>Eligibility first, explainable ranking second, worker choice always preserved.</p></article>
+        <article class="solution-pillar"><span>04</span><h3>Protect & Grow</h3><p>Work history, earnings visibility and roadmap for training, welfare, insurance and renewal alerts.</p></article>
         <article class="solution-pillar"><span>05</span><h3>Govern & Predict</h3><p>Command Center, complaint SLA, capacity exchange and demand → capacity → skill-gap planning.</p></article>
       </div>
     </div>
@@ -132,7 +148,7 @@
     <div class="wrap">
       <div class="head">
         <span class="tag">How SanPaid Works</span>
-        <h2>One traceable lifecycle from demand to better workforce decisions</h2>
+        <h2>One traceable lifecycle from service demand to workforce decisions</h2>
       </div>
       <div class="timeline">
         <div class="tstep"><b>01</b>Request Service</div>
@@ -151,26 +167,14 @@
       <div class="head">
         <span class="tag">Why SanPaid Is Different</span>
         <h2>Designed around cooperative governance, not platform control</h2>
-        <p>Booking, payment and ratings are useful features — but they are not the innovation. SanPaid's differentiation is how trust, opportunity, capacity and governance work together.</p>
+        <p>Booking, payment and ratings are standard features. SanPaid's differentiation is how trust, fair opportunity, capacity and governance work together.</p>
       </div>
       <div class="why-different-grid">
-        <div class="why-different-card"><b>Cooperative Governance</b><p>Verification, complaints, capacity and workforce operations stay accountable to cooperative/federation roles.</p></div>
-        <div class="why-different-card"><b>Eligibility-First Matching</b><p>Trust and safety checks happen before any ranking score is allowed to matter.</p></div>
-        <div class="why-different-card"><b>Fair Opportunity Allocation</b><p>Distance, rating and recent workload/opportunity are considered without forcing a worker to accept.</p></div>
-        <div class="why-different-card"><b>Cross-Cooperative Capacity</b><p>Shortage can create governed capacity requests and voluntary worker offers across societies.</p></div>
-        <div class="why-different-card"><b>Workforce Planning</b><p>Demand and eligible capacity lead to operational actions such as capacity requests and training recommendations.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="stakeholders">
-    <div class="wrap">
-      <div class="head"><span class="tag">Four Stakeholders</span><h2>One network, different responsibilities</h2></div>
-      <div class="benefit-grid stakeholder-grid">
-        <div class="card"><h3>👤 Customer</h3><p>Verified local services, transparent approvals, trusted service start and digital history.</p></div>
-        <div class="card"><h3>🛠️ Worker</h3><p>Fair job offers, Accept / Decline choice, multilingual request access and transparent earnings.</p></div>
-        <div class="card"><h3>🏢 Cooperative</h3><p>Verification, bookings, complaints, workforce capacity and operational analytics.</p></div>
-        <div class="card"><h3>🌐 Federation</h3><p>Regional capacity coordination, escalation visibility, training needs and policy governance.</p></div>
+        <div class="why-different-card"><b>Cooperative Governance</b><p>Verification, complaints, capacity and operations stay accountable to cooperative/federation roles.</p></div>
+        <div class="why-different-card"><b>Eligibility-First Matching</b><p>Trust and safety checks happen before ranking.</p></div>
+        <div class="why-different-card"><b>Fair Opportunity</b><p>Distance, rating and workload/opportunity matter without forcing acceptance.</p></div>
+        <div class="why-different-card"><b>Cross-Cooperative Capacity</b><p>Shortage can create governed capacity requests and voluntary worker offers.</p></div>
+        <div class="why-different-card"><b>Workforce Planning</b><p>Demand and eligible capacity lead to governed operational and training actions.</p></div>
       </div>
     </div>
   </section>
@@ -182,7 +186,7 @@
           <div>
             <span class="tag dark-tag">Trust + Fair Matching Proof</span>
             <h2>Nearest does not automatically mean eligible</h2>
-            <p class="muted-light">SanPaid removes ineligible workers first. Only verified, skill-eligible, available workers within policy are ranked using explainable factors.</p>
+            <p class="muted-light">SanPaid removes ineligible workers first. Only verified, skill-eligible and available workers within policy are ranked.</p>
             <div class="eligibility-proof">
               <div class="proof-person excluded"><strong>Rahul · 1.8 KM</strong><span>NOT ELIGIBLE</span><small>Verification pending</small></div>
               <div class="proof-arrow">→</div>
@@ -197,31 +201,34 @@
     </div>
   </section>
 
-  <section class="section white" id="services">
-    <div class="wrap">
-      <div class="head">
-        <span class="tag">Service Network</span>
-        <h2>Household & community services through verified workers</h2>
-        <p>Service cards open the fallback booking rehearsal. The Connected Demo remains the primary SIH cross-device proof.</p>
+  <section class="section selector-invite" id="guidedDemo">
+    <div class="wrap selector-invite-inner">
+      <div>
+        <span class="tag">Self-Guided SIH Selection Experience</span>
+        <h2>Understand the full solution in about 3 minutes — no login required.</h2>
+        <p>Problem → differentiation → fair matching → worker choice → trust → governance → capacity → planning → research → impact.</p>
       </div>
-      <div class="service-grid" id="serviceGrid"></div>
+      <div class="selector-invite-actions">
+        <button class="btn primary" type="button" data-open-selector="0">▶ Start 3-Minute Guided Demo</button>
+        <button class="btn secondary" id="connectedDemoBtn" type="button">Open Working Prototype</button>
+      </div>
     </div>
   </section>
 
-  <section class="section" id="impact">
+  <section class="section white" id="impact">
     <div class="wrap">
       <div class="head">
         <span class="tag">Expected Impact</span>
-        <h2>Value for customers, workers and cooperative governance</h2>
+        <h2>Value across the complete cooperative service network</h2>
         <p>No invented percentages — only outcomes the system is designed to enable and measure during pilots.</p>
       </div>
       <div class="impact-grid">
-        <article><b>Trusted Services</b><p>Eligibility and service-start checks strengthen confidence in local service delivery.</p></article>
-        <article><b>Faster Discovery</b><p>Local matching makes verified cooperative workers easier to discover within policy radius.</p></article>
-        <article><b>Fair Worker Opportunity</b><p>Explainable allocation and worker choice reduce dependence on nearest-only assignment.</p></article>
-        <article><b>Digital Cooperative Management</b><p>Bookings, complaints, capacity and planning become visible in one operating network.</p></article>
-        <article><b>Transparent Transactions</b><p>Extra work needs customer approval and sandbox payment/invoice flows remain auditable.</p></article>
-        <article><b>Workforce Planning</b><p>Demand, capacity and skill gaps can lead to governed capacity or training action.</p></article>
+        <article><b>Customer</b><p>Verified service discovery and trusted service start.</p></article>
+        <article><b>Worker</b><p>Fairer digital opportunities with Accept / Decline choice.</p></article>
+        <article><b>Cooperative</b><p>Digital workforce operations, complaints and capacity visibility.</p></article>
+        <article><b>Federation</b><p>Regional capacity coordination, escalation and workforce planning.</p></article>
+        <article><b>Transparent Transactions</b><p>Extra work approval, sandbox payment and invoice records remain auditable.</p></article>
+        <article><b>Planning</b><p>Demand, capacity and skill gaps can become governed operational action.</p></article>
       </div>
     </div>
   </section>
@@ -229,14 +236,15 @@
   <section class="section white" id="status">
     <div class="wrap" id="researchProof">
       <div class="head">
-        <span class="tag">Research-Backed Working Prototype</span>
-        <h2>Simple for users. Deep proof for SIH judges.</h2>
-        <p>Customer and Worker screens stay product-focused. Architecture, security, scale, welfare, business model, research references and prototype-truth labels are available inside SIH Judge Mode.</p>
+        <span class="tag">Research + Prototype Truth</span>
+        <h2>Simple first impression. Deep proof when the selector wants it.</h2>
+        <p>The guided demo explains research, architecture, security, welfare, business model and prototype truth without forcing a login.</p>
+        <button class="btn primary" type="button" data-open-selector="8" style="margin-top:12px">Explore Research & Architecture</button>
       </div>
       <div class="truth-strip">
         <div><span class="truth-dot implemented"></span><b>Implemented</b><small>Connected booking, fair matching, worker choice, capacity/SLA proof</small></div>
         <div><span class="truth-dot prototype"></span><b>Prototype-Demo</b><small>Identity/liveness, payment and time-advanced SLA simulation</small></div>
-        <div><span class="truth-dot future"></span><b>Future Integration Ready</b><small>Insurance/welfare integrations, production KYC, production-scale infrastructure</small></div>
+        <div><span class="truth-dot future"></span><b>Future Integration Ready</b><small>Insurance/welfare, production KYC and production-scale infrastructure</small></div>
       </div>
     </div>
   </section>
@@ -245,13 +253,22 @@
     <div class="wrap">
       <div class="brand">San<span>Paid</span></div>
       <p>SIH 2026 Prototype · PS 26089</p>
+      <p>Selector Mode explains · Connected Demo proves · Judge Mode goes deep.</p>
       <p>Payment and identity/liveness remain sandboxed. SLA breach advancement is explicitly a demo simulation.</p>
     </div>
   </footer>
 </div>
 
 <div id="appShell" class="app-shell hidden">
-  <header class="app-top"><div class="brand">San<span>Paid</span></div><div class="actions"><span id="appUser"></span><button class="btn ghost small" id="homeFromApp" aria-label="Back to landing">Landing</button><button class="btn primary small" id="logoutBtn" aria-label="Logout">Logout</button><button class="menu-btn" id="appMenuBtn" aria-label="Open dashboard menu" aria-expanded="false" aria-controls="mobileAppDrawer">☰</button></div></header>
+  <header class="app-top">
+    <div class="brand">San<span>Paid</span></div>
+    <div class="actions">
+      <span id="appUser"></span>
+      <button class="btn ghost small" id="homeFromApp" aria-label="Back to landing">Landing</button>
+      <button class="btn primary small" id="logoutBtn" aria-label="Logout">Logout</button>
+      <button class="menu-btn" id="appMenuBtn" aria-label="Open dashboard menu" aria-expanded="false" aria-controls="mobileAppDrawer">☰</button>
+    </div>
+  </header>
   <div class="app-main"><aside class="side" id="sideNav"></aside><main class="content" id="appContent"></main></div>
   <div class="mobile-drawer hidden" id="mobileAppDrawer" aria-hidden="true"><p>Loading mobile navigation…</p></div>
 </div>
@@ -266,6 +283,7 @@
 <script src="connected-runtime-fix.js"></script>
 <script src="capacity-worker-ui.js"></script>
 <script src="judge-demo.js"></script>
+<script src="selector-mode.js"></script>
 <script src="top1-polish.js"></script>
 </body>
 </html>
