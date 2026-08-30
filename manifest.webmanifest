@@ -1,0 +1,22 @@
+{
+  "name": "SanPaid — Cooperative Workforce Network",
+  "short_name": "SanPaid",
+  "description": "AI-Assisted Cooperative Workforce Operating Network for verified local services, fair worker opportunities and cooperative governance.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5f8fb",
+  "theme_color": "#0b1930",
+  "lang": "en-IN",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "./app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
