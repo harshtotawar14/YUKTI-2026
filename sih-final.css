@@ -1,0 +1,400 @@
+/* SanPaid SIH final research-backed product polish.
+   Keep this file additive: it sharpens the public/Judge hierarchy without
+   changing Connected Demo business logic. */
+
+:root{
+  --sih-soft:#f5f8fc;
+  --sih-green:#16845b;
+  --sih-orange:#a66b00;
+  --sih-purple:#654bb5;
+}
+
+/* ---------- Public landing: less clutter, stronger hierarchy ---------- */
+.final-problem-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+}
+.problem-no{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:34px;
+  height:28px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+  background:#eef3f8;
+  color:var(--navy2);
+  margin-bottom:10px;
+}
+
+.solution-pillar-grid{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:12px;
+}
+.solution-pillar{
+  min-width:0;
+  padding:18px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  box-shadow:var(--shadow);
+}
+.solution-pillar>span{
+  display:inline-block;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.08em;
+  color:var(--green);
+  margin-bottom:8px;
+}
+.solution-pillar h3{margin:0 0 8px;color:var(--navy2)}
+.solution-pillar p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+
+.stakeholder-grid .card{min-height:170px}
+
+.dark-tag{
+  background:rgba(255,255,255,.12)!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.18);
+}
+
+.eligibility-proof{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  gap:10px;
+  align-items:center;
+  margin:18px 0;
+}
+.proof-person{
+  border-radius:14px;
+  padding:13px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.07);
+  display:grid;
+  gap:4px;
+}
+.proof-person strong{color:#fff}
+.proof-person span{
+  width:max-content;
+  max-width:100%;
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:10px;
+  font-weight:900;
+}
+.proof-person small{color:#c7d3e3}
+.proof-person.excluded span{background:#ffe8e8;color:#9d3030}
+.proof-person.eligible span{background:#dff7e9;color:#176b46}
+.proof-arrow{font-size:24px;font-weight:900;color:#9fb2c9}
+
+.impact-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+.impact-grid article{
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:16px;
+  background:#fff;
+  box-shadow:var(--shadow);
+}
+.impact-grid b{display:block;color:var(--navy2);margin-bottom:6px}
+.impact-grid p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+
+.truth-strip{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+.truth-strip>div{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px;
+  background:var(--sih-soft);
+  display:grid;
+  grid-template-columns:auto 1fr;
+  column-gap:9px;
+  row-gap:3px;
+  align-items:center;
+}
+.truth-strip b{color:var(--navy2)}
+.truth-strip small{grid-column:2;color:var(--muted);line-height:1.45}
+.truth-dot{width:10px;height:10px;border-radius:50%;display:block}
+.truth-dot.implemented{background:#16845b}
+.truth-dot.prototype{background:#b87700}
+.truth-dot.future{background:#654bb5}
+
+/* ---------- Judge Mode: research/system proof ---------- */
+.judge-grid.three{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+.judge-badge.future{
+  background:#f2edff;
+  color:#5c439f;
+  border-color:#d9cdf7;
+}
+.judge-section-intro{
+  border-left:4px solid #16845b;
+}
+
+.judge-sequence,
+.trust-flow{
+  display:grid;
+  gap:8px;
+  margin:14px 0;
+}
+.judge-sequence>div,
+.trust-flow>div{
+  display:grid;
+  grid-template-columns:34px 1fr;
+  gap:10px;
+  align-items:center;
+  padding:10px;
+  background:#f7f9fc;
+  border-radius:11px;
+}
+.judge-sequence b,
+.trust-flow b{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#0b1930;
+  color:#fff;
+  font-size:12px;
+}
+.judge-sequence span,
+.trust-flow span{
+  font-size:13px;
+  color:#32455d;
+  font-weight:700;
+}
+
+.mini-proof{
+  padding:13px;
+  background:#f7f9fc;
+  border:1px solid #e1e7ef;
+  border-radius:12px;
+}
+.mini-proof b{display:block;color:#10223a;margin-bottom:5px}
+.mini-proof p{margin:0!important;font-size:12px!important;line-height:1.5}
+
+.verification-cycle{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin:12px 0 16px;
+}
+.verification-cycle span{
+  padding:7px 9px;
+  border-radius:999px;
+  background:#f2f6fb;
+  border:1px solid #dce4ee;
+  font-size:11px;
+  font-weight:800;
+  color:#344b65;
+}
+
+.capacity-story,
+.sla-flow,
+.growth-flow{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:7px;
+  margin:14px 0;
+}
+.capacity-story span,
+.sla-flow span,
+.growth-flow span{
+  padding:8px 10px;
+  border-radius:10px;
+  background:#f7f9fc;
+  border:1px solid #dfe6ee;
+  font-size:12px;
+  font-weight:800;
+}
+.capacity-story b,
+.sla-flow b,
+.growth-flow b{color:#6f8093}
+
+.architecture-stack{
+  display:grid;
+  gap:7px;
+  margin-top:14px;
+}
+.architecture-stack>div{
+  display:grid;
+  gap:4px;
+  padding:12px;
+  border:1px solid #dce4ee;
+  border-radius:12px;
+  background:#f8fafc;
+}
+.architecture-stack>div b{color:#10223a}
+.architecture-stack>div span{font-size:12px;color:#5d6b7d;line-height:1.45}
+.architecture-stack>i{
+  text-align:center;
+  font-style:normal;
+  color:#8698ad;
+  font-weight:900;
+}
+
+.domain-cloud{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin:12px 0;
+}
+.domain-cloud span{
+  padding:6px 9px;
+  border-radius:999px;
+  background:#edf3f8;
+  color:#304862;
+  font-size:11px;
+  font-weight:800;
+}
+
+.research-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-top:12px;
+}
+.research-grid>a,
+.research-grid>div{
+  display:grid;
+  gap:6px;
+  padding:13px;
+  border:1px solid #dce4ee;
+  border-radius:12px;
+  background:#f8fafc;
+  text-decoration:none;
+  color:inherit;
+}
+.research-grid>a:hover{border-color:#9eb4ca;transform:translateY(-1px)}
+.research-grid b{color:#10223a}
+.research-grid span{font-size:12px;color:#5d6b7d;line-height:1.5}
+
+.scale-grid,
+.welfare-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-top:12px;
+}
+.scale-grid>div,
+.welfare-grid>div{
+  display:grid;
+  gap:6px;
+  padding:13px;
+  border:1px solid #dce4ee;
+  border-radius:12px;
+  background:#f8fafc;
+}
+.scale-grid b,
+.welfare-grid b{color:#10223a}
+.scale-grid span,
+.welfare-grid span{font-size:12px;color:#5d6b7d;line-height:1.5}
+.welfare-grid em{
+  font-style:normal;
+  width:max-content;
+  max-width:100%;
+  font-size:10px;
+  font-weight:900;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#f2edff;
+  color:#5c439f;
+}
+
+.judge-confirm-box{
+  margin-top:12px;
+  padding:13px;
+  border:1px solid #efc6c6;
+  background:#fff7f7;
+  border-radius:12px;
+}
+.judge-confirm-box.hidden{display:none!important}
+
+/* Public status is intentionally compact: technical detail belongs in Judge Mode. */
+#status .head{max-width:900px}
+#status .truth-strip{margin-top:14px}
+
+/* Presentation focus: emphasize active proof, reduce surrounding noise. */
+.judge-presentation .judge-hero{
+  padding:16px 20px;
+}
+.judge-presentation .judge-tabs{
+  position:sticky;
+  top:58px;
+  z-index:2;
+  background:#f4f7fb;
+  padding-top:8px;
+}
+
+/* Reduce motion for accessibility/performance. */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    scroll-behavior:auto!important;
+    transition-duration:.01ms!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+  }
+}
+
+@media(max-width:1080px){
+  .solution-pillar-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .final-problem-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media(max-width:900px){
+  .impact-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .research-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .scale-grid,.welfare-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .judge-grid.three{grid-template-columns:1fr}
+}
+
+@media(max-width:640px){
+  .solution-pillar-grid,
+  .final-problem-grid,
+  .impact-grid,
+  .truth-strip,
+  .research-grid,
+  .scale-grid,
+  .welfare-grid{
+    grid-template-columns:1fr;
+  }
+
+  .eligibility-proof{
+    grid-template-columns:1fr;
+  }
+  .proof-arrow{
+    transform:rotate(90deg);
+    text-align:center;
+  }
+
+  .truth-strip>div{
+    grid-template-columns:auto 1fr;
+  }
+
+  .capacity-story,
+  .sla-flow,
+  .growth-flow{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .capacity-story b,
+  .sla-flow b,
+  .growth-flow b{
+    text-align:center;
+    transform:rotate(90deg);
+  }
+
+  .judge-table{
+    min-width:560px;
+  }
+}
