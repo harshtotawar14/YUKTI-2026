@@ -4,29 +4,49 @@ Smart India Hackathon 2026 prototype for **PS ID 26089 — Cooperative Gig Servi
 
 ## Current repository handoff
 
-- `index.html` — Claude-generated SanPaid HTML/CSS/JavaScript frontend prototype.
-- `docs/frontend-functionality-repair/` — frontend repair master prompt split into ordered parts. Use this first to make all important buttons, forms, modals, dashboards and demo flows actually clickable and stateful while preserving the current design.
-- `docs/backend-master-prompt/` — complete backend, database, API and system-integration master prompt, preserved in ordered parts `01` through `06`. Use this after the frontend functionality pass.
+- `index.html` — current SanPaid HTML frontend.
+- `styles.css` — current shared styling.
+- `app.js` — current frontend demo/application logic.
+- `docs/final-research-grounded-frontend-master-prompt.md` — **LATEST / PRIMARY frontend execution prompt**. Use this first for the full research-grounded website upgrade.
+- `docs/frontend-functionality-repair/` — earlier detailed frontend repair prompt; keep as supporting QA/reference material.
+- `docs/backend-master-prompt/` — backend, PostgreSQL/PostGIS, API and system-integration prompt; use after the frontend state/UI contract is stable.
 
-## Frontend repair prompt reading order
+## Recommended execution order
+
+### Phase 1 — Final frontend upgrade
+
+Use:
+
+`docs/final-research-grounded-frontend-master-prompt.md`
+
+Main goals:
+
+- audit the real repository before editing;
+- preserve good existing SanPaid design/code;
+- remove every dead button, broken link and fake CTA;
+- replace disconnected/random values with one deterministic connected demo dataset;
+- make Customer, Worker, Cooperative Admin and Federation Admin dashboards operational;
+- keep eligibility before fairness;
+- keep worker choice mandatory;
+- implement continuous worker trust, Digital Worker ID and dual service-start verification;
+- make payment/biometric actions honest sandbox workflows;
+- implement worker earnings, Service Passport, welfare/training, complaint/SLA, capacity exchange and demand planning;
+- synchronize actions across all affected dashboards;
+- use claim-safe research framing;
+- manually test every Golden Demo flow and every critical click.
+
+### Phase 2 — Supporting frontend QA
+
+If extra repair detail is needed, follow:
 
 1. `docs/frontend-functionality-repair/01-audit-state-booking-customer.txt`
 2. `docs/frontend-functionality-repair/02-worker-admin-service-payment.txt`
 3. `docs/frontend-functionality-repair/03-validation-responsive-click-audit.txt`
 4. `docs/frontend-functionality-repair/04-golden-flows-qa-start.txt`
 
-Frontend repair priorities:
+### Phase 3 — Backend / database / API integration
 
-- audit every clickable element;
-- remove dead `href="#"` and missing handlers from critical actions;
-- use meaningful demo state instead of alert-only placeholders;
-- make Customer, Worker, Cooperative Admin and Federation flows usable;
-- preserve eligibility-first matching and exclude unverified workers;
-- demonstrate dual service-start verification, payment sandbox, complaints/SLA and capacity exchange;
-- persist appropriate demo state in localStorage;
-- manually test every critical button and Golden Flow.
-
-## Backend prompt reading order
+Then follow:
 
 1. `docs/backend-master-prompt/01-foundation-auth-booking.txt`
 2. `docs/backend-master-prompt/02-booking-matching-verification-payment.txt`
@@ -35,6 +55,23 @@ Frontend repair priorities:
 5. `docs/backend-master-prompt/05-reliability-golden-demo-testing.txt`
 6. `docs/backend-master-prompt/06-integration-deployment-definition-done.txt`
 
-The backend phase must treat the repaired frontend as the UI contract, audit any remaining mock/hardcoded behaviour, then connect real APIs, PostgreSQL/PostGIS data, authentication/RBAC, booking and matching, worker verification, service-start verification, payments, complaints/SLA, cooperative/federation governance, capacity exchange, AI/forecasting, audit/security, testing and deployment.
+The backend phase must treat the final frontend as the UI contract, replace remaining demo adapters with real APIs, connect PostgreSQL/PostGIS, authentication/RBAC, booking/matching, worker verification, service-start verification, payments, complaints/SLA, cooperative/federation governance, capacity exchange, AI/forecasting, audit/security, testing and deployment.
 
-> Demo-only integrations such as sandbox payment or verification must stay honestly labelled until real production integrations are connected.
+## Product positioning
+
+SanPaid should be presented as an **AI-assisted cooperative workforce operating network**, not another generic home-service marketplace.
+
+Core integrated differentiation:
+
+- Cooperative / Federation Governance
+- Cross-Cooperative Capacity Exchange
+- Eligibility-First Fair Opportunity
+- Explainable Ranking
+- Continuous Trust Lifecycle
+- Worker Choice
+- Dual Service-Start Verification
+- Transparent Earnings + Service Passport
+- Demand → Capacity → Skill-Gap Planning
+- Auditable Governance
+
+> Demo-only integrations such as sandbox payment or sandbox identity verification must remain honestly labelled until real production integrations are connected.
