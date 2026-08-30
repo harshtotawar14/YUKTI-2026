@@ -1,0 +1,738 @@
+AI fallback
+
+maps fallback
+
+file upload security
+
+===============================================================
+CM. INTEGRATION TESTING
+===============================================================
+
+Test full frontend ↔ API ↔ database flow.
+
+Do not consider API endpoint success enough.
+
+Example:
+
+click frontend "Book Service"
+
+→ network request is correct
+
+→ API succeeds
+
+→ DB row created
+
+→ UI receives result
+
+→ booking shows in customer account
+
+→ worker receives corresponding offer
+
+That is an integrated success.
+
+===============================================================
+CN. API CONTRACT DOCUMENTATION
+===============================================================
+
+Create/update API documentation.
+
+For every endpoint document:
+
+method
+
+path
+
+authentication
+
+role
+
+request
+
+response
+
+possible errors
+
+side effects
+
+state transition
+
+Example:
+
+POST /api/bookings
+
+Role:
+CUSTOMER
+
+Request:
+serviceId
+addressId
+schedule
+problemDescription
+urgency
+
+Response:
+booking
+bookingId
+status
+
+===============================================================
+CO. ENVIRONMENT VARIABLES
+===============================================================
+
+Use environment variables.
+
+Provide:
+
+.env.example
+
+Possible keys:
+
+DATABASE_URL
+
+JWT_SECRET
+
+JWT_REFRESH_SECRET
+
+REDIS_URL
+
+STORAGE_BUCKET
+
+STORAGE_REGION
+
+PAYMENT_* variables
+
+MAPS_API_KEY
+
+SMS_* variables
+
+EMAIL_* variables
+
+AI_SERVICE_URL
+
+Do NOT commit live secrets.
+
+===============================================================
+CP. DEVELOPMENT / DEMO / PRODUCTION
+===============================================================
+
+Separate configuration for:
+
+development
+
+demo
+
+production
+
+Demo may use:
+
+sandbox payment
+
+demo verification
+
+demo notifications
+
+Production adapters must be separately configurable.
+
+===============================================================
+CQ. README
+===============================================================
+
+Update README with:
+
+architecture
+
+backend setup
+
+database setup
+
+PostGIS setup
+
+Redis setup
+
+migrations
+
+seed command
+
+environment variables
+
+run commands
+
+test commands
+
+API documentation
+
+demo accounts
+
+sandbox integrations
+
+deployment procedure
+
+known demo limitations
+
+===============================================================
+CR. DEPLOYMENT
+===============================================================
+
+Analyse current deployment before changing it.
+
+If frontend is already on Vercel:
+
+preserve where appropriate.
+
+Backend may use:
+
+Render
+
+Railway
+
+Vercel server functions
+
+or existing compatible hosting.
+
+Database:
+
+managed PostgreSQL where available.
+
+Do not unnecessarily migrate platforms.
+
+===============================================================
+CS. CI/CD
+===============================================================
+
+Where repository supports GitHub Actions or equivalent:
+
+implement/check:
+
+install
+
+lint
+
+test
+
+migration validation
+
+build
+
+deployment checks
+
+Do not deploy broken code.
+
+===============================================================
+CT. DEMO DATA
+===============================================================
+
+Use realistic demo data.
+
+Example workers:
+
+Amit Patil
+Priya Shinde
+Rahul Jadhav
+Neha More
+
+Services:
+
+Electrician
+Plumber
+Carpenter
+Painter
+Cleaner
+Caregiver
+Driver
+Gardener
+Technician
+
+Create varied:
+
+verified workers
+
+pending workers
+
+busy workers
+
+available workers
+
+expired documents
+
+active bookings
+
+completed bookings
+
+complaints
+
+capacity shortage
+
+===============================================================
+CU. PERFORMANCE
+===============================================================
+
+Optimise backend queries.
+
+Avoid:
+
+N+1 queries
+
+fetching millions of records at once
+
+unindexed geo queries
+
+full-table scans for routine dashboard metrics
+
+Use:
+
+pagination
+
+indexes
+
+aggregation
+
+cache where useful
+
+===============================================================
+CV. SEARCH / FILTER / PAGINATION API
+===============================================================
+
+Backend must support real query parameters.
+
+Workers:
+
+search
+
+skill
+
+verification
+
+availability
+
+zone
+
+rating
+
+document status
+
+Bookings:
+
+status
+
+service
+
+date
+
+worker
+
+cooperative
+
+Complaints:
+
+level
+
+SLA
+
+category
+
+status
+
+owner
+
+Return pagination metadata.
+
+===============================================================
+CW. NO HARDCODED DASHBOARD DATA
+===============================================================
+
+Claude frontend may contain demo arrays/hardcoded counters.
+
+Identify them.
+
+Replace underlying source with backend APIs.
+
+Dashboard statistics must be generated from:
+
+database
+
+seed/demo records
+
+actual application events.
+
+===============================================================
+CX. FRONTEND CODE ANALYSIS REPORT
+===============================================================
+
+Before backend implementation, internally create a report:
+
+PAGE
+
+COMPONENT / SECTION
+
+DOM ID / JS HANDLER
+
+CURRENT DATA SOURCE
+
+CURRENT MOCK BEHAVIOUR
+
+EXPECTED API
+
+EXPECTED ROLE
+
+DATABASE TABLES
+
+STATUS
+
+Example:
+
+Customer Dashboard
+"Book Now"
+handleBookService()
+local mock array
+POST /api/bookings
+CUSTOMER
+bookings + addresses
+MISSING BACKEND
+
+Use this map to ensure no frontend function remains disconnected.
+
+===============================================================
+CY. DEAD BUTTON AUDIT
+===============================================================
+
+Analyse every clickable element.
+
+Classify:
+
+already functional
+
+frontend-only
+
+missing backend
+
+wrong route
+
+broken selector
+
+mock success
+
+external integration
+
+Every critical SIH button must eventually perform a real/demo-backed action.
+
+===============================================================
+CZ. FINAL TECHNICAL ACCEPTANCE
+===============================================================
+
+Before declaring complete verify:
+
+Frontend opens.
+
+Backend starts.
+
+Database connects.
+
+Migrations run.
+
+Seed data works.
+
+Login works.
+
+RBAC works.
+
+Customer booking persists.
+
+Worker offer persists.
+
+Worker reject works.
+
+Next worker offer works.
+
+Worker acceptance works.
+
+Only one worker gets assigned.
+
+Unverified worker never matches.
+
+Expired mandatory document blocks eligibility.
+
+20 KM/default policy works.
+
+Ranking reasons work.
+
+Worker replacement works.
+
+Worker arrival works.
+
+Identity demo works.
+
+Dynamic QR works.
+
+QR expires.
+
+QR cannot be reused.
+
+Customer confirmation works.
+
+Service cannot start before authorization.
+
+Evidence uploads work.
+
+Extra charge requires approval.
+
+Payment works.
+
+Duplicate payment is prevented.
+
+Invoice is generated.
+
+Worker ledger updates.
+
+Rating works.
+
+Worker passport updates.
+
+Complaint works.
+
+Complaint evidence timeline works.
+
+SLA escalates automatically.
+
+Cooperative dashboard uses real backend data.
+
+Federation authorization works.
+
+Capacity exchange works.
+
+Forecast works or uses honest baseline fallback.
+
+AI failure does not break booking.
+
+Maps failure does not break booking.
+
+Audit logs exist.
+
+No secrets are exposed.
+
+No unauthorized data is returned.
+
+No critical console/network errors remain.
+
+===============================================================
+DA. IMPLEMENTATION ORDER
+===============================================================
+
+Implement in this exact order:
+
+PHASE 1
+Repository + Claude frontend code audit
+
+PHASE 2
+Frontend-to-backend contract mapping
+
+PHASE 3
+Current backend/database audit
+
+PHASE 4
+Fix existing runtime/database problems
+
+PHASE 5
+Database schema + migrations
+
+PHASE 6
+Authentication + RBAC
+
+PHASE 7
+User / worker / cooperative / federation model
+
+PHASE 8
+Worker verification + documents
+
+PHASE 9
+Service catalog + booking
+
+PHASE 10
+Policy engine
+
+PHASE 11
+Geo eligibility
+
+PHASE 12
+Fair ranking
+
+PHASE 13
+Worker offer / reject / timeout
+
+PHASE 14
+Replacement engine
+
+PHASE 15
+Dual service-start verification
+
+PHASE 16
+Service execution + evidence
+
+PHASE 17
+Pricing + extra charge
+
+PHASE 18
+Payment + idempotency
+
+PHASE 19
+Invoice + settlement + ledger
+
+PHASE 20
+Rating + service report + passport
+
+PHASE 21
+Complaints + SLA + background escalation
+
+PHASE 22
+Cooperative backend analytics
+
+PHASE 23
+Capacity exchange
+
+PHASE 24
+Federation governance
+
+PHASE 25
+Welfare + training
+
+PHASE 26
+Voice/translation backend integration
+
+PHASE 27
+AI diagnosis
+
+PHASE 28
+Forecasting + capacity/skill-gap planning
+
+PHASE 29
+Audit + fraud monitoring
+
+PHASE 30
+Notifications
+
+PHASE 31
+Security hardening
+
+PHASE 32
+Reliability + observability
+
+PHASE 33
+Frontend/API integration audit
+
+PHASE 34
+Golden demo testing
+
+PHASE 35
+Deployment validation
+
+===============================================================
+DB. AGENT AUTONOMY
+===============================================================
+
+Do NOT repeatedly ask permission for ordinary safe engineering work.
+
+If:
+
+backend bug exists
+→ fix it
+
+API is missing
+→ implement it
+
+migration is needed
+→ create it safely
+
+DB index is missing
+→ add migration
+
+seed data is missing
+→ add it
+
+integration is broken
+→ repair it
+
+existing frontend uses mock data
+→ connect it to backend
+
+test fails
+→ diagnose and fix
+
+security bug exists
+→ fix it
+
+But STOP before:
+
+database reset
+
+production data deletion
+
+large destructive migration
+
+deleting working major modules
+
+changing live credentials
+
+removing production integrations
+
+irreversible infrastructure change
+
+===============================================================
+DC. MOST IMPORTANT RULE
+===============================================================
+
+DO NOT finish after creating backend files.
+
+DO NOT finish after creating database tables.
+
+DO NOT finish because API endpoints return 200.
+
+The project is complete only when:
+
+THE EXISTING CLAUDE HTML/CSS/JS FRONTEND
+        ↓
+REAL API
+        ↓
+REAL BUSINESS LOGIC
+        ↓
+DATABASE
+        ↓
+ROLE / SECURITY RULES
+        ↓
+BACKGROUND AUTOMATION
+        ↓
+EXTERNAL / DEMO INTEGRATIONS
+        ↓
+ACTUAL RESULT BACK IN FRONTEND
+
+works end-to-end.
+
+===============================================================
+DD. START NOW
+===============================================================
+
+Start by analysing the COMPLETE repository and especially the
+Claude-generated HTML/CSS/JavaScript files.
+
+Do not code blindly.
+
+First determine:
+
+1. what pages Claude generated,
+2. what actions exist,
+3. what buttons currently use fake/mock behaviour,
+4. what data structures the JavaScript expects,
+5. what localStorage/sessionStorage is currently being used for,
+6. what APIs are already referenced,
+7. what backend currently exists,
+8. what database currently exists,
+9. what functionality can be preserved,
+10. what functionality is actually missing.
+
+Then create the frontend-to-backend contract map.
+
+Then implement the backend systematically following the phase order.
+
+Never recreate the frontend.
+
+Preserve the Claude design.
+
+Make SanPaid actually work.
