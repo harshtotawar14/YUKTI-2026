@@ -1,210 +1,258 @@
-/* SanPaid desktop hero viewport fix.
-   Goal: on common laptop/desktop screens, the headline, all three primary CTAs
-   and the complete Operating Loop are visible immediately without an initial scroll.
-   Mobile behavior remains controlled by the existing mobile styles. */
+/* SanPaid professional selector hero.
+   Keeps the complete first decision surface above the fold on common laptops
+   without compressing typography into a demo/dashboard look. */
 
 @media (min-width: 961px) {
+  #landing .ribbon {
+    padding: 7px 12px;
+    font-size: 11px;
+    letter-spacing: .01em;
+    color: #a9e7ca;
+    background: #071426;
+  }
+
+  #landing .navin { height: 66px; }
+  #landing .navlinks { gap: 27px; }
+  #landing .navlinks a { font-size: 13px; font-weight: 500; }
+  #landing .nav .actions .btn {
+    min-height: 42px;
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+
   #home.hero {
     min-height: 0 !important;
-    padding: clamp(22px, 3vh, 32px) 0 clamp(22px, 2.6vh, 30px) !important;
+    padding: 30px 0 34px !important;
     display: block !important;
   }
 
   #home .hero-grid {
     width: 100%;
-    grid-template-columns: minmax(0, 1.2fr) minmax(400px, .8fr) !important;
-    gap: clamp(24px, 2.7vw, 38px) !important;
-    align-items: start !important;
+    grid-template-columns: minmax(0, 1.10fr) minmax(400px, .90fr) !important;
+    gap: 54px !important;
+    align-items: center !important;
   }
 
-  #home .hero-grid > div:first-child {
-    min-width: 0;
-    align-self: start;
-  }
+  #home .hero-grid > div:first-child { min-width: 0; }
 
   #home .eyebrow {
-    padding: 6px 10px;
-    font-size: 11px;
+    padding: 7px 12px !important;
+    font-size: 11px !important;
     line-height: 1.2;
+    letter-spacing: .015em;
+    background: rgba(43,194,123,.09);
+    border-color: rgba(71,214,148,.32);
   }
 
   #home h1 {
-    font-size: clamp(40px, 3.25vw, 52px) !important;
-    line-height: 1.01 !important;
-    letter-spacing: -.025em;
-    margin: 12px 0 10px !important;
+    max-width: 730px;
+    margin: 15px 0 12px !important;
+    font-size: clamp(44px, 3.55vw, 56px) !important;
+    line-height: 1.025 !important;
+    letter-spacing: -.035em !important;
+    font-weight: 800;
   }
 
+  #home h1 em { color: #8ce3b6; }
+
   #home .lead {
-    max-width: 650px;
-    margin: 0;
+    max-width: 680px;
+    margin: 0 !important;
+    color: #c7d4e4;
     font-size: 14px !important;
-    line-height: 1.5 !important;
+    line-height: 1.6 !important;
   }
 
   #home .hero-ctas {
-    display: grid !important;
-    grid-template-columns: max-content max-content max-content;
+    display: flex !important;
     align-items: center;
-    justify-content: start;
-    gap: 8px !important;
-    margin: 14px 0 11px !important;
+    flex-wrap: wrap;
+    gap: 10px !important;
+    margin: 20px 0 14px !important;
   }
 
   #home .hero-ctas .btn {
-    min-height: 40px;
-    padding: 9px 13px !important;
-    font-size: 12px !important;
-    line-height: 1.15;
+    min-height: 44px;
+    padding: 11px 17px !important;
+    font-size: 12.5px !important;
+    line-height: 1.2;
     white-space: nowrap;
+    box-shadow: none;
   }
 
+  #home .selector-hero-primary {
+    box-shadow: 0 12px 30px -18px rgba(43,194,123,.85) !important;
+  }
+
+  #home #selectorResearchBtn {
+    background: transparent;
+    border-color: rgba(255,255,255,.24);
+  }
+
+  /* Keep selector guidance, but make it feel like product metadata instead of an alert. */
   #home .selector-home-note {
-    max-width: 650px;
-    margin-top: 0 !important;
-    padding: 9px 12px !important;
-    border-radius: 11px !important;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 10px;
+    max-width: 680px;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    color: #9fb2c9 !important;
   }
 
   #home .selector-home-note b {
-    font-size: 11px !important;
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    color: #dce7f3 !important;
+    font-size: 10px !important;
+    white-space: nowrap;
   }
 
   #home .selector-home-note span {
+    color: #9fb2c9 !important;
     font-size: 10.5px !important;
-    line-height: 1.3 !important;
+    line-height: 1.35 !important;
   }
 
-  #home .quick-booking-details {
-    max-width: 650px;
-    margin-top: 7px !important;
-  }
-
-  #home .quick-booking-details summary {
-    padding-top: 7px !important;
-    padding-bottom: 7px !important;
-    font-size: 11px !important;
-  }
+  /* Booking tools remain available through the primary CTA; do not clutter the selector hero. */
+  #home .quick-booking-details { display: none !important; }
 
   #home .loop-card {
     width: 100%;
-    align-self: start !important;
-    padding: 16px !important;
-    border-radius: 18px !important;
+    align-self: center !important;
+    padding: 22px !important;
+    border-radius: 22px !important;
+    background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.045)) !important;
+    border: 1px solid rgba(255,255,255,.15) !important;
+    box-shadow: 0 24px 60px -38px rgba(0,0,0,.75);
   }
 
   #home .loop-card > .eyebrow {
     margin-bottom: 0;
+    background: rgba(43,194,123,.10) !important;
+    color: #9be8c2 !important;
+    font-size: 10.5px !important;
   }
 
   #home .loop-card .loop {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 7px !important;
-    margin-top: 10px !important;
+    gap: 10px !important;
+    margin-top: 14px !important;
   }
 
   #home .loop-step {
     min-width: 0;
-    padding: 9px 10px !important;
-    border-radius: 10px !important;
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    padding: 11px 13px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255,255,255,.065);
+    border-left: 3px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.055) !important;
+    color: #c4d0df !important;
     font-size: 12px !important;
-    line-height: 1.25 !important;
+    line-height: 1.3 !important;
+    font-weight: 600;
+  }
+
+  #home .loop-step.active {
+    color: #fff !important;
+    border-color: rgba(43,194,123,.24) !important;
+    border-left-color: #2bc27b !important;
+    background: linear-gradient(90deg, rgba(43,194,123,.17), rgba(43,194,123,.08)) !important;
   }
 
   #home .loop-message {
-    margin-top: 9px !important;
-    padding: 9px 10px !important;
-    border-radius: 10px;
+    margin-top: 12px !important;
+    padding: 12px 13px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255,255,255,.07);
+    background: rgba(7,20,38,.28) !important;
+    color: #aebed1 !important;
     font-size: 10.5px !important;
-    line-height: 1.35 !important;
+    line-height: 1.45 !important;
+  }
+
+  #landing .trust {
+    background: #081629;
+    border-top: 1px solid rgba(255,255,255,.06);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+
+  #landing .trustin {
+    padding-top: 16px !important;
+    padding-bottom: 16px !important;
+    gap: 18px !important;
+  }
+
+  #landing .trust span {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #c6d3e2;
+    font-size: 11.5px !important;
+    font-weight: 600;
+  }
+
+  #landing .trust span::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+    border-radius: 50%;
+    background: #2bc27b;
+    box-shadow: 0 0 0 4px rgba(43,194,123,.08);
   }
 }
 
-/* Medium laptop widths: preserve two-column hero but allow CTA wrapping if needed. */
 @media (min-width: 961px) and (max-width: 1180px) {
   #home .hero-grid {
-    grid-template-columns: minmax(0, 1.08fr) minmax(360px, .92fr) !important;
-    gap: 22px !important;
+    grid-template-columns: minmax(0, 1.05fr) minmax(370px, .95fr) !important;
+    gap: 28px !important;
   }
-
-  #home h1 {
-    font-size: clamp(38px, 4vw, 46px) !important;
-  }
-
-  #home .hero-ctas {
-    display: flex !important;
-    flex-wrap: wrap;
-  }
-
-  #home .loop-step {
-    font-size: 11px !important;
-    padding: 8px 9px !important;
-  }
+  #home h1 { font-size: clamp(39px, 4vw, 48px) !important; }
+  #home .loop-step { font-size: 10.8px !important; }
 }
 
-/* Short laptop screens (e.g. 1366x768): aggressively protect above-the-fold visibility. */
+/* Short laptop screens: compact carefully, never crush the visual hierarchy. */
 @media (min-width: 961px) and (max-height: 760px) {
-  #home.hero {
-    padding: 14px 0 16px !important;
-  }
-
+  #home.hero { padding: 23px 0 26px !important; }
+  #home .hero-grid { gap: 42px !important; }
   #home h1 {
-    font-size: clamp(36px, 3vw, 45px) !important;
-    margin: 8px 0 8px !important;
+    font-size: clamp(40px, 3.25vw, 49px) !important;
+    margin: 12px 0 10px !important;
   }
-
-  #home .lead {
-    font-size: 12.5px !important;
-    line-height: 1.42 !important;
-  }
-
-  #home .hero-ctas {
-    margin: 10px 0 8px !important;
-  }
-
+  #home .lead { font-size: 13px !important; line-height: 1.5 !important; }
+  #home .hero-ctas { margin: 16px 0 11px !important; }
   #home .hero-ctas .btn {
-    min-height: 36px;
-    padding: 8px 11px !important;
+    min-height: 40px;
+    padding: 9px 14px !important;
+    font-size: 11.5px !important;
+  }
+  #home .loop-card { padding: 18px !important; }
+  #home .loop-card .loop { gap: 8px !important; margin-top: 11px !important; }
+  #home .loop-step {
+    min-height: 40px;
+    padding: 9px 11px !important;
     font-size: 11px !important;
   }
-
-  #home .selector-home-note {
-    padding: 7px 10px !important;
-  }
-
-  #home .quick-booking-details {
-    margin-top: 5px !important;
-  }
-
-  #home .loop-card {
-    padding: 13px !important;
-  }
-
-  #home .loop-card .loop {
-    gap: 5px !important;
-    margin-top: 7px !important;
-  }
-
-  #home .loop-step {
-    padding: 7px 8px !important;
-    font-size: 10.5px !important;
-  }
-
   #home .loop-message {
-    margin-top: 6px !important;
-    padding: 7px 8px !important;
-    font-size: 9.5px !important;
+    margin-top: 9px !important;
+    padding: 9px 11px !important;
+    font-size: 9.8px !important;
   }
 }
 
-/* Very wide monitors: keep content readable instead of re-growing vertically. */
 @media (min-width: 1500px) and (min-height: 761px) {
   #home .hero-grid {
-    grid-template-columns: minmax(0, 1.22fr) minmax(420px, .78fr) !important;
-  }
-
-  #home h1 {
-    max-width: 690px;
+    grid-template-columns: minmax(0, 1.12fr) minmax(430px, .88fr) !important;
   }
 }
