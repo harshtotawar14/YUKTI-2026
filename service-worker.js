@@ -1,13 +1,15 @@
-const CACHE_NAME = 'sanpaid-shell-v3';
+const CACHE_NAME = 'sanpaid-shell-v4';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
   './mobile.css',
   './mobile-fix.css',
+  './connected-demo.css',
   './app.js',
   './voice-request.js',
   './mobile.js',
+  './connected-demo.js',
   './manifest.webmanifest',
   './app-icon.svg'
 ];
@@ -38,6 +40,9 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+
+  // API and SSE requests must always hit the shared backend/proxy.
+  if (url.pathname.startsWith('/api/')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(
