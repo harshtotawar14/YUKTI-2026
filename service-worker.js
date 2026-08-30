@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v11';
+const CACHE_NAME = 'sanpaid-shell-v12';
 const APP_SHELL = [
   './',
   './index.html',
@@ -16,6 +16,7 @@ const APP_SHELL = [
   './connected-runtime-fix.js',
   './capacity-worker-ui.js',
   './judge-demo.js',
+  './judge-actions-polish.js',
   './top1-polish.js',
   './manifest.webmanifest',
   './app-icon.svg'
@@ -49,7 +50,6 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // API requests are never cached.
   if (url.pathname.startsWith('/api/')) return;
 
   if (request.mode === 'navigate') {
@@ -65,8 +65,6 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Connected and judge-demo code is network-first so SIH hotfixes are not
-  // trapped in an older browser/PWA cache during rehearsals or judging.
   const connectedCritical = [
     '/connected-demo.js',
     '/connected-service-ui.js',
@@ -74,6 +72,7 @@ self.addEventListener('fetch', event => {
     '/connected-runtime-fix.js',
     '/capacity-worker-ui.js',
     '/judge-demo.js',
+    '/judge-actions-polish.js',
     '/judge-demo.css',
     '/top1-polish.js'
   ].some(path => url.pathname.endsWith(path));
