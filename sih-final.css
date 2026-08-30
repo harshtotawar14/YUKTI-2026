@@ -126,6 +126,109 @@
 .truth-dot.prototype{background:#b87700}
 .truth-dot.future{background:#654bb5}
 
+/* ---------- Above-the-fold selector hero ----------
+   SIH selectors may open the PPT link on a laptop with a short browser viewport.
+   Keep the complete decision surface (headline, CTAs and Operating Loop) visible
+   without requiring an initial scroll. This changes presentation density only. */
+@media(min-width:961px){
+  .hero{
+    padding:clamp(24px,3.8vh,40px) 0 clamp(24px,3.4vh,36px);
+    min-height:calc(100svh - 102px);
+    display:flex;
+    align-items:center;
+  }
+  .hero-grid{
+    width:100%;
+    grid-template-columns:minmax(0,1.08fr) minmax(380px,.92fr);
+    gap:clamp(28px,3vw,44px);
+    align-items:center;
+  }
+  .hero h1{
+    font-size:clamp(40px,min(3.55vw,6.2vh),54px);
+    line-height:1.015;
+    margin:14px 0 12px;
+    letter-spacing:-.025em;
+  }
+  .hero .lead{
+    font-size:15px;
+    line-height:1.55;
+    margin:0;
+    max-width:610px;
+  }
+  .hero-ctas{
+    gap:9px;
+    margin:18px 0 14px;
+  }
+  .hero-ctas .btn{
+    padding:10px 16px;
+  }
+  .selector-home-note{
+    margin-top:0!important;
+    padding:11px 13px!important;
+  }
+  .selector-home-note b{
+    font-size:12px;
+  }
+  .selector-home-note span{
+    font-size:11px;
+    line-height:1.35;
+  }
+  .quick-booking-details{
+    margin-top:10px!important;
+  }
+  .quick-booking-details summary{
+    padding-top:8px!important;
+    padding-bottom:8px!important;
+  }
+  .loop-card{
+    padding:20px;
+    border-radius:20px;
+    align-self:center;
+  }
+  .loop-card>.eyebrow{
+    padding:6px 10px;
+    font-size:11px;
+  }
+  .loop-card .loop{
+    gap:8px;
+    margin-top:12px!important;
+  }
+  .loop-step{
+    padding:10px 13px;
+    border-radius:10px;
+    font-size:14px;
+    line-height:1.25;
+  }
+  .loop-message{
+    margin-top:12px!important;
+    padding:11px 12px!important;
+    font-size:11px!important;
+    line-height:1.4!important;
+  }
+}
+
+/* Extra protection for common 1366×768 / 1536×864 laptop viewports. */
+@media(min-width:961px) and (max-height:760px){
+  .hero{
+    padding:18px 0 20px;
+    min-height:calc(100svh - 98px);
+  }
+  .hero h1{
+    font-size:clamp(38px,3.25vw,48px);
+    margin:10px 0 10px;
+  }
+  .hero .eyebrow{padding:5px 10px;font-size:10px}
+  .hero .lead{font-size:13px;line-height:1.45}
+  .hero-ctas{margin:13px 0 10px}
+  .hero-ctas .btn{padding:9px 14px;font-size:13px}
+  .selector-home-note{padding:9px 11px!important}
+  .quick-booking-details{margin-top:7px!important}
+  .loop-card{padding:17px}
+  .loop-card .loop{gap:6px;margin-top:9px!important}
+  .loop-step{padding:8px 11px;font-size:13px}
+  .loop-message{margin-top:9px!important;padding:9px 10px!important}
+}
+
 /* ---------- Judge Mode: research/system proof ---------- */
 .judge-grid.three{
   grid-template-columns:repeat(3,minmax(0,1fr));
