@@ -1,0 +1,700 @@
+BB. DEMAND BASELINE & FORECAST
+===============================================================
+
+Input:
+
+historical bookings
+
+service
+
+zone
+
+time
+
+seasonality
+
+current demand
+
+worker capacity
+
+Output:
+
+expected demand
+
+confidence
+
+capacity
+
+gap
+
+skill gap
+
+recommended action
+
+===============================================================
+BC. AI COLD START
+===============================================================
+
+Low-data cooperative:
+
+use transparent baseline.
+
+Do not invent precision.
+
+Return:
+
+LOW_CONFIDENCE
+
+or similar.
+
+With sufficient data:
+
+trained forecast may be used.
+
+Track:
+
+MAE
+
+WAPE
+
+or appropriate metric.
+
+Monitor drift.
+
+If poor:
+
+fallback to baseline.
+
+===============================================================
+BD. HUMAN-IN-THE-LOOP AI
+===============================================================
+
+AI MAY:
+
+rank candidates
+
+forecast demand
+
+identify capacity gap
+
+identify skill gap
+
+recommend training
+
+classify complaints
+
+summarize evidence
+
+AI MUST NOT autonomously:
+
+suspend worker
+
+decide major dispute
+
+approve exceptional pricing
+
+punish worker
+
+transfer worker between cooperatives
+
+Authorized human must decide.
+
+===============================================================
+BE. ANALYTICS SERVICE
+===============================================================
+
+Compute real backend metrics.
+
+Cooperative:
+
+booking trend
+
+demand by service
+
+demand by area
+
+worker availability
+
+worker utilization
+
+opportunity distribution
+
+revenue
+
+payment status
+
+complaints
+
+SLA
+
+verification turnaround
+
+capacity gap
+
+training impact
+
+Federation:
+
+regional demand
+
+regional capacity
+
+capacity exchange
+
+regional skill gap
+
+policy compliance
+
+SLA trends
+
+===============================================================
+BF. KPI TRACKING
+===============================================================
+
+Possible KPIs:
+
+booking completion
+
+worker response
+
+verification turnaround
+
+service-start verification success
+
+replacement success
+
+complaint resolution
+
+SLA compliance
+
+forecast error
+
+capacity gap
+
+unfulfilled demand
+
+waiting time
+
+worker utilization
+
+opportunity concentration
+
+travel burden
+
+training effectiveness
+
+voice request success
+
+sync success
+
+customer rating
+
+Never invent achieved KPI percentages.
+
+===============================================================
+BG. DATABASE DESIGN
+===============================================================
+
+Design/refactor schema to support at minimum:
+
+users
+
+roles
+
+user_roles
+
+customers
+
+workers
+
+cooperatives
+
+federations
+
+worker_documents
+
+worker_skills
+
+certifications
+
+training_programs
+
+worker_training
+
+services
+
+service_categories
+
+addresses
+
+worker_availability
+
+worker_locations
+
+bookings
+
+booking_status_history
+
+worker_offers
+
+matching_candidates
+
+ranking_explanations
+
+policies
+
+policy_versions
+
+service_start_verifications
+
+qr_tokens
+
+otp_tokens
+
+service_evidence
+
+additional_charge_requests
+
+payments
+
+payment_attempts
+
+settlements
+
+invoices
+
+ratings
+
+feedback
+
+worker_passport
+
+complaints
+
+complaint_evidence
+
+complaint_escalations
+
+notifications
+
+welfare_programs
+
+worker_welfare
+
+capacity_requests
+
+capacity_allocations
+
+demand_baselines
+
+demand_forecasts
+
+fairness_metrics
+
+audit_logs
+
+ai_inference_logs
+
+fraud_flags
+
+Use appropriate:
+
+UUIDs
+
+primary keys
+
+foreign keys
+
+unique constraints
+
+indexes
+
+check constraints
+
+transactions
+
+timestamps
+
+status fields
+
+===============================================================
+BH. DATABASE MIGRATIONS
+===============================================================
+
+Do not manually mutate schema only in local DB.
+
+Create versioned migrations.
+
+Before migration:
+
+inspect current schema.
+
+Do not lose existing data.
+
+For risky changes:
+
+backfill safely.
+
+Never reset the database unless explicitly authorized.
+
+===============================================================
+BI. SEED DATA
+===============================================================
+
+Provide realistic SIH demo seed data.
+
+Use realistic Indian names.
+
+Include:
+
+customers
+
+workers
+
+skills
+
+verified/pending workers
+
+cooperatives
+
+federation
+
+bookings
+
+payments
+
+ratings
+
+complaints
+
+capacity gap
+
+capacity request
+
+forecast
+
+Do not use Lorem Ipsum.
+
+===============================================================
+BJ. OBJECT STORAGE
+===============================================================
+
+Use object storage for:
+
+worker photos
+
+documents
+
+certificates
+
+before photos
+
+after photos
+
+complaint evidence
+
+service images
+
+invoice files
+
+Database should store:
+
+object key
+
+metadata
+
+owner
+
+booking
+
+access relation
+
+mime type
+
+size
+
+timestamp
+
+===============================================================
+BK. FILE UPLOAD SECURITY
+===============================================================
+
+Validate:
+
+file type
+
+MIME type
+
+size
+
+extension
+
+authorization
+
+filename
+
+storage path
+
+Never trust browser-provided MIME alone.
+
+Prevent executable uploads.
+
+===============================================================
+BL. API DESIGN
+===============================================================
+
+Use consistent response format.
+
+Example:
+
+{
+  "success": true,
+  "data": {},
+  "message": "Booking created successfully"
+}
+
+Error example:
+
+{
+  "success": false,
+  "error": {
+    "code": "NO_ELIGIBLE_WORKER",
+    "message": "No eligible worker is currently available."
+  }
+}
+
+Use correct HTTP status codes.
+
+===============================================================
+BM. REQUIRED API DOMAINS
+===============================================================
+
+At minimum evaluate/create:
+
+/api/auth
+
+/api/users
+
+/api/workers
+
+/api/cooperatives
+
+/api/federations
+
+/api/services
+
+/api/bookings
+
+/api/matching
+
+/api/offers
+
+/api/verification
+
+/api/service-execution
+
+/api/evidence
+
+/api/pricing
+
+/api/payments
+
+/api/invoices
+
+/api/ratings
+
+/api/complaints
+
+/api/sla
+
+/api/capacity
+
+/api/welfare
+
+/api/training
+
+/api/notifications
+
+/api/analytics
+
+/api/forecast
+
+/api/policies
+
+/api/audit
+
+/api/files
+
+Do not create an endpoint merely because it is listed.
+
+Reuse equivalent existing routes where already present.
+
+===============================================================
+BN. API VALIDATION
+===============================================================
+
+Validate server-side using appropriate schema validator.
+
+Never trust:
+
+booking amount
+
+role
+
+worker ID
+
+verification state
+
+payment result
+
+ranking score
+
+customer ID
+
+coming from frontend without validation.
+
+===============================================================
+BO. SECURITY
+===============================================================
+
+Follow OWASP principles.
+
+Protect against:
+
+broken object-level authorization
+
+broken authentication
+
+broken function-level authorization
+
+mass assignment
+
+SQL injection
+
+unsafe queries
+
+XSS-related stored data risk
+
+CSRF where architecture needs it
+
+file upload abuse
+
+rate abuse
+
+credential leakage
+
+sensitive logs
+
+===============================================================
+BP. SECURITY CONTROLS
+===============================================================
+
+Implement:
+
+authentication
+
+RBAC
+
+least privilege
+
+input validation
+
+parameterized queries/ORM
+
+secure headers
+
+rate limiting
+
+password hashing
+
+secret management
+
+upload validation
+
+audit logging
+
+sensitive data masking
+
+CORS policy
+
+token expiry
+
+refresh-token rotation where appropriate
+
+===============================================================
+BQ. PRIVACY
+===============================================================
+
+Customer must not receive:
+
+worker KYC documents
+
+bank details
+
+private address
+
+internal admin data
+
+Worker must not receive unrelated customer data.
+
+Cooperative gets own-authorized information.
+
+Federation gets authorized aggregate/operational information.
+
+Precise location:
+
+only when needed for active authorized booking.
+
+===============================================================
+BR. AUDIT LOGS
+===============================================================
+
+Audit critical events:
+
+worker verification
+
+rejection
+
+suspension
+
+role change
+
+policy change
+
+booking assignment
+
+worker offer
+
+worker acceptance
+
+identity verification
+
+QR validation
+
+customer confirmation
+
+extra charge
+
+payment
+
+refund
+
+complaint escalation
+
+dispute resolution
+
+capacity exchange
+
+admin override
+
+Store:
+
+actor
+
+role
+
+action
+
+entity
+
+entity_id
