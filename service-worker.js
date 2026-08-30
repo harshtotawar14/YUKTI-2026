@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v21';
+const CACHE_NAME = 'sanpaid-shell-v22';
 const APP_SHELL = [
   './',
   './index.html',
