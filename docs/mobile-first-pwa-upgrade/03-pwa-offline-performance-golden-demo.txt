@@ -1,0 +1,499 @@
+============================================================
+
+Turn SanPaid into an installable Progressive Web App.
+
+Add:
+
+manifest.webmanifest
+
+service-worker.js
+
+PWA icons references
+
+theme-color meta
+
+apple-mobile-web-app-capable
+
+apple-mobile-web-app-status-bar-style
+
+apple-touch-icon
+
+Do NOT provide fake icons if none exist.
+
+Use existing SanPaid branding assets where available.
+
+If icon assets do not exist:
+
+create safe simple app-icon assets from existing SanPaid mark
+only if repository workflow permits it.
+
+============================================================
+36. MANIFEST
+============================================================
+
+Create:
+
+manifest.webmanifest
+
+Example properties:
+
+name:
+SanPaid
+
+short_name:
+SanPaid
+
+description:
+AI-Assisted Cooperative Workforce Operating Network
+
+display:
+standalone
+
+start_url:
+./
+
+scope:
+./
+
+orientation:
+any
+
+theme_color:
+current SanPaid dark green/navy
+
+background_color:
+current SanPaid background
+
+============================================================
+37. SERVICE WORKER
+============================================================
+
+Create a basic safe service worker.
+
+Cache:
+
+index.html
+styles.css
+app.js
+voice-request.js
+manifest
+
+Do NOT cache sensitive real backend data.
+
+For current frontend prototype:
+
+cache static shell.
+
+Use versioned cache.
+
+Example:
+
+sanpaid-shell-v1
+
+Provide proper update strategy.
+
+============================================================
+38. OFFLINE APP SHELL
+============================================================
+
+If network goes offline:
+
+landing/dashboard shell should still load if previously visited.
+
+Show:
+
+Offline Mode
+
+Allow viewing cached:
+
+active booking
+
+assigned job
+
+basic service details
+
+voice transcript text
+
+Do NOT claim server actions succeeded.
+
+Actions requiring backend/sync should show:
+
+PENDING SYNC
+
+============================================================
+39. ONLINE / OFFLINE BANNER
+============================================================
+
+Use:
+
+window.addEventListener('online')
+window.addEventListener('offline')
+
+Show compact status:
+
+Offline
+Changes may sync when connection returns.
+
+Online
+Connection restored.
+
+Do not permanently occupy huge screen space.
+
+============================================================
+40. MOBILE INSTALL PROMPT
+============================================================
+
+When supported:
+
+show subtle:
+
+Install SanPaid
+
+button.
+
+Use beforeinstallprompt.
+
+Do not constantly annoy user.
+
+Allow dismiss.
+
+Do not show install action if unsupported.
+
+============================================================
+41. APP-LIKE NAVIGATION
+============================================================
+
+When dashboard is open:
+
+avoid navigating browser to random anchors.
+
+Use application state.
+
+Back button behaviour must be reasonable.
+
+Where possible:
+
+browser history / popstate
+
+or internal back navigation.
+
+============================================================
+42. MOBILE PERFORMANCE
+============================================================
+
+Optimize for low-mid Android phones.
+
+Avoid:
+
+large libraries
+
+huge animations
+
+large background videos
+
+thousands of DOM nodes
+
+large uncompressed images
+
+constant setInterval rendering
+
+expensive shadows everywhere.
+
+Keep animations subtle.
+
+============================================================
+43. IMAGE PERFORMANCE
+============================================================
+
+Use:
+
+max-width:100%
+height:auto
+
+For uploaded previews:
+
+do not render massive dimensions.
+
+Use thumbnails/previews where possible.
+
+============================================================
+44. FONT PERFORMANCE
+============================================================
+
+Do not block the entire UI waiting for Google Fonts.
+
+Use a strong system fallback:
+
+Inter,
+system-ui,
+-apple-system,
+BlinkMacSystemFont,
+"Segoe UI",
+sans-serif
+
+============================================================
+45. MOBILE ACCESSIBILITY
+============================================================
+
+Ensure:
+
+aria-label
+
+form labels
+
+visible focus
+
+screen reader statuses
+
+button text
+
+correct heading order
+
+Avoid icon-only buttons without labels.
+
+============================================================
+46. MOBILE STATUS BADGES
+============================================================
+
+Badges must wrap.
+
+Do not let:
+
+CUSTOMER_CONFIRMED
+
+or:
+
+MORE_INFORMATION_REQUIRED
+
+overflow.
+
+Display human text:
+
+Customer Confirmed
+
+More Information Required
+
+while preserving internal status codes.
+
+============================================================
+47. BOTTOM SHEETS
+============================================================
+
+For mobile, use bottom sheets for:
+
+role selector
+
+filters
+
+quick actions
+
+payment methods
+
+language selection
+
+worker reject reason
+
+where appropriate.
+
+Do not turn every small action into a full-screen page.
+
+============================================================
+48. MOBILE NOTIFICATIONS
+============================================================
+
+Notification list:
+
+single-column.
+
+Readable timestamp.
+
+Tap to open related booking/job/complaint.
+
+Large Mark Read action.
+
+============================================================
+49. MOBILE DEMO CONTROL CENTER
+============================================================
+
+Presenter controls must not clutter normal mobile UI.
+
+Place under:
+
+More
+→ Demo Tools
+
+Functions:
+
+Reset Demo Data
+
+Customer Scenario
+
+Worker Voice Offer
+
+Arrival Verification
+
+SLA Scenario
+
+Capacity Scenario
+
+Forecast Scenario
+
+============================================================
+50. MOBILE GOLDEN DEMO
+============================================================
+
+This entire flow must work from a phone:
+
+OPEN SANPAID
+
+↓
+
+CUSTOMER LOGIN
+
+↓
+
+BOOK ELECTRICIAN
+
+↓
+
+VOICE REQUEST
+
+↓
+
+ENTER LOCATION
+
+↓
+
+CONFIRM BOOKING
+
+↓
+
+FAIR MATCHING
+
+↓
+
+LOG OUT
+
+↓
+
+WORKER LOGIN
+
+↓
+
+JOB OFFERS
+
+↓
+
+LISTEN TO CUSTOMER REQUEST
+
+↓
+
+ACCEPT
+
+↓
+
+ACTIVE JOB
+
+↓
+
+TRAVEL
+
+↓
+
+ARRIVE
+
+↓
+
+IDENTITY CHECK
+
+↓
+
+CUSTOMER CONFIRM
+
+↓
+
+START SERVICE
+
+↓
+
+COMPLETE
+
+↓
+
+PAYMENT
+
+↓
+
+RATING
+
+No desktop should be required.
+
+============================================================
+51. SECOND MOBILE FLOW
+============================================================
+
+Customer speaks Marathi:
+
+"Mala udya sakali plumber pahije."
+
+Worker preference:
+Hindi
+
+Worker receives readable Hindi summary.
+
+Worker taps:
+
+Listen Summary
+
+then:
+
+Accept
+
+This must work on supported mobile browsers.
+
+============================================================
+52. MOBILE REJECT FALLBACK
+============================================================
+
+Worker A:
+
+Reject
+
+↓
+
+Next Eligible Worker
+
+↓
+
+Same Booking
+
+↓
+
+Same Voice Context
+
+↓
+
+Worker B Job Offer
+
+Voice request must not disappear.
+
+============================================================
+53. ROTATION / ORIENTATION
+============================================================
+
+Test:
+
+portrait
+
+landscape.
+
+Do not force landscape.
+
+Admin complex tables may improve in landscape but must remain usable
+in portrait.
+
+============================================================
+54. TEST REAL MOBILE BROWSER CONDITIONS
+============================================================
+
+Test behaviour for:
