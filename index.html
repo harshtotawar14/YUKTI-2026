@@ -22,7 +22,7 @@
 </head>
 <body>
 <div id="landing">
-  <div class="ribbon">Smart India Hackathon 2026 · PS ID <b>26089</b> · SanPaid Working Frontend Demo</div>
+  <div class="ribbon">Smart India Hackathon 2026 · PS ID <b>26089</b> · SanPaid Working Prototype</div>
   <nav class="nav">
     <div class="wrap navin">
       <a class="brand" href="#home">San<span>Paid</span></a>
@@ -89,9 +89,9 @@
 
   <section class="section" id="how"><div class="wrap"><div class="head"><span class="tag">How SanPaid Works</span><h2>From request to rating, every step is traceable</h2></div><div class="timeline"><div class="tstep"><b>01</b>Request Service</div><div class="tstep"><b>02</b>Eligibility Gate</div><div class="tstep"><b>03</b>Fair Worker Offer</div><div class="tstep"><b>04</b>Worker Accepts</div><div class="tstep"><b>05</b>Dual Start Verification</div><div class="tstep"><b>06</b>Payment & Invoice</div><div class="tstep"><b>07</b>Rating & Audit</div></div></div></section>
 
-  <section class="section white" id="status"><div class="wrap"><div class="head"><span class="tag">Implementation Status</span><h2>Honest demo labels</h2></div><table class="status-table"><thead><tr><th>Capability</th><th>Current Demo Status</th><th>What Works</th></tr></thead><tbody><tr><td>Clickable booking flow</td><td><span class="badge b-green">FRONTEND DEMO</span></td><td>Service selection, location, schedule, estimate and persisted booking</td></tr><tr><td>Connected two-device booking</td><td><span class="badge b-green">BACKEND CONNECTED</span></td><td>Shared PostgreSQL booking, worker-scoped offer, Accept/Reject fallback and SSE status stream</td></tr><tr><td>Eligibility-first matching</td><td><span class="badge b-green">CONNECTED DEMO</span></td><td>Verified/available/skill-verified workers are gated before deterministic ranking</td></tr><tr><td>Worker accept/reject</td><td><span class="badge b-green">BACKEND CONNECTED</span></td><td>Atomic offer response; Reject creates next eligible worker offer with same booking context</td></tr><tr><td>Dual service-start verification</td><td><span class="badge b-orange">CONNECTED SANDBOX</span></td><td>Backend-enforced arrival → sandbox identity → one-time token → customer confirmation → service-start lock</td></tr><tr><td>Payment & invoice</td><td><span class="badge b-orange">CONNECTED SANDBOX</span></td><td>Approved extra work + idempotent sandbox payment + persisted invoice + rating flow</td></tr><tr><td>Complaint SLA</td><td><span class="badge b-purple">PROTOTYPE</span></td><td>Complaint state plus demo escalation</td></tr><tr><td>PostgreSQL backend</td><td><span class="badge b-green">CONNECTED</span></td><td>Existing SanPaid shared database powers the connected SIH flow</td></tr></tbody></table></div></section>
+  <section class="section white" id="status"><div class="wrap"><div class="head"><span class="tag">Implementation Status</span><h2>Honest demo labels</h2><p>Live-connected labels are verified by the browser against the currently deployed backend.</p></div><table class="status-table"><thead><tr><th>Capability</th><th>Current Demo Status</th><th>What Works</th></tr></thead><tbody><tr><td>Clickable booking flow</td><td><span class="badge b-green">FRONTEND DEMO</span></td><td>Service selection, location, schedule, estimate and persisted booking</td></tr><tr><td>Connected two-device booking</td><td><span class="badge b-orange">CHECKING DEPLOYMENT</span></td><td>Connected source/database are ready; browser health check verifies the currently served backend.</td></tr><tr><td>Eligibility-first matching</td><td><span class="badge b-orange">SOURCE READY</span></td><td>Verified/available/skill-verified workers are gated before deterministic ranking.</td></tr><tr><td>Worker accept/reject</td><td><span class="badge b-orange">CHECKING DEPLOYMENT</span></td><td>Transaction-protected Accept/Reject and next-worker fallback are implemented in source/database.</td></tr><tr><td>Dual service-start verification</td><td><span class="badge b-orange">SANDBOX · CHECKING</span></td><td>Arrival → sandbox identity → one-time token → customer confirmation → backend service-start lock.</td></tr><tr><td>Payment & invoice</td><td><span class="badge b-orange">SANDBOX · CHECKING</span></td><td>Approved extra work + sandbox payment + persisted invoice + rating source is ready.</td></tr><tr><td>Complaint SLA</td><td><span class="badge b-purple">PROTOTYPE</span></td><td>Complaint state plus demo escalation</td></tr><tr><td>PostgreSQL backend</td><td><span class="badge b-orange">DATABASE READY</span></td><td>Shared schema/data are ready; public connected API deployment is checked at runtime.</td></tr></tbody></table></div></section>
 
-  <footer class="footer"><div class="wrap"><div class="brand">San<span>Paid</span></div><p>SIH 2026 Prototype · PS 26089</p><p>Connected demo uses a shared backend/PostgreSQL workflow. Payment and identity integrations remain honestly sandboxed.</p></div></footer>
+  <footer class="footer"><div class="wrap"><div class="brand">San<span>Paid</span></div><p>SIH 2026 Prototype · PS 26089</p><p>Payment and identity/liveness are sandboxed. Connected backend availability is checked at runtime instead of being assumed.</p></div></footer>
 </div>
 
 <div id="appShell" class="app-shell hidden">
@@ -107,5 +107,6 @@
 <script src="connected-demo.js"></script>
 <script src="connected-service-ui.js"></script>
 <script src="connected-commerce-ui.js"></script>
+<script src="connected-runtime-fix.js"></script>
 </body>
 </html>
