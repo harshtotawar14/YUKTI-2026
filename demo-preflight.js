@@ -75,7 +75,7 @@
 
   function mount() {
     if (document.getElementById('demoReadiness')) return document.getElementById('demoReadiness');
-    const anchor = document.getElementById('guidedDemo');
+    const anchor = document.getElementById('guidedDemo') || document.getElementById('architecture') || document.getElementById('status');
     if (!anchor) return null;
 
     const section = document.createElement('section');
