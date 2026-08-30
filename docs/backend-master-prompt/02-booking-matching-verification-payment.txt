@@ -1,0 +1,700 @@
+O. BOOKING STATE MACHINE
+===============================================================
+
+Enforce valid server-side transitions.
+
+Normal flow:
+
+REQUESTED
+
+→ VALIDATING
+
+→ MATCHING
+
+→ OFFERING
+
+→ ASSIGNED
+
+→ TRAVELING
+
+→ ARRIVED
+
+→ IDENTITY_VERIFIED
+
+→ CUSTOMER_CONFIRMED
+
+→ SERVICE_STARTED
+
+→ IN_PROGRESS
+
+→ COMPLETION_REQUESTED
+
+→ COMPLETED
+
+→ PAYMENT_PENDING
+
+→ PAID
+
+→ CLOSED
+
+Alternate flows:
+
+WORKER_CANCELLED
+
+→ FINDING_REPLACEMENT
+
+CANCELLED
+
+FAILED_MATCH
+
+DISPUTED
+
+Never allow arbitrary status jumps.
+
+Example:
+
+REQUESTED
+must not directly become
+SERVICE_STARTED.
+
+===============================================================
+P. BOOKING HISTORY
+===============================================================
+
+Maintain:
+
+booking_status_history
+
+Store:
+
+booking_id
+
+old_status
+
+new_status
+
+actor
+
+reason
+
+timestamp
+
+metadata
+
+This will later support:
+
+customer timeline
+
+worker history
+
+complaint evidence
+
+audit
+
+===============================================================
+Q. POLICY ENGINE
+===============================================================
+
+Do NOT hardcode important business rules across application source.
+
+Store configurable policies.
+
+Examples:
+
+default service radius
+
+radius expansion limit
+
+worker response timeout
+
+minimum verification requirements
+
+minimum quality gate
+
+service urgency rules
+
+price thresholds
+
+extra-charge limits
+
+SLA times
+
+document expiry rules
+
+ranking weights
+
+capacity exchange rules
+
+service zone
+
+Demo default radius may be:
+
+20 KM
+
+but it must be configurable.
+
+===============================================================
+R. GEO / 20 KM MATCHING
+===============================================================
+
+Use PostGIS where possible.
+
+Do NOT load every worker and calculate distance in JavaScript.
+
+Use database geo query.
+
+Eligibility geo check:
+
+worker location
+
+booking location
+
+service radius
+
+service zone
+
+Default demo radius:
+
+20 KM
+
+But configuration must come from policy.
+
+No-worker fallback:
+
+Initial radius
+
+→ no worker
+
+→ policy-approved expansion
+
+OR
+
+alternate schedule
+
+OR
+
+capacity exchange
+
+===============================================================
+S. ELIGIBILITY GATE
+===============================================================
+
+Before ranking a worker validate:
+
+VERIFIED
+
+required skill present
+
+certificate valid
+
+documents valid
+
+active status
+
+available
+
+no schedule conflict
+
+authorized cooperative
+
+valid service zone
+
+distance policy
+
+not suspended
+
+required minimum conditions
+
+no incompatible active booking
+
+Only eligible workers enter ranking.
+
+PRINCIPLE:
+
+ELIGIBILITY FIRST.
+
+FAIRNESS SECOND.
+
+===============================================================
+T. FAIR & EXPLAINABLE RANKING
+===============================================================
+
+Possible scoring factors:
+
+distance
+
+availability
+
+skill level
+
+rating
+
+recent workload
+
+recent opportunities
+
+travel burden
+
+schedule fit
+
+urgency
+
+fair rotation
+
+cooperative capacity
+
+SLA compatibility
+
+Use configurable weights.
+
+Return an explanation.
+
+Example backend result:
+
+{
+  "workerId": "...",
+  "score": 91,
+  "reasons": [
+    "Verified electrician",
+    "2.3 KM away",
+    "Available now",
+    "Valid certification",
+    "Lower recent workload"
+  ]
+}
+
+Store:
+
+candidate list
+
+scores
+
+factors
+
+reason
+
+policy version
+
+algorithm version
+
+===============================================================
+U. FAIRNESS ANALYTICS
+===============================================================
+
+Compute:
+
+eligible worker count
+
+opportunities offered
+
+jobs accepted
+
+jobs completed
+
+workload
+
+underutilized workers
+
+travel burden
+
+rejection rate
+
+worker utilization
+
+opportunity concentration
+
+Fairness must not override:
+
+verification
+
+skills
+
+safety
+
+availability
+
+===============================================================
+V. WORKER OFFER ENGINE
+===============================================================
+
+When ranking completes:
+
+create worker offer.
+
+Store:
+
+booking
+
+worker
+
+offered_at
+
+expires_at
+
+response
+
+rejection_reason
+
+Accept / Reject endpoints.
+
+Timeout should be configurable.
+
+Demo example:
+
+30–60 seconds.
+
+If:
+
+REJECTED
+or
+TIMEOUT
+
+offer next eligible worker.
+
+===============================================================
+W. CONCURRENCY CONTROL
+===============================================================
+
+Critical requirement:
+
+Only ONE worker may become confirmed for a normal one-worker booking.
+
+Prevent race conditions using:
+
+database transaction
+
+atomic update
+
+locking where appropriate
+
+unique constraints
+
+Do not rely on frontend state.
+
+===============================================================
+X. SMART WORKER REPLACEMENT ENGINE
+===============================================================
+
+If assigned worker cancels:
+
+do NOT immediately kill the customer booking.
+
+Flow:
+
+WORKER_CANCELLED
+
+→ release worker schedule
+
+→ FINDING_REPLACEMENT
+
+→ re-check candidates
+
+→ eligibility
+
+→ ranking
+
+→ offer replacement
+
+→ replacement accepts
+
+→ assignment updated
+
+→ customer notification
+
+Store:
+
+cancellation reason
+
+replacement time
+
+replacement worker
+
+attempts
+
+===============================================================
+Y. DUAL SERVICE-START VERIFICATION
+===============================================================
+
+Flagship workflow.
+
+Server flow:
+
+booking accepted
+
+→ worker traveling
+
+→ worker arrives
+
+→ location/booking check
+
+→ identity/liveness verification
+
+→ identity match success
+
+→ generate booking-specific dynamic QR/token
+
+→ customer scans
+
+→ customer confirms
+
+→ service allowed to start
+
+Critical rule:
+
+IDENTITY VERIFIED
+
+AND
+
+CUSTOMER CONFIRMED
+
+must both be true.
+
+Otherwise:
+
+SERVICE MUST NOT START.
+
+===============================================================
+Z. QR / TOKEN SECURITY
+===============================================================
+
+Dynamic verification token must be:
+
+booking-specific
+
+one-time use
+
+server-generated
+
+server-validated
+
+short-lived
+
+not predictable
+
+expire automatically
+
+invalid after use
+
+Track:
+
+created_at
+
+expires_at
+
+used_at
+
+booking
+
+worker
+
+verification status
+
+Detect/reject QR reuse.
+
+===============================================================
+AA. OTP FALLBACK
+===============================================================
+
+Where policy allows:
+
+temporary OTP may act as approved fallback.
+
+OTP must:
+
+expire
+
+be booking-specific
+
+be server-side validated
+
+not be hardcoded
+
+not appear in worker-readable booking API
+
+Rate-limit verification attempts.
+
+===============================================================
+AB. LIVE FACE / LIVENESS INTEGRATION
+===============================================================
+
+If real biometric system is unavailable:
+
+build a sandbox adapter.
+
+Clearly store:
+
+verification_provider = DEMO
+
+Do NOT fake official government biometric integration.
+
+API response must distinguish:
+
+VERIFIED
+
+FAILED
+
+UNAVAILABLE
+
+DEMO_VERIFIED
+
+===============================================================
+AC. SERVICE EXECUTION
+===============================================================
+
+After authorized start:
+
+support:
+
+before-service evidence
+
+in-progress updates
+
+additional work
+
+completion request
+
+after-service evidence
+
+customer completion confirmation
+
+All important actions create:
+
+booking history
+
+audit event
+
+===============================================================
+AD. BEFORE / AFTER EVIDENCE
+===============================================================
+
+Use object storage.
+
+Store metadata in database.
+
+service_evidence:
+
+id
+
+booking_id
+
+uploaded_by
+
+type
+
+BEFORE
+AFTER
+COMPLAINT
+EXTRA_WORK
+
+object_key
+
+mime_type
+
+size
+
+hash if appropriate
+
+timestamp
+
+Do not store huge images directly in PostgreSQL unless there is an
+existing reason.
+
+===============================================================
+AE. CONTROLLED EXTRA CHARGE
+===============================================================
+
+Worker cannot silently change amount.
+
+Flow:
+
+worker submits extra work
+
+→ server validates
+
+→ customer receives request
+
+→ customer approves/rejects
+
+Only APPROVED additional amount may be included in final bill.
+
+Store:
+
+booking
+
+worker
+
+description
+
+reason
+
+amount
+
+evidence
+
+policy decision
+
+customer decision
+
+admin approval if required
+
+timestamps
+
+===============================================================
+AF. PRICING ENGINE
+===============================================================
+
+Support:
+
+base charge
+
+visit charge
+
+distance charge where configured
+
+urgency surcharge where configured
+
+additional approved work
+
+tax
+
+cooperative/platform fee
+
+total
+
+worker gross earning
+
+deductions
+
+worker net earning
+
+Never hide deductions.
+
+All important values:
+
+policy/config driven.
+
+Do NOT hard-code official 90/10 split.
+
+===============================================================
+AG. PAYMENT SERVICE
+===============================================================
+
+Support architecture for:
+
+UPI
+
+card
+
+wallet
+
+cash
+
+sandbox payment
+
+Do not store raw card credentials.
+
+Payment states:
+
+CREATED
+
+PENDING
