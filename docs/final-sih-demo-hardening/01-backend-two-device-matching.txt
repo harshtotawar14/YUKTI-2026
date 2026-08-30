@@ -1,0 +1,759 @@
+# =====================================================================
+# SANPAID — FINAL SIH DEMO HARDENING & DEEP INTEGRATION MASTER PROMPT
+# SMART INDIA HACKATHON 2026
+# PS ID 26089
+# COOPERATIVE GIG SERVICES PLATFORM
+# =====================================================================
+
+You are now acting as:
+
+- Principal Full-Stack Engineer
+- Senior System Architect
+- PostgreSQL Engineer
+- Realtime Systems Engineer
+- Product Engineer
+- Mobile/PWA Engineer
+- UX Engineer
+- QA Lead
+- Security Engineer
+- SIH Prototype Engineer
+
+You are working on the EXISTING SanPaid repository.
+
+IMPORTANT:
+
+DO NOT create another separate project.
+
+DO NOT replace the current SanPaid design unnecessarily.
+
+DO NOT convert the project into a generic home-services marketplace.
+
+DO NOT add random new features.
+
+DO NOT add blockchain, crypto, social feeds, AR/VR, generic chatbot
+features or decorative AI features.
+
+DO NOT claim functionality that is not actually implemented.
+
+DO NOT use fake random dashboard numbers.
+
+DO NOT leave dead buttons.
+
+DO NOT stop after frontend visual changes.
+
+The objective is to transform the CURRENT SanPaid prototype into a
+HIGH-FIDELITY, INTERCONNECTED, TWO-DEVICE-CAPABLE, SIH-READY WORKING
+PROTOTYPE.
+
+=====================================================================
+1. PRODUCT POSITIONING — NEVER LOSE THIS
+=====================================================================
+
+SanPaid is:
+
+"An AI-assisted cooperative workforce operating network."
+
+It is NOT:
+
+"another home-service app."
+
+The product connects:
+
+Customer Demand
+    ↓
+Cooperative Workforce
+    ↓
+Verified Eligibility
+    ↓
+Fair Opportunity Allocation
+    ↓
+Worker Choice
+    ↓
+Trusted Service Delivery
+    ↓
+Transparent Payment
+    ↓
+Service History / Passport
+    ↓
+Complaint / Governance
+    ↓
+Demand & Capacity Intelligence
+    ↓
+Future Workforce Preparation
+
+Core stakeholders:
+
+CUSTOMER
+
+WORKER
+
+COOPERATIVE ADMIN
+
+FEDERATION ADMIN
+
+=====================================================================
+2. FIRST — AUDIT CURRENT REPOSITORY
+=====================================================================
+
+Before modifying anything:
+
+Inspect the COMPLETE current repository.
+
+Read:
+
+index.html
+styles.css
+mobile.css
+mobile-fix.css
+app.js
+voice-request.js
+mobile.js
+manifest.webmanifest
+service-worker.js
+README
+all docs/
+backend prompt files
+frontend prompt files
+mobile prompt files
+
+Also inspect any existing:
+
+backend
+database
+API
+deployment
+environment variables
+authentication
+realtime
+tests
+
+Create an internal audit:
+
+FEATURE
+CURRENT IMPLEMENTATION
+DATA SOURCE
+WORKING?
+MOBILE WORKING?
+CROSS-DEVICE WORKING?
+BACKEND CONNECTED?
+NEEDS FIX?
+
+Do not overwrite working functionality blindly.
+
+=====================================================================
+3. TOP PRIORITY — SHARED BACKEND
+=====================================================================
+
+The biggest current limitation is browser-local state.
+
+Replace the critical localStorage-only operating flow with a shared
+backend.
+
+Target architecture:
+
+CUSTOMER MOBILE
+      ↓
+FRONTEND
+      ↓
+API
+      ↓
+BACKEND
+      ↓
+POSTGRESQL
+      ↓
+MATCHING / BUSINESS RULES
+      ↓
+REALTIME EVENT
+      ↓
+WORKER MOBILE
+
+If an existing backend already exists:
+
+audit and extend it.
+
+If no backend exists:
+
+create a minimal production-style backend.
+
+Preferred stack:
+
+Node.js
+Express or equivalent lightweight backend
+PostgreSQL
+PostGIS where geo capability is needed
+
+Use WebSocket, SSE or another appropriate realtime method for
+cross-device updates.
+
+Do not use polling every second unless absolutely necessary.
+
+=====================================================================
+4. FRONTEND API ADAPTER
+=====================================================================
+
+Do not allow components to directly manipulate localStorage for core
+business operations.
+
+Use an API abstraction.
+
+Example:
+
+API.login()
+
+API.createBooking()
+
+API.getBooking()
+
+API.getEligibleWorkers()
+
+API.createWorkerOffer()
+
+API.acceptWorkerOffer()
+
+API.rejectWorkerOffer()
+
+API.updateWorkerStatus()
+
+API.verifyWorkerArrival()
+
+API.confirmServiceStart()
+
+API.requestExtraCharge()
+
+API.approveExtraCharge()
+
+API.requestCompletion()
+
+API.completePayment()
+
+API.submitRating()
+
+API.raiseComplaint()
+
+API.escalateComplaint()
+
+API.requestCapacity()
+
+API.approveCapacityRequest()
+
+API.getDemandForecast()
+
+Current DemoAPI can remain as fallback only.
+
+Primary SIH demo path should use RealAPI wherever backend is available.
+
+=====================================================================
+5. DATABASE — CONNECTED DATA MODEL
+=====================================================================
+
+Create proper relational data.
+
+Required primary entities:
+
+users
+roles
+customers
+workers
+cooperatives
+federations
+worker_skills
+worker_documents
+worker_certificates
+worker_availability
+services
+bookings
+booking_status_history
+worker_offers
+payments
+invoices
+ratings
+complaints
+complaint_events
+notifications
+capacity_requests
+capacity_request_workers
+training_records
+welfare_records
+policies
+forecast_records
+audit_logs
+
+Use real foreign keys.
+
+Example:
+
+booking.customer_id
+booking.service_id
+booking.cooperative_id
+booking.assigned_worker_id
+
+worker.cooperative_id
+
+offer.booking_id
+offer.worker_id
+
+rating.booking_id
+rating.worker_id
+
+complaint.booking_id
+
+payment.booking_id
+
+Never duplicate the same business truth independently across
+different tables if a relation can represent it.
+
+=====================================================================
+6. USE REALISTIC SEED DATA
+=====================================================================
+
+Do not create massive fake-looking datasets.
+
+Use realistic demonstration scale.
+
+Example:
+
+4 Cooperatives
+40–60 Workers
+10–20 Customers
+30–50 Historical Bookings
+5–10 Active/Upcoming Bookings
+Multiple Ratings
+Several Complaints
+Several Capacity Requests
+Training Records
+Worker Documents
+
+Use realistic Maharashtra geography.
+
+Suggested areas:
+
+Karad
+Satara
+Kolhapur
+nearby cooperative zones
+
+Use realistic Indian names.
+
+Every entity must stay connected.
+
+The same worker should appear consistently in:
+
+Worker Directory
+Booking
+Offer
+Payment
+Rating
+Service Passport
+Analytics
+
+=====================================================================
+7. NO RANDOM DASHBOARD VALUES
+=====================================================================
+
+Never hardcode:
+
+500 Workers
+
+98% Success Rate
+
+₹5,00,000 Revenue
+
+95% AI Accuracy
+
+unless genuinely derived.
+
+Calculate dashboard values from actual database/state.
+
+Examples:
+
+Total Workers =
+COUNT(workers)
+
+Verified Workers =
+verification_status = VERIFIED
+
+Active Bookings =
+booking status in active states
+
+Open Complaints =
+complaint status not resolved/closed
+
+Today Revenue =
+completed sandbox payment records for current date
+
+=====================================================================
+8. GOLDEN DEMO #1 — TWO-DEVICE CUSTOMER → WORKER
+=====================================================================
+
+This is now the HIGHEST PRIORITY SIH demonstration.
+
+DEVICE A — CUSTOMER PHONE
+
+Customer logs in.
+
+Customer chooses:
+
+Plumber
+
+Customer speaks:
+
+"Mala udya sakali plumber pahije.
+Kitchen sink leak hot aahe."
+
+System captures:
+
+Voice Transcript
+
+Language = Marathi
+
+Service = Plumber
+
+Problem = Kitchen sink leakage
+
+Schedule = Tomorrow Morning
+
+Location = Customer location
+
+Customer confirms.
+
+Booking is created in backend.
+
+Example:
+
+SAN-2026-10234
+
+Backend:
+
+validates request
+
+checks local cooperative capacity
+
+runs Eligibility Gate
+
+creates fair ranking
+
+creates worker offer
+
+=====================================================================
+9. DEVICE B — WORKER PHONE
+=====================================================================
+
+Matched worker should receive the job without using the customer's
+browser/localStorage.
+
+Worker mobile dashboard must show:
+
+NEW JOB OFFER
+
+Booking ID
+
+Service
+
+Customer Area
+
+Approx Distance
+
+Schedule
+
+Urgency
+
+Expected Earnings
+
+Cooperative
+
+Preferred Customer Language
+
+CUSTOMER VOICE REQUEST
+
+Original Language:
+Marathi
+
+Translated Worker Summary:
+Hindi / Marathi / English according to worker preference
+
+Buttons:
+
+LISTEN SUMMARY
+
+SHOW ORIGINAL
+
+REJECT
+
+ACCEPT
+
+Worker can independently open another phone/browser and receive the
+same backend booking.
+
+This is mandatory.
+
+=====================================================================
+10. REALTIME CUSTOMER UPDATE
+=====================================================================
+
+Worker clicks:
+
+ACCEPT
+
+Backend:
+
+offer.status = ACCEPTED
+
+booking.assigned_worker_id = worker
+
+booking.status = ASSIGNED
+
+Customer phone updates without page refresh where practical.
+
+Customer sees:
+
+WORKER ASSIGNED
+
+Worker Name
+
+Worker Photo
+
+Verified Status
+
+Skill
+
+Rating
+
+Cooperative
+
+Approx Distance
+
+ETA if available
+
+=====================================================================
+11. WORKER REJECT FALLBACK
+=====================================================================
+
+Worker A:
+
+REJECT
+
+Ask rejection reason:
+
+Too Far
+Unavailable
+Schedule Conflict
+Not My Skill
+Personal Reason
+Other
+
+Persist rejection.
+
+Do not fail booking.
+
+Backend should automatically:
+
+get next eligible worker
+
+create next offer
+
+send realtime notification
+
+preserve the SAME booking
+
+preserve original voice request
+
+preserve customer requirements
+
+Customer sees:
+
+Finding another verified worker...
+
+Then Worker B gets the offer.
+
+=====================================================================
+12. WORKER CANCELLATION / REPLACEMENT
+=====================================================================
+
+If assigned worker later cancels:
+
+booking.status = FINDING_REPLACEMENT
+
+release worker slot
+
+create audit record
+
+notify customer
+
+rerun eligibility
+
+rerun fair ranking
+
+create new offer
+
+Customer sees:
+
+Finding Replacement
+
+If replacement is found:
+
+new worker appears.
+
+If no worker exists:
+
+show:
+
+Choose Another Time
+Expand Search Radius
+Request Cooperative Capacity
+Cancel Booking
+
+=====================================================================
+13. ELIGIBILITY FIRST
+=====================================================================
+
+Before fairness ranking validate:
+
+Worker Verified
+
+Correct Skill
+
+Required Certificate Valid
+
+Worker Active
+
+Worker Available
+
+Worker Not Suspended
+
+Correct Service Zone
+
+Within Current Policy Radius
+
+No Schedule Conflict
+
+Required Documents Valid
+
+Only eligible workers reach ranking.
+
+Unverified workers must NEVER be bookable.
+
+=====================================================================
+14. VISUAL ELIGIBILITY EXPLANATION
+=====================================================================
+
+Judge should be able to open:
+
+Why this worker?
+
+Example:
+
+Amit Patil
+
+Eligibility:
+
+Identity Verified             ✓
+Electrician Skill             ✓
+Certificate Valid             ✓
+Available                     ✓
+Within Radius                 ✓
+No Schedule Conflict          ✓
+
+Then:
+
+Fair Ranking
+
+Distance                      2.3 KM
+Rating                        4.8
+Recent Workload               Balanced
+Recent Opportunity Count      3
+Travel Burden                 Low
+Schedule Fit                  High
+
+Overall Match                 91%
+
+Use explainable deterministic logic.
+
+=====================================================================
+15. UNVERIFIED WORKER PROOF
+=====================================================================
+
+Include an example:
+
+Rahul Deshmukh
+
+Distance:
+1.8 KM
+
+BUT:
+
+Verification Pending
+
+System should show:
+
+EXCLUDED BEFORE RANKING
+
+Reason:
+
+Worker verification incomplete.
+
+This visually proves:
+
+ELIGIBILITY FIRST
+FAIRNESS SECOND
+
+=====================================================================
+16. FAIR MATCHING RULES
+=====================================================================
+
+Ranking factors can include:
+
+Distance
+
+Rating
+
+Availability
+
+Recent Workload
+
+Recent Opportunity Count
+
+Travel Burden
+
+Schedule Fit
+
+Fair Rotation
+
+Skill Match
+
+Do not allow fairness to override:
+
+skill
+
+verification
+
+safety
+
+availability.
+
+=====================================================================
+17. CONFIGURABLE SERVICE RADIUS
+=====================================================================
+
+20 KM is:
+
+DEFAULT DEMO RADIUS
+
+not a universal permanent rule.
+
+Store in policy.
+
+Example:
+
+default_radius_km = 20
+
+Admin/Federation can configure within policy limits.
+
+If no worker:
+
+authorized expansion
+
+alternate time
+
+capacity exchange
+
+should be offered.
