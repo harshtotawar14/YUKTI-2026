@@ -1,0 +1,699 @@
+PROCESSING
+
+AUTHORIZED
+
+PAID
+
+FAILED
+
+REFUNDED
+
+PARTIALLY_REFUNDED
+
+CASH_COLLECTED
+
+===============================================================
+AH. PAYMENT IDEMPOTENCY
+===============================================================
+
+Payment endpoint must support idempotency.
+
+Do not double-charge if:
+
+frontend retries
+
+network retry occurs
+
+browser refreshes
+
+gateway callback repeats
+
+Store:
+
+idempotency_key
+
+gateway_transaction_id
+
+attempt number
+
+status
+
+===============================================================
+AI. SETTLEMENT & WORKER LEDGER
+===============================================================
+
+After successful payment:
+
+create settlement/ledger entry.
+
+Store:
+
+booking
+
+gross amount
+
+platform/cooperative fee
+
+valid deduction
+
+net worker amount
+
+settlement status
+
+settled_at
+
+reference
+
+Worker earnings API should provide:
+
+today
+
+week
+
+month
+
+pending settlement
+
+transaction history
+
+===============================================================
+AJ. INVOICE SERVICE
+===============================================================
+
+Generate digital invoice.
+
+Invoice includes:
+
+invoice ID
+
+booking ID
+
+customer
+
+worker
+
+cooperative
+
+service
+
+original estimate
+
+base charge
+
+visit charge
+
+approved extras
+
+tax
+
+fees
+
+total
+
+payment method
+
+transaction ID
+
+payment status
+
+Generate viewable/downloadable invoice representation.
+
+===============================================================
+AK. RATINGS
+===============================================================
+
+Rating API supports:
+
+1–5 stars
+
+service quality
+
+professionalism
+
+punctuality
+
+communication
+
+feedback
+
+Prevent:
+
+duplicate rating for same intended transaction where policy disallows it
+
+unauthorized rating
+
+rating unrelated worker
+
+===============================================================
+AL. TRUST SCORE / PROFILE METRICS
+===============================================================
+
+Do NOT base trust on stars alone.
+
+Possible inputs:
+
+verification state
+
+completed jobs
+
+rating trend
+
+complaint history
+
+document validity
+
+training
+
+service history
+
+Do not expose internal scoring details unnecessarily.
+
+===============================================================
+AM. DIGITAL SERVICE REPORT
+===============================================================
+
+Create trusted completed-service record containing:
+
+booking ID
+
+service
+
+worker
+
+cooperative
+
+arrival
+
+identity verification
+
+customer confirmation
+
+start
+
+completion
+
+before evidence
+
+after evidence
+
+original estimate
+
+approved extra work
+
+payment
+
+invoice
+
+rating
+
+complaint reference if any
+
+===============================================================
+AN. WORKER SERVICE PASSPORT
+===============================================================
+
+Maintain:
+
+verified skills
+
+certifications
+
+completed jobs
+
+training
+
+service categories
+
+rating trend
+
+work history summary
+
+expiring qualifications
+
+digital service history
+
+Never expose private customer information.
+
+===============================================================
+AO. COMPLAINT SYSTEM
+===============================================================
+
+Complaint API should support:
+
+booking
+
+customer/worker
+
+category
+
+description
+
+priority
+
+evidence
+
+Complaint categories:
+
+service incomplete
+
+poor service
+
+late arrival
+
+worker behaviour
+
+pricing
+
+extra-charge dispute
+
+payment
+
+cancellation
+
+no-show
+
+safety
+
+other
+
+===============================================================
+AP. COMPLAINT STATE MACHINE
+===============================================================
+
+Possible flow:
+
+NEW
+
+→ ASSIGNED_L1
+
+→ UNDER_REVIEW
+
+→ WORKER_RESPONSE_REQUIRED
+
+→ CUSTOMER_RESPONSE_REQUIRED
+
+→ ESCALATED_L2
+
+→ ESCALATED_L3
+
+→ RESOLVED
+
+→ CLOSED
+
+===============================================================
+AQ. VERIFIED COMPLAINT EVIDENCE TIMELINE
+===============================================================
+
+Automatically connect:
+
+booking created
+
+worker offered
+
+worker accepted
+
+arrival
+
+identity verification
+
+customer confirmation
+
+service start
+
+extra charge request
+
+extra charge decision
+
+completion
+
+payment
+
+invoice
+
+rating
+
+complaint statements
+
+Do not force admins to manually gather these records.
+
+===============================================================
+AR. SLA ENGINE
+===============================================================
+
+Create configurable SLA.
+
+Store:
+
+complaint_id
+
+current_level
+
+assigned_to
+
+created_at
+
+assigned_at
+
+sla_due_at
+
+escalated_at
+
+resolved_at
+
+SLA flow:
+
+L1
+
+→ timer
+
+→ unresolved
+
+→ L2 Cooperative Admin
+
+→ timer
+
+→ unresolved
+
+→ L3 Federation / authorized admin
+
+SLA values must be configurable.
+
+Demo may use shortened timers.
+
+===============================================================
+AS. AUTOMATIC ESCALATION JOB
+===============================================================
+
+Use:
+
+background scheduler
+
+queue
+
+cron/worker
+
+or appropriate backend system.
+
+It must automatically find breached complaints.
+
+Do not require browser to remain open.
+
+Generate:
+
+escalation
+
+notification
+
+audit log
+
+===============================================================
+AT. COOPERATIVE ADMIN BACKEND
+===============================================================
+
+Provide real data APIs for:
+
+total workers
+
+verified workers
+
+pending verification
+
+available
+
+busy
+
+bookings
+
+completed services
+
+pending services
+
+complaints
+
+SLA breaches
+
+pending payments
+
+worker utilization
+
+capacity shortages
+
+welfare
+
+training gaps
+
+Do not hardcode dashboard statistics.
+
+===============================================================
+AU. FEDERATION BACKEND
+===============================================================
+
+Provide authorized consolidated APIs for:
+
+cooperatives
+
+workers
+
+regional demand
+
+regional capacity
+
+capacity shortage
+
+capacity exchange
+
+SLA
+
+appeals
+
+compliance
+
+analytics
+
+policy governance
+
+Federation must NOT automatically receive every sensitive raw record.
+
+Use authorized aggregation.
+
+===============================================================
+AV. CROSS-COOPERATIVE CAPACITY EXCHANGE
+===============================================================
+
+Flow:
+
+shortage detected
+
+→ capacity search
+
+→ nearby authorized cooperative
+
+→ eligible spare workers identified
+
+→ capacity request
+
+→ provider cooperative approval
+
+→ workers receive opportunity
+
+→ worker accepts
+
+→ assignment
+
+Never transfer a worker without worker acceptance.
+
+Store:
+
+requesting cooperative
+
+provider cooperative
+
+skill
+
+quantity
+
+zone
+
+time window
+
+reason
+
+approval status
+
+worker offers
+
+outcome
+
+===============================================================
+AW. WORKER WELFARE
+===============================================================
+
+Backend supports welfare program records.
+
+Fields may include:
+
+program
+
+category
+
+eligibility
+
+status
+
+application
+
+renewal
+
+documents
+
+training relation
+
+Status:
+
+AVAILABLE
+
+ELIGIBLE
+
+NOT_ELIGIBLE
+
+APPLIED
+
+ENROLLED
+
+COMPLETED
+
+EXPIRED
+
+External government/insurance systems:
+
+must remain adapter-based unless actually connected.
+
+===============================================================
+AX. TRAINING & SKILL DEVELOPMENT
+===============================================================
+
+Track:
+
+training
+
+worker enrolment
+
+completion
+
+certificate
+
+new skill
+
+verified skill
+
+training recommendation
+
+Use demand/capacity gaps to recommend training.
+
+AI can recommend.
+
+Human/cooperative confirms important actions.
+
+===============================================================
+AY. VOICE / LANGUAGE BACKEND CONTRACT
+===============================================================
+
+Support languages:
+
+English
+
+Hindi
+
+Marathi
+
+Workflow:
+
+voice/text
+
+→ extraction
+
+→ structured job fields
+
+→ confidence
+
+→ confirmation when needed
+
+→ translation
+
+→ worker preferred language
+
+Do NOT silently guess critical low-confidence fields.
+
+Critical fields:
+
+service
+
+location
+
+date
+
+time
+
+price
+
+urgency
+
+special instruction
+
+===============================================================
+AZ. LOW CONNECTIVITY SUPPORT
+===============================================================
+
+Backend should support:
+
+safe retry
+
+idempotent actions
+
+sync timestamps
+
+client action IDs
+
+offline pending actions
+
+When frontend eventually syncs:
+
+server must decide whether the action is still valid.
+
+Example:
+
+worker offline ACCEPT
+
+must not override a booking already assigned to someone else.
+
+===============================================================
+BA. AI SERVICE DIAGNOSIS
+===============================================================
+
+Optional AI input:
+
+image
+
+text
+
+voice-derived text
+
+Output:
+
+recommended service
+
+required skill
+
+urgency
+
+confidence
+
+safety note
+
+AI is advisory.
+
+If unavailable:
+
+normal manual booking must continue.
+
+===============================================================
