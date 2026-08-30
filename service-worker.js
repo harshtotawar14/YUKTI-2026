@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v4';
+const CACHE_NAME = 'sanpaid-shell-v5';
 const APP_SHELL = [
   './',
   './index.html',
@@ -10,6 +10,7 @@ const APP_SHELL = [
   './voice-request.js',
   './mobile.js',
   './connected-demo.js',
+  './connected-service-ui.js',
   './manifest.webmanifest',
   './app-icon.svg'
 ];
