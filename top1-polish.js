@@ -40,6 +40,15 @@
     }
   }
 
+  function scheduleJudgeCredibility(){
+    [1200,3000].forEach(delay=>setTimeout(()=>{
+      const shell=document.getElementById('sihJudgeShell');
+      if(!shell||shell.classList.contains('judge-hidden'))return;
+      if(!shell.querySelector('.judge-tabs')||shell.querySelector('[data-judge-tab="credibility"]'))return;
+      window.SanPaidJudgeMode?.open?.();
+    },delay));
+  }
+
   function focusable(root){
     return [...root.querySelectorAll('button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')]
       .filter(el=>!el.hidden&&el.getClientRects().length);
@@ -70,6 +79,8 @@
     });
 
     document.addEventListener('click',event=>{
+      if(event.target.closest?.('[data-judge-role]'))scheduleJudgeCredibility();
+
       const decline=event.target.closest?.('[data-reject-offer]');
       if(decline){
         declineReturnFocus=decline;
