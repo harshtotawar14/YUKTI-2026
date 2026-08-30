@@ -4,15 +4,53 @@ Smart India Hackathon 2026 prototype for **PS ID 26089 — Cooperative Gig Servi
 
 ## Current repository handoff
 
-- `index.html` — current SanPaid HTML frontend.
-- `styles.css` — current shared styling.
+- `index.html` — current SanPaid HTML frontend with mobile/PWA metadata and responsive assets loaded.
+- `styles.css` — shared desktop/base styling.
+- `mobile.css` — mobile-first responsive layout, touch-target, modal, bottom-nav and dashboard overrides.
+- `mobile-fix.css` — final drawer scrolling/header-alignment mobile hotfixes.
 - `app.js` — current frontend demo/application logic.
 - `voice-request.js` — customer voice capture + worker-scoped voice request delivery/playback enhancement.
+- `mobile.js` — functional mobile landing drawer, role-aware dashboard navigation, Customer/Worker bottom navigation, mobile status handling, connectivity banner, install flow and service-worker registration.
+- `manifest.webmanifest` — installable SanPaid PWA metadata.
+- `service-worker.js` — versioned static app-shell cache and offline navigation fallback.
+- `app-icon.svg` — SanPaid PWA/app icon asset.
 - `docs/final-research-grounded-frontend-master-prompt.md` — **PRIMARY research-grounded frontend execution prompt**.
 - `docs/voice-request-worker-delivery-addendum.md` — **MANDATORY voice-flow addendum**.
-- `docs/mobile-first-pwa-upgrade/` — **MANDATORY mobile-first/PWA upgrade prompt**, preserved as ordered parts `01` through `04`.
+- `docs/mobile-first-pwa-upgrade/` — mobile-first/PWA upgrade specification, preserved as ordered parts `01` through `04`.
 - `docs/frontend-functionality-repair/` — earlier detailed frontend repair prompt; keep as supporting QA/reference material.
-- `docs/backend-master-prompt/` — backend, PostgreSQL/PostGIS, API and system-integration prompt; use after the frontend state/UI contract is stable.
+- `docs/backend-master-prompt/` — backend, PostgreSQL/PostGIS, API and system-integration prompt.
+
+## Mobile implementation now present
+
+The repository now includes an actual mobile runtime rather than only a mobile prompt.
+
+Implemented mobile-shell behaviour includes:
+
+- `viewport-fit=cover` and safe-area-aware layout;
+- responsive hero/search/cards at phone/tablet widths;
+- zero page-level horizontal overflow protection;
+- minimum mobile touch targets for primary controls;
+- full mobile landing menu instead of desktop-only navigation;
+- functional mobile dashboard drawer generated from the current role's real sidebar views;
+- Customer bottom navigation: Home / Book / Active / History / More;
+- Worker bottom navigation: Home / Offers / Active / Earnings / More;
+- Admin/Federation mobile navigation through the real dashboard drawer;
+- mobile-safe full-width/bottom-sheet-style modals and 16px form inputs for iOS;
+- mobile voice controls and worker voice-offer controls sized for touch;
+- responsive QR, toast, timeline, KPI and table handling;
+- connection/offline status feedback;
+- installable PWA metadata where browser support permits;
+- service-worker app-shell caching with an update path.
+
+## Important architecture limitation
+
+The current demo application state is still browser-local (`localStorage`). This means Customer and Worker flows can be demonstrated sequentially on the **same browser/device**, but two separate phones do **not** share bookings, offers or voice requests yet.
+
+Real cross-device behaviour requires the backend phase:
+
+`Customer phone → API/database/realtime event → matched Worker phone`
+
+Do not claim cross-device realtime delivery until the shared backend/database is connected.
 
 ## Recommended execution order
 
@@ -39,12 +77,14 @@ Core requirements:
 
 ### Phase 2 — Mobile-first + PWA upgrade
 
-Follow in order:
+Reference specification:
 
 1. `docs/mobile-first-pwa-upgrade/01-audit-layout-navigation-voice.txt`
 2. `docs/mobile-first-pwa-upgrade/02-voice-booking-mobile-workflows.txt`
 3. `docs/mobile-first-pwa-upgrade/03-pwa-offline-performance-golden-demo.txt`
 4. `docs/mobile-first-pwa-upgrade/04-permissions-breakpoints-qa-start.txt`
+
+A first implementation pass is now present in `mobile.css`, `mobile-fix.css` and `mobile.js`. Continue testing against the acceptance goals below rather than creating a second mobile website.
 
 Mobile acceptance goals:
 
@@ -57,7 +97,7 @@ Mobile acceptance goals:
 - mobile location/camera permission failure never crashes booking;
 - mobile-safe touch targets, bottom sheets/modals, forms, filters and admin tables;
 - PWA manifest/service-worker/install flow where supported;
-- offline app shell with honest `PENDING SYNC` semantics;
+- offline app shell with honest local/offline semantics;
 - refresh preserves booking, voice request, offer, worker acceptance, service state, payment and complaint;
 - zero dead mobile buttons and zero critical mobile console/runtime errors.
 
