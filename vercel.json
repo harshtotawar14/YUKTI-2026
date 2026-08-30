@@ -1,28 +1,17 @@
 {
   "headers": [
-    {
-      "source": "/service-worker.js",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
-      ]
-    },
-    {
-      "source": "/(connected-demo|connected-service-ui|connected-commerce-ui|connected-runtime-fix|capacity-worker-ui|judge-demo|top1-polish).js",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
-      ]
-    },
-    {
-      "source": "/judge-demo.css",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
-      ]
-    }
+    {"source":"/service-worker.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/connected-demo.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/connected-service-ui.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/connected-commerce-ui.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/connected-runtime-fix.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/capacity-worker-ui.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/judge-demo.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/judge-actions-polish.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/top1-polish.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/judge-demo.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]}
   ],
   "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://sanpaid-sih-2026.onrender.com/api/:path*"
-    }
+    {"source":"/api/:path*","destination":"https://sanpaid-sih-2026.onrender.com/api/:path*"}
   ]
 }
