@@ -11,7 +11,7 @@
     return d;
   }
   const post=(path,body={})=>req(path,{method:'POST',body:JSON.stringify(body)});
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
   const human=s=>String(s||'').toLowerCase().replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase());
 
   function shellOpen(){const s=document.getElementById('connectedShell');return s&&!s.classList.contains('hidden');}
@@ -126,8 +126,13 @@
   }
 
   function start(){
-    const observer=new MutationObserver(()=>{if(shellOpen())setTimeout(refresh,80);});observer.observe(document.body,{childList:true,subtree:true});
+    // Use a light interval instead of observing our own DOM writes. This avoids
+    // self-triggered render loops on mobile while still keeping both devices fresh.
+    setTimeout(refresh,250);
     timer=setInterval(refresh,2600);
+    document.addEventListener('click',event=>{
+      if(event.target.closest('[data-open-connected],#connectedDemoBtn,[data-connected-persona],#connectedLogin'))setTimeout(refresh,350);
+    },true);
     document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
   }
 
