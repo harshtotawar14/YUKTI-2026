@@ -32,27 +32,70 @@
     document.head.appendChild(link);
   }
 
-  function polishLandingCopy(){
-    const ribbon=document.querySelector('#landing .ribbon');
+  function polishLandingHero(){
+    const landing=document.getElementById('landing');
+    const hero=document.getElementById('home');
+    if(!landing||!hero)return;
+
+    const ribbon=landing.querySelector('.ribbon');
     if(ribbon)ribbon.innerHTML='Smart India Hackathon 2026 · PS ID <b>26089</b> · Cooperative Gig Services Platform';
 
-    const note=document.querySelector('#home .selector-home-note');
-    if(note){
-      const title=note.querySelector('b');
-      const text=note.querySelector('span');
-      if(title)title.textContent='Selector Guide';
-      if(text)text.textContent='3-minute guided overview · no login required';
+    const productBadge=hero.querySelector('.hero-grid>div:first-child>.eyebrow');
+    if(productBadge)productBadge.textContent='AI-Assisted Cooperative Workforce Network';
+
+    const research=hero.querySelector('#selectorResearchBtn');
+    if(research){
+      research.textContent='Explore Research & Proof →';
+      research.classList.add('hero-tertiary-link');
+      research.classList.remove('ghost');
     }
 
-    const trust=[
-      'Verified Workforce',
-      'Eligibility-First Matching',
-      'Worker Choice',
-      'Cooperative Governance'
-    ];
-    document.querySelectorAll('#landing .trust span').forEach((node,index)=>{
-      if(trust[index])node.textContent=trust[index];
-    });
+    const note=hero.querySelector('.selector-home-note');
+    if(note){
+      note.innerHTML='<span class="selector-proof-line">✓ No login required for the guided SIH overview</span>';
+    }
+
+    const loopCard=hero.querySelector('.loop-card');
+    if(loopCard){
+      const title=loopCard.querySelector(':scope > .eyebrow, :scope > .loop-title');
+      if(title){
+        title.textContent='SANPAID OPERATING MODEL';
+        title.classList.remove('eyebrow');
+        title.classList.add('loop-title');
+      }
+
+      const labels=[
+        'Customer Demand',
+        'Verified Eligibility',
+        'Fair Allocation',
+        'Worker Choice',
+        'Trusted Service',
+        'Govern & Plan'
+      ];
+      loopCard.querySelectorAll('.loop-step').forEach((step,index)=>{
+        const number=String(index+1).padStart(2,'0');
+        step.classList.remove('active');
+        step.setAttribute('aria-label',`${number} ${labels[index]||''}`.trim());
+        step.innerHTML=`<span class="loop-no">${number}</span><span class="loop-label">${labels[index]||''}</span>`;
+      });
+
+      const message=loopCard.querySelector('.loop-message');
+      if(message)message.textContent='Service delivery continues into cooperative governance, capacity coordination and workforce planning.';
+    }
+
+    const trust=landing.querySelector('#trust');
+    if(trust){
+      const trustLabels=[
+        'Verified Workforce',
+        'Eligibility-First',
+        'Worker Choice',
+        'Cooperative Governance'
+      ];
+      trust.querySelectorAll('span').forEach((node,index)=>{
+        if(trustLabels[index])node.textContent=trustLabels[index];
+      });
+      if(trust.parentElement!==hero)hero.appendChild(trust);
+    }
   }
 
   function loadCredibilityLayer(){
@@ -98,7 +141,7 @@
   function start(){
     injectStyles();
     loadHeroViewportFix();
-    polishLandingCopy();
+    polishLandingHero();
     loadCredibilityLayer();
 
     document.addEventListener('keydown',event=>{
