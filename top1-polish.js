@@ -23,6 +23,15 @@
     document.head.appendChild(style);
   }
 
+  function loadHeroViewportFix(){
+    if(document.getElementById('sanpaidHeroViewportFix'))return;
+    const link=document.createElement('link');
+    link.id='sanpaidHeroViewportFix';
+    link.rel='stylesheet';
+    link.href='hero-viewport-fix.css';
+    document.head.appendChild(link);
+  }
+
   function loadCredibilityLayer(){
     if(!document.getElementById('sanpaidCredibilityStyles')){
       const link=document.createElement('link');
@@ -65,6 +74,7 @@
 
   function start(){
     injectStyles();
+    loadHeroViewportFix();
     loadCredibilityLayer();
 
     document.addEventListener('keydown',event=>{
