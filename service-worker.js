@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v27';
+const CACHE_NAME = 'sanpaid-shell-v28';
 const APP_SHELL = [
   './',
   './index.html',
@@ -27,6 +27,7 @@ const APP_SHELL = [
   './workforce-intelligence.js',
   './worker-trust-passport-ui.js',
   './top1-polish.js',
+  './demo-preflight.js',
   './manifest.webmanifest',
   './app-icon.svg'
 ];
@@ -95,7 +96,8 @@ self.addEventListener('fetch', event => {
     '/workforce-intelligence.css',
     '/worker-trust-passport-ui.js',
     '/hero-viewport-fix.css',
-    '/top1-polish.js'
+    '/top1-polish.js',
+    '/demo-preflight.js'
   ].some(path => url.pathname.endsWith(path));
 
   if (connectedCritical) {
