@@ -1,0 +1,725 @@
+# ============================================================
+# SANPAID — FRONTEND FUNCTIONALITY REPAIR MASTER PROMPT
+# FIX ALL DEAD BUTTONS, LINKS, FORMS & USER FLOWS
+# HTML + CSS + VANILLA JAVASCRIPT ONLY
+# ============================================================
+
+You are now acting as a Senior Frontend Engineer and QA Engineer.
+
+The SanPaid UI/design already exists.
+
+DO NOT redesign the website from scratch.
+
+DO NOT replace the current design.
+
+DO NOT migrate to React, Next.js, Vue, Angular or another framework.
+
+USE ONLY:
+
+HTML
+CSS
+Vanilla JavaScript
+
+Your primary objective is:
+
+MAKE THE EXISTING SANPAID FRONTEND ACTUALLY WORK.
+
+Right now the website looks good visually but many buttons, links,
+cards and actions do nothing.
+
+Your job is to inspect the COMPLETE existing frontend code and make
+EVERY meaningful interactive element functional.
+
+============================================================
+1. FIRST AUDIT THE EXISTING CODE
+============================================================
+
+Before changing anything, inspect the complete repository.
+
+Especially inspect:
+
+index.html
+all HTML files
+all CSS
+all JavaScript
+inline scripts
+navigation
+buttons
+forms
+cards
+modals
+links
+localStorage
+sessionStorage
+
+Create an internal list of every clickable element.
+
+For each element determine:
+
+- text/name
+- element type
+- current href
+- current onclick/event listener
+- expected action
+- whether it currently works
+- whether it is placeholder
+- what needs to be implemented
+
+DO NOT GUESS.
+
+Inspect the actual code.
+
+============================================================
+2. DEAD BUTTON AUDIT
+============================================================
+
+Find ALL:
+
+href="#"
+
+href="javascript:void(0)"
+
+buttons without handlers
+
+cards that visually look clickable but do nothing
+
+forms without submit handlers
+
+links pointing to missing sections
+
+missing modal triggers
+
+buttons that only create ripple animation
+
+buttons that only scroll but should open a workflow
+
+console errors
+
+broken selectors
+
+null DOM references
+
+duplicate IDs
+
+missing IDs
+
+incorrect event listeners
+
+Every meaningful interactive element must be fixed.
+
+============================================================
+3. CRITICAL RULE — NO FAKE FUNCTIONALITY
+============================================================
+
+DO NOT solve this by adding:
+
+alert("Coming soon")
+
+console.log("clicked")
+
+dummy popups
+
+fake success messages with no state change
+
+Every button must perform a meaningful demo action.
+
+Since the real backend will be integrated later:
+
+use a clean FRONTEND DEMO STATE LAYER for now.
+
+Use:
+
+localStorage
+
+sessionStorage
+
+JavaScript objects
+
+where required.
+
+But structure the JavaScript so later we can easily replace demo
+functions with real API calls.
+
+============================================================
+4. CREATE CENTRAL APP STATE
+============================================================
+
+Create a clean SanPaid frontend state system.
+
+Example:
+
+const SanPaidState = {
+    currentUser: null,
+    currentRole: null,
+    selectedService: null,
+    selectedLocation: null,
+    bookings: [],
+    activeBooking: null,
+    workers: [],
+    notifications: [],
+    complaints: [],
+    payments: []
+};
+
+Persist suitable demo information in localStorage.
+
+Do NOT scatter random variables throughout the code.
+
+============================================================
+5. CREATE API ADAPTER LAYER
+============================================================
+
+Even though the backend is not connected yet, prepare frontend code
+for later backend integration.
+
+Example:
+
+const API = {
+
+    async login(data) {
+        return DemoAPI.login(data);
+    },
+
+    async createBooking(data) {
+        return DemoAPI.createBooking(data);
+    },
+
+    async getWorkers() {
+        return DemoAPI.getWorkers();
+    }
+
+};
+
+Then:
+
+DemoAPI
+
+contains frontend demo behaviour.
+
+Later we should be able to replace DemoAPI with real fetch() calls
+without rewriting all UI logic.
+
+============================================================
+6. FIX NAVBAR
+============================================================
+
+Current navigation must fully work.
+
+Make these functional:
+
+Problem
+Fair Matching
+How It Works
+Status
+Trust & Safety
+
+Smooth scroll to valid sections.
+
+Also fix:
+
+Cooperative Login
+
+Get Started
+
+If clicked:
+
+COOPERATIVE LOGIN
+→ open role/login modal or dedicated login view
+
+GET STARTED
+→ open role selection
+
+Role options:
+
+Customer
+
+Worker
+
+Cooperative Admin
+
+Federation Admin
+
+Do NOT leave href="#".
+
+============================================================
+7. GET STARTED ROLE SELECTOR
+============================================================
+
+When user clicks:
+
+GET STARTED
+
+open a polished modal.
+
+Title:
+
+How would you like to continue?
+
+Options:
+
+Book Services as Customer
+
+Join as Worker
+
+Cooperative Login
+
+Federation Login
+
+Each option must work.
+
+============================================================
+8. LOGIN MODAL / VIEW
+============================================================
+
+Create a working frontend demo login.
+
+Fields:
+
+Email / Phone
+
+Password
+
+Role
+
+Remember Me
+
+Login button
+
+Forgot Password
+
+Create Account
+
+For demo:
+
+validate fields.
+
+Show useful form errors.
+
+On successful demo login:
+
+store session.
+
+Redirect/open appropriate dashboard.
+
+Example demo users:
+
+CUSTOMER
+
+customer@sanpaid.demo
+
+WORKER
+
+worker@sanpaid.demo
+
+COOPERATIVE ADMIN
+
+admin@sanpaid.demo
+
+FEDERATION ADMIN
+
+federation@sanpaid.demo
+
+Use a clearly documented demo password.
+
+============================================================
+9. JOIN AS WORKER
+============================================================
+
+Current:
+
+Join as Worker
+
+must work.
+
+Open worker registration workflow.
+
+Steps:
+
+STEP 1
+Personal Information
+
+STEP 2
+Contact Information
+
+STEP 3
+Select Cooperative
+
+STEP 4
+Skills
+
+STEP 5
+Experience
+
+STEP 6
+Document Upload Demo
+
+STEP 7
+Submit
+
+When submitted:
+
+store demo worker application.
+
+Show:
+
+Application Submitted
+
+Status:
+
+UNDER REVIEW
+
+Do NOT automatically show the worker as VERIFIED.
+
+============================================================
+10. BOOK A SERVICE BUTTON
+============================================================
+
+Current:
+
+Book a Service
+
+must start the actual booking experience.
+
+Do NOT only scroll to service list.
+
+Open:
+
+SERVICE BOOKING FLOW
+
+============================================================
+11. MAKE SERVICE CARDS CLICKABLE
+============================================================
+
+Every service card must work:
+
+Electrician
+
+Plumber
+
+Carpenter
+
+Painter
+
+Cleaner
+
+Domestic Help
+
+Caregiver
+
+Driver
+
+Gardener
+
+Technician
+
+On card click:
+
+select service
+
+highlight selected service
+
+open booking flow
+
+or show:
+
+Book Now
+
+View Details
+
+Service cards must support keyboard activation too.
+
+============================================================
+12. HERO SERVICE SEARCH
+============================================================
+
+Fix hero search.
+
+Fields:
+
+Service
+
+Area
+
+Search
+
+When user selects:
+
+Electrician
+
+and enters:
+
+Karad Zone 1
+
+and presses SEARCH:
+
+validate inputs.
+
+Then:
+
+store selected service
+
+store location
+
+show nearby matching section
+
+or start booking wizard.
+
+Do NOT simply jump to #services.
+
+============================================================
+13. BOOKING WIZARD
+============================================================
+
+Create a polished multi-step booking modal/view.
+
+STEP 1
+
+Selected Service
+
+STEP 2
+
+Describe Problem
+
+Textarea
+
+Optional image upload
+
+Voice button demo
+
+STEP 3
+
+Location
+
+Area
+
+Address
+
+Use Current Location button
+
+STEP 4
+
+Schedule
+
+Book Now
+
+Schedule Later
+
+Urgent
+
+STEP 5
+
+Estimate
+
+Show:
+
+Base Charge
+
+Visit Charge
+
+Distance Charge Demo
+
+Urgency Charge if selected
+
+Estimated Total
+
+STEP 6
+
+Confirm Booking
+
+When confirmed:
+
+generate demo booking ID.
+
+Example:
+
+SAN-2026-00451
+
+Store booking in localStorage.
+
+============================================================
+14. DEMO BOOKING STATE MACHINE
+============================================================
+
+Create valid booking state transitions.
+
+REQUESTED
+
+→ VALIDATING
+
+→ MATCHING
+
+→ OFFERING
+
+→ ASSIGNED
+
+→ TRAVELING
+
+→ ARRIVED
+
+→ IDENTITY_VERIFIED
+
+→ CUSTOMER_CONFIRMED
+
+→ SERVICE_STARTED
+
+→ IN_PROGRESS
+
+→ COMPLETION_REQUESTED
+
+→ COMPLETED
+
+→ PAYMENT_PENDING
+
+→ PAID
+
+→ CLOSED
+
+Do NOT instantly skip all states.
+
+Use controlled demo actions.
+
+============================================================
+15. FAIR MATCHING DEMO
+============================================================
+
+Existing matching demo already exists.
+
+Preserve it.
+
+Improve it.
+
+Current ranking demo should be integrated into booking flow.
+
+On matching:
+
+filter unverified worker.
+
+Then rank verified workers.
+
+Show:
+
+Worker name
+
+Distance
+
+Rating
+
+Recent workload
+
+Verification
+
+Match score
+
+Reasons
+
+Example:
+
+Amit Patil
+
+91%
+
+Reasons:
+
+Verified Electrician
+
+2.3 KM Away
+
+4.8 Rating
+
+Available Now
+
+Lower Recent Workload
+
+============================================================
+16. DO NOT SHOW UNVERIFIED WORKERS
+============================================================
+
+Important rule.
+
+Unverified worker:
+
+must be excluded from customer matching UI.
+
+The current code already demonstrates this concept.
+
+Preserve it.
+
+============================================================
+17. WORKER ASSIGNMENT DEMO
+============================================================
+
+After ranking:
+
+simulate worker offer.
+
+Show:
+
+Finding verified worker...
+
+then:
+
+Worker Found
+
+Show:
+
+Name
+
+Verified Badge
+
+Distance
+
+Rating
+
+Cooperative
+
+ETA
+
+Button:
+
+View Booking
+
+============================================================
+18. CUSTOMER DASHBOARD
+============================================================
+
+Create a working frontend demo customer dashboard.
+
+Do NOT redesign the whole visual language.
+
+Reuse existing SanPaid styles.
+
+Sections:
+
+Dashboard
+
+Book Service
+
+Active Booking
+
+Upcoming Booking
+
+Service History
+
+Payments
+
+Invoices
+
+Complaints
+
+Ratings
+
+Notifications
+
+Profile
+
+Logout
+
+Dashboard cards:
+
+Active Booking
+
+Completed Services
+
+Pending Payment
+
+Open Complaint
