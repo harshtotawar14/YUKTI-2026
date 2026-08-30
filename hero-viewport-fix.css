@@ -253,8 +253,9 @@
   }
 }
 
-/* Desktop companion-panel balance: stretch the Operating Model to the full
-   depth of the hero content while keeping its internal stages compact. */
+/* Desktop companion-panel balance. This uses an explicit visual depth rather
+   than relying only on grid stretch, so the panel visibly reaches toward the
+   trust strip at common laptop/desktop viewport sizes. */
 @media (min-width:1100px){
   #landing #home .hero-grid{
     align-items:stretch!important;
@@ -262,19 +263,20 @@
   #landing #home .loop-card{
     align-self:stretch!important;
     height:auto!important;
-    min-height:100%;
+    min-height:350px!important;
     display:flex!important;
     flex-direction:column;
   }
-  #landing #home .loop-title{
-    flex:0 0 auto;
-  }
+  #landing #home .loop-title,
   #landing #home .loop{
     flex:0 0 auto;
   }
   #landing #home .loop-message{
     margin-top:auto!important;
     padding-top:24px!important;
+  }
+  #landing #home>.trust{
+    margin-top:18px!important;
   }
 }
 
@@ -291,7 +293,10 @@
     max-width:640px!important;
     font-size:14px!important;
   }
-  #landing #home .loop-card{padding:22px!important}
+  #landing #home .loop-card{
+    padding:22px!important;
+    min-height:345px!important;
+  }
   #landing #home .loop-step{min-height:61px}
 }
 
@@ -321,8 +326,8 @@
   #landing #home .loop-label{font-size:11px}
 }
 
-/* Short screens: reduce vertical gaps, not information quality. */
-@media (min-width:961px) and (max-height:760px){
+/* Short screens: preserve the visible panel extension without crowding the fold. */
+@media (min-width:1100px) and (max-height:760px){
   #landing #home.hero{padding-top:24px!important}
   #landing #home .hero-grid{gap:42px!important}
   #landing #home .hero-grid>div:first-child>.eyebrow{font-size:10px!important}
@@ -341,7 +346,10 @@
     font-size:12px!important;
   }
   #landing #home .selector-home-note .selector-proof-line{font-size:10.8px}
-  #landing #home .loop-card{padding:19px!important}
+  #landing #home .loop-card{
+    padding:19px!important;
+    min-height:325px!important;
+  }
   #landing #home .loop-title{margin-bottom:11px}
   #landing #home .loop{gap:7px!important}
   #landing #home .loop-step{
@@ -352,7 +360,7 @@
     font-size:9.9px!important;
     padding-top:16px!important;
   }
-  #landing #home>.trust{margin-top:22px}
+  #landing #home>.trust{margin-top:16px!important}
   #landing #home>.trust .trustin{min-height:39px}
 }
 
@@ -361,6 +369,7 @@
     grid-template-columns:minmax(0,1fr) 430px!important;
     gap:66px!important;
   }
+  #landing #home .loop-card{min-height:355px!important}
 }
 
 /* Mobile/tablet: simple product-first order, no squeezed desktop rules. */
@@ -469,4 +478,4 @@
   #home #selectorResearchBtn.hero-tertiary-link{transition:none!important}
 }
 
-/* release retry: visual hierarchy final */
+/* release retry: operating model visual depth final */
