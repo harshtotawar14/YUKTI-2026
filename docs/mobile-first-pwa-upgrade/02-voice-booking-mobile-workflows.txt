@@ -1,0 +1,500 @@
+SpeechSynthesis
+
+where available.
+
+Support:
+
+hi-IN
+mr-IN
+en-IN
+
+If TTS unavailable:
+
+worker must still see readable translated text.
+
+============================================================
+15. MOBILE VOICE DELIVERY FLOW
+============================================================
+
+This complete flow must work on mobile:
+
+Customer
+
+↓
+Book Service
+
+↓
+Problem Description
+
+↓
+Start Voice
+
+↓
+Speak Marathi/Hindi/English
+
+↓
+Transcript
+
+↓
+Confirm Booking
+
+↓
+Matching
+
+↓
+Offer sent to specific Worker ID
+
+↓
+Worker opens mobile dashboard
+
+↓
+Job Offers
+
+↓
+Customer Voice Request
+
+↓
+Translated Summary
+
+↓
+Listen
+
+↓
+Accept / Reject
+
+If worker rejects:
+
+same voice request context follows the booking to next eligible worker.
+
+============================================================
+16. MOBILE LOGIN
+============================================================
+
+Login modal should behave like a mobile sheet.
+
+On screens <= 600px:
+
+modal width:
+calc(100% - 24px)
+
+or:
+
+bottom sheet.
+
+Inputs:
+
+48px+
+
+Avoid page zoom caused by tiny font sizes.
+
+Input text should be at least 16px on iOS.
+
+============================================================
+17. MOBILE BOOKING WIZARD
+============================================================
+
+Booking steps:
+
+Service
+Problem
+Location
+Schedule
+Estimate
+Confirm
+
+On mobile:
+
+one step per clean view.
+
+Do not show huge desktop forms.
+
+Buttons:
+
+Back
+Next
+
+must remain visible.
+
+Use sticky footer inside wizard where appropriate.
+
+============================================================
+18. MOBILE LOCATION
+============================================================
+
+Button:
+
+Use Current Location
+
+must be:
+
+large
+touch-friendly
+full-width or prominent.
+
+Handle:
+
+loading
+
+permission denied
+
+GPS unavailable
+
+browser unsupported.
+
+Manual location must remain available.
+
+============================================================
+19. MOBILE SERVICE CARDS
+============================================================
+
+At:
+
+<= 430px
+
+use:
+
+1 column
+
+or carefully designed 2-column compact cards.
+
+Do not use tiny 3–4 column cards.
+
+Card touch area:
+
+minimum 44px.
+
+============================================================
+20. MOBILE FAIR MATCHING
+============================================================
+
+Do not show wide comparison tables.
+
+Worker result becomes stacked card.
+
+Show:
+
+Worker Name
+
+Verified Badge
+
+Match Score
+
+Distance
+
+Rating
+
+Workload reason
+
+Cooperative
+
+Each factor can use chips.
+
+============================================================
+21. MOBILE ACTIVE BOOKING
+============================================================
+
+Customer active booking:
+
+status
+
+worker
+
+ETA
+
+booking ID
+
+verification status
+
+progress timeline
+
+must fit one-column.
+
+Timeline becomes vertical.
+
+============================================================
+22. MOBILE DUAL SERVICE-START
+============================================================
+
+Mobile flow:
+
+Worker Arrived
+
+↓
+Sandbox Identity Verification
+
+↓
+Generate Booking Token
+
+↓
+Customer Confirmation
+
+↓
+Service Start
+
+QR/token screen must fit phone.
+
+QR area max:
+
+min(70vw, 280px)
+
+Do not overflow.
+
+============================================================
+23. CAMERA / IMAGE UPLOAD
+============================================================
+
+For worker evidence and problem images support mobile camera.
+
+Use:
+
+<input
+ type="file"
+ accept="image/*"
+ capture="environment">
+
+where appropriate.
+
+Allow gallery fallback.
+
+Do not force camera-only.
+
+============================================================
+24. MOBILE BEFORE / AFTER EVIDENCE
+============================================================
+
+Worker can:
+
+Take Before Photo
+
+Preview
+
+Save
+
+Take After Photo
+
+Preview
+
+Save
+
+Images:
+
+width 100%
+
+object-fit cover
+
+reasonable compression/preview size.
+
+============================================================
+25. MOBILE PAYMENTS
+============================================================
+
+Sandbox payment form:
+
+single-column.
+
+Large payment method cards.
+
+UPI
+Card
+Wallet
+Cash
+
+Do not show desktop four-column payment form on mobile.
+
+============================================================
+26. MOBILE INVOICE
+============================================================
+
+Invoice must be readable without horizontal scroll.
+
+Use:
+
+label
+value
+
+rows.
+
+Desktop table can become stacked key/value layout on phone.
+
+Print remains desktop/print-friendly.
+
+============================================================
+27. MOBILE ADMIN TABLES
+============================================================
+
+Critical.
+
+Admin tables cannot simply overflow offscreen.
+
+For <=768px:
+
+convert table rows into cards
+
+OR
+
+use controlled scroll container only for genuinely tabular data.
+
+Preferred for Workers:
+
+Worker Name
+Worker ID
+Skill
+Status
+Availability
+Rating
+
+then:
+
+View Details
+
+Do not show 12 tiny columns.
+
+============================================================
+28. MOBILE FILTERS
+============================================================
+
+Filters open in:
+
+Filter Drawer
+
+or:
+
+bottom sheet.
+
+Button:
+
+Filters (3)
+
+Then:
+
+Skill
+Status
+Zone
+Verification
+Availability
+
+Apply Filters
+
+Clear
+
+============================================================
+29. MOBILE COOPERATIVE DASHBOARD
+============================================================
+
+Top KPI grid:
+
+desktop:
+4 columns
+
+tablet:
+2 columns
+
+mobile:
+2 compact columns
+
+For long text KPI:
+1 column if necessary.
+
+Use CSS Grid:
+
+repeat(auto-fit,minmax(...))
+
+============================================================
+30. MOBILE FEDERATION DASHBOARD
+============================================================
+
+Same principle.
+
+Regional charts and maps must scale.
+
+Avoid fixed chart width.
+
+Canvas/SVG:
+
+width: 100%
+height: responsive
+
+============================================================
+31. TOUCH INTERACTIONS
+============================================================
+
+No hover-only functionality.
+
+Everything available through:
+
+tap
+
+keyboard
+
+focus.
+
+Do not depend on:
+
+:hover
+
+for opening important information.
+
+============================================================
+32. TOUCH TARGETS
+============================================================
+
+All important interactive controls:
+
+minimum:
+44 × 44 px
+
+Primary booking/job buttons:
+48–52px high.
+
+Spacing between destructive and primary actions.
+
+Example:
+
+REJECT
+
+ACCEPT
+
+should not be too close.
+
+============================================================
+33. MOBILE MODALS
+============================================================
+
+On mobile:
+
+max-height:
+90dvh
+
+overflow-y:
+auto
+
+Use:
+
+100dvh
+
+rather than only 100vh where useful.
+
+Header can remain sticky.
+
+Action footer can remain sticky.
+
+============================================================
+34. MOBILE KEYBOARD
+============================================================
+
+When keyboard opens:
+
+form submit button must remain reachable.
+
+Avoid fixed-bottom buttons being hidden under keyboard.
+
+Use:
+
+dvh units
+
+scrollIntoView
+
+where appropriate.
+
+============================================================
+35. PWA SUPPORT
