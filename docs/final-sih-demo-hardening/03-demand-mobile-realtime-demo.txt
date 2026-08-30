@@ -1,0 +1,755 @@
+40. GOLDEN DEMO #5 — DEMAND → CAPACITY → ACTION
+=====================================================================
+
+Do not show a meaningless forecast chart.
+
+Demand Planning should show:
+
+Service:
+Electrician
+
+Historical Demand:
+34
+
+Expected Demand:
+42
+
+Forecast Method:
+Baseline / Trend Assisted
+
+Confidence:
+Medium
+
+Eligible Capacity:
+29
+
+Capacity Gap:
+-13
+
+Skill Gap:
+Electrician shortage
+
+Recommended Actions:
+
+REQUEST NEARBY CAPACITY
+
+REVIEW TRAINING GAP
+
+OFFER ALTERNATE TIME
+
+=====================================================================
+41. FORECAST CONFIDENCE
+=====================================================================
+
+Never show fake:
+
+97.4% AI Accuracy
+
+For limited data:
+
+Method:
+Baseline
+
+Confidence:
+Low
+
+For more history:
+
+Method:
+Trend Assisted
+
+Confidence:
+Medium
+
+If genuinely evaluated:
+
+show actual evaluation metric.
+
+Otherwise do not invent accuracy.
+
+=====================================================================
+42. FORECAST MUST CREATE ACTION
+=====================================================================
+
+Click:
+
+REQUEST NEARBY CAPACITY
+
+→ open capacity workflow.
+
+Click:
+
+REVIEW TRAINING GAP
+
+→ show relevant workers and training recommendation.
+
+AI output must lead to operation.
+
+=====================================================================
+43. DEMAND-BASED TRAINING
+=====================================================================
+
+Example:
+
+Demand:
+Electrician shortage
+
+Worker:
+Basic electrical skill
+
+Recommendation:
+
+Advanced Domestic Electrical Safety Training
+
+Reason:
+
+Skill gap identified for upcoming demand.
+
+Admin can:
+
+Recommend
+
+Approve
+
+Enroll
+
+Assessment Complete
+
+Only after assessment:
+
+verified skill can be upgraded.
+
+=====================================================================
+44. WORKER MOBILE EXPERIENCE
+=====================================================================
+
+Worker phone is highest UX priority.
+
+Bottom navigation:
+
+Home
+
+Offers
+
+Active
+
+Earnings
+
+More
+
+Home:
+
+ONLINE / OFFLINE
+
+Pending Offers
+
+Active Job
+
+Today's Earnings
+
+Important Alerts
+
+If OFFLINE:
+
+worker must be excluded from new matching.
+
+=====================================================================
+45. CUSTOMER MOBILE EXPERIENCE
+=====================================================================
+
+Bottom navigation:
+
+Home
+
+Book
+
+Active
+
+History
+
+More
+
+Customer must complete the full Golden Demo without desktop.
+
+=====================================================================
+46. MOBILE VOICE
+=====================================================================
+
+Preserve:
+
+English
+
+Hindi
+
+Marathi
+
+Flow:
+
+Customer voice
+
+↓
+
+Speech Recognition
+
+↓
+
+Transcript
+
+↓
+
+Customer confirms
+
+↓
+
+Backend booking
+
+↓
+
+Specific Worker Offer
+
+↓
+
+Worker preferred language
+
+↓
+
+Translated readable summary
+
+↓
+
+Speech Synthesis
+
+↓
+
+Listen
+
+↓
+
+Accept / Reject
+
+If speech recognition unsupported:
+
+text fallback.
+
+If speech synthesis unsupported:
+
+readable text fallback.
+
+=====================================================================
+47. REAL CROSS-DEVICE NOTIFICATIONS
+=====================================================================
+
+Create realtime events for:
+
+BOOKING_CREATED
+
+WORKER_OFFER_CREATED
+
+OFFER_ACCEPTED
+
+OFFER_REJECTED
+
+WORKER_ASSIGNED
+
+WORKER_TRAVELING
+
+WORKER_ARRIVED
+
+IDENTITY_VERIFIED
+
+CUSTOMER_CONFIRMED
+
+SERVICE_STARTED
+
+EXTRA_CHARGE_REQUESTED
+
+EXTRA_CHARGE_APPROVED
+
+COMPLETION_REQUESTED
+
+SERVICE_COMPLETED
+
+PAYMENT_COMPLETED
+
+COMPLAINT_CREATED
+
+SLA_ESCALATED
+
+CAPACITY_REQUESTED
+
+CAPACITY_APPROVED
+
+=====================================================================
+48. NOTIFICATION CENTER
+=====================================================================
+
+Persist notifications.
+
+Customer:
+
+Worker Assigned
+
+Worker Traveling
+
+Worker Arrived
+
+Verification
+
+Extra Charge
+
+Completion
+
+Payment
+
+Complaint
+
+Worker:
+
+New Offer
+
+Offer Expired
+
+Customer Approval
+
+Payment
+
+Document Expiry
+
+Training
+
+Admin:
+
+Verification
+
+Complaint
+
+SLA Breach
+
+Capacity Request
+
+Policy Alert
+
+=====================================================================
+49. MAP / GEO — SECONDARY PRIORITY
+=====================================================================
+
+Only after core workflow works.
+
+Support:
+
+Customer location
+
+Worker location
+
+Approx Distance
+
+Service Radius
+
+ETA if map integration exists.
+
+Do not delay backend work for fancy maps.
+
+=====================================================================
+50. SECURITY BASICS
+=====================================================================
+
+Use:
+
+server-side RBAC
+
+input validation
+
+parameterized queries / ORM safety
+
+secure password hashing
+
+JWT or secure session
+
+rate limits
+
+env-based secrets
+
+upload validation
+
+role authorization
+
+audit logs
+
+Never trust frontend role state.
+
+Never expose:
+
+Aadhaar
+
+bank details
+
+private documents
+
+admin private comments
+
+to unauthorized users.
+
+=====================================================================
+51. AUDIT LOGS
+=====================================================================
+
+Record major actions:
+
+LOGIN
+
+BOOKING_CREATED
+
+MATCH_EXECUTED
+
+WORKER_OFFERED
+
+OFFER_REJECTED
+
+OFFER_ACCEPTED
+
+WORKER_ASSIGNED
+
+WORKER_ARRIVED
+
+IDENTITY_VERIFIED
+
+CUSTOMER_CONFIRMED
+
+SERVICE_STARTED
+
+EXTRA_CHARGE_REQUESTED
+
+EXTRA_CHARGE_APPROVED
+
+SERVICE_COMPLETED
+
+PAYMENT_COMPLETED
+
+RATING_SUBMITTED
+
+WORKER_VERIFIED
+
+COMPLAINT_CREATED
+
+SLA_ESCALATED
+
+CAPACITY_REQUESTED
+
+CAPACITY_APPROVED
+
+POLICY_UPDATED
+
+Store:
+
+actor
+
+role
+
+action
+
+entity
+
+entity_id
+
+timestamp
+
+metadata
+
+=====================================================================
+52. ZERO FAKE CLAIMS
+=====================================================================
+
+Never display:
+
+100% Secure
+
+Fraud Free
+
+Government Approved
+
+Aadhaar Verified
+
+Guaranteed Income
+
+Millions of Users
+
+India's First
+
+95% AI Accuracy
+
+unless actual evidence exists.
+
+Use:
+
+Working Prototype
+
+Sandbox
+
+Integration Ready
+
+Future Integration
+
+where appropriate.
+
+=====================================================================
+53. REALISTIC STATUS LABELS
+=====================================================================
+
+FRONTEND ONLY:
+
+Working Frontend Demo
+
+REAL API CONNECTED:
+
+Backend Connected
+
+PAYMENT:
+
+Sandbox
+
+IDENTITY:
+
+Sandbox Verification
+
+MAP:
+
+Connected / Demo according to actual implementation
+
+FORECAST:
+
+Baseline / Prototype
+
+Do not label everything IMPLEMENTED.
+
+=====================================================================
+54. SIH DEMO CONTROL CENTER
+=====================================================================
+
+Create hidden/presenter-oriented:
+
+Demo Tools
+
+Only accessible to presenter/admin.
+
+Functions:
+
+Reset Demo Dataset
+
+Open Customer Scenario
+
+Open Worker Offer Scenario
+
+Jump to Arrival Verification
+
+Simulate Complaint SLA
+
+Create Capacity Shortage
+
+Open Forecast Scenario
+
+This prevents demo failure during judging.
+
+=====================================================================
+55. ONE-CLICK DEMO RESET
+=====================================================================
+
+Reset should restore:
+
+seed database state
+
+test accounts
+
+worker availability
+
+demo bookings
+
+complaints
+
+capacity scenario
+
+forecast scenario
+
+notifications
+
+Never leave judge demo broken after one rehearsal.
+
+=====================================================================
+56. DEMO ACCOUNTS
+=====================================================================
+
+Provide documented accounts:
+
+Customer
+
+Worker A
+
+Worker B
+
+Cooperative Admin
+
+Federation Admin
+
+Do not expose real production credentials.
+
+Use safe demo credentials.
+
+=====================================================================
+57. MAIN SIH 3-MINUTE GOLDEN DEMO
+=====================================================================
+
+The complete primary demo should be rehearsable:
+
+0:00
+
+Customer opens SanPaid.
+
+0:10
+
+Customer speaks Marathi request.
+
+0:25
+
+System structures service request.
+
+0:35
+
+Eligibility gate executes.
+
+0:45
+
+Explainable fair ranking.
+
+0:55
+
+Worker receives offer on separate phone.
+
+1:05
+
+Worker listens to request.
+
+1:10
+
+Worker accepts.
+
+1:20
+
+Customer sees assigned verified worker.
+
+1:30
+
+Worker arrives.
+
+1:40
+
+Sandbox identity verification.
+
+1:50
+
+Dynamic booking-specific token.
+
+2:00
+
+Customer confirms worker.
+
+2:05
+
+Service start unlocked.
+
+2:15
+
+Quickly show Cooperative Command Center.
+
+2:25
+
+Show Electrician shortage.
+
+2:35
+
+Request nearby cooperative capacity.
+
+2:45
+
+Show Demand → Capacity → Skill Gap.
+
+2:55
+
+End on SanPaid operating loop.
+
+=====================================================================
+58. SECONDARY JUDGE DEMOS
+=====================================================================
+
+Prepare clickable mini demos:
+
+WORKER REJECTION
+
+Worker A Reject
+→ Worker B Offer
+
+REPLACEMENT
+
+Assigned Worker Cancel
+→ Replacement
+
+COMPLAINT
+
+Complaint
+→ SLA
+→ L2
+→ Federation
+
+CAPACITY
+
+Shortage
+→ Cooperative Request
+→ Worker Choice
+
+=====================================================================
+59. DATA CONSISTENCY
+=====================================================================
+
+One backend action must update all affected views.
+
+Example:
+
+Admin verifies Worker.
+
+Then:
+
+worker status changes
+
+matching eligibility changes
+
+admin verification count changes
+
+worker dashboard changes
+
+audit log created
+
+notification created
+
+No manual refresh dependency.
+
+=====================================================================
+60. BOOKING CONSISTENCY
+=====================================================================
+
+Booking created on Customer Phone.
+
+Then:
+
+database record exists
+
+admin bookings list updates
+
+matching runs
+
+worker offer exists
+
+worker phone receives it
+
+Customer should not need to log in as Worker on the same phone.
+
+This is mandatory for the final SIH demo.
+
+=====================================================================
