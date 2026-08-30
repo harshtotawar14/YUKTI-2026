@@ -7,25 +7,13 @@
       ]
     },
     {
-      "source": "/connected-runtime-fix.js",
+      "source": "/(connected-demo|connected-service-ui|connected-commerce-ui|connected-runtime-fix|capacity-worker-ui|judge-demo|top1-polish).js",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
       ]
     },
     {
-      "source": "/connected-demo.js",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
-      ]
-    },
-    {
-      "source": "/connected-service-ui.js",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
-      ]
-    },
-    {
-      "source": "/connected-commerce-ui.js",
+      "source": "/judge-demo.css",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
       ]
