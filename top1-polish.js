@@ -41,23 +41,26 @@
     if(ribbon)ribbon.innerHTML='Smart India Hackathon 2026 · PS ID <b>26089</b> · Cooperative Gig Services Platform';
 
     const productBadge=hero.querySelector('.hero-grid>div:first-child>.eyebrow');
-    if(productBadge)productBadge.textContent='AI-Assisted Cooperative Workforce Network';
+    if(productBadge){
+      productBadge.textContent='SIH 2026 • Cooperative Workforce Network';
+      productBadge.classList.add('eval-badge');
+    }
 
     const research=hero.querySelector('#selectorResearchBtn');
     if(research){
-      research.textContent='Explore Research & Proof →';
+      research.textContent='3-Minute SIH Overview →';
       research.classList.add('hero-tertiary-link');
       research.classList.remove('ghost');
     }
 
     const note=hero.querySelector('.selector-home-note');
-    if(note)note.innerHTML='<span class="selector-proof-line">✓ No login required for the guided SIH overview</span>';
+    if(note)note.innerHTML='<span class="selector-proof-line">✓ Guided overview needs no login · Connected prototype uses isolated demo accounts</span>';
 
     const loopCard=hero.querySelector('.loop-card');
     if(loopCard){
       const title=loopCard.querySelector(':scope > .eyebrow, :scope > .loop-title');
-      if(title){title.textContent='SANPAID OPERATING MODEL';title.classList.remove('eyebrow');title.classList.add('loop-title');}
-      const labels=['Customer Demand','Verified Eligibility','Fair Allocation','Worker Choice','Trusted Service','Govern & Plan'];
+      if(title){title.textContent='SANPAID DECISION LOGIC';title.classList.remove('eyebrow');title.classList.add('loop-title');}
+      const labels=['Service Request','Eligibility Gate','Fair & Explainable Ranking','Worker Choice','Service Verification','Payment','Audit & Outcome'];
       loopCard.querySelectorAll('.loop-step').forEach((step,index)=>{
         const number=String(index+1).padStart(2,'0');
         step.classList.remove('active');
@@ -65,12 +68,12 @@
         step.innerHTML=`<span class="loop-no">${number}</span><span class="loop-label">${labels[index]||''}</span>`;
       });
       const message=loopCard.querySelector('.loop-message');
-      if(message)message.textContent='Service delivery continues into cooperative governance, capacity coordination and workforce planning.';
+      if(message)message.textContent='Only eligible workers reach ranking. Opportunities are offered, not forced. Service outcomes remain traceable.';
     }
 
     const trust=landing.querySelector('#trust');
     if(trust){
-      const trustLabels=['Verified Workforce','Eligibility-First','Worker Choice','Cooperative Governance'];
+      const trustLabels=['Cooperative Governance','Eligibility Gate','Worker Choice','Cross-Cooperative Capacity'];
       trust.querySelectorAll('span').forEach((node,index)=>{if(trustLabels[index])node.textContent=trustLabels[index];});
       if(trust.parentElement!==hero)hero.appendChild(trust);
     }
