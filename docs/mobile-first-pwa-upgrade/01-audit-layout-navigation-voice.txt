@@ -1,0 +1,499 @@
+# ============================================================
+# SANPAID — MOBILE-FIRST + PWA + RESPONSIVE UPGRADE PROMPT
+# SIH 2026 · PS 26089
+# HTML + CSS + VANILLA JAVASCRIPT
+# ============================================================
+
+You are now acting as:
+
+- Senior Mobile Web Engineer
+- PWA Engineer
+- Responsive UI/UX Engineer
+- Accessibility Engineer
+- Frontend QA Engineer
+
+You are working on the EXISTING SanPaid repository.
+
+DO NOT create another separate mobile website.
+
+DO NOT redesign SanPaid into a different product.
+
+DO NOT create Android native code.
+
+DO NOT migrate to React/Next/Vue.
+
+Use the EXISTING:
+
+HTML
+CSS
+Vanilla JavaScript
+
+Your job is to make the SAME SanPaid application work properly on:
+
+Android phones
+iPhones
+Tablets
+Desktop
+
+The website must feel like a real mobile application when opened
+inside Chrome/Safari.
+
+============================================================
+1. MOBILE-FIRST AUDIT FIRST
+============================================================
+
+Before changing code, inspect:
+
+index.html
+styles.css
+app.js
+voice-request.js
+all current dashboards
+all modals
+all tables
+booking flow
+voice request flow
+worker offers
+customer dashboard
+worker dashboard
+cooperative dashboard
+federation dashboard
+
+Test current layout conceptually at:
+
+320px
+360px
+375px
+390px
+412px
+430px
+480px
+768px
+1024px
+
+Find:
+
+horizontal overflow
+
+text clipping
+
+cards wider than screen
+
+modal overflow
+
+tables breaking layout
+
+small buttons
+
+sidebar not usable on mobile
+
+navbar hidden without replacement
+
+fixed heights
+
+fixed widths
+
+absolute positioning issues
+
+touch targets smaller than 44px
+
+forms difficult to use
+
+mic button too small
+
+dropdowns overflowing
+
+dashboard panels cut off
+
+sticky headers overlapping content
+
+keyboard covering form buttons
+
+============================================================
+2. CRITICAL MOBILE RULE
+============================================================
+
+There must be:
+
+ZERO horizontal page scrolling.
+
+Use:
+
+max-width: 100%
+
+min-width: 0
+
+overflow-wrap
+
+responsive grid
+
+responsive flex
+
+clamp()
+
+minmax()
+
+CSS media queries
+
+Avoid fixed desktop widths.
+
+Bad:
+
+width: 1200px
+
+Good:
+
+width: min(100%, 1200px)
+
+============================================================
+3. GLOBAL VIEWPORT
+============================================================
+
+Ensure:
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+Support safe areas for modern phones.
+
+Use CSS where useful:
+
+env(safe-area-inset-top)
+env(safe-area-inset-bottom)
+
+Especially for:
+
+mobile bottom navigation
+sticky header
+modals
+full-screen drawers
+
+============================================================
+4. MOBILE DESIGN SYSTEM
+============================================================
+
+Use responsive spacing.
+
+Example:
+
+--space-page:
+clamp(14px, 4vw, 28px)
+
+Headings:
+
+h1:
+clamp(28px, 8vw, 60px)
+
+h2:
+clamp(22px, 6vw, 42px)
+
+Body:
+
+14px–16px mobile
+
+Avoid tiny 10px primary text.
+
+Buttons:
+
+minimum height:
+44px
+
+Preferred mobile CTA:
+48px–52px
+
+============================================================
+5. MOBILE LANDING PAGE
+============================================================
+
+Hero must become single-column.
+
+Desktop:
+
+text | operating-loop card
+
+Mobile:
+
+text
+↓
+CTA
+↓
+search
+↓
+operating loop
+
+Do not squeeze two columns.
+
+Hero buttons:
+
+Book a Service
+Join as Worker
+
+must become:
+
+full-width or two clean mobile rows.
+
+Do not create tiny side-by-side buttons.
+
+============================================================
+6. MOBILE HERO SEARCH
+============================================================
+
+Desktop search can remain horizontal.
+
+Mobile:
+
+Service
+↓
+Location
+↓
+Preferred Time
+↓
+Search Verified Workers
+
+Each:
+
+width: 100%
+
+Minimum height:
+48px
+
+Search button:
+full width.
+
+============================================================
+7. MOBILE NAVBAR
+============================================================
+
+Desktop navigation stays.
+
+For mobile:
+
+use hamburger button.
+
+Open proper slide-in drawer.
+
+Drawer includes:
+
+Home
+Services
+Fair Matching
+How It Works
+Trust & Safety
+Book Service
+Join as Worker
+Customer Login
+Worker Login
+Cooperative Login
+Federation Login
+
+Do NOT use a mobile drawer containing only text saying
+"use desktop navigation".
+
+Mobile navigation must actually work.
+
+============================================================
+8. MOBILE APP SHELL
+============================================================
+
+Current dashboards must not depend on desktop sidebar.
+
+Desktop:
+
+left sidebar + content.
+
+Mobile:
+
+Top App Bar
++
+Bottom Navigation
+or
+Hamburger App Drawer
+
+Preferred:
+
+Customer:
+bottom navigation
+
+Worker:
+bottom navigation
+
+Admin/Federation:
+hamburger drawer because they have many modules.
+
+============================================================
+9. CUSTOMER MOBILE NAVIGATION
+============================================================
+
+Bottom navigation:
+
+Home
+Book
+Active
+History
+Profile
+
+Use 5 items maximum.
+
+Additional modules under:
+
+More
+
+including:
+
+Payments
+Invoices
+Complaints
+Notifications
+Addresses
+Ratings
+
+============================================================
+10. WORKER MOBILE NAVIGATION
+============================================================
+
+Worker UI is highest mobile priority.
+
+Bottom nav:
+
+Home
+Offers
+Active Job
+Earnings
+More
+
+More:
+
+Schedule
+Availability
+History
+Passport
+Skills
+Documents
+Welfare
+Training
+Notifications
+Profile
+
+============================================================
+11. WORKER JOB OFFER MOBILE CARD
+============================================================
+
+The job offer must be easy to understand with one hand.
+
+Card order:
+
+SERVICE
+
+Electrician
+
+Booking:
+SAN-2026-XXXXX
+
+Area:
+Karad Zone 1
+
+Distance:
+2.3 KM
+
+Time:
+Today · 4:00 PM
+
+Expected Earnings:
+₹xxx
+
+Urgency:
+Normal / Urgent
+
+Then:
+
+CUSTOMER VOICE REQUEST
+
+Worker-language translated summary.
+
+Buttons:
+
+🔊 Listen
+
+Show Original
+
+Then large action buttons:
+
+REJECT
+
+ACCEPT
+
+Minimum action button height:
+52px.
+
+============================================================
+12. VOICE REQUEST MUST WORK ON MOBILE
+============================================================
+
+Preserve existing:
+
+voice-request.js
+
+Do NOT remove the current voice-request delivery feature.
+
+Customer booking must support:
+
+English
+Hindi
+Marathi
+
+Mobile UI:
+
+Language dropdown
+
+large microphone button
+
+clear recording status
+
+captured transcript
+
+edit transcript
+
+confirmation.
+
+Button:
+
+🎙 Start Voice Request
+
+When listening:
+
+show:
+
+Listening...
+
+and visual microphone state.
+
+After capture:
+
+show transcript.
+
+============================================================
+13. MOBILE MICROPHONE FALLBACK
+============================================================
+
+Browser SpeechRecognition support differs.
+
+Never break the app.
+
+If SpeechRecognition unavailable:
+
+show:
+
+"Voice recognition is not supported in this browser.
+Please type your request."
+
+Text booking must still work.
+
+============================================================
+14. MOBILE VOICE PLAYBACK
+============================================================
+
+Worker:
+
+🔊 Listen Summary
+
+Use:
