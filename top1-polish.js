@@ -14,72 +14,186 @@
       .connected-trust-row.done{border-color:#c4e8d5;background:#eef9f3}
       .connected-payment-success{line-height:1.65}
 
-      /* Keep the complete evaluator message visible together on laptop/desktop screens. */
+      /* Final evaluator hero balance: strong, readable and calm rather than tiny. */
       @media (min-width:961px){
-        #landing .eval-nav .navin{height:62px!important}
-        #landing .eval-nav.nav-compact .navin{height:56px!important}
-        #landing #home.eval-hero{padding:34px 0 0!important}
-        #landing #home .eval-hero-grid{
-          grid-template-columns:minmax(0,1.08fr) minmax(370px,.92fr)!important;
-          gap:44px!important;
-          align-items:center!important;
+        #landing .eval-nav .navin{height:64px!important}
+        #landing .eval-nav.nav-compact .navin{height:58px!important}
+        #landing .eval-nav .navlinks{gap:22px!important}
+        #landing .eval-nav .navlinks a{font-size:12.5px!important}
+        #landing .eval-sih-chip,#landing #getStarted{display:none!important}
+        #landing .eval-nav .actions{gap:8px!important}
+        #landing .eval-nav .actions .btn.primary{min-height:42px!important;padding:9px 17px!important;font-size:11.5px!important}
+
+        #landing #home.eval-hero{
+          padding:46px 0 0!important;
+          background:linear-gradient(180deg,#fbfcfd 0%,#f6f9fb 100%)!important;
         }
-        #landing #home .eval-badge{padding:5px 8px!important;font-size:9px!important}
+        #landing #home .eval-hero-grid{
+          grid-template-columns:minmax(0,1fr) minmax(430px,.92fr)!important;
+          gap:50px!important;
+          align-items:center!important;
+          max-width:1180px!important;
+        }
+        #landing #home .eval-hero-copy{align-self:center!important}
+        #landing #home .eval-badge{
+          padding:6px 10px!important;
+          font-size:9.5px!important;
+          letter-spacing:.055em!important;
+          border-color:#bddfd8!important;
+          background:#eaf7f4!important;
+          color:#14726c!important;
+        }
         #landing #home h1{
-          margin:12px 0 10px!important;
-          font-size:clamp(40px,4.25vw,56px)!important;
+          max-width:650px!important;
+          margin:15px 0 14px!important;
+          font-size:clamp(44px,4.35vw,60px)!important;
           line-height:1.02!important;
-          letter-spacing:-.045em!important;
+          letter-spacing:-.046em!important;
         }
         #landing #home .lead{
-          max-width:650px!important;
-          font-size:14px!important;
-          line-height:1.5!important;
+          max-width:620px!important;
+          font-size:15px!important;
+          line-height:1.56!important;
+          color:#4f6376!important;
         }
-        #landing #home .hero-master-flow{margin-top:15px!important;gap:6px!important;flex-wrap:nowrap!important}
-        #landing #home .hero-master-flow span{padding:5px 7px!important;font-size:9.5px!important;white-space:nowrap}
-        #landing #home .hero-master-flow i{font-size:10px!important}
-        #landing #home .hero-ctas{margin:16px 0 7px!important;gap:7px!important;flex-wrap:nowrap!important}
+        #landing #home .hero-master-flow{
+          margin-top:18px!important;
+          gap:6px!important;
+          flex-wrap:nowrap!important;
+        }
+        #landing #home .hero-master-flow span{
+          padding:6px 9px!important;
+          border-radius:999px!important;
+          background:#fff!important;
+          border:1px solid #d5e0e8!important;
+          color:#29455a!important;
+          font-size:10px!important;
+          font-weight:750!important;
+          white-space:nowrap;
+        }
+        #landing #home .hero-master-flow i{font-size:10px!important;color:#8599a9!important}
+        #landing #home .hero-ctas{
+          margin:19px 0 7px!important;
+          gap:9px!important;
+          flex-wrap:nowrap!important;
+        }
         #landing #home .hero-ctas .btn{
-          min-height:40px!important;
-          padding:8px 12px!important;
+          min-height:43px!important;
+          padding:9px 14px!important;
           font-size:10.5px!important;
           white-space:nowrap;
         }
-        #landing #home .eval-hero-principle{margin-top:7px!important;gap:6px!important;font-size:9.5px!important}
+        #landing #home .hero-ctas .btn.primary{min-width:176px!important}
+        #landing #home .hero-ctas .btn.secondary{min-width:170px!important}
+        #landing #home #selectorResearchBtn{
+          color:#49677c!important;
+          font-weight:750!important;
+          opacity:1!important;
+        }
+        #landing #home #selectorResearchBtn:hover{color:#0b7a75!important}
+        #landing #home .eval-hero-principle{
+          margin-top:8px!important;
+          gap:7px!important;
+          font-size:10px!important;
+          color:#526879!important;
+        }
+        #landing #home .eval-hero-principle b{color:#2f4a5f!important}
         #landing #home .selector-home-note{margin:5px 0 0!important}
-        #landing #home .selector-proof-line{font-size:9.5px!important;line-height:1.3!important}
+        #landing #home .selector-proof-line{
+          font-size:10px!important;
+          line-height:1.35!important;
+          color:#667b8c!important;
+        }
 
-        #landing .eval-hero-system{padding:15px!important;border-radius:20px!important}
-        #landing .eval-system-top{margin-bottom:9px!important}
-        #landing .eval-mini-request{padding:9px 10px!important}
-        #landing .eval-mini-request b{font-size:11.5px!important}
-        #landing .eval-mini-workers{gap:6px!important;margin:7px 0!important}
-        #landing .hero-worker{min-height:44px!important;font-size:10px!important}
-        #landing .eval-mini-gate{padding:8px!important;gap:5px!important}
-        #landing .eval-mini-gate strong{font-size:14px!important}
-        #landing .eval-mini-rank{margin-top:7px!important;padding:8px!important}
-        #landing .eval-mini-rank span{padding:5px!important;font-size:9px!important}
-        #landing .eval-mini-offer{margin-top:7px!important;padding:8px 10px!important}
-        #landing .eval-mini-offer b{margin:2px 0 5px!important;font-size:10.5px!important}
-        #landing .eval-mini-audit{margin-top:7px!important;padding:8px 10px!important}
-        #landing .eval-system-progress{margin-top:9px!important}
-        #landing #home>.eval-trust{margin-top:28px!important}
-        #landing #home>.eval-trust .trustin{min-height:44px!important}
+        /* Make the live system visual readable even while the sequence is animating. */
+        #landing .eval-hero-system{
+          padding:18px!important;
+          border:1px solid #c7d5df!important;
+          border-radius:22px!important;
+          background:#fff!important;
+          box-shadow:0 20px 55px rgba(28,55,77,.10)!important;
+        }
+        #landing .eval-hero-system::before{height:3px!important}
+        #landing .eval-system-top{margin-bottom:11px!important}
+        #landing .eval-system-label{font-size:9px!important;color:#39596f!important}
+        #landing .eval-system-demo{background:#edf5fa!important;color:#2f6c93!important}
+        #landing .eval-mini-request,
+        #landing .eval-mini-gate,
+        #landing .eval-mini-rank,
+        #landing .eval-mini-offer,
+        #landing .eval-mini-audit{
+          background:#fbfdff!important;
+          border-color:#ccd9e2!important;
+        }
+        #landing .eval-mini-request{padding:10px 12px!important}
+        #landing .eval-mini-request small,
+        #landing .eval-mini-gate small,
+        #landing .eval-mini-offer small,
+        #landing .eval-mini-audit small{color:#65798a!important}
+        #landing .eval-mini-request b{font-size:12px!important;color:#17344b!important}
+        #landing .eval-mini-request span{font-size:8.5px!important;color:#647b8d!important}
+        #landing .eval-mini-workers{gap:7px!important;margin:8px 0!important}
+        #landing .hero-worker{
+          min-height:46px!important;
+          font-size:10px!important;
+          color:#506a7e!important;
+          background:#f7fafc!important;
+          border-color:#d3dee6!important;
+        }
+        #landing .hero-worker span{font-size:7.5px!important;color:#718697!important}
+        #landing .hero-worker.bad.hero-remove{opacity:.55!important;transform:scale(.97)!important;background:#fbf7f7!important;border-color:#e4caca!important}
+        #landing .hero-worker.good.hero-pass{background:#eaf7f0!important;border-color:#9fd6bb!important;color:#146f47!important}
+        #landing .eval-mini-gate{padding:9px!important;gap:6px!important}
+        #landing .eval-mini-gate strong{font-size:15px!important}
+        #landing .eval-mini-rank{margin-top:8px!important;padding:9px!important}
+        #landing .eval-mini-rank span{padding:6px 7px!important;font-size:9px!important;color:#294f6b!important;background:#eef5fa!important}
+        #landing .eval-mini-rank small{color:#667c8e!important}
+        #landing .eval-mini-offer{margin-top:8px!important;padding:9px 11px!important}
+        #landing .eval-mini-offer b{margin:2px 0 6px!important;font-size:11px!important;color:#17344b!important}
+        #landing .eval-mini-offer div span{color:#50687a!important;background:#fff!important}
+        #landing .eval-mini-offer div .accept{background:#eaf7f0!important;color:#146f47!important}
+        #landing .eval-mini-audit{margin-top:8px!important;padding:9px 11px!important}
+        #landing .eval-mini-audit b{font-size:9.5px!important;color:#365367!important}
+        #landing .hero-seq{opacity:.72!important;transform:translateY(1px)!important}
+        #landing .hero-seq.hero-active{opacity:1!important;transform:none!important;border-color:#8fb3c8!important}
+        #landing .eval-system-progress{margin-top:10px!important}
+
+        /* Attach the trust proof to the hero instead of making it look like a separate banner. */
+        #landing #home>.eval-trust{
+          margin-top:30px!important;
+          background:#f8fbfc!important;
+          border-top:1px solid #dce5eb!important;
+          border-bottom:1px solid #dce5eb!important;
+        }
+        #landing #home>.eval-trust .trustin{
+          min-height:46px!important;
+          gap:12px!important;
+        }
+        #landing #home>.eval-trust span{
+          font-size:10.5px!important;
+          color:#405b6f!important;
+          font-weight:650!important;
+        }
       }
 
-      @media (min-width:961px) and (max-height:760px){
-        #landing #home.eval-hero{padding-top:24px!important}
-        #landing #home .eval-hero-grid{gap:36px!important}
-        #landing #home h1{margin:9px 0 8px!important;font-size:clamp(37px,3.9vw,49px)!important}
-        #landing #home .lead{font-size:13px!important;line-height:1.42!important}
-        #landing #home .hero-master-flow{margin-top:11px!important}
-        #landing #home .hero-ctas{margin:12px 0 5px!important}
-        #landing #home .hero-ctas .btn{min-height:37px!important;padding:7px 10px!important;font-size:10px!important}
-        #landing #home .eval-hero-principle{margin-top:5px!important;font-size:9px!important}
-        #landing #home .selector-proof-line{font-size:9px!important}
-        #landing .eval-hero-system{padding:12px!important}
+      /* Common laptop heights: keep the complete hero visible without making it microscopic. */
+      @media (min-width:961px) and (max-height:780px){
+        #landing #home.eval-hero{padding-top:30px!important}
+        #landing #home .eval-hero-grid{gap:40px!important;grid-template-columns:minmax(0,1fr) minmax(405px,.9fr)!important}
+        #landing #home h1{margin:11px 0 10px!important;font-size:clamp(40px,4vw,52px)!important}
+        #landing #home .lead{font-size:13.5px!important;line-height:1.46!important}
+        #landing #home .hero-master-flow{margin-top:13px!important}
+        #landing #home .hero-master-flow span{padding:5px 7px!important;font-size:9px!important}
+        #landing #home .hero-ctas{margin:14px 0 5px!important}
+        #landing #home .hero-ctas .btn{min-height:39px!important;padding:7px 11px!important;font-size:9.8px!important}
+        #landing #home .eval-hero-principle{margin-top:5px!important;font-size:9.3px!important}
+        #landing #home .selector-proof-line{font-size:9.2px!important}
+        #landing .eval-hero-system{padding:14px!important}
+        #landing .eval-mini-request{padding:8px 10px!important}
         #landing .hero-worker{min-height:40px!important}
+        #landing .eval-mini-gate{padding:7px!important}
+        #landing .eval-mini-rank{margin-top:6px!important;padding:7px!important}
+        #landing .eval-mini-offer,#landing .eval-mini-audit{margin-top:6px!important;padding:7px 9px!important}
         #landing #home>.eval-trust{margin-top:20px!important}
         #landing #home>.eval-trust .trustin{min-height:40px!important}
       }
