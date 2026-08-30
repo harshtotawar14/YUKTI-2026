@@ -1,0 +1,780 @@
+=====================================================================
+18. GOLDEN DEMO #2 — DUAL SERVICE START VERIFICATION
+=====================================================================
+
+This is a flagship SanPaid feature.
+
+Worker:
+
+ASSIGNED
+↓
+TRAVELING
+↓
+ARRIVED
+
+At arrival:
+
+validate booking
+
+validate worker
+
+validate service location where possible
+
+run:
+
+SANDBOX IDENTITY / LIVENESS CHECK
+
+Do not call it Aadhaar verification.
+
+After successful identity check:
+
+identityVerified = true
+
+Generate:
+
+booking-specific
+one-time
+expiring verification token / QR
+
+=====================================================================
+19. CUSTOMER CONFIRMATION
+=====================================================================
+
+Customer scans/opens token.
+
+Show:
+
+Worker Photo
+
+Worker Name
+
+Worker ID
+
+Verified Status
+
+Cooperative
+
+Service
+
+Booking ID
+
+Customer clicks:
+
+YES — THIS IS MY BOOKED WORKER
+
+Then:
+
+customerConfirmed = true
+
+=====================================================================
+20. SERVICE START LOCK
+=====================================================================
+
+Before confirmation show:
+
+Identity Verified           ✅
+
+Customer Confirmation       ❌
+
+START SERVICE
+[DISABLED]
+
+Only if:
+
+identityVerified === true
+
+AND
+
+customerConfirmed === true
+
+enable:
+
+START SERVICE
+
+This rule must exist in backend/business logic too,
+not only visually in frontend.
+
+=====================================================================
+21. ONE-TIME TOKEN
+=====================================================================
+
+Token must include server-side record:
+
+token_id
+booking_id
+worker_id
+created_at
+expires_at
+used_at
+status
+
+Status:
+
+ACTIVE
+USED
+EXPIRED
+
+Prevent token reuse.
+
+=====================================================================
+22. BEFORE SERVICE EVIDENCE
+=====================================================================
+
+Worker can upload:
+
+Before Service Photo
+
+Associate with booking.
+
+Store file safely using appropriate storage adapter.
+
+For prototype:
+
+object storage if available.
+
+Do not put large base64 images inside PostgreSQL rows.
+
+Store metadata in database.
+
+=====================================================================
+23. CONTROLLED ADDITIONAL CHARGE
+=====================================================================
+
+Worker:
+
+Request Additional Work
+
+Fields:
+
+Reason
+
+Description
+
+Amount
+
+Optional Evidence
+
+Backend creates:
+
+PENDING_EXTRA_CHARGE
+
+Customer receives request.
+
+Customer sees:
+
+Original Estimate
+
+Additional Amount
+
+Reason
+
+Updated Proposed Total
+
+APPROVE
+REJECT
+
+Only APPROVED amount changes final invoice.
+
+=====================================================================
+24. COMPLETION FLOW
+=====================================================================
+
+Worker:
+
+Upload After Evidence
+
+Request Completion
+
+Customer:
+
+Confirm Completed
+or
+Report Problem
+
+Confirm:
+
+COMPLETED
+
+Then:
+
+PAYMENT_PENDING
+
+Report Problem:
+
+open complaint.
+
+=====================================================================
+25. SANDBOX PAYMENT
+=====================================================================
+
+Use honest:
+
+SANDBOX PAYMENT
+
+Do not simulate fake production payment success without label.
+
+Methods can include:
+
+UPI
+Card
+Wallet
+Cash
+
+Generate:
+
+Transaction ID
+
+Booking ID
+
+Amount
+
+Method
+
+Timestamp
+
+Status
+
+Persist in backend.
+
+No raw card storage.
+
+=====================================================================
+26. INVOICE
+=====================================================================
+
+Generate professional invoice:
+
+Invoice ID
+
+Booking ID
+
+Customer
+
+Worker
+
+Cooperative
+
+Service
+
+Date
+
+Base Service
+
+Visit Charge
+
+Distance Charge
+
+Urgent Charge if applicable
+
+Approved Additional Work
+
+Platform/Cooperative Fee if applicable
+
+Tax if applicable
+
+Final Amount
+
+Payment Method
+
+Transaction ID
+
+Status
+
+Provide:
+
+View
+Print
+Download-friendly layout
+
+=====================================================================
+27. RATING
+=====================================================================
+
+Only completed service can be rated.
+
+Categories:
+
+Service Quality
+
+Professionalism
+
+Punctuality
+
+Communication
+
+Overall
+
+Feedback
+
+Prevent duplicate rating.
+
+Rating must update:
+
+Worker Profile
+
+Service Passport
+
+Analytics
+
+=====================================================================
+28. SANPAID SERVICE PASSPORT
+=====================================================================
+
+Worker dashboard:
+
+SanPaid Verified Service Passport
+
+Show:
+
+Verified Skills
+
+Certificates
+
+Training
+
+Completed Services
+
+Rating
+
+Service Categories
+
+Cooperative
+
+Recent Work History
+
+Document Expiry
+
+Do NOT call it a government passport/certificate.
+
+=====================================================================
+29. COOPERATIVE COMMAND CENTER
+=====================================================================
+
+This must become one of the strongest dashboards.
+
+Navigation:
+
+Overview
+
+Workers
+
+Verification
+
+Skills
+
+Bookings
+
+Matching
+
+Fair Allocation
+
+Capacity
+
+Payments
+
+Complaints
+
+SLA
+
+Welfare
+
+Training
+
+Demand Planning
+
+Reports
+
+Audit
+
+Policies
+
+=====================================================================
+30. COOPERATIVE OVERVIEW
+=====================================================================
+
+Calculate everything from real backend data.
+
+WORKFORCE
+
+Total Workers
+
+Verified Workers
+
+Pending Verification
+
+Available
+
+Busy
+
+Offline
+
+Suspended
+
+Documents Expiring
+
+OPERATIONS
+
+Bookings Today
+
+Active Services
+
+Unassigned Requests
+
+Completed Today
+
+Cancelled
+
+TRUST
+
+Pending Verification
+
+Open Complaints
+
+SLA At Risk
+
+SLA Breached
+
+FINANCIAL
+
+Payments Today
+
+Pending Settlements
+
+CAPACITY
+
+Current Shortage
+
+Current Surplus
+
+Underutilized Workers
+
+=====================================================================
+31. WORKER VERIFICATION
+=====================================================================
+
+Admin opens verification queue.
+
+Worker:
+
+Identity
+
+Photo
+
+Cooperative
+
+Skills
+
+Certificates
+
+Experience
+
+Document Expiry
+
+Actions:
+
+VERIFY
+
+REQUEST MORE INFORMATION
+
+REJECT
+
+SUSPEND where appropriate
+
+Action must:
+
+update backend
+
+update eligibility immediately
+
+update worker dashboard
+
+update admin counts
+
+create audit log
+
+send notification
+
+=====================================================================
+32. GOLDEN DEMO #3 — CAPACITY EXCHANGE
+=====================================================================
+
+This is one of SanPaid's strongest differentiators.
+
+Example:
+
+Karad Cooperative
+
+Electrician Expected Demand:
+42
+
+Eligible Capacity:
+29
+
+Gap:
+-13
+
+Nearby:
+
+Sahyadri Cooperative
+
+Available Electricians:
+8
+
+Button:
+
+REQUEST CAPACITY
+
+=====================================================================
+33. CAPACITY REQUEST WORKFLOW
+=====================================================================
+
+Karad:
+
+creates request
+
+↓
+
+Sahyadri:
+
+receives request
+
+↓
+
+Admin:
+
+APPROVE / REJECT
+
+↓
+
+Approved eligible workers:
+
+receive offers
+
+↓
+
+Worker:
+
+ACCEPT / REJECT
+
+↓
+
+Assignment
+
+Do NOT silently transfer workers.
+
+Worker consent is mandatory.
+
+=====================================================================
+34. CAPACITY REQUEST DETAILS
+=====================================================================
+
+Show:
+
+Request ID
+
+Requesting Cooperative
+
+Providing Cooperative
+
+Service
+
+Required Workers
+
+Time Window
+
+Area
+
+Distance
+
+Reason
+
+Status
+
+Approving Admin
+
+Worker Consent
+
+Assigned Workers
+
+Complaint Responsibility
+
+=====================================================================
+35. FEDERATION DASHBOARD
+=====================================================================
+
+Show regional view:
+
+Total Cooperatives
+
+Total Verified Workers
+
+Regional Demand
+
+Regional Capacity
+
+Current Shortages
+
+Surpluses
+
+Capacity Requests
+
+Open Appeals
+
+Regional SLA Breaches
+
+Skill Gaps
+
+=====================================================================
+36. GOLDEN DEMO #4 — COMPLAINT + SLA
+=====================================================================
+
+Customer opens completed booking.
+
+Raise Complaint.
+
+Fields:
+
+Booking
+
+Category
+
+Description
+
+Priority
+
+Evidence
+
+Categories:
+
+Incomplete Service
+
+Quality
+
+Late Arrival
+
+Worker Behaviour
+
+Pricing
+
+Extra Charge
+
+Payment
+
+Cancellation
+
+No Show
+
+Safety
+
+Other
+
+Create complaint ID.
+
+=====================================================================
+37. COMPLAINT AUDIT TIMELINE
+=====================================================================
+
+Complaint details should automatically reference:
+
+Booking Created
+
+Worker Offered
+
+Worker Accepted
+
+Arrival
+
+Identity Verification
+
+Customer Confirmation
+
+Service Start
+
+Additional Charge Request
+
+Additional Charge Decision
+
+Completion
+
+Payment
+
+Invoice
+
+Rating
+
+Complaint
+
+This proves the dispute is auditable.
+
+=====================================================================
+38. SLA FLOW
+=====================================================================
+
+Complaint:
+
+L1
+
+If unresolved within SLA:
+
+L2 Cooperative
+
+If still unresolved:
+
+L3 Federation
+
+States:
+
+NEW
+L1_ASSIGNED
+UNDER_REVIEW
+ESCALATED_L2
+ESCALATED_L3
+RESOLVED
+CLOSED
+
+Show:
+
+Created
+
+Current Owner
+
+SLA Due
+
+Remaining Time
+
+Priority
+
+Status
+
+Timeline
+
+=====================================================================
+39. SAFE DEMO SLA TOOL
+=====================================================================
+
+For SIH presentation create:
+
+Demo Tools
+→ Simulate SLA Breach
+
+This should never appear as a normal customer function.
+
+When clicked:
+
+advance SLA clock/state safely.
+
+Show:
+
+L1 SLA BREACHED
+
+→ L2
+
+Then:
+
+L2 SLA BREACHED
+
+→ L3 Federation
+
+Create audit records.
+
+=====================================================================
