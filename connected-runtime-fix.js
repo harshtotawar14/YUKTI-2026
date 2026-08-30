@@ -10,6 +10,7 @@
   ]);
   const LANG = { mr: 'mr-IN', hi: 'hi-IN', en: 'en-IN' };
   const nativeFetch = window.fetch.bind(window);
+  const NativeEventSource = window.EventSource;
   let backendOnline = false;
 
   function getToken() {
@@ -21,49 +22,68 @@
       else sessionStorage.removeItem(TOKEN_KEY);
     } catch {}
   }
-  function rawUrl(input) { return typeof input === 'string' ? input : (input?.url || ''); }
+  function connectedShellActive() {
+    const shell = document.getElementById('connectedShell');
+    return !!(shell && !shell.classList.contains('hidden'));
+  }
+  function rawUrl(input) {
+    if (typeof input === 'string') return input;
+    if (input instanceof URL) return input.pathname + input.search;
+    return input?.url || '';
+  }
   function parseBody(init) {
     try { return typeof init?.body === 'string' ? JSON.parse(init.body) : {}; }
     catch { return {}; }
   }
   function direct(path) { return `${BACKEND}${path}`; }
+  function connectedPath(url) {
+    try {
+      if (url.startsWith('/api/connected/')) return url;
+      const parsed = new URL(url, location.href);
+      if (parsed.origin === location.origin && parsed.pathname.startsWith('/api/connected/')) return parsed.pathname + parsed.search;
+    } catch {}
+    return '';
+  }
 
-  // Connected SIH demo transport:
-  // - demo auth goes directly to Render, bypassing Vercel proxy rate limits
-  // - short-lived demo session token is kept only in sessionStorage
-  // - all /api/connected calls use Authorization: Bearer <token>
-  // Normal SanPaid API calls are untouched.
+  // Keep normal SanPaid auth untouched. Only isolated Connected Demo accounts
+  // and /api/connected/* requests use the direct Render transport.
   window.fetch = async function sanPaidConnectedFetch(input, init = {}) {
     const url = rawUrl(input);
-    let target = '';
+    const token = getToken();
+    let targetPath = '';
     let isDemoLogin = false;
     let isDemoLogout = false;
 
-    if (url === '/api/auth/login') {
+    if (url === '/api/auth/login' && connectedShellActive()) {
       const payload = parseBody(init);
       const identifier = String(payload.identifier || '').trim().toLowerCase();
       if (DEMO_EMAILS.has(identifier)) {
-        target = direct('/api/connected/auth/login');
+        targetPath = '/api/connected/auth/login';
         isDemoLogin = true;
       }
-    } else if (url === '/api/auth/me') {
-      // Connected demo should never depend on an unrelated same-origin cookie.
-      target = direct('/api/connected/auth/me');
-    } else if (url === '/api/auth/logout') {
-      target = direct('/api/connected/auth/logout');
+    } else if (url === '/api/auth/me' && connectedShellActive()) {
+      // Connected shell should never accidentally inherit the normal app cookie.
+      if (!token) {
+        return new Response(JSON.stringify({ error: 'not_authenticated' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      targetPath = '/api/connected/auth/me';
+    } else if (url === '/api/auth/logout' && connectedShellActive() && token) {
+      targetPath = '/api/connected/auth/logout';
       isDemoLogout = true;
-    } else if (url.startsWith('/api/connected/')) {
-      target = direct(url);
+    } else {
+      targetPath = connectedPath(url);
     }
 
-    if (!target) return nativeFetch(input, init);
+    if (!targetPath) return nativeFetch(input, init);
 
     const headers = new Headers(init.headers || {});
     if (!headers.has('Content-Type') && init.body) headers.set('Content-Type', 'application/json');
-    const token = getToken();
     if (!isDemoLogin && token) headers.set('Authorization', `Bearer ${token}`);
 
-    const response = await nativeFetch(target, {
+    const response = await nativeFetch(direct(targetPath), {
       ...init,
       headers,
       credentials: 'omit',
@@ -78,22 +98,28 @@
       } catch {}
     }
     if (isDemoLogout && response.ok) setToken('');
+    if (response.status === 401 && targetPath.startsWith('/api/connected/') && !isDemoLogin) {
+      setToken('');
+    }
     return response;
   };
 
-  // Replace long-lived SSE only for this demo page with a small polling
-  // adapter that implements the EventSource methods used by connected-demo.js.
-  // This avoids reconnect storms through Vercel rewrites.
-  class PollingEventSource {
-    constructor() {
+  // connected-demo.js currently creates EventSource('/api/connected/events').
+  // Replace ONLY that URL with authenticated polling; keep any other app
+  // EventSource usage native.
+  class ConnectedPollingSource {
+    constructor(url) {
+      this.url = String(url || '');
       this.listeners = new Map();
       this.onerror = null;
+      this.onopen = null;
       this.readyState = 0;
       this.closed = false;
       this.timer = null;
+      this.opened = false;
       this.tick = this.tick.bind(this);
       setTimeout(this.tick, 120);
-      this.timer = setInterval(this.tick, 3000);
+      this.timer = setInterval(this.tick, 2800);
     }
     addEventListener(type, handler) {
       if (!this.listeners.has(type)) this.listeners.set(type, new Set());
@@ -105,12 +131,20 @@
       this.listeners.get(type)?.forEach(fn => { try { fn(event); } catch {} });
     }
     async tick() {
-      if (this.closed || !getToken()) return;
+      if (this.closed) return;
+      if (!getToken()) {
+        this.readyState = 0;
+        return;
+      }
       try {
         const response = await window.fetch('/api/connected/snapshot', { method: 'GET' });
         if (!response.ok) throw new Error(`snapshot_${response.status}`);
         const snapshot = await response.json();
         this.readyState = 1;
+        if (!this.opened) {
+          this.opened = true;
+          if (typeof this.onopen === 'function') { try { this.onopen({ type: 'open' }); } catch {} }
+        }
         this.emit('snapshot', snapshot);
         const top = document.getElementById('connectedTopStatus');
         if (top) {
@@ -119,9 +153,7 @@
         }
       } catch (error) {
         this.readyState = 0;
-        if (typeof this.onerror === 'function') {
-          try { this.onerror(error); } catch {}
-        }
+        if (typeof this.onerror === 'function') { try { this.onerror(error); } catch {} }
       }
     }
     close() {
@@ -132,10 +164,23 @@
     }
   }
 
-  window.EventSource = PollingEventSource;
+  if (NativeEventSource) {
+    window.EventSource = function SanPaidEventSource(url, options) {
+      if (String(url || '') === '/api/connected/events') return new ConnectedPollingSource(url, options);
+      return new NativeEventSource(url, options);
+    };
+    window.EventSource.CONNECTING = NativeEventSource.CONNECTING ?? 0;
+    window.EventSource.OPEN = NativeEventSource.OPEN ?? 1;
+    window.EventSource.CLOSED = NativeEventSource.CLOSED ?? 2;
+    window.EventSource.prototype = NativeEventSource.prototype;
+  } else {
+    window.EventSource = ConnectedPollingSource;
+  }
+
   window.SanPaidConnectedTransport = {
     backend: BACKEND,
     mode: 'DIRECT_RENDER_BEARER_POLLING',
+    hasSession: () => !!getToken(),
     clearSession: () => setToken('')
   };
 
@@ -148,13 +193,11 @@
     window.speechSynthesis.speak(utterance);
     return true;
   }
-
   function inferSummaryLanguage(text = '') {
     if (/आपको|क्षेत्र|जॉब रिक्वेस्ट/.test(text)) return 'hi';
     if (/तुम्हाला|परिसर|जॉब रिक्वेस्ट/.test(text)) return 'mr';
     return 'en';
   }
-
   function structuredSummaryOnly(text = '') {
     const markers = ['ग्राहक की रिक्वेस्ट:', 'ग्राहकाची विनंती:', 'Customer request:'];
     const clean = String(text).trim();
@@ -164,20 +207,17 @@
     }
     return clean;
   }
-
   function requestLanguageFromCard(card) {
     const label = card?.querySelector('details summary')?.textContent || '';
     const match = label.match(/\((mr|hi|en)\)/i);
     return match ? match[1].toLowerCase() : 'en';
   }
-
   function setTextIfChanged(node, value) {
     if (node && node.textContent !== value) node.textContent = value;
   }
   function setStyleIfChanged(node, prop, value) {
     if (node && node.style[prop] !== value) node.style[prop] = value;
   }
-
   function setStatusRow(label, badgeText, detail, tone = 'orange') {
     document.querySelectorAll('#status tbody tr').forEach(row => {
       const cells = row.querySelectorAll('td');
@@ -191,13 +231,12 @@
       if (detail && cells[2]) setTextIfChanged(cells[2], detail);
     });
   }
-
   function syncLandingTruth(online) {
     backendOnline = online;
     if (online) {
       setStatusRow('Connected two-device booking', 'BACKEND CONNECTED', 'Shared PostgreSQL booking, worker-scoped offer, Accept/Reject fallback and authenticated live polling', 'green');
       setStatusRow('Eligibility-first matching', 'CONNECTED DEMO', 'Verified/available/skill-verified workers are gated before deterministic ranking', 'green');
-      setStatusRow('Worker accept/reject', 'BACKEND CONNECTED', 'Atomic offer response; Reject creates next eligible worker offer with same booking context', 'green');
+      setStatusRow('Worker accept/reject', 'BACKEND CONNECTED', 'Atomic offer response; Reject creates next eligible worker offer with the same booking context', 'green');
       setStatusRow('Dual service-start verification', 'CONNECTED SANDBOX', 'Backend-enforced arrival → sandbox identity → one-time token → customer confirmation → service-start lock', 'orange');
       setStatusRow('Payment & invoice', 'CONNECTED SANDBOX', 'Approved extra work + sandbox payment + persisted invoice + rating flow', 'orange');
       setStatusRow('PostgreSQL backend', 'CONNECTED', 'Shared SanPaid PostgreSQL backend is reachable directly from this deployment', 'green');
@@ -211,7 +250,6 @@
       setStatusRow('PostgreSQL backend', 'OFFLINE', pending, 'orange');
     }
   }
-
   async function checkConnectedHealth() {
     try {
       const r = await window.fetch('/api/connected/health', { cache: 'no-store' });
@@ -221,7 +259,6 @@
       syncLandingTruth(false);
     }
   }
-
   function syncConnectedShellTruth() {
     const top = document.getElementById('connectedTopStatus');
     if (!top) return;
@@ -231,7 +268,7 @@
     const targetBackground = offline ? '#fff6e8' : '#eaf8f1';
     const targetBorder = offline ? '#f0d29d' : '#c4e8d5';
     document.querySelectorAll('#connectedShell .connected-badge').forEach(badge => {
-      if (!/CONNECTED BACKEND|DEPLOYMENT PENDING|BACKEND OFFLINE/.test(badge.textContent || '')) return;
+      if (!/CONNECTED BACKEND|DEPLOYMENT PENDING|BACKEND OFFLINE|SHARED BACKEND/.test(badge.textContent || '')) return;
       setTextIfChanged(badge, targetText);
       setStyleIfChanged(badge, 'color', targetColor);
       setStyleIfChanged(badge, 'background', targetBackground);
@@ -239,6 +276,7 @@
     });
   }
 
+  // Fix original-language playback even if the older connected-demo handler is cached.
   document.addEventListener('click', event => {
     const originalBtn = event.target.closest?.('[data-listen-original]');
     if (originalBtn) {
@@ -249,15 +287,13 @@
       speak(original, requestLanguageFromCard(card));
       return;
     }
-
     const summaryBtn = event.target.closest?.('[data-listen-offer]');
     if (summaryBtn) {
       event.preventDefault();
       event.stopImmediatePropagation();
       const card = summaryBtn.closest('[data-offer]');
       const displayed = card?.querySelector('.connected-voice > .transcript')?.textContent || '';
-      const summary = structuredSummaryOnly(displayed);
-      speak(summary, inferSummaryLanguage(summary));
+      speak(structuredSummaryOnly(displayed), inferSummaryLanguage(displayed));
     }
   }, true);
 
