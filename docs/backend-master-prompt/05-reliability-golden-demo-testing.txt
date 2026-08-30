@@ -1,0 +1,699 @@
+before
+
+after
+
+reason
+
+timestamp
+
+policy version
+
+request metadata where appropriate
+
+Prefer append-only behaviour.
+
+===============================================================
+BS. FRAUD / ABUSE FLAGS
+===============================================================
+
+Detect/flag:
+
+repeated OTP failures
+
+QR reuse
+
+impossible state transitions
+
+duplicate payment
+
+unauthorized access attempt
+
+excessive cancellations
+
+suspicious review pattern
+
+document reuse
+
+unusual admin override
+
+Do not automatically punish based only on weak heuristics.
+
+Flag for human review.
+
+===============================================================
+BT. MAPS INTEGRATION
+===============================================================
+
+Analyse existing frontend map code.
+
+Reuse configured provider if present.
+
+Possible providers:
+
+Google Maps
+
+Mapbox
+
+OpenStreetMap
+
+Backend responsibilities may include:
+
+distance
+
+route data
+
+geo eligibility
+
+service zones
+
+worker distribution
+
+demand heatmap data
+
+capacity heatmap data
+
+Do not expose exact worker location outside authorized active booking.
+
+===============================================================
+BU. NOTIFICATIONS
+===============================================================
+
+Create notification/event system.
+
+Events include:
+
+booking created
+
+worker offered
+
+accepted
+
+rejected
+
+replacement
+
+worker traveling
+
+worker arrival
+
+verification
+
+service start
+
+extra-charge request
+
+extra-charge decision
+
+completion
+
+payment
+
+invoice
+
+rating reminder
+
+complaint
+
+SLA escalation
+
+document expiry
+
+training
+
+welfare
+
+capacity request
+
+Channels:
+
+in-app
+
+SMS
+
+email
+
+push
+
+Use sandbox adapters when credentials unavailable.
+
+===============================================================
+BV. BACKGROUND JOBS
+===============================================================
+
+Implement background processing where needed:
+
+offer expiration
+
+SLA escalation
+
+document expiry
+
+notification retry
+
+payment reconciliation
+
+forecast generation
+
+audit cleanup policy if appropriate
+
+scheduled analytics
+
+Do not depend on browser timers for server business rules.
+
+===============================================================
+BW. RELIABILITY
+===============================================================
+
+Implement where appropriate:
+
+retry with backoff
+
+timeouts
+
+idempotency
+
+circuit breaker
+
+graceful degradation
+
+dead-letter handling
+
+transaction safety
+
+Examples:
+
+payment gateway unavailable
+
+SMS unavailable
+
+maps unavailable
+
+AI unavailable
+
+notification failure
+
+===============================================================
+BX. DATABASE RELIABILITY
+===============================================================
+
+Prepare architecture for:
+
+PostgreSQL primary
+
+read replicas
+
+connection pooling
+
+backup
+
+PITR
+
+failover
+
+recovery
+
+Do not claim these are production-enabled unless actually configured.
+
+===============================================================
+BY. REDIS
+===============================================================
+
+Use Redis only where useful.
+
+Possible uses:
+
+rate limits
+
+cache
+
+sessions
+
+short-lived token data
+
+queues
+
+distributed locks
+
+Do not make Redis the permanent source of financial/booking truth.
+
+===============================================================
+BZ. OBSERVABILITY
+===============================================================
+
+Implement:
+
+structured logs
+
+health endpoint
+
+error logging
+
+metrics
+
+important business-event metrics
+
+Where appropriate:
+
+OpenTelemetry
+
+Prometheus
+
+Grafana
+
+or hosting-provider monitoring.
+
+Track:
+
+API latency
+
+API errors
+
+booking failures
+
+matching failures
+
+payment failures
+
+verification failures
+
+SLA breach
+
+queue problems
+
+database connectivity
+
+AI failures
+
+===============================================================
+CA. HEALTH ENDPOINTS
+===============================================================
+
+Add appropriate:
+
+/health
+
+/readiness
+
+if architecture supports it.
+
+Check:
+
+server
+
+database
+
+Redis if critical
+
+storage if critical
+
+Do not expose secrets in health output.
+
+===============================================================
+CB. ERROR HANDLING
+===============================================================
+
+Never send raw stack traces in production responses.
+
+Use centralized error middleware.
+
+Create stable error codes.
+
+Examples:
+
+AUTH_REQUIRED
+
+FORBIDDEN
+
+BOOKING_NOT_FOUND
+
+INVALID_BOOKING_STATE
+
+NO_ELIGIBLE_WORKER
+
+WORKER_NOT_VERIFIED
+
+WORKER_OFFER_EXPIRED
+
+QR_EXPIRED
+
+QR_ALREADY_USED
+
+VERIFICATION_REQUIRED
+
+EXTRA_CHARGE_NOT_APPROVED
+
+PAYMENT_FAILED
+
+SLA_ESCALATED
+
+===============================================================
+CC. GRACEFUL FALLBACKS
+===============================================================
+
+NO WORKER:
+
+alternate time / expanded radius / capacity exchange
+
+CAMERA FAILURE:
+
+retry / approved fallback verification
+
+VOICE FAILURE:
+
+manual input remains available
+
+AI FAILURE:
+
+manual service path
+
+PAYMENT FAILURE:
+
+safe retry
+
+MAP FAILURE:
+
+manual address flow
+
+NOTIFICATION FAILURE:
+
+database notification + retry
+
+POLICY FAILURE:
+
+last approved policy
+
+===============================================================
+CD. BUSINESS MODEL CONFIGURATION
+===============================================================
+
+Do not encode:
+
+90/10
+
+5%
+
+or any specific fee
+
+as permanent national policy.
+
+Use policy/configuration.
+
+Architecture may support:
+
+cooperative SaaS subscription
+
+federation SaaS subscription
+
+transparent per-service fee
+
+institutional booking fee
+
+===============================================================
+CE. CLAIM SAFETY
+===============================================================
+
+Do not implement fake labels claiming:
+
+Government Approved
+
+Live Aadhaar Integration
+
+Live Insurance Integration
+
+ONDC Integrated
+
+100% Secure
+
+Fraud Free
+
+95% AI Accuracy
+
+Millions of Users
+
+99.99% Uptime
+
+unless actually proven.
+
+Use statuses:
+
+IMPLEMENTED
+
+DEMO
+
+PROTOTYPE
+
+INTEGRATION READY
+
+FUTURE
+
+===============================================================
+CF. GOLDEN DEMO — FLOW 1
+===============================================================
+
+The following MUST work end-to-end:
+
+Customer frontend
+→ login
+→ select electrician
+→ description
+→ location
+→ estimate
+→ booking
+
+Backend
+→ create booking
+→ validate
+→ eligibility
+→ fair ranking
+→ worker offer
+
+Worker frontend
+→ receives job
+→ accepts
+
+Backend
+→ assignment
+
+Worker
+→ traveling
+→ arrived
+
+Backend
+→ verification
+
+→ dynamic QR
+
+Customer
+→ scans/confirms
+
+Backend
+→ authorize service
+
+Worker
+→ before photo
+→ service
+→ additional charge request
+
+Customer
+→ approves
+
+Worker
+→ after photo
+→ completion request
+
+Customer
+→ confirms
+
+Backend
+→ bill
+
+→ payment
+
+→ settlement
+
+→ invoice
+
+Customer
+→ rating
+
+Backend
+→ close booking
+→ service report
+→ worker passport
+→ analytics
+
+===============================================================
+CG. GOLDEN DEMO — FLOW 2
+===============================================================
+
+Worker Cancellation
+
+→ release slot
+
+→ finding replacement
+
+→ eligibility re-run
+
+→ fair ranking
+
+→ offer replacement
+
+→ replacement accepts
+
+→ customer notification
+
+→ booking continues
+
+===============================================================
+CH. GOLDEN DEMO — FLOW 3
+===============================================================
+
+Complaint
+
+→ attach booking evidence
+
+→ L1
+
+→ SLA
+
+→ automatic breach
+
+→ L2
+
+→ alert
+
+→ optional L3
+
+→ human resolution
+
+→ audit
+
+===============================================================
+CI. GOLDEN DEMO — FLOW 4
+===============================================================
+
+Forecast detects shortage
+
+→ capacity gap
+
+→ nearby cooperative found
+
+→ capacity request
+
+→ provider approval
+
+→ worker offer
+
+→ worker accepts
+
+→ assignment
+
+===============================================================
+CJ. GOLDEN DEMO — FLOW 5
+===============================================================
+
+Customer Marathi voice input
+
+→ speech extraction
+
+→ structured booking fields
+
+→ confidence
+
+→ confirmation if needed
+
+→ Hindi worker job summary
+
+→ worker accepts
+
+→ booking continues
+
+===============================================================
+CK. GOLDEN DEMO — FLOW 6
+===============================================================
+
+Historical demand
+
+→ baseline / forecast
+
+→ confidence
+
+→ capacity
+
+→ gap
+
+→ skill gap
+
+→ recommendation
+
+→ human approval
+
+→ training or capacity exchange
+
+→ KPI tracking
+
+===============================================================
+CL. AUTOMATED TESTING
+===============================================================
+
+Create tests for:
+
+auth
+
+RBAC
+
+multi-role account
+
+worker verification
+
+unverified worker hidden
+
+document expiry
+
+booking
+
+state transitions
+
+geo eligibility
+
+fair matching
+
+worker offer
+
+offer timeout
+
+reject
+
+accept
+
+race condition
+
+replacement
+
+QR expiry
+
+QR reuse
+
+OTP fallback
+
+service start authorization
+
+extra charge
+
+payment retry
+
+payment idempotency
+
+invoice
+
+rating
+
+evidence upload
+
+complaint
+
+SLA escalation
+
+capacity exchange
+
+federation permissions
