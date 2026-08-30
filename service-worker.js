@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v15';
+const CACHE_NAME = 'sanpaid-shell-v16';
 const APP_SHELL = [
   './',
   './index.html',
@@ -17,7 +17,6 @@ const APP_SHELL = [
   './connected-runtime-fix.js',
   './capacity-worker-ui.js',
   './judge-demo.js',
-  './judge-actions-polish.js',
   './top1-polish.js',
   './manifest.webmanifest',
   './app-icon.svg'
@@ -51,14 +50,17 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
+  // Never cache API responses or authenticated connected-demo data.
   if (url.pathname.startsWith('/api/')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request, { cache: 'no-store' })
         .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
+          }
           return response;
         })
         .catch(async () => (await caches.match('./index.html')) || (await caches.match('./')))
@@ -75,11 +77,12 @@ self.addEventListener('fetch', event => {
     '/voice-lazy-loader.js',
     '/capacity-worker-ui.js',
     '/judge-demo.js',
-    '/judge-actions-polish.js',
     '/judge-demo.css',
     '/top1-polish.js'
   ].some(path => url.pathname.endsWith(path));
 
+  // Critical demo code is network-first so an old installed PWA cannot keep a
+  // stale booking/auth/runtime hotfix after deployment.
   if (connectedCritical) {
     event.respondWith(
       fetch(request, { cache: 'no-store' })
