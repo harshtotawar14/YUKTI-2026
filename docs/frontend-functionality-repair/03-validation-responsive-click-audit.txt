@@ -1,0 +1,482 @@
+44. FORM VALIDATION
+============================================================
+
+Validate all forms.
+
+Required fields.
+
+Email.
+
+Phone.
+
+Password minimum.
+
+Amount numeric.
+
+Address required.
+
+Service selection.
+
+Schedule.
+
+Display error directly under field.
+
+Do not use browser alert() for normal validation.
+
+============================================================
+45. TOAST SYSTEM
+============================================================
+
+Create reusable toast notifications.
+
+Types:
+
+Success
+
+Info
+
+Warning
+
+Error
+
+Examples:
+
+Booking created successfully
+
+Worker accepted the job
+
+Payment failed — retry
+
+Complaint submitted
+
+============================================================
+46. EMPTY STATES
+============================================================
+
+Do not show blank screens.
+
+Examples:
+
+No active bookings.
+
+No new job offers.
+
+No complaints.
+
+No notifications.
+
+No pending verifications.
+
+Provide meaningful action.
+
+============================================================
+47. LOADING STATES
+============================================================
+
+Use loading indicators for simulated async actions.
+
+Examples:
+
+Finding Workers...
+
+Creating Booking...
+
+Processing Payment...
+
+Verifying Worker...
+
+Loading Dashboard...
+
+Disable double-click while loading.
+
+============================================================
+48. RESPONSIVE INTERACTIONS
+============================================================
+
+Test interactions at:
+
+360px
+
+390px
+
+430px
+
+768px
+
+1024px
+
+1366px
+
+1440px
+
+Fix:
+
+modal overflow
+
+buttons outside screen
+
+horizontal scroll
+
+navigation issues
+
+mobile menu
+
+forms
+
+tables
+
+cards
+
+============================================================
+49. MOBILE NAVIGATION
+============================================================
+
+Current nav links disappear on smaller screens.
+
+Do NOT simply hide navigation with no replacement.
+
+Create mobile menu button.
+
+Open mobile drawer/menu.
+
+Include:
+
+Problem
+
+Fair Matching
+
+How It Works
+
+Services
+
+Trust
+
+Login
+
+Get Started
+
+============================================================
+50. KEYBOARD SUPPORT
+============================================================
+
+Make clickable cards accessible.
+
+Use:
+
+button
+
+or
+
+role="button"
+
+tabindex where appropriate
+
+Enter
+
+Space
+
+Visible focus state.
+
+============================================================
+51. FIX ALL FOOTER LINKS
+============================================================
+
+Current links such as:
+
+About
+
+Trust & Safety
+
+Contact
+
+must not point to useless "#".
+
+Create:
+
+correct sections
+
+or functional modal/view.
+
+============================================================
+52. CONSOLE QUALITY
+============================================================
+
+After implementation:
+
+open browser developer tools.
+
+Fix ALL:
+
+JavaScript errors
+
+undefined variables
+
+null element errors
+
+duplicate IDs
+
+missing event handlers
+
+broken imports
+
+promise errors
+
+DOM exceptions
+
+There should be zero critical console errors.
+
+============================================================
+53. EVENT LISTENER SAFETY
+============================================================
+
+Before:
+
+element.addEventListener()
+
+ensure element exists.
+
+Or use event delegation.
+
+Avoid:
+
+Cannot read properties of null.
+
+============================================================
+54. DO NOT DUPLICATE EVENT HANDLERS
+============================================================
+
+Avoid adding multiple listeners to same button after modal redraw.
+
+Use:
+
+event delegation
+
+or controlled render lifecycle.
+
+============================================================
+55. SAFE HTML RENDERING
+============================================================
+
+Avoid inserting raw user content directly into innerHTML.
+
+Create an escapeHTML helper.
+
+Example:
+
+function escapeHTML(value) {
+   ...
+}
+
+Use it for:
+
+names
+
+feedback
+
+complaints
+
+descriptions
+
+user-entered text
+
+============================================================
+56. FRONTEND FILE STRUCTURE
+============================================================
+
+If current app is one HTML file:
+
+you MAY safely refactor into:
+
+index.html
+
+css/styles.css
+
+js/app.js
+
+js/state.js
+
+js/demo-api.js
+
+js/ui.js
+
+ONLY IF:
+
+design remains identical
+
+all imports work
+
+no functionality breaks
+
+Otherwise keep current single-file structure.
+
+Do not refactor just for appearance.
+
+============================================================
+57. DEMO DATA
+============================================================
+
+Create realistic demo data.
+
+Services:
+
+Electrician
+
+Plumber
+
+Carpenter
+
+Painter
+
+Cleaner
+
+Domestic Help
+
+Caregiver
+
+Driver
+
+Gardener
+
+Technician
+
+Workers:
+
+Amit Patil
+
+Suresh Jadhav
+
+Priya Shinde
+
+Neha More
+
+Rahul Deshmukh
+
+Include:
+
+verified worker
+
+unverified worker
+
+available worker
+
+busy worker
+
+pending verification
+
+============================================================
+58. IMPLEMENTATION STATUS
+============================================================
+
+The existing page contains status labels.
+
+DO NOT falsely say something is IMPLEMENTED simply because UI exists.
+
+After repairing frontend:
+
+update statuses accurately.
+
+Examples:
+
+FRONTEND DEMO
+
+SANDBOX
+
+PROTOTYPE
+
+BACKEND INTEGRATION PENDING
+
+Do not claim backend is connected if it is not.
+
+============================================================
+59. MOST IMPORTANT CLICK CHECKLIST
+============================================================
+
+Manually test EVERY ONE:
+
+Cooperative Login
+
+Get Started
+
+Book a Service
+
+Join as Worker
+
+Hero Search
+
+All 10 Service Cards
+
+Run Matching Demo
+
+Customer Login
+
+Worker Login
+
+Cooperative Login
+
+Federation Login
+
+Register
+
+Forgot Password
+
+Booking Next
+
+Booking Back
+
+Confirm Booking
+
+Worker Accept
+
+Worker Reject
+
+Worker Online/Offline
+
+Worker Arrived
+
+Verify Identity Demo
+
+Generate QR
+
+Customer Confirm
+
+Start Service
+
+Extra Charge
+
+Approve Charge
+
+Reject Charge
+
+Complete Service
+
+Confirm Completion
+
+Payment
+
+Invoice
+
+Rating
+
+Complaint
+
+SLA
+
+Worker Verification
+
+Capacity Request
+
+Capacity Approval
+
+Notifications
+
+Language Selector
+
+Profile
+
+Logout
+
+Mobile Menu
+
+Footer Links
+
+There must be NO dead critical buttons.
