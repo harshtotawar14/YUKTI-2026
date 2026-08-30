@@ -23,6 +23,23 @@
     document.head.appendChild(style);
   }
 
+  function loadCredibilityLayer(){
+    if(!document.getElementById('sanpaidCredibilityStyles')){
+      const link=document.createElement('link');
+      link.id='sanpaidCredibilityStyles';
+      link.rel='stylesheet';
+      link.href='credibility-layer.css';
+      document.head.appendChild(link);
+    }
+    if(!document.getElementById('sanpaidCredibilityScript')){
+      const script=document.createElement('script');
+      script.id='sanpaidCredibilityScript';
+      script.src='credibility-layer.js';
+      script.defer=true;
+      document.body.appendChild(script);
+    }
+  }
+
   function focusable(root){
     return [...root.querySelectorAll('button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')]
       .filter(el=>!el.hidden&&el.getClientRects().length);
@@ -39,6 +56,7 @@
 
   function start(){
     injectStyles();
+    loadCredibilityLayer();
 
     document.addEventListener('keydown',event=>{
       const connectedDialog=document.querySelector('#connectedModalRoot [role="dialog"]');
