@@ -2,13 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="SanPaid — Cooperative Gig Services Platform for Household & Community Services">
+<meta name="theme-color" content="#0b1930">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>SanPaid — SIH 2026 Working Demo</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="app-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="app-icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="mobile.css">
 </head>
 <body>
 <div id="landing">
@@ -28,12 +36,12 @@
         <button class="btn ghost desktop-only" id="coopLogin">Cooperative Login</button>
         <button class="btn primary desktop-only" id="getStarted">Get Started</button>
         <button class="btn secondary hidden" id="resumeDemo">Resume Demo</button>
-        <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+        <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileDrawer">☰</button>
       </div>
     </div>
-    <div id="mobileDrawer" class="mobile-drawer hidden">
+    <div id="mobileDrawer" class="mobile-drawer hidden" aria-hidden="true">
       <a href="#problem">Problem</a><a href="#matching">Fair Matching</a><a href="#services">Services</a><a href="#how">How It Works</a><a href="#trust">Trust & Safety</a>
-      <button onclick="SanPaidDemo.showRoles()">Get Started</button>
+      <button type="button" onclick="SanPaidDemo.showRoles()">Get Started</button>
     </div>
   </nav>
 
@@ -85,13 +93,14 @@
 </div>
 
 <div id="appShell" class="app-shell hidden">
-  <header class="app-top"><div class="brand">San<span>Paid</span></div><div class="actions"><span id="appUser"></span><button class="btn ghost small" id="homeFromApp">Landing</button><button class="btn primary small" id="logoutBtn">Logout</button><button class="menu-btn" id="appMenuBtn">☰</button></div></header>
+  <header class="app-top"><div class="brand">San<span>Paid</span></div><div class="actions"><span id="appUser"></span><button class="btn ghost small" id="homeFromApp" aria-label="Back to landing">Landing</button><button class="btn primary small" id="logoutBtn" aria-label="Logout">Logout</button><button class="menu-btn" id="appMenuBtn" aria-label="Open dashboard menu" aria-expanded="false" aria-controls="mobileAppDrawer">☰</button></div></header>
   <div class="app-main"><aside class="side" id="sideNav"></aside><main class="content" id="appContent"></main></div>
-  <div class="mobile-drawer hidden" id="mobileAppDrawer"><p>Use the desktop/sidebar navigation or rotate your device for the full dashboard menu.</p></div>
+  <div class="mobile-drawer hidden" id="mobileAppDrawer" aria-hidden="true"><p>Loading mobile navigation…</p></div>
 </div>
 
 <div id="toastWrap" class="toast-wrap"></div>
 <script src="app.js"></script>
 <script src="voice-request.js"></script>
+<script src="mobile.js"></script>
 </body>
 </html>
