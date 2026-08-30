@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v23';
+const CACHE_NAME = 'sanpaid-shell-v24';
 const APP_SHELL = [
   './',
   './index.html',
@@ -56,7 +56,6 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Never cache API responses or authenticated connected-demo data.
   if (url.pathname.startsWith('/api/')) return;
 
   if (request.mode === 'navigate') {
@@ -93,8 +92,6 @@ self.addEventListener('fetch', event => {
     '/top1-polish.js'
   ].some(path => url.pathname.endsWith(path));
 
-  // Critical selector/demo/Judge/credibility/hero code is network-first so installed PWAs do not
-  // keep stale workflow, proof, research or above-the-fold layout assets after deployment.
   if (connectedCritical) {
     event.respondWith(
       fetch(request, { cache: 'no-store' })
