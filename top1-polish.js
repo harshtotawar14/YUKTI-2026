@@ -92,6 +92,9 @@
     if(!document.getElementById('sanpaidWorkforceIntelligenceScript')){
       const script=document.createElement('script');script.id='sanpaidWorkforceIntelligenceScript';script.src='workforce-intelligence.js';script.defer=true;document.body.appendChild(script);
     }
+    if(!document.getElementById('sanpaidWorkerTrustPassportScript')){
+      const script=document.createElement('script');script.id='sanpaidWorkerTrustPassportScript';script.src='worker-trust-passport-ui.js';script.defer=true;document.body.appendChild(script);
+    }
   }
 
   function scheduleJudgeCredibility(){
