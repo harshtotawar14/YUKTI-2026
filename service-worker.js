@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v9';
+const CACHE_NAME = 'sanpaid-shell-v10';
 const APP_SHELL = [
   './',
   './index.html',
@@ -50,7 +50,7 @@ self.addEventListener('fetch', event => {
 
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
+      fetch(request, { cache: 'no-store' })
         .then(response => {
           const copy = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
@@ -61,6 +61,8 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // Connected demo code is network-first so SIH hotfixes are not trapped in
+  // an older mobile/PWA cache during rehearsals or judging.
   const connectedCritical = [
     '/connected-demo.js',
     '/connected-service-ui.js',
