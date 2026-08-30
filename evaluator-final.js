@@ -143,11 +143,15 @@
     const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),nodes=[];
     while(walker.nextNode())nodes.push(walker.currentNode);
     nodes.forEach(node=>{let value=node.nodeValue;replacements.forEach(([from,to])=>{if(value.includes(from))value=value.split(from).join(to);});if(value!==node.nodeValue)node.nodeValue=value;});
+    root.querySelectorAll?.('.match-results .score').forEach(score=>{score.hidden=true;score.setAttribute('aria-hidden','true');});
   }
 
   function installTerminologyObserver(){
     let queued=false;
-    const run=()=>{queued=false;['landing','selectorModeShell','sihJudgeShell','connectedShell'].forEach(id=>{const root=document.getElementById(id);if(root)normalizeText(root);});};
+    const run=()=>{
+      queued=false;
+      ['landing','selectorModeShell','sihJudgeShell','connectedShell','appShell','modalBackdrop'].forEach(id=>{const root=document.getElementById(id);if(root)normalizeText(root);});
+    };
     const observer=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(run);});
     observer.observe(document.body,{subtree:true,childList:true,characterData:true});run();
   }
@@ -155,7 +159,10 @@
   function wire(){
     $('#connectedDemoBtn')?.addEventListener('click',()=>openConnected());
     $('#heroMatchingCta')?.addEventListener('click',()=>$('#matching')?.scrollIntoView({behavior:'smooth',block:'start'}));
-    $$('[id="evalOpenConnected"]').forEach(button=>button.addEventListener('click',()=>openConnected()));
+    $$('[id="evalOpenConnected"]').forEach((button,index)=>{
+      if(index>0)button.id=`evalOpenConnected${index+1}`;
+      button.addEventListener('click',()=>openConnected());
+    });
     $('#evalFinalPrototype')?.addEventListener('click',()=>openConnected());
     $('#evalFinalMatching')?.addEventListener('click',()=>$('#matching')?.scrollIntoView({behavior:'smooth',block:'start'}));
     $('#evalCapacityConnected')?.addEventListener('click',()=>openConnected());
@@ -164,7 +171,7 @@
     $('#runMatchBtn')?.addEventListener('click',event=>{event.preventDefault();startMatchingDemo();});
     $('#evalResetMatch')?.addEventListener('click',()=>resetMatching(demoState.radius));
     $('#evalResetLocal')?.addEventListener('click',()=>window.SanPaidDemo?.reset?.());
-    $('#evalRadius')?.addEventListener('change',event=>{const radius=Number(event.target.value||20);resetMatching(radius);});
+    $('#evalRadius')?.addEventListener('change',event=>resetMatching(Number(event.target.value||20)));
 
     document.addEventListener('click',event=>{
       const why=event.target.closest('[data-eval-why]');if(why){why.closest('.eval-candidate')?.classList.toggle('open');return;}
@@ -177,5 +184,6 @@
     wireCapacity();resetMatching(20);installTerminologyObserver();
   }
 
+  window.SanPaidEvaluatorFinal={startMatchingDemo,resetMatching};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire,{once:true});else wire();
 })();
