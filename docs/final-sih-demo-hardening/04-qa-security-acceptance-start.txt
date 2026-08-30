@@ -1,0 +1,718 @@
+61. RESPONSIVE QA
+=====================================================================
+
+Test:
+
+360px
+
+390px
+
+412px
+
+430px
+
+768px
+
+1024px
+
+1366px
+
+1440px
+
+No:
+
+horizontal overflow
+
+offscreen modal
+
+tiny action buttons
+
+broken drawer
+
+broken bottom nav
+
+unusable admin table
+
+voice overflow
+
+QR overflow
+
+=====================================================================
+62. REAL MOBILE DEVICE QA
+=====================================================================
+
+Test where possible:
+
+Android Chrome
+
+iPhone Safari
+
+Desktop Chrome
+
+Two browser sessions simultaneously
+
+Incognito / separate profile for another role
+
+=====================================================================
+63. NETWORK FAILURE
+=====================================================================
+
+If API unavailable:
+
+do not pretend action succeeded.
+
+Show:
+
+Connection unavailable.
+
+Retry.
+
+For safe offline-capable actions:
+
+PENDING SYNC
+
+only if proper queue/sync logic exists.
+
+=====================================================================
+64. BACKEND ERROR HANDLING
+=====================================================================
+
+Handle:
+
+401
+
+403
+
+404
+
+409
+
+422
+
+429
+
+500
+
+No unhandled JSON response should crash UI.
+
+Display user-safe messages.
+
+=====================================================================
+65. DATABASE TRANSACTIONS
+=====================================================================
+
+Use transactions for sensitive multi-step operations:
+
+Worker Offer Acceptance
+
+Booking Assignment
+
+Payment Ledger
+
+Capacity Assignment
+
+Complaint Escalation
+
+Avoid double assignment race conditions.
+
+=====================================================================
+66. WORKER OFFER RACE CONDITION
+=====================================================================
+
+If two workers attempt to accept same booking:
+
+only ONE can win assignment.
+
+Backend should atomically check:
+
+booking not already assigned
+
+offer still pending
+
+worker still eligible
+
+Then assign.
+
+Other worker receives:
+
+Offer no longer available.
+
+=====================================================================
+67. IDEMPOTENCY
+=====================================================================
+
+Protect important repeated actions:
+
+booking creation where appropriate
+
+payment
+
+worker offer acceptance
+
+complaint creation
+
+capacity request
+
+Prevent duplicate records caused by double tap/network retry.
+
+=====================================================================
+68. FILE UPLOADS
+=====================================================================
+
+Validate:
+
+file type
+
+file size
+
+ownership
+
+booking relationship
+
+Store only safe metadata in DB.
+
+Do not execute user-uploaded files.
+
+=====================================================================
+69. PERFORMANCE
+=====================================================================
+
+Do not overengineer.
+
+For SIH demo:
+
+fast page load
+
+fast API responses
+
+small JS
+
+no massive libraries unless necessary
+
+pagination for tables
+
+database indexes for:
+
+worker skill
+
+verification
+
+availability
+
+booking status
+
+complaint status
+
+cooperative
+
+created_at
+
+geo queries where used.
+
+=====================================================================
+70. TESTS
+=====================================================================
+
+Add tests for critical business logic.
+
+At minimum:
+
+Unverified Worker Exclusion
+
+Worker Accept
+
+Worker Reject Fallback
+
+Double Accept Race Protection
+
+Dual Service Start Lock
+
+Extra Charge Approval
+
+Complaint Escalation
+
+Capacity Worker Consent
+
+Rating Duplicate Prevention
+
+=====================================================================
+71. MANUAL CLICK AUDIT
+=====================================================================
+
+Test every important button:
+
+Book
+
+Voice
+
+Next
+
+Back
+
+Location
+
+Confirm Booking
+
+Matching
+
+Offer
+
+Accept
+
+Reject
+
+Travel
+
+Arrive
+
+Verify
+
+QR
+
+Customer Confirm
+
+Start Service
+
+Extra Charge
+
+Approve
+
+Complete
+
+Payment
+
+Invoice
+
+Rating
+
+Complaint
+
+Escalate
+
+Worker Verification
+
+Capacity Request
+
+Capacity Approval
+
+Forecast Action
+
+Training Recommendation
+
+Mobile Drawer
+
+Bottom Nav
+
+Logout
+
+Reset Demo
+
+No dead button.
+
+=====================================================================
+72. CONSOLE / NETWORK AUDIT
+=====================================================================
+
+Before completing:
+
+zero uncaught JavaScript errors
+
+zero broken asset requests
+
+zero CORS errors
+
+zero missing API endpoints
+
+zero null element crashes
+
+zero promise rejection errors
+
+zero duplicated action requests caused by bad listeners
+
+=====================================================================
+73. WHAT NOT TO ADD
+=====================================================================
+
+Do NOT spend time adding:
+
+Blockchain
+
+Crypto
+
+AR / VR
+
+Generic Chatbot
+
+Social Feed
+
+E-commerce Store
+
+Gamification
+
+3D Globe
+
+Random AI Models
+
+Dozens of new categories
+
+Fake government integrations
+
+Fake insurance integrations
+
+Fake biometrics
+
+Focus on CORE WORKFLOW DEPTH.
+
+=====================================================================
+74. FINAL SIH QUALITY RULE
+=====================================================================
+
+Every important SanPaid claim must have a working proof.
+
+CLAIM:
+
+Verified Workers
+
+PROOF:
+
+Worker Verification Workflow
+
+CLAIM:
+
+Fair Opportunities
+
+PROOF:
+
+Eligibility + Explainable Ranking + Worker Choice
+
+CLAIM:
+
+Customer Trust
+
+PROOF:
+
+Dual Service-Start Verification
+
+CLAIM:
+
+Worker Freedom
+
+PROOF:
+
+Accept / Reject
+
+CLAIM:
+
+Reliability
+
+PROOF:
+
+Replacement Flow
+
+CLAIM:
+
+Cooperative Governance
+
+PROOF:
+
+Command Center
+
+CLAIM:
+
+Federation Governance
+
+PROOF:
+
+Capacity Exchange
+
+CLAIM:
+
+Accountability
+
+PROOF:
+
+Complaint + SLA Audit
+
+CLAIM:
+
+Worker Growth
+
+PROOF:
+
+Service Passport + Training
+
+CLAIM:
+
+Planning
+
+PROOF:
+
+Demand → Capacity → Skill Gap → Action
+
+CLAIM:
+
+Inclusive Access
+
+PROOF:
+
+Marathi/Hindi/English Voice
+
+CLAIM:
+
+Mobile Accessibility
+
+PROOF:
+
+Customer + Worker Two-Phone Demo
+
+=====================================================================
+75. PRIORITY ORDER — DO NOT IGNORE
+=====================================================================
+
+P0
+
+Audit current repo.
+
+P1
+
+Shared backend + PostgreSQL.
+
+P2
+
+Cross-device Customer → Worker booking.
+
+P3
+
+Realtime Worker Offer / Accept / Reject.
+
+P4
+
+One flawless booking lifecycle.
+
+P5
+
+Dual service-start verification.
+
+P6
+
+Explainable fair matching.
+
+P7
+
+Cooperative Command Center.
+
+P8
+
+Capacity Exchange.
+
+P9
+
+Complaint + SLA.
+
+P10
+
+Demand → Capacity → Skill Gap.
+
+P11
+
+Service Passport.
+
+P12
+
+Mobile polish.
+
+P13
+
+Map / additional visual enhancements.
+
+If time is limited:
+
+DO NOT sacrifice P1–P9 for P12–P13.
+
+=====================================================================
+76. FINAL ACCEPTANCE TEST
+=====================================================================
+
+Do not mark task complete until all answers are YES:
+
+Can Customer create a booking?
+
+Is booking stored on backend?
+
+Can Worker receive it on another phone/browser?
+
+Can worker hear/read the voice request?
+
+Can worker reject?
+
+Does next worker receive same request?
+
+Can worker accept?
+
+Does customer update?
+
+Can worker start traveling?
+
+Can worker arrive?
+
+Does identity verification work as sandbox?
+
+Does booking-specific QR/token work?
+
+Can customer confirm worker?
+
+Is Start Service locked until both checks pass?
+
+Can extra charge be requested?
+
+Can customer approve/reject?
+
+Can completion happen?
+
+Can sandbox payment happen?
+
+Can invoice be generated?
+
+Can rating update worker profile?
+
+Can admin verify worker?
+
+Does verification immediately affect eligibility?
+
+Can complaint be raised?
+
+Can SLA escalate?
+
+Can cooperative capacity shortage be shown?
+
+Can another cooperative approve capacity?
+
+Does worker still choose whether to accept?
+
+Does federation dashboard reflect it?
+
+Does demand forecast lead to an action?
+
+Does mobile work?
+
+Does data persist?
+
+Does separate-device data synchronize?
+
+Are there zero critical dead buttons?
+
+Are there zero critical console errors?
+
+If any critical answer is NO:
+
+FIX IT BEFORE COMPLETION.
+
+=====================================================================
+77. FINAL PRODUCT EXPERIENCE
+=====================================================================
+
+When an SIH judge opens SanPaid, the reaction should NOT be:
+
+"This is a home-service website with many cards."
+
+The reaction should be:
+
+"This is a connected operating system for cooperative workforce
+discovery, verification, fair allocation, trusted service execution
+and workforce planning."
+
+The system must visibly prove:
+
+DEMAND
+
+→ VERIFIED ELIGIBILITY
+
+→ FAIR ALLOCATION
+
+→ WORKER CHOICE
+
+→ TRUSTED DELIVERY
+
+→ TRANSPARENT PAYMENT
+
+→ ACCOUNTABLE GOVERNANCE
+
+→ CAPACITY / SKILL PLANNING
+
+=====================================================================
+78. FINAL RESPONSE FROM CODING AGENT
+=====================================================================
+
+After actually modifying the repository, provide:
+
+Files Changed
+
+Database Schema Added
+
+Backend APIs Added
+
+Realtime Flow Added
+
+Customer Two-Device Flow
+
+Worker Offer Flow
+
+Fair Matching Logic
+
+Dual Verification Flow
+
+Payment Flow
+
+Complaint/SLA Flow
+
+Capacity Exchange Flow
+
+Demand Planning Flow
+
+Mobile Changes
+
+Tests Added
+
+Known Limitations
+
+Production Integrations Still Pending
+
+Exact 3-Minute Golden Demo Steps
+
+Do NOT respond only with suggestions.
+
+DO NOT give only code snippets.
+
+ACTUALLY MODIFY THE CURRENT SANPAID REPOSITORY.
+
+=====================================================================
+79. START NOW
+=====================================================================
+
+Open the latest repository state.
+
+Audit before editing.
+
+Preserve working functionality.
+
+Prioritize depth over feature count.
+
+Do not fake realtime functionality.
+
+Do not fake production integrations.
+
+Make the core workflow work across separate devices.
+
+Make every important claim demonstrable.
+
+Make SanPaid technically credible, visually coherent,
+mobile-friendly and SIH judge-ready.
+
+FINAL TARGET:
+
+A REALISTIC,
+CONNECTED,
+TWO-DEVICE,
+RESEARCH-GROUNDED,
+WORKING,
+SIH-READY SANPAID PROTOTYPE.
