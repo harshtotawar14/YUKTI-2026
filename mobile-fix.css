@@ -1,0 +1,6 @@
+/* Final mobile interaction hotfixes */
+body.mobile-drawer-open{overflow:hidden;touch-action:auto}
+@media(max-width:960px){
+  .ribbon{display:none}
+  .mobile-drawer{height:auto!important;touch-action:pan-y!important;-webkit-overflow-scrolling:touch}
+}
