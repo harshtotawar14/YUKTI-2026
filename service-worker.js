@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v8';
+const CACHE_NAME = 'sanpaid-shell-v9';
 const APP_SHELL = [
   './',
   './index.html',
@@ -22,6 +22,7 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(APP_SHELL))
       .catch(error => console.warn('SanPaid shell precache partial failure', error))
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -44,7 +45,7 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // API and SSE requests must always hit the shared backend/proxy.
+  // API requests are never cached.
   if (url.pathname.startsWith('/api/')) return;
 
   if (request.mode === 'navigate') {
@@ -56,6 +57,28 @@ self.addEventListener('fetch', event => {
           return response;
         })
         .catch(async () => (await caches.match('./index.html')) || (await caches.match('./')))
+    );
+    return;
+  }
+
+  const connectedCritical = [
+    '/connected-demo.js',
+    '/connected-service-ui.js',
+    '/connected-commerce-ui.js',
+    '/connected-runtime-fix.js'
+  ].some(path => url.pathname.endsWith(path));
+
+  if (connectedCritical) {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' })
+        .then(response => {
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
     );
     return;
   }
