@@ -1,0 +1,716 @@
+19. WORKER DASHBOARD
+============================================================
+
+Worker dashboard:
+
+Online / Offline toggle
+
+Job Offers
+
+Active Job
+
+Schedule
+
+Earnings
+
+Service History
+
+Ratings
+
+Profile
+
+Documents
+
+Verification
+
+Welfare
+
+Notifications
+
+Support
+
+Job offer card:
+
+Service
+
+Area
+
+Distance
+
+Estimated Earnings
+
+Time
+
+Buttons:
+
+ACCEPT
+
+REJECT
+
+Both must actually update demo state.
+
+============================================================
+20. WORKER ACCEPT
+============================================================
+
+When ACCEPT clicked:
+
+change worker offer status.
+
+Update booking:
+
+OFFERING
+
+→ ASSIGNED
+
+Show customer assigned worker.
+
+============================================================
+21. WORKER REJECT
+============================================================
+
+When REJECT clicked:
+
+show optional reason modal.
+
+Reasons:
+
+Too Far
+
+Unavailable
+
+Schedule Conflict
+
+Not My Skill
+
+Other
+
+Then:
+
+mark current worker rejected.
+
+Automatically offer next eligible worker.
+
+============================================================
+22. COOPERATIVE ADMIN DASHBOARD
+============================================================
+
+Cooperative Login must open a working demo admin dashboard.
+
+Sections:
+
+Overview
+
+Workers
+
+Verification
+
+Bookings
+
+Fair Allocation
+
+Payments
+
+Complaints
+
+SLA
+
+Capacity
+
+Welfare
+
+Analytics
+
+Forecast
+
+Audit Logs
+
+Settings
+
+Use demo data.
+
+============================================================
+23. ADMIN KPI CARDS
+============================================================
+
+Show realistic demo values from JS state.
+
+Do NOT hardcode numbers directly in HTML.
+
+Compute using demo data.
+
+Cards:
+
+Total Workers
+
+Verified Workers
+
+Available Workers
+
+Pending Verification
+
+Today's Bookings
+
+Active Services
+
+Open Complaints
+
+SLA Breaches
+
+Pending Payments
+
+Worker Utilization
+
+============================================================
+24. WORKER VERIFICATION DEMO
+============================================================
+
+Create pending verification list.
+
+Admin clicks worker.
+
+Show:
+
+Name
+
+Photo placeholder
+
+Skills
+
+Documents
+
+Certificates
+
+Experience
+
+Actions:
+
+VERIFY
+
+REQUEST MORE INFORMATION
+
+REJECT
+
+VERIFY:
+
+changes worker state to VERIFIED.
+
+Only then worker becomes eligible for matching.
+
+============================================================
+25. FEDERATION DASHBOARD
+============================================================
+
+Federation login should work.
+
+Sections:
+
+Cooperatives
+
+Regional Workforce
+
+Capacity Exchange
+
+Regional Demand
+
+SLA
+
+Compliance
+
+Forecast
+
+Reports
+
+Show realistic demo data.
+
+============================================================
+26. CAPACITY EXCHANGE DEMO
+============================================================
+
+Create functional demo.
+
+Example:
+
+Cooperative A:
+
+Electrician shortage = 13
+
+Cooperative B:
+
+Available electricians = 8
+
+Button:
+
+REQUEST CAPACITY
+
+Then:
+
+show request status.
+
+Provider cooperative:
+
+APPROVE
+
+REJECT
+
+After approval:
+
+show:
+
+Capacity Approved
+
+Then worker opportunity.
+
+============================================================
+27. DUAL SERVICE START DEMO
+============================================================
+
+Create functional frontend demo flow.
+
+Assigned Worker
+
+→ Worker Traveling
+
+→ Worker Arrived
+
+→ Demo Identity Check
+
+→ Dynamic QR / Verification Token visual
+
+→ Customer Confirm Worker
+
+→ Service Started
+
+Important:
+
+Service Start button must remain disabled until:
+
+identityVerified === true
+
+AND
+
+customerConfirmed === true
+
+============================================================
+28. DYNAMIC QR DEMO
+============================================================
+
+Use a generated visual/demo QR or secure-looking token.
+
+Do NOT call it live Aadhaar verification.
+
+Label:
+
+SANDBOX VERIFICATION
+
+QR/token should include:
+
+Booking ID
+
+Worker ID
+
+Timestamp
+
+short expiry demo
+
+After customer confirms:
+
+mark token used.
+
+Do not allow reuse.
+
+============================================================
+29. SERVICE PROGRESS
+============================================================
+
+Active booking page should show timeline:
+
+Worker Assigned
+
+Traveling
+
+Arrived
+
+Identity Verified
+
+Customer Confirmed
+
+Service Started
+
+In Progress
+
+Completed
+
+Current status visually highlighted.
+
+============================================================
+30. EXTRA CHARGE DEMO
+============================================================
+
+Worker:
+
+Request Additional Work
+
+Fields:
+
+Reason
+
+Description
+
+Amount
+
+Customer should receive:
+
+Additional Charge Request
+
+Buttons:
+
+APPROVE
+
+REJECT
+
+Only approved amount updates invoice total.
+
+============================================================
+31. COMPLETE SERVICE
+============================================================
+
+Worker:
+
+Request Completion
+
+Customer:
+
+Confirm Completion
+
+Report Problem
+
+Confirm:
+
+booking → COMPLETED
+
+Report Problem:
+
+open complaint creation.
+
+============================================================
+32. PAYMENT DEMO
+============================================================
+
+Create payment modal.
+
+Options:
+
+UPI
+
+Card
+
+Wallet
+
+Cash
+
+Clearly label:
+
+SANDBOX PAYMENT
+
+Validate fields.
+
+On successful demo payment:
+
+status:
+
+PAID
+
+Generate transaction ID.
+
+Do NOT claim real money was processed.
+
+============================================================
+33. INVOICE
+============================================================
+
+After payment:
+
+generate frontend invoice.
+
+Show:
+
+Booking ID
+
+Worker
+
+Service
+
+Base Charge
+
+Approved Extra Charge
+
+Total
+
+Payment Method
+
+Transaction ID
+
+Status
+
+Buttons:
+
+Print
+
+Download / Save as printable document
+
+============================================================
+34. RATING
+============================================================
+
+After completed service:
+
+show rating modal.
+
+1–5 stars.
+
+Categories:
+
+Service Quality
+
+Professionalism
+
+Punctuality
+
+Communication
+
+Feedback
+
+Submit:
+
+store rating.
+
+Update displayed worker average demo rating.
+
+============================================================
+35. COMPLAINT FLOW
+============================================================
+
+Create complaint modal.
+
+Fields:
+
+Booking
+
+Category
+
+Description
+
+Priority
+
+Optional evidence
+
+Categories:
+
+Service Quality
+
+Worker Behaviour
+
+Payment
+
+No Show
+
+Pricing
+
+Safety
+
+Other
+
+On submit:
+
+create complaint ID.
+
+Show status.
+
+============================================================
+36. SLA DEMO
+============================================================
+
+Create frontend SLA demo status.
+
+Example:
+
+L1 Support
+
+Within SLA
+
+Near SLA
+
+Breached
+
+For demo provide:
+
+"Simulate SLA Breach"
+
+button available only inside admin/demo tooling.
+
+When clicked:
+
+L1
+
+→ L2 Cooperative Admin
+
+Then optionally:
+
+L3 Federation
+
+Update timeline.
+
+============================================================
+37. NOTIFICATIONS
+============================================================
+
+Add working notification center.
+
+Notifications for:
+
+Booking Created
+
+Worker Assigned
+
+Worker Arrived
+
+Verification Complete
+
+Service Started
+
+Additional Charge
+
+Payment
+
+Complaint
+
+SLA Escalation
+
+Capacity Request
+
+Allow:
+
+mark as read
+
+clear read notifications
+
+============================================================
+38. PROFILE MENU
+============================================================
+
+Logged-in user must see:
+
+Name
+
+Role
+
+Profile
+
+Switch Role if account has multiple roles
+
+Logout
+
+Logout must clear session properly.
+
+============================================================
+39. LANGUAGE SELECTOR
+============================================================
+
+Add:
+
+English
+
+Hindi
+
+Marathi
+
+For current demo:
+
+at least translate important actions/navigation.
+
+Use centralized dictionary object.
+
+Example:
+
+const translations = {
+    en: {},
+    hi: {},
+    mr: {}
+};
+
+Do not duplicate page HTML for each language.
+
+============================================================
+40. VOICE BUTTON
+============================================================
+
+If browser SpeechRecognition exists:
+
+use browser API.
+
+If unavailable:
+
+show proper fallback message.
+
+Do NOT break booking.
+
+Text input must always work.
+
+============================================================
+41. LOCATION BUTTON
+============================================================
+
+Use browser geolocation where available.
+
+Button:
+
+Use Current Location
+
+Handle:
+
+permission allowed
+
+permission denied
+
+unsupported browser
+
+loading
+
+error
+
+Do not crash.
+
+============================================================
+42. BACK BUTTONS
+============================================================
+
+Every modal/wizard should have:
+
+Back
+
+Next
+
+Cancel
+
+Close
+
+Do not trap user.
+
+============================================================
+43. MODAL SYSTEM
+============================================================
+
+Create one reusable modal system.
+
+Requirements:
+
+Escape closes modal where safe.
+
+Click outside closes non-critical modal.
+
+Focus should move into modal.
+
+Focus returns after close.
+
+Prevent background scroll when modal is open.
