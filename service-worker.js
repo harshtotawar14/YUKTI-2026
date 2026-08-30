@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v22';
+const CACHE_NAME = 'sanpaid-shell-v23';
 const APP_SHELL = [
   './',
   './index.html',
@@ -10,6 +10,7 @@ const APP_SHELL = [
   './sih-final.css',
   './selector-mode.css',
   './credibility-layer.css',
+  './hero-viewport-fix.css',
   './app.js',
   './voice-lazy-loader.js',
   './voice-request.js',
@@ -88,11 +89,12 @@ self.addEventListener('fetch', event => {
     '/selector-mode.css',
     '/credibility-layer.js',
     '/credibility-layer.css',
+    '/hero-viewport-fix.css',
     '/top1-polish.js'
   ].some(path => url.pathname.endsWith(path));
 
-  // Critical selector/demo/Judge/credibility code is network-first so installed PWAs do not
-  // keep stale workflow, proof or research assets after deployment.
+  // Critical selector/demo/Judge/credibility/hero code is network-first so installed PWAs do not
+  // keep stale workflow, proof, research or above-the-fold layout assets after deployment.
   if (connectedCritical) {
     event.respondWith(
       fetch(request, { cache: 'no-store' })
