@@ -1,12 +1,19 @@
 (() => {
   'use strict';
 
-  // Final polish is intentionally event-light. Core loading, speech, modal and
-  // status behavior now lives in the feature modules themselves so we do not
-  // duplicate handlers or reintroduce DOM-observer performance regressions.
-  document.addEventListener('keydown', event => {
-    if (event.key !== 'Escape') return;
-    const cancel = document.querySelector('#connectedModalRoot [data-modal-cancel]');
-    if (cancel) cancel.click();
-  });
+  function injectStyles(){
+    if(document.getElementById('sanpaidFinalPolishStyles'))return;
+    const style=document.createElement('style');style.id='sanpaidFinalPolishStyles';style.textContent=`
+      .connected-trust-checks{display:grid;gap:8px;margin:12px 0}.connected-trust-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px;border:1px solid #ead8a8;background:#fff9ea;border-radius:11px}.connected-trust-row.done{border-color:#c4e8d5;background:#eef9f3}.connected-payment-success{line-height:1.65}.why-different-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.why-different-card{padding:16px;border:1px solid var(--line);border-radius:15px;background:#fff;box-shadow:var(--shadow)}.why-different-card b{display:block;color:var(--navy2);margin-bottom:6px}.why-different-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}@media(max-width:980px){.why-different-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.why-different-grid{grid-template-columns:1fr}}
+      @media print{body>*{display:none!important}#connectedShell{display:block!important;position:static!important;background:#fff!important}#connectedShell .connected-top,#connectedShell .connected-actions,#connectedModalRoot{display:none!important}.connected-shell,.connected-main{overflow:visible!important;width:100%!important;max-width:none!important;padding:0!important}.connected-card{box-shadow:none!important;break-inside:avoid}}
+    `;document.head.appendChild(style);
+  }
+  function polishLanding(){
+    document.getElementById('bookServiceHero')?.replaceChildren(document.createTextNode('Book Verified Service'));
+    const connected=document.getElementById('connectedDemoBtn');if(connected)connected.textContent='▶ Watch Connected Demo';
+    const trust=document.querySelector('#trust .trustin');if(trust)trust.innerHTML='<span>✅ Verified Workforce</span><span>⚖️ Fair Allocation</span><span>🤝 Worker Choice</span><span>🏢 Cooperative Governance</span>';
+    const problem=document.getElementById('problem');if(problem&&!document.getElementById('whyDifferent')){const section=document.createElement('section');section.id='whyDifferent';section.className='section white';section.innerHTML='<div class="wrap"><div class="head"><span class="tag">Why SanPaid Is Different</span><h2>Built for cooperative workforce operations — not only service booking</h2><p>SanPaid combines worker trust, fair opportunity and cooperative planning in one connected operating network.</p></div><div class="why-different-grid"><div class="why-different-card"><b>Cooperative Governance</b><p>Verification, complaints, capacity and workforce operations stay accountable to the cooperative.</p></div><div class="why-different-card"><b>Fair Opportunity Allocation</b><p>Eligibility comes first, then explainable fair ranking and worker choice.</p></div><div class="why-different-card"><b>Cross-Cooperative Capacity</b><p>Nearby cooperatives can share approved capacity without silently transferring workers.</p></div><div class="why-different-card"><b>Trusted Service Start</b><p>Worker identity and customer confirmation are both required before service begins.</p></div><div class="why-different-card"><b>Workforce Planning</b><p>Demand, capacity and skill gaps lead to governed operational actions.</p></div></div></div>';problem.insertAdjacentElement('afterend',section);}
+  }
+  function start(){injectStyles();polishLanding();document.addEventListener('keydown',event=>{if(event.key!=='Escape')return;const cancel=document.querySelector('#connectedModalRoot [data-modal-cancel]');if(cancel)cancel.click();});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
