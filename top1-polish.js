@@ -61,6 +61,12 @@
     ensureScript('sanpaidTop1ReadinessScript', 'top1-readiness.js');
   }
 
+  function loadSelectionReadyV3() {
+    ensureStylesheet('sanpaidDesignTokensV3', 'design-tokens.css');
+    ensureStylesheet('sanpaidSelectionReadyV3Styles', 'selection-ready-v3.css');
+    ensureScript('sanpaidSelectionReadyV3Script', 'selection-ready-v3.js');
+  }
+
   function polishLandingHero() {
     const landing = document.getElementById('landing');
     const hero = document.getElementById('home');
@@ -159,6 +165,7 @@
     loadPremiumExperience();
     loadResearchUpgrades();
     loadTop1Readiness();
+    loadSelectionReadyV3();
 
     document.addEventListener('keydown', event => {
       const connectedDialog = document.querySelector('#connectedModalRoot [role="dialog"]');
