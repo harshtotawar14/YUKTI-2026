@@ -72,7 +72,7 @@
 
   function mount() {
     if ($('#top1Readiness')) return $('#top1Readiness');
-    const anchor = $('#researchBackedUpgrades') || $('#intelligence') || $('#impact');
+    const anchor = $('#impact') || $('#researchBackedUpgrades') || $('#intelligence');
     if (!anchor) return null;
 
     const section = document.createElement('section');
@@ -80,7 +80,7 @@
     section.className = 'section white sp-readiness';
     section.innerHTML = `<div class="wrap">
       <div class="head" data-reveal>
-        <span class="tag">09B — Failure-Safe Operations</span>
+        <span class="tag">10A — Failure-Safe Operations</span>
         <h2>A strong prototype explains what happens when things go wrong.</h2>
         <p>SanPaid does not hide failure states. Each scenario shows the reason, next action, human control and auditable outcome without bypassing eligibility or worker choice.</p>
       </div>
@@ -91,9 +91,9 @@
 
       <div class="sp-validation-wrap" data-reveal>
         <article class="sp-validation-card" id="stakeholderValidationReadiness">
-          <span class="sp-validation-status">Awaiting real stakeholder evidence</span>
+          <span class="sp-validation-status">Cooperative/Admin validation pending</span>
           <h3>Cooperative / Admin Validation Readiness</h3>
-          <p>The website is ready to show real stakeholder validation when it is collected. No organization, quote, approval or pilot result is fabricated.</p>
+          <p>Customer and worker evidence can be shown separately; this block remains reserved for genuine cooperative/admin feedback. No organization, quote, approval or pilot result is fabricated.</p>
           <div class="sp-validation-fields"><span>Stakeholder Role</span><span>Organization Type</span><span>Date</span><span>Problem Confirmed</span><span>Most Valuable Feature</span><span>Improvement Suggestion</span><span>Permission to Quote</span><span>Evidence / Notes</span></div>
           <div class="sp-validation-truth"><b>Truth rule:</b> publish a stakeholder name, organization or quote only after direct feedback and permission. Until then this remains a validation-readiness placeholder, not a partnership claim.</div>
         </article>
@@ -102,7 +102,7 @@
           <h3>What still creates the most judge value</h3>
           <div class="sp-proof-queue">
             <article><i>01</i><div><b>1 real Cooperative/Admin feedback</b><small>Confirm operational pain + most useful SanPaid capability.</small></div></article>
-            <article><i>02</i><div><b>2–5 worker/customer usability checks</b><small>Test clarity of Accept / Decline, trust and service-start steps.</small></div></article>
+            <article><i>02</i><div><b>Golden Demo repeatability</b><small>Rehearse the complete connected booking, worker choice and trust flow.</small></div></article>
             <article><i>03</i><div><b>Pilot baseline before impact claims</b><small>Measure assignment time, booking success, SLA and opportunity distribution.</small></div></article>
           </div>
         </article>
@@ -143,7 +143,7 @@
       const note = document.createElement('p');
       note.dataset.spValidationNote = 'true';
       note.className = 'eval-impact-note';
-      note.textContent = 'Real cooperative/admin and worker/customer validation is still required before external pilot claims.';
+      note.textContent = 'Real cooperative/admin validation is still required before external pilot claims.';
       impactNote.insertAdjacentElement('afterend', note);
     }
   }
@@ -151,19 +151,13 @@
   function installReveal(section) {
     if (!section) return;
     const targets = $$('[data-reveal]', section);
-    targets.forEach(node => node.classList.add('premium-reveal'));
-    if (!('IntersectionObserver' in window) || window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) {
-      targets.forEach(node => node.classList.add('premium-visible'));
-      return;
-    }
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('premium-visible');
-        observer.unobserve(entry.target);
-      });
-    }, { threshold:.12, rootMargin:'0px 0px -7% 0px' });
-    targets.forEach(node => observer.observe(node));
+    /* Do not allow reveal animation to reserve a visually blank full section. */
+    targets.forEach(node => {
+      node.classList.add('premium-reveal', 'premium-visible');
+      node.style.opacity = '1';
+      node.style.visibility = 'visible';
+      node.style.transform = 'none';
+    });
   }
 
   function start() {
