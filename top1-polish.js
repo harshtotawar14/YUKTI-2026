@@ -51,6 +51,11 @@
     ensureScript('sanpaidPremiumSihScript', 'premium-sih.js');
   }
 
+  function loadResearchUpgrades() {
+    ensureStylesheet('sanpaidResearchUpgradeStyles', 'research-upgrades.css');
+    ensureScript('sanpaidResearchUpgradeScript', 'research-upgrades.js');
+  }
+
   function polishLandingHero() {
     const landing = document.getElementById('landing');
     const hero = document.getElementById('home');
@@ -147,6 +152,7 @@
     loadCredibilityLayer();
     loadWorkforceIntelligence();
     loadPremiumExperience();
+    loadResearchUpgrades();
 
     document.addEventListener('keydown', event => {
       const connectedDialog = document.querySelector('#connectedModalRoot [role="dialog"]');
