@@ -1,0 +1,50 @@
+/* SanPaid spacing hotfix — compact the research-backed 09A subsection between 09 and 10. */
+#landing #intelligence{
+  padding-bottom:52px!important;
+}
+
+#landing #researchBackedUpgrades{
+  min-height:0!important;
+  margin:0!important;
+  padding:44px 0 52px!important;
+}
+
+#landing #researchBackedUpgrades .wrap{
+  position:relative;
+}
+
+#landing #researchBackedUpgrades .head{
+  margin-top:0!important;
+  margin-bottom:24px!important;
+}
+
+#landing #researchBackedUpgrades .head h2{
+  margin-top:10px!important;
+  margin-bottom:8px!important;
+}
+
+#landing #researchBackedUpgrades .sp-upgrade-grid{
+  margin-top:0!important;
+}
+
+#landing #researchBackedUpgrades .sp-upgrade-truth{
+  margin-top:14px!important;
+}
+
+/* Never leave a large blank block if an IntersectionObserver/reveal callback is delayed. */
+#landing #researchBackedUpgrades .premium-reveal{
+  opacity:1!important;
+  visibility:visible!important;
+  transform:none!important;
+}
+
+#landing #impact{
+  padding-top:60px!important;
+}
+
+@media(max-width:720px){
+  #landing #intelligence{padding-bottom:36px!important}
+  #landing #researchBackedUpgrades{padding:32px 0 38px!important}
+  #landing #researchBackedUpgrades .head{margin-bottom:18px!important}
+  #landing #impact{padding-top:44px!important}
+}
