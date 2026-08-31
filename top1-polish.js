@@ -56,6 +56,11 @@
     ensureScript('sanpaidResearchUpgradeScript', 'research-upgrades.js');
   }
 
+  function loadTop1Readiness() {
+    ensureStylesheet('sanpaidTop1ReadinessStyles', 'top1-readiness.css');
+    ensureScript('sanpaidTop1ReadinessScript', 'top1-readiness.js');
+  }
+
   function polishLandingHero() {
     const landing = document.getElementById('landing');
     const hero = document.getElementById('home');
@@ -101,7 +106,7 @@
     const trust = landing.querySelector('#trust');
     if (trust) {
       const trustLabels = ['Cooperative Governance','Eligibility Gate','Worker Choice','Cross-Cooperative Capacity'];
-      trust.querySelectorAll('span').forEach((node, index) => { if (trustLabels[index]) node.textContent = trustLabels[index]; });
+      trust.querySelectorAll('.trustin > span').forEach((node, index) => { if (trustLabels[index]) node.textContent = trustLabels[index]; });
       if (trust.parentElement !== hero) hero.appendChild(trust);
     }
   }
@@ -153,6 +158,7 @@
     loadWorkforceIntelligence();
     loadPremiumExperience();
     loadResearchUpgrades();
+    loadTop1Readiness();
 
     document.addEventListener('keydown', event => {
       const connectedDialog = document.querySelector('#connectedModalRoot [role="dialog"]');
