@@ -65,6 +65,7 @@
     ensureStylesheet('sanpaidDesignTokensV3', 'design-tokens.css');
     ensureStylesheet('sanpaidSelectionReadyV3Styles', 'selection-ready-v3.css');
     ensureScript('sanpaidSelectionReadyV3Script', 'selection-ready-v3.js');
+    ensureStylesheet('sanpaidSectionGapHotfix', 'section-gap-hotfix.css');
   }
 
   function polishLandingHero() {
