@@ -20,7 +20,7 @@
   function setTheme(theme) {
     const resolved = theme === 'dark' ? 'dark' : 'light';
     document.documentElement.dataset.sanpaidTheme = resolved;
-    localStorage.setItem('sanpaid-theme', resolved);
+    try { localStorage.setItem('sanpaid-theme', resolved); } catch {}
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', resolved === 'dark' ? '#07131d' : '#f4f8fa');
     const button = $('#premiumThemeToggle');
@@ -32,9 +32,9 @@
   }
 
   function installThemeToggle() {
-    const stored = localStorage.getItem('sanpaid-theme');
-    const preferredDark = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches;
-    setTheme(stored || (preferredDark ? 'dark' : 'light'));
+    let stored = '';
+    try { stored = localStorage.getItem('sanpaid-theme') || ''; } catch {}
+    setTheme(stored || 'light');
 
     const actions = $('#landing .eval-nav .actions');
     if (!actions || $('#premiumThemeToggle')) return;
@@ -48,7 +48,7 @@
   }
 
   function decorateHeroBadges() {
-    const chips = $$('#landing #home .hero-master-flow span');
+    const chips = $$('#landing #home .hero-master-flow > span');
     const data = [
       {icon: ICONS.shield, tip: 'Identity, skill, availability and configured service area are checked before ranking.'},
       {icon: ICONS.rank, tip: 'Only eligible workers are ranked using visible factors such as distance and workload balance.'},
@@ -56,12 +56,14 @@
       {icon: ICONS.audit, tip: 'Reason codes and service outcomes remain traceable for cooperative oversight.'}
     ];
     chips.forEach((chip, index) => {
-      const label = chip.textContent.trim();
       const item = data[index];
-      if (!item) return;
-      chip.innerHTML = `${item.icon}<span>${label}</span>`;
+      if (!item || chip.dataset.premiumDecorated === 'true') return;
+      const label = chip.textContent.trim();
+      chip.innerHTML = `${item.icon}${label}`;
       chip.dataset.tip = item.tip;
+      chip.dataset.premiumDecorated = 'true';
       chip.tabIndex = 0;
+      chip.setAttribute('aria-label', `${label}. ${item.tip}`);
     });
   }
 
@@ -75,8 +77,9 @@
     ];
     items.forEach((item, index) => {
       const x = data[index];
-      if (!x) return;
-      item.innerHTML = `${x.icon}<span><b>${x.title}</b><small>${x.desc}</small></span>`;
+      if (!x || item.dataset.premiumDecorated === 'true') return;
+      item.innerHTML = `${x.icon}<div><b>${x.title}</b><small>${x.desc}</small></div>`;
+      item.dataset.premiumDecorated = 'true';
     });
   }
 
@@ -122,17 +125,22 @@
     const chips = $$('#landing .eval-mini-workers .hero-worker');
     if (!chips.length || reduceMotion) return;
     let index = 0;
+    let count = 0;
+    const maxSteps = Math.max(chips.length * 2, 8);
     const step = () => {
+      if (document.hidden) { setTimeout(step, 900); return; }
       chips.forEach((chip, i) => chip.classList.toggle('premium-chip-active', i === index));
       index = (index + 1) % chips.length;
+      count += 1;
+      if (count < maxSteps) setTimeout(step, 760);
+      else setTimeout(() => chips.forEach(chip => chip.classList.remove('premium-chip-active')), 900);
     };
     step();
-    setInterval(step, 760);
   }
 
   function installHeroMetricLoop() {
     pulseHeroMetrics();
-    if (!reduceMotion) setInterval(pulseHeroMetrics, 8200);
+    if (!reduceMotion) setTimeout(() => { if (!document.hidden) pulseHeroMetrics(); }, 8200);
   }
 
   function installNavScroll() {
@@ -149,16 +157,17 @@
       ...$$('#landing .problem-card'),
       ...$$('#landing .eval-core-card'),
       ...$$('#landing .eval-match'),
-      ...$$('#landing .eval-worker-phone'),
-      ...$$('#landing .eval-capacity-card'),
+      ...$$('#landing .eval-phone'),
+      ...$$('#landing .eval-coop-card'),
       ...$$('#landing .eval-decision-card'),
       ...$$('#landing .eval-kpi-card'),
       ...$$('#landing .eval-truth-col'),
-      ...$$('#landing .eval-architecture')
+      ...$$('#landing .eval-architecture-preview')
     ];
-    targets.forEach(node => node.classList.add('premium-reveal'));
+    const unique = [...new Set(targets)];
+    unique.forEach(node => node.classList.add('premium-reveal'));
     if (reduceMotion || !('IntersectionObserver' in window)) {
-      targets.forEach(node => node.classList.add('premium-visible'));
+      unique.forEach(node => node.classList.add('premium-visible'));
       return;
     }
     const observer = new IntersectionObserver(entries => {
@@ -169,7 +178,7 @@
         }
       });
     }, { threshold: .12, rootMargin: '0px 0px -7% 0px' });
-    targets.forEach((node, index) => {
+    unique.forEach((node, index) => {
       node.style.transitionDelay = `${Math.min(index % 4, 3) * 70}ms`;
       observer.observe(node);
     });
@@ -177,17 +186,15 @@
 
   function installCardPointerDepth() {
     if (reduceMotion || !window.matchMedia?.('(pointer:fine)')?.matches) return;
-    const cards = $$('#landing .eval-hero-system, #landing .eval-core-card, #landing .problem-card');
-    cards.forEach(card => {
-      card.addEventListener('pointermove', event => {
-        if (card !== $('#evalHeroSystem')) return;
-        const rect = card.getBoundingClientRect();
-        const x = (event.clientX - rect.left) / rect.width - .5;
-        const y = (event.clientY - rect.top) / rect.height - .5;
-        card.style.transform = `perspective(900px) rotateX(${(-y * 1.6).toFixed(2)}deg) rotateY(${(x * 1.8).toFixed(2)}deg) translateY(-3px)`;
-      });
-      card.addEventListener('pointerleave', () => { if (card === $('#evalHeroSystem')) card.style.transform = ''; });
+    const panel = $('#evalHeroSystem');
+    if (!panel) return;
+    panel.addEventListener('pointermove', event => {
+      const rect = panel.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - .5;
+      const y = (event.clientY - rect.top) / rect.height - .5;
+      panel.style.transform = `perspective(900px) rotateX(${(-y * 1.6).toFixed(2)}deg) rotateY(${(x * 1.8).toFixed(2)}deg) translateY(-3px)`;
     });
+    panel.addEventListener('pointerleave', () => { panel.style.transform = ''; });
   }
 
   function start() {
