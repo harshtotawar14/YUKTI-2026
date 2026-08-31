@@ -1,0 +1,92 @@
+/* SanPaid Design System v3 — shared landing/auth foundation.
+   Cooperative-trust visual language. Keep factual/feature truth separate from styling. */
+:root{
+  --sp-ink:#071d2e;
+  --sp-ink-2:#0d2d42;
+  --sp-ink-3:#163b52;
+  --sp-teal:#0f766e;
+  --sp-teal-2:#0c9488;
+  --sp-cyan:#38b9b1;
+  --sp-blue:#2f6fab;
+  --sp-amber:#b97512;
+  --sp-green:#15805d;
+  --sp-red:#b94b55;
+  --sp-bg:#f5f8fb;
+  --sp-surface:#ffffff;
+  --sp-surface-2:#eef4f7;
+  --sp-text:#10283a;
+  --sp-muted:#5d7180;
+  --sp-border:#dbe5eb;
+  --sp-border-strong:#c8d6df;
+  --sp-focus:#0c9488;
+
+  --sp-font-display:"Space Grotesk","Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --sp-font-body:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+
+  --sp-fs-xs:.75rem;
+  --sp-fs-sm:.875rem;
+  --sp-fs-md:1rem;
+  --sp-fs-lg:1.125rem;
+  --sp-fs-xl:1.375rem;
+  --sp-fs-2xl:clamp(1.8rem,3vw,2.8rem);
+  --sp-fs-hero:clamp(2.7rem,5vw,4.6rem);
+
+  --sp-space-1:4px;
+  --sp-space-2:8px;
+  --sp-space-3:12px;
+  --sp-space-4:16px;
+  --sp-space-5:24px;
+  --sp-space-6:32px;
+  --sp-space-7:40px;
+  --sp-space-8:48px;
+  --sp-space-9:64px;
+  --sp-space-10:80px;
+  --sp-space-11:96px;
+
+  --sp-radius-sm:8px;
+  --sp-radius-md:12px;
+  --sp-radius-lg:20px;
+  --sp-radius-xl:28px;
+  --sp-pill:999px;
+
+  --sp-shadow-sm:0 8px 24px rgba(7,29,46,.06);
+  --sp-shadow-md:0 18px 44px rgba(7,29,46,.09);
+  --sp-shadow-lg:0 28px 70px rgba(7,29,46,.13);
+  --sp-shadow-focus:0 0 0 4px rgba(12,148,136,.18);
+
+  --sp-ease:cubic-bezier(.2,.75,.2,1);
+  --sp-fast:180ms;
+  --sp-med:300ms;
+}
+
+html[data-sanpaid-theme="dark"]{
+  --sp-bg:#07131f;
+  --sp-surface:#0d2030;
+  --sp-surface-2:#102a3c;
+  --sp-text:#ecf5f8;
+  --sp-muted:#aac0cb;
+  --sp-border:#244052;
+  --sp-border-strong:#315267;
+  --sp-shadow-sm:0 8px 24px rgba(0,0,0,.18);
+  --sp-shadow-md:0 18px 44px rgba(0,0,0,.25);
+  --sp-shadow-lg:0 28px 70px rgba(0,0,0,.34);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+body{font-family:var(--sp-font-body)}
+h1,h2,h3,.brand{font-family:var(--sp-font-display)}
+
+:focus-visible{
+  outline:2px solid var(--sp-focus)!important;
+  outline-offset:3px!important;
+  box-shadow:var(--sp-shadow-focus);
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    scroll-behavior:auto!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+}
