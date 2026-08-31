@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v31';
+const CACHE_NAME = 'sanpaid-shell-v32';
 const APP_SHELL = [
   './',
   './index.html',
@@ -14,6 +14,7 @@ const APP_SHELL = [
   './hero-viewport-fix.css',
   './evaluator-final.css',
   './premium-sih.css',
+  './research-upgrades.css',
   './app.js',
   './voice-lazy-loader.js',
   './voice-request.js',
@@ -32,6 +33,7 @@ const APP_SHELL = [
   './demo-preflight.js',
   './evaluator-final.js',
   './premium-sih.js',
+  './research-upgrades.js',
   './manifest.webmanifest',
   './app-icon.svg'
 ];
@@ -104,7 +106,9 @@ self.addEventListener('fetch', event => {
     '/demo-preflight.js',
     '/evaluator-final.js',
     '/premium-sih.css',
-    '/premium-sih.js'
+    '/premium-sih.js',
+    '/research-upgrades.css',
+    '/research-upgrades.js'
   ].some(path => url.pathname.endsWith(path));
 
   if (connectedCritical) {
