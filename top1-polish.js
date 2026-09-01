@@ -63,7 +63,7 @@
 
   function loadSharedDesignSystem() {
     ensureStylesheet('sanpaidDesignTokensV4', 'design-tokens.css');
-    /* Keep the mature visual primitives from v3, but DO NOT load its old auth/runtime JS. */
+    /* Keep mature landing primitives only. The duplicate v3 auth/runtime JS is intentionally not loaded. */
     ensureStylesheet('sanpaidSelectionReadyV3Styles', 'selection-ready-v3.css');
     ensureStylesheet('sanpaidSectionGapHotfix', 'section-gap-hotfix.css');
   }
@@ -76,6 +76,10 @@
   function loadMasterFinalV4() {
     ensureStylesheet('sanpaidMasterFinalV4Styles', 'master-final-v4.css');
     ensureScript('sanpaidMasterFinalV4Script', 'master-final-v4.js');
+  }
+
+  function loadWorkspaceUi() {
+    ensureStylesheet('sanpaidWorkspaceUiStyles', 'workspace-ui.css');
   }
 
   function loadSelectionProofV4() {
@@ -183,6 +187,7 @@
     loadSharedDesignSystem();
     loadUnifiedAuth();
     loadMasterFinalV4();
+    loadWorkspaceUi();
     loadSelectionProofV4();
 
     document.addEventListener('keydown', event => {
