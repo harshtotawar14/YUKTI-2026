@@ -91,8 +91,10 @@
     ensureStylesheet('sanpaidAdminCommandCenterStyles', 'admin-command-center.css');
     ensureStylesheet('sanpaidFederationGovtechStyles', 'federation-govtech.css');
     ensureStylesheet('sanpaidFederationPortalStyles', 'federation-portal.css');
+    ensureStylesheet('sanpaidCooperativePortalStyles', 'cooperative-portal.css');
     ensureScript('sanpaidAdminCommandCenterScript', 'admin-command-center.js');
     ensureScript('sanpaidFederationPortalScript', 'federation-portal.js');
+    ensureScript('sanpaidCooperativePortalScript', 'cooperative-portal.js');
   }
 
   function loadSelectionProofV4() {
