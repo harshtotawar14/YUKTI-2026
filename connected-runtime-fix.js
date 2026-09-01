@@ -63,6 +63,12 @@
       setToken('');return response;
     }
 
+    if(path==='/api/auth/me'&&getToken()){
+      const response=await fetchWithConnectedAuth('/api/connected/auth/me',{...init,method:'GET'});
+      if(response.status===401)setToken('');
+      return response;
+    }
+
     const cpath=connectedPath(url);
     if(!cpath)return nativeFetch(input,init);
 
