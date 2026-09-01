@@ -17,6 +17,7 @@
     {"source":"/top1-readiness.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/auth-unified.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/master-final-v4.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/admin-command-center.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/selection-proof-v4.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/judge-demo.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/hero-viewport-fix.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
@@ -32,7 +33,8 @@
     {"source":"/auth-unified.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/master-final-v4.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/workspace-ui.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
-    {"source":"/color-system-v5.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]}
+    {"source":"/color-system-v5.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/admin-command-center.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]}
   ],
   "rewrites": [
     {"source":"/api/:path*","destination":"https://sanpaid-sih-2026.onrender.com/api/:path*"}
