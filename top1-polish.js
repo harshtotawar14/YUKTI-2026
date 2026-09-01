@@ -10,8 +10,8 @@
     style.textContent = `
       .ribbon{display:none!important}
       .connected-trust-checks{display:grid;gap:8px;margin:12px 0}
-      .connected-trust-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px;border:1px solid #ead8a8;background:#fff9ea;border-radius:11px}
-      .connected-trust-row.done{border-color:#c4e8d5;background:#eef9f3}
+      .connected-trust-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px;border:1px solid var(--sp-warning-border,#EED29D);background:var(--sp-warning-bg,#FFF6E5);border-radius:11px;color:var(--sp-text,#10283A)}
+      .connected-trust-row.done{border-color:var(--sp-success-border,#BFE4D4);background:var(--sp-success-bg,#EAF7F1)}
       .connected-payment-success{line-height:1.65}
       @media print{
         body>*{display:none!important}
@@ -62,7 +62,7 @@
   }
 
   function loadSharedDesignSystem() {
-    ensureStylesheet('sanpaidDesignTokensV4', 'design-tokens.css');
+    ensureStylesheet('sanpaidDesignTokensV5', 'design-tokens.css');
     /* Keep mature landing primitives only. The duplicate v3 auth/runtime JS is intentionally not loaded. */
     ensureStylesheet('sanpaidSelectionReadyV3Styles', 'selection-ready-v3.css');
     ensureStylesheet('sanpaidSectionGapHotfix', 'section-gap-hotfix.css');
@@ -80,6 +80,11 @@
 
   function loadWorkspaceUi() {
     ensureStylesheet('sanpaidWorkspaceUiStyles', 'workspace-ui.css');
+  }
+
+  function loadColorSystemV5() {
+    /* Deliberately loaded after landing/auth/workspace skins so one semantic palette wins. */
+    ensureStylesheet('sanpaidColorSystemV5', 'color-system-v5.css');
   }
 
   function loadSelectionProofV4() {
@@ -188,6 +193,7 @@
     loadUnifiedAuth();
     loadMasterFinalV4();
     loadWorkspaceUi();
+    loadColorSystemV5();
     loadSelectionProofV4();
 
     document.addEventListener('keydown', event => {
