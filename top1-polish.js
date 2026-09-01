@@ -98,6 +98,16 @@
     ensureScript('sanpaidCooperativeDeployGuardScript', 'cooperative-deploy-guard.js');
   }
 
+  function loadDemoFirstStable() {
+    ensureStylesheet('sanpaidDemoFirstStableStyles', 'demo-first-stable.css');
+    ensureScript('sanpaidDemoFirstStableScript', 'demo-first-stable.js');
+  }
+
+  function loadCustomerWorkerDashboard() {
+    ensureStylesheet('sanpaidCustomerWorkerDashboardStyles', 'customer-worker-dashboard.css');
+    ensureScript('sanpaidCustomerWorkerDashboardScript', 'customer-worker-dashboard.js');
+  }
+
   function loadSelectionProofV4() {
     ensureScript('sanpaidSelectionProofV4Script', 'selection-proof-v4.js');
   }
@@ -206,6 +216,8 @@
     loadWorkspaceUi();
     loadColorSystemV5();
     loadAdminCommandCenter();
+    loadDemoFirstStable();
+    loadCustomerWorkerDashboard();
     loadSelectionProofV4();
 
     document.addEventListener('keydown', event => {
