@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v48';
+const CACHE_NAME = 'sanpaid-shell-v49';
 const APP_SHELL = [
   './',
   './index.html',
@@ -52,6 +52,7 @@ const APP_SHELL = [
   './admin-command-center.js',
   './federation-portal.js',
   './cooperative-portal.js',
+  './cooperative-deploy-guard.js',
   './selection-proof-v4.js',
   './manifest.webmanifest',
   './app-icon.svg'
@@ -145,6 +146,7 @@ self.addEventListener('fetch', event => {
     '/federation-portal.js',
     '/cooperative-portal.css',
     '/cooperative-portal.js',
+    '/cooperative-deploy-guard.js',
     '/selection-proof-v4.js'
   ].some(path => url.pathname.endsWith(path));
 
