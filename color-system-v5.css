@@ -1,5 +1,5 @@
-/* SanPaid Color System v5 — final semantic color layer.
-   Scope: color/contrast consistency only. No layout or business-logic changes. */
+/* SanPaid Color System v5 — final semantic color and readability layer.
+   Scope: color/contrast consistency plus small hierarchy/readability corrections. No business-logic changes. */
 
 /* ---------- Global surfaces / text ---------- */
 body{background:var(--sp-bg)!important;color:var(--sp-text)!important}
@@ -197,6 +197,33 @@ body{background:var(--sp-bg)!important;color:var(--sp-text)!important}
 .kpi,.panel,.list-item,.judge-card,.connected-card{background:var(--sp-surface)!important;border-color:var(--sp-border)!important}
 .toast{background:#0B293A!important;color:#EAF2F5!important}
 
+/* ---------- UX readability / hierarchy ---------- */
+#landing .hero-ctas .sp-ux-overview{min-height:50px!important;padding-inline:20px!important}
+#landing .hero-ctas .sp-ux-text-link{min-height:44px!important;padding-inline:6px!important;text-decoration:underline!important;text-underline-offset:4px!important;font-size:13px!important;box-shadow:none!important}
+#landing .quick-booking-details:not([open]){padding:0!important;border-color:transparent!important;background:transparent!important;box-shadow:none!important}
+#landing .quick-booking-details:not([open])>summary{display:inline-flex!important;min-height:40px!important;align-items:center!important;padding:0 2px!important;color:var(--sp-teal)!important;font-size:12.5px!important}
+#landing .eval-request-item small{font-size:11px!important}
+#landing .eval-request-item span{font-size:12px!important;line-height:1.45!important}
+#landing .eval-radius-copy{font-size:12.5px!important;line-height:1.6!important}
+#landing .sp-v4-stage b{font-size:12.5px!important}
+#landing .sp-v4-stage small{font-size:11px!important;line-height:1.45!important}
+#landing .eval-worker-principles span{font-size:11.5px!important}
+#landing .eval-capacity-steps span{font-size:11px!important;line-height:1.4!important}
+#landing .eval-section-note{font-size:11.5px!important;line-height:1.55!important}
+#landing .eval-kpi-card>span{font-size:11.5px!important;line-height:1.4!important}
+#landing .sp-validation-proof b{font-size:12px!important}
+#landing .sp-validation-proof span{font-size:11px!important}
+#landing .eval-arch-layer span,#landing .eval-research-chips span{font-size:11.5px!important;line-height:1.4!important}
+#landing .eval-demo-truth{font-size:11.5px!important;line-height:1.5!important}
+#landing .sp-v4-footer-meta{font-size:11px!important;line-height:1.5!important}
+.connected-top-subtitle{font-size:12px!important}
+.connected-step-label{font-size:11px!important}
+.connected-account,.connected-tech-details{font-size:11.5px!important;line-height:1.6!important}
+#spRoleNextAction{margin:0 0 16px!important;padding:14px 16px!important}
+#spRoleNextAction b{font-size:12.5px!important;color:var(--sp-text)!important}
+#spRoleNextAction span{font-size:12px!important;line-height:1.5!important;color:var(--sp-muted)!important}
+.spu-demo-pill{font-size:10.5px!important}
+
 /* ---------- Dark mode tuned palette ---------- */
 html[data-sanpaid-theme="dark"] #landing .eval-nav,
 html[data-sanpaid-theme="dark"] #landing .eval-nav.sp-v4-scrolled{background:rgba(13,32,48,.94)!important;border-bottom-color:var(--sp-border)!important}
@@ -229,6 +256,12 @@ html[data-sanpaid-theme="dark"] .spu-shell{background:var(--sp-surface)!importan
 html[data-sanpaid-theme="dark"] .spu-field input,
 html[data-sanpaid-theme="dark"] .spu-field select,
 html[data-sanpaid-theme="dark"] .spu-role{background:var(--sp-surface-2)!important;color:var(--sp-text)!important;border-color:var(--sp-border)!important}
+
+@media(max-width:600px){
+  #landing .hero-ctas .sp-ux-text-link{width:auto!important;justify-self:start!important;justify-content:flex-start!important}
+  #landing .quick-booking-details:not([open])>summary{min-height:44px!important}
+  #spRoleNextAction{margin-bottom:14px!important}
+}
 
 @media(prefers-reduced-motion:reduce){
   #landing .btn,.connected-shell .btn,#sihJudgeShell .btn,.app-shell .btn,.spu-root button{transition:none!important}
