@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v49';
+const CACHE_NAME = 'sanpaid-shell-v50';
 const APP_SHELL = [
   './',
   './index.html',
@@ -27,6 +27,7 @@ const APP_SHELL = [
   './federation-govtech.css',
   './federation-portal.css',
   './cooperative-portal.css',
+  './demo-first-stable.css',
   './app.js',
   './voice-lazy-loader.js',
   './voice-request.js',
@@ -53,6 +54,7 @@ const APP_SHELL = [
   './federation-portal.js',
   './cooperative-portal.js',
   './cooperative-deploy-guard.js',
+  './demo-first-stable.js',
   './selection-proof-v4.js',
   './manifest.webmanifest',
   './app-icon.svg'
@@ -147,6 +149,8 @@ self.addEventListener('fetch', event => {
     '/cooperative-portal.css',
     '/cooperative-portal.js',
     '/cooperative-deploy-guard.js',
+    '/demo-first-stable.css',
+    '/demo-first-stable.js',
     '/selection-proof-v4.js'
   ].some(path => url.pathname.endsWith(path));
 
