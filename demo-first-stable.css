@@ -1,0 +1,92 @@
+/* SanPaid SIH 2026 — Demo-First Stable Mode
+   Keeps operational portals readable and judge-friendly even when the connected backend is unavailable.
+   This is a GovTech-inspired prototype, not an official government portal. */
+
+.demo-first-statusbar{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:12px 14px;margin:0 0 16px;border:1px solid #d8e1e5;background:#fff;border-radius:10px;color:#10283a}
+.demo-first-statusbar strong{display:block;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.demo-first-statusbar span{display:block;margin-top:3px;font-size:12px;line-height:1.45;color:#607381}
+.demo-first-statusbar .demo-first-badge{flex:0 0 auto;display:inline-flex;align-items:center;min-height:28px;padding:4px 9px;border-radius:999px;border:1px solid #b7d9d5;background:#edf8f6;color:#0f5f59;font-size:11px;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
+.demo-first-statusbar.fallback{border-color:#e7c88f;background:#fff9ee}
+.demo-first-statusbar.fallback .demo-first-badge{border-color:#e7c88f;background:#fff3d8;color:#8b5b10}
+
+.demo-first-role-brief{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;padding:18px;margin:0 0 18px;border:1px solid #d8e1e5;background:#f8fafb;border-left:4px solid #0f766e;border-radius:10px}
+.demo-first-role-brief.federation{border-left-color:#316b9a}
+.demo-first-role-brief .eyebrow{display:block;margin:0 0 5px;color:#607381;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.demo-first-role-brief h3{margin:0;color:#10283a;font-size:18px;line-height:1.25}
+.demo-first-role-brief p{margin:7px 0 0;max-width:760px;color:#607381;font-size:13px;line-height:1.55}
+.demo-first-role-chain{display:flex;align-items:center;flex-wrap:wrap;justify-content:flex-end;gap:6px;max-width:520px}
+.demo-first-role-chain span{display:inline-flex;align-items:center;min-height:30px;padding:5px 8px;border:1px solid #d8e1e5;background:#fff;border-radius:6px;color:#29485d;font-size:11px;font-weight:700}
+.demo-first-role-chain i{font-style:normal;color:#8797a3}
+
+.demo-first-primary-nav{display:grid;gap:4px;margin:4px 0 10px}
+.demo-first-primary-nav button{width:100%;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 11px;border:1px solid transparent;background:transparent;border-radius:7px;text-align:left;color:inherit;cursor:pointer}
+.demo-first-primary-nav button:hover,.demo-first-primary-nav button:focus-visible{border-color:#cfdbe0;background:#fff;outline:none}
+.demo-first-primary-nav button.active{background:#e9f4f2;border-color:#b8d8d3;color:#0c5e58}
+.federation-govtech .demo-first-primary-nav button.active{background:#edf3f8;border-color:#c3d5e3;color:#285c80}
+.demo-first-primary-nav button span{font-size:12px;font-weight:800}
+.demo-first-primary-nav button small{font-size:10px;line-height:1.35;color:#6b7d89}
+.demo-first-legacy-nav{display:none!important}
+#coopSidebar nav>.coop-nav-group.demo-first-legacy-label,#fedSidebar nav>.fed-nav-group.demo-first-legacy-label{display:none!important}
+
+.demo-first-quick-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.demo-first-quick-actions button{min-height:32px;padding:5px 9px;border:1px solid #cbd9de;background:#fff;border-radius:6px;color:#29485d;font-size:11px;font-weight:750;cursor:pointer}
+.demo-first-quick-actions button:hover,.demo-first-quick-actions button:focus-visible{border-color:#0f766e;color:#0f5f59;outline:2px solid rgba(15,118,110,.18);outline-offset:2px}
+
+.demo-first-truth-legend{display:flex;gap:8px;flex-wrap:wrap;padding:12px 0 2px}
+.demo-first-truth-legend span{display:inline-flex;align-items:center;min-height:25px;padding:3px 8px;border:1px solid #d8e1e5;border-radius:999px;background:#fff;color:#526875;font-size:10px;font-weight:800;letter-spacing:.025em;text-transform:uppercase}
+.demo-first-truth-legend .connected{border-color:#bfe4d4;background:#eaf7f1;color:#166047}
+.demo-first-truth-legend .demo{border-color:#d8c9ee;background:#f6f1fc;color:#664696}
+.demo-first-truth-legend .sandbox{border-color:#c8d9ea;background:#eff6fb;color:#315f86}
+.demo-first-truth-legend .future{background:#f3f5f6;color:#63727c}
+
+.demo-first-policy,.demo-first-fairness{margin:18px 0;padding:18px;border:1px solid #d8e1e5;background:#fff;border-radius:10px}
+.demo-first-section-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:14px}
+.demo-first-section-head span{display:block;color:#607381;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.demo-first-section-head h3{margin:4px 0 0;font-size:18px;color:#10283a}
+.demo-first-section-head small{max-width:300px;text-align:right;color:#607381;font-size:11px;line-height:1.45}
+.demo-first-policy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.demo-first-policy-grid article{padding:12px;border:1px solid #dce5e8;border-radius:8px;background:#f8fafb}
+.demo-first-policy-grid article>span{display:block;color:#607381;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.demo-first-policy-grid article strong{display:block;margin:6px 0 4px;color:#17384c;font-size:13px}
+.demo-first-policy-grid article p{margin:0;color:#607381;font-size:11px;line-height:1.45}
+.demo-first-policy-grid article em{display:inline-block;margin-top:8px;font-style:normal;color:#8b5b10;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+
+.demo-first-responsibility{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid #e1e8eb}
+.demo-first-responsibility div{padding:10px;background:#f8fafb;border-radius:7px}
+.demo-first-responsibility span{display:block;color:#6a7b86;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.demo-first-responsibility b{display:block;margin-top:4px;color:#17384c;font-size:11px}
+
+.demo-first-fairness-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.demo-first-fairness-grid article{padding:12px;border:1px solid #dce5e8;border-radius:8px}
+.demo-first-fairness-grid b{display:block;color:#17384c;font-size:12px}
+.demo-first-fairness-grid p{margin:4px 0 0;color:#607381;font-size:11px;line-height:1.45}
+.demo-first-insufficient{margin-top:12px;padding:10px 12px;border-left:3px solid #a96813;background:#fff8ea;color:#75501b;font-size:11px;line-height:1.45}
+
+.demo-fallback-block{padding:12px;border:1px solid #e1e8eb;border-radius:8px;background:#fff}
+.demo-fallback-label{display:inline-flex;padding:3px 7px;margin-bottom:8px;border-radius:999px;border:1px solid #e7c88f;background:#fff3d8;color:#8b5b10;font-size:9px;font-weight:850;letter-spacing:.04em;text-transform:uppercase}
+.demo-fallback-table{width:100%;border-collapse:collapse;font-size:11px}
+.demo-fallback-table th,.demo-fallback-table td{padding:9px 8px;border-bottom:1px solid #e5ecef;text-align:left;vertical-align:top}
+.demo-fallback-table th{color:#617681;font-size:9px;letter-spacing:.04em;text-transform:uppercase;background:#f7f9fa}
+.demo-fallback-table td{color:#29485d}
+.demo-fallback-table tr:last-child td{border-bottom:0}
+.demo-fallback-state{display:inline-flex;padding:3px 6px;border:1px solid #d8e1e5;border-radius:999px;background:#f6f8f9;font-size:9px;font-weight:800;text-transform:uppercase}
+.demo-fallback-state.ok{border-color:#bfe4d4;background:#eaf7f1;color:#166047}
+.demo-fallback-state.warn{border-color:#e7c88f;background:#fff3d8;color:#8b5b10}
+.demo-fallback-state.info{border-color:#c8d9ea;background:#eff6fb;color:#315f86}
+.demo-fallback-state.risk{border-color:#e8bcbc;background:#fceeee;color:#9b3535}
+.demo-fallback-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.demo-fallback-metrics article{padding:11px;border:1px solid #dce5e8;border-radius:8px;background:#f8fafb}
+.demo-fallback-metrics span{display:block;color:#6b7d89;font-size:9px;text-transform:uppercase;font-weight:800}
+.demo-fallback-metrics strong{display:block;margin-top:4px;color:#17384c;font-size:18px}
+.demo-fallback-list{display:grid;gap:7px}
+.demo-fallback-list article{display:flex;justify-content:space-between;gap:12px;padding:10px;border:1px solid #e1e8eb;border-radius:7px;background:#fafbfc}
+.demo-fallback-list article>div b{display:block;font-size:11px;color:#244257}
+.demo-fallback-list article>div small{display:block;margin-top:2px;color:#70818c;font-size:10px;line-height:1.35}
+
+body.demo-first-fallback #sihJudgeShell .admin-skeleton{display:none!important}
+body.demo-first-fallback #sihJudgeShell .judge-hero{border-bottom-color:#e8d6af}
+.cooperative-govtech .judge-tabs,.federation-govtech .judge-tabs{display:none!important}
+
+@media(max-width:1000px){.demo-first-role-brief{grid-template-columns:1fr}.demo-first-role-chain{justify-content:flex-start;max-width:none}.demo-first-policy-grid,.demo-first-fairness-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.demo-first-responsibility{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.demo-first-statusbar{flex-direction:column}.demo-first-statusbar .demo-first-badge{align-self:flex-start}.demo-first-role-brief{padding:14px}.demo-first-role-chain{gap:4px}.demo-first-role-chain span{font-size:10px}.demo-first-section-head{flex-direction:column}.demo-first-section-head small{text-align:left}.demo-first-policy-grid,.demo-first-fairness-grid,.demo-fallback-metrics,.demo-first-responsibility{grid-template-columns:1fr}.demo-fallback-table{min-width:620px}.demo-fallback-block{overflow:auto}}
+@media(prefers-reduced-motion:reduce){.demo-first-primary-nav button,.demo-first-quick-actions button{scroll-behavior:auto;transition:none!important}}
