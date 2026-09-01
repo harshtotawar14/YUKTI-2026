@@ -87,6 +87,11 @@
     ensureStylesheet('sanpaidColorSystemV5', 'color-system-v5.css');
   }
 
+  function loadAdminCommandCenter() {
+    ensureStylesheet('sanpaidAdminCommandCenterStyles', 'admin-command-center.css');
+    ensureScript('sanpaidAdminCommandCenterScript', 'admin-command-center.js');
+  }
+
   function loadSelectionProofV4() {
     ensureScript('sanpaidSelectionProofV4Script', 'selection-proof-v4.js');
   }
@@ -194,6 +199,7 @@
     loadMasterFinalV4();
     loadWorkspaceUi();
     loadColorSystemV5();
+    loadAdminCommandCenter();
     loadSelectionProofV4();
 
     document.addEventListener('keydown', event => {
