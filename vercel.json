@@ -30,7 +30,8 @@
     {"source":"/selection-ready-v3.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/section-gap-hotfix.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/auth-unified.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
-    {"source":"/master-final-v4.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]}
+    {"source":"/master-final-v4.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/workspace-ui.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]}
   ],
   "rewrites": [
     {"source":"/api/:path*","destination":"https://sanpaid-sih-2026.onrender.com/api/:path*"}
