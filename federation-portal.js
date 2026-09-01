@@ -97,6 +97,11 @@
         td.innerHTML='<button type="button" class="fed-table-action" data-fed-coop-view>View Details</button>';
         row.appendChild(td);
       }
+      const view=row.querySelector('[data-fed-coop-view]');
+      if(view&&view.dataset.fedBound!=='1'){
+        view.dataset.fedBound='1';
+        view.addEventListener('click',e=>openCooperativeDetail(row,e.currentTarget));
+      }
     });
 
     const cities=[...new Set(rows.map(cityFromRow).filter(x=>x&&x!=='—'))].sort((a,b)=>a.localeCompare(b));
@@ -123,9 +128,11 @@
       if(count)count.textContent=`Showing ${shown} of ${rows.length} cooperatives`;
     };
 
-    ['input','change'].forEach(type=>toolbar.addEventListener(type,e=>{if(e.target.matches('input,select'))apply();}));
-    $('#fedFilterReset',toolbar)?.addEventListener('click',()=>{const q=$('#fedCoopSearch',toolbar);if(q)q.value='';if(citySelect)citySelect.value='';if(statusSelect)statusSelect.value='';apply();q?.focus();});
-    rows.forEach(row=>row.querySelector('[data-fed-coop-view]')?.addEventListener('click',e=>openCooperativeDetail(row,e.currentTarget)));
+    if(toolbar.dataset.fedBound!=='1'){
+      toolbar.dataset.fedBound='1';
+      ['input','change'].forEach(type=>toolbar.addEventListener(type,e=>{if(e.target.matches('input,select'))apply();}));
+      $('#fedFilterReset',toolbar)?.addEventListener('click',()=>{const q=$('#fedCoopSearch',toolbar);if(q)q.value='';if(citySelect)citySelect.value='';if(statusSelect)statusSelect.value='';apply();q?.focus();});
+    }
     apply();
   }
 
@@ -150,7 +157,7 @@
     const workers=Number(String(cells[2]?.innerText||'0').replace(/[^0-9.-]/g,''))||0;
     const available=Number(String(cells[3]?.innerText||'0').replace(/[^0-9.-]/g,''))||0;
     const status=statusFromRow(row);
-    const utilization=workers?Math.round((available/workers)*100):0;
+    const availabilityRatio=workers?Math.round((available/workers)*100):0;
     const body=$('#fedDetailBody',root);
     if(body)body.innerHTML=`
       <div class="fed-detail-status"><span>Capacity Status</span><b>${esc(status)}</b></div>
@@ -159,7 +166,7 @@
         <div><dt>City / Zone</dt><dd>${esc(city)}</dd></div>
         <div><dt>Registered Workforce</dt><dd>${workers}</dd></div>
         <div><dt>Available Workforce</dt><dd>${available}</dd></div>
-        <div><dt>Availability Ratio</dt><dd>${utilization}%</dd></div>
+        <div><dt>Availability Ratio</dt><dd>${availabilityRatio}%</dd></div>
         <div><dt>Data Scope</dt><dd>Aggregate governance view</dd></div>
       </dl>
       <div class="fed-detail-note"><b>Privacy-safe Federation view</b><p>Only aggregate cooperative workforce data exposed by the connected overview is shown here. Individual worker personal data is intentionally not displayed.</p></div>`;
@@ -218,7 +225,7 @@
             <p><b>Recommended action:</b> ${esc(actionsText(p.recommendedActions))}</p>
           </div>
         </div>`;
-    }catch(e){
+    }catch{
       section.innerHTML='<div class="admin-health-error">Regional planning data could not be loaded. Open Planning & Intelligence to retry.</div>';
     }
   }
@@ -283,7 +290,11 @@
     document.addEventListener('keydown',trapDrawer,true);
     const observer=new MutationObserver(schedule);
     observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
-    document.addEventListener('click',e=>{if(e.target.closest?.('[data-judge-role],#getStarted,#adminHealthRefresh'))setTimeout(schedule,180);},true);
+    document.addEventListener('click',e=>{
+      const refresh=e.target.closest?.('#adminHealthRefresh');
+      if(refresh){planningCache=null;planningPromise=null;$('#fed-demand-snapshot')?.remove();setTimeout(schedule,180);return;}
+      if(e.target.closest?.('[data-judge-role],#getStarted'))setTimeout(schedule,180);
+    },true);
     schedule();
   }
 
