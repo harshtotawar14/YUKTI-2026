@@ -123,6 +123,9 @@
       matching.classList.add('tertiary','sp-ux-text-link');
     }
 
+    const ctas=$('#home .hero-ctas');
+    if(ctas&&overview&&matching){ctas.appendChild(overview);ctas.appendChild(matching);}
+
     const access=$('#getStarted');
     if(access&&!/^CONTINUE/i.test(access.textContent.trim()))access.textContent='ACCESS ROLES';
 
@@ -238,6 +241,73 @@
     if(copy)copy.id='spV4RadiusHelp';
   }
 
+  function roleNextCopy(role,text){
+    const upper=text.toUpperCase();
+    if(role==='CUSTOMER'){
+      if(/NO ACTIVE BOOKING/.test(upper))return ['Ready to request a service','Describe what you need, then find a verified worker.'];
+      if(/FINDING ANOTHER|FINDING VERIFIED|WAITING FOR WORKER|WORKER RESPONSE/.test(upper))return ['Request sent','Your request is active. Wait for an eligible worker response; this page updates automatically.'];
+      if(/WORKER ARRIVED|ARRIVED/.test(upper)&&!/IDENTITY VERIFIED/.test(upper))return ['Worker arrived','Verify the worker identity before allowing the service to start.'];
+      if(/IDENTITY VERIFIED/.test(upper)&&!/CUSTOMER CONFIRMED|SERVICE STARTED/.test(upper))return ['Worker identity verified','Confirm the worker for this booking to unlock service start.'];
+      if(/SERVICE STARTED|IN PROGRESS/.test(upper))return ['Service in progress','Follow the service status. Confirm completion before payment.'];
+      if(/PAYMENT PENDING|SERVICE COMPLETED|COMPLETED/.test(upper)&&!/PAID/.test(upper))return ['Service completed','Review the service and complete the payment step.'];
+      if(/PAID|PAYMENT COMPLETED|CLOSED/.test(upper))return ['Service complete','Review the outcome and provide feedback when available.'];
+      if(/WORKER ASSIGNED|ON THE WAY|TRAVELING/.test(upper))return ['Worker assigned','Track the worker and wait for arrival before verification.'];
+      return ['Service request active','Follow the current status and complete the next highlighted action.'];
+    }
+    if(role==='WORKER'){
+      if(/LOADING JOB OFFERS/.test(upper))return ['Checking opportunities','SanPaid is loading eligible opportunities for this worker.'];
+      if(/NO JOB OFFERS/.test(upper))return ['No eligible opportunity right now','Stay available. New eligible opportunities will appear automatically.'];
+      if(/JOB ACCEPTED|ACCEPTED/.test(upper))return ['Opportunity accepted','Follow the assigned booking steps and travel/service instructions.'];
+      if(/NEW JOB OFFER|DECLINE|ACCEPT JOB/.test(upper))return ['New eligible opportunity','Review why you received it, earnings and distance, then choose Accept or Decline.'];
+      return ['Worker workspace ready','Review current eligible opportunities and choose the next action.'];
+    }
+    return null;
+  }
+
+  function syncRoleNextAction(){
+    const content=$('#connectedContent');
+    if(!content)return;
+    const role=content.dataset.connectedRole;
+    if(!['CUSTOMER','WORKER'].includes(role)){content.querySelector('#spRoleNextAction')?.remove();return;}
+    const appHeading=$('.connected-app-heading',content);
+    if(!appHeading)return;
+    let banner=$('#spRoleNextAction',content);
+    if(!banner){
+      banner=document.createElement('div');
+      banner.id='spRoleNextAction';
+      banner.className='connected-progress-note';
+      banner.setAttribute('role','status');
+      banner.setAttribute('aria-live','polite');
+      appHeading.insertAdjacentElement('afterend',banner);
+    }
+    const source=role==='CUSTOMER'?($('#connectedCustomerState',content)?.textContent||content.textContent):($('#connectedWorkerOffers',content)?.textContent||content.textContent);
+    const copy=roleNextCopy(role,source);
+    if(!copy)return;
+    const signature=copy.join('|');
+    if(banner.dataset.signature===signature)return;
+    banner.dataset.signature=signature;
+    banner.innerHTML=`<b>CURRENT STATUS — ${copy[0]}</b><span>NEXT STEP — ${copy[1]}</span>`;
+  }
+
+  function installRoleNextAction(){
+    let contentObserver=null;
+    let timer=0;
+    const attach=()=>{
+      const content=$('#connectedContent');
+      if(!content||content.dataset.spNextActionObserved==='1')return false;
+      content.dataset.spNextActionObserved='1';
+      const schedule=()=>{clearTimeout(timer);timer=setTimeout(syncRoleNextAction,30);};
+      contentObserver=new MutationObserver(schedule);
+      contentObserver.observe(content,{childList:true,subtree:true,characterData:true});
+      schedule();
+      return true;
+    };
+    if(attach())return;
+    const bodyObserver=new MutationObserver(()=>{if(attach())bodyObserver.disconnect();});
+    bodyObserver.observe(document.body,{childList:true,subtree:true});
+    setTimeout(()=>bodyObserver.disconnect(),15000);
+  }
+
   function polishDynamicSections(){
     installSectionRhythm();
     installValidationProof();
@@ -285,6 +355,7 @@
     installUnifiedEntryGuards();
     installSectionTargetButtons();
     installA11yLabels();
+    installRoleNextAction();
     ensureDynamicPolish();
   }
 
