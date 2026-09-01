@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v38';
+const CACHE_NAME = 'sanpaid-shell-v39';
 const APP_SHELL = [
   './',
   './index.html',
@@ -20,6 +20,7 @@ const APP_SHELL = [
   './selection-ready-v3.css',
   './section-gap-hotfix.css',
   './auth-unified.css',
+  './master-final-v4.css',
   './app.js',
   './voice-lazy-loader.js',
   './voice-request.js',
@@ -40,8 +41,8 @@ const APP_SHELL = [
   './premium-sih.js',
   './research-upgrades.js',
   './top1-readiness.js',
-  './selection-ready-v3.js',
   './auth-unified.js',
+  './master-final-v4.js',
   './manifest.webmanifest',
   './app-icon.svg'
 ];
@@ -120,10 +121,11 @@ self.addEventListener('fetch', event => {
     '/top1-readiness.js',
     '/design-tokens.css',
     '/selection-ready-v3.css',
-    '/selection-ready-v3.js',
     '/section-gap-hotfix.css',
     '/auth-unified.css',
-    '/auth-unified.js'
+    '/auth-unified.js',
+    '/master-final-v4.css',
+    '/master-final-v4.js'
   ].some(path => url.pathname.endsWith(path));
 
   if (connectedCritical) {
