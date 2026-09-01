@@ -1,0 +1,235 @@
+/* SanPaid Color System v5 — final semantic color layer.
+   Scope: color/contrast consistency only. No layout or business-logic changes. */
+
+/* ---------- Global surfaces / text ---------- */
+body{background:var(--sp-bg)!important;color:var(--sp-text)!important}
+#landing{background:var(--sp-bg)!important;color:var(--sp-text)!important}
+#landing main>.section:not(.white){background:var(--sp-bg)!important}
+#landing main>.section.white,#landing #researchBackedUpgrades,#landing .sp-readiness.white{background:var(--sp-surface)!important}
+#landing .head p,#landing .lead,#landing p{color:var(--sp-muted)}
+
+/* ---------- Navigation ---------- */
+#landing .eval-nav{background:rgba(255,255,255,.90)!important;border-bottom-color:rgba(220,229,233,.70)!important}
+#landing .eval-nav.sp-v4-scrolled{background:rgba(255,255,255,.96)!important;border-bottom-color:var(--sp-border)!important;box-shadow:0 10px 28px rgba(11,31,51,.06)!important}
+#landing .brand{color:var(--sp-ink)!important}
+#landing .brand span{color:var(--sp-teal-2)!important}
+#landing .navlinks a{color:#5E7180!important}
+#landing .navlinks a:hover,#landing .navlinks a.is-active{color:var(--sp-text)!important;background:var(--sp-soft-teal)!important}
+#landing .navlinks a.is-active:after{background:var(--sp-teal)!important}
+
+/* ---------- Primary button system ---------- */
+#landing .btn.primary,
+.connected-shell .btn.primary,
+#sihJudgeShell .btn.primary,
+.app-shell .btn.primary,
+.spu-primary{
+  background:var(--sp-teal-2)!important;
+  border-color:var(--sp-teal-2)!important;
+  color:#fff!important;
+  box-shadow:0 10px 24px rgba(13,148,136,.18)!important;
+}
+#landing .btn.primary:hover:not(:disabled),
+.connected-shell .btn.primary:hover:not(:disabled),
+#sihJudgeShell .btn.primary:hover:not(:disabled),
+.app-shell .btn.primary:hover:not(:disabled),
+.spu-primary:hover:not(:disabled){background:var(--sp-teal)!important;border-color:var(--sp-teal)!important}
+
+#landing .btn.secondary,
+.connected-shell .btn.secondary,
+#sihJudgeShell .btn.secondary,
+.app-shell .btn.secondary{
+  background:var(--sp-surface)!important;
+  border-color:var(--sp-border-strong)!important;
+  color:var(--sp-text)!important;
+}
+#landing .btn.secondary:hover:not(:disabled),
+.connected-shell .btn.secondary:hover:not(:disabled),
+#sihJudgeShell .btn.secondary:hover:not(:disabled),
+.app-shell .btn.secondary:hover:not(:disabled){background:var(--sp-surface-2)!important}
+
+#landing .btn.ghost,#landing .btn.tertiary{background:transparent!important;color:var(--sp-teal)!important;border-color:transparent!important}
+
+/* ---------- Hero ---------- */
+#landing .eval-hero{
+  background:linear-gradient(180deg,#F8FAFB 0%,var(--sp-bg) 72%,#F4F7F8 100%)!important;
+}
+#landing .eval-hero:before{
+  opacity:.16!important;
+  background-image:linear-gradient(rgba(11,31,51,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(11,31,51,.03) 1px,transparent 1px)!important;
+}
+#landing .eval-hero h1{color:var(--sp-ink)!important}
+#landing .eval-hero h1 em,#landing em{color:var(--sp-teal)!important}
+#landing .eval-badge{background:var(--sp-soft-teal)!important;border-color:rgba(15,118,110,.20)!important;color:var(--sp-teal)!important}
+#landing .hero-master-flow span{background:var(--sp-surface)!important;border-color:var(--sp-border)!important;color:var(--sp-text)!important}
+#landing .hero-master-flow i{color:var(--sp-teal)!important}
+#landing .eval-hero-system{background:rgba(255,255,255,.94)!important;border-color:var(--sp-border)!important}
+#landing .hero-seq{background:var(--sp-surface)!important;border-color:var(--sp-border)!important}
+#landing .eval-trust{background:rgba(255,255,255,.82)!important;border-color:var(--sp-border)!important}
+#landing .eval-trust span{color:var(--sp-text-2)!important;border-color:var(--sp-border)!important}
+
+/* ---------- Current gap: neutral cards + purposeful accents ---------- */
+#landing .problem-card{background:var(--sp-surface)!important;border-color:var(--sp-border)!important}
+#landing .problem-card:nth-child(1){border-top:3px solid var(--sp-blue)!important}
+#landing .problem-card:nth-child(2){border-top:3px solid var(--sp-teal)!important}
+#landing .problem-card:nth-child(3){border-top:3px solid var(--sp-amber)!important}
+#landing .problem-card:nth-child(4){border-top:3px solid var(--sp-ink-2)!important}
+#landing .problem-card:nth-child(1) .problem-no{background:rgba(49,107,154,.08)!important;color:var(--sp-blue)!important}
+#landing .problem-card:nth-child(2) .problem-no{background:var(--sp-soft-teal)!important;color:var(--sp-teal)!important}
+#landing .problem-card:nth-child(3) .problem-no{background:var(--sp-warning-bg)!important;color:var(--sp-amber)!important}
+#landing .problem-card:nth-child(4) .problem-no{background:rgba(18,52,77,.07)!important;color:var(--sp-ink-2)!important}
+
+/* ---------- Core differentiator ---------- */
+#landing .eval-core-card{background:var(--sp-surface)!important;border-color:var(--sp-border)!important}
+#landing .eval-core-card.eligibility{border-top:3px solid var(--sp-teal)!important}
+#landing .eval-core-card.ranking{border-top:3px solid var(--sp-blue)!important}
+#landing .eval-core-card.choice{border-top:3px solid var(--sp-green)!important}
+#landing .eval-check-stack span,#landing .eval-factor-grid span,#landing .eval-choice-preview span{background:var(--sp-surface-2)!important;border-color:var(--sp-border)!important;color:var(--sp-text)!important}
+#landing .eval-core-arrow,#landing .eval-master-chain i{color:var(--sp-teal)!important}
+
+/* ---------- Matching semantics ---------- */
+#landing .eval-match,#landing .eval-proof-panel{background:var(--sp-surface)!important;border-color:var(--sp-border)!important}
+#landing .eval-request-bar,#landing .sp-v4-stage{background:var(--sp-surface-2)!important}
+#landing .sp-v4-stage[data-state="active"]{background:var(--sp-soft-teal)!important;border-color:rgba(15,118,110,.30)!important}
+#landing .sp-v4-stage[data-state="active"] i{background:rgba(13,148,136,.12)!important;color:var(--sp-teal)!important}
+#landing .sp-v4-stage[data-state="done"]{background:var(--sp-success-bg)!important;border-color:var(--sp-success-border)!important}
+#landing .sp-v4-stage[data-state="done"] i{background:var(--sp-success-bg)!important;color:var(--sp-green)!important}
+#landing .sp-v4-stage[data-state="locked"]{background:var(--sp-future-bg)!important;border-color:var(--sp-future-border)!important;opacity:.72!important}
+#landing .eval-candidate-row.eligible,#landing .eval-ranking-row.top{background:var(--sp-success-bg)!important;border-color:var(--sp-success-border)!important}
+#landing .eval-candidate-row.excluded{background:var(--sp-error-bg)!important;border-color:var(--sp-error-border)!important}
+
+/* ---------- Worker experience / decline is neutral ---------- */
+#landing .eval-phone{background:var(--sp-surface)!important;border-color:var(--sp-border)!important}
+#landing .eval-phone-top{background:var(--sp-ink)!important;color:#fff!important}
+#landing .eval-why-box{background:var(--sp-soft-teal)!important;border-color:rgba(15,118,110,.18)!important}
+#landing .eval-phone-actions .good{background:var(--sp-teal-2)!important;color:#fff!important}
+#landing .eval-phone-actions button:not(.good){background:var(--sp-surface)!important;border-color:var(--sp-border-strong)!important;color:var(--sp-text)!important}
+.connected-offer-actions .btn:not(.primary),[data-reject-offer]{background:var(--sp-surface)!important;border-color:var(--sp-border-strong)!important;color:var(--sp-text)!important}
+
+/* ---------- Capacity / admin / AI ---------- */
+#landing .eval-coop-card.shortage{border-top-color:var(--sp-amber)!important}
+#landing .eval-coop-card.available{border-top-color:var(--sp-green)!important}
+#landing .eval-network-label{color:var(--sp-teal)!important}
+#landing .eval-dashboard-tabs>span{background:var(--sp-warning-bg)!important;color:var(--sp-amber)!important;border-color:var(--sp-warning-border)!important}
+#landing .eval-decision-card{border-left-color:var(--sp-blue)!important;background:var(--sp-surface)!important}
+#landing .eval-decision-card.warn{border-left-color:var(--sp-amber)!important}
+#landing .eval-decision-card.risk{border-left-color:var(--sp-red)!important}
+#landing .eval-ai-control article{background:var(--sp-surface)!important;border-color:var(--sp-border)!important}
+#landing .eval-ai-control article:nth-of-type(1){border-top:3px solid var(--sp-ink-2)!important}
+#landing .eval-ai-control article.accent{background:rgba(49,107,154,.045)!important;border-color:rgba(49,107,154,.20)!important;border-top:3px solid var(--sp-blue)!important}
+#landing .eval-ai-control article:nth-of-type(3){border-top:3px solid var(--sp-teal)!important}
+#landing .eval-ai-control article:nth-of-type(4){border-top:3px solid var(--sp-green)!important}
+#landing .eval-forecast>b{background:var(--sp-warning-bg)!important;color:var(--sp-amber)!important}
+
+/* ---------- Impact / Prototype Truth ---------- */
+#landing .eval-kpi-card{background:var(--sp-surface)!important;border-color:var(--sp-border)!important}
+#landing .eval-kpi-card:nth-child(1){border-top:3px solid var(--sp-blue)!important}
+#landing .eval-kpi-card:nth-child(2){border-top:3px solid var(--sp-teal)!important}
+#landing .eval-kpi-card:nth-child(3){border-top:3px solid var(--sp-green)!important}
+#landing .eval-kpi-card:nth-child(4){border-top:3px solid var(--sp-ink-2)!important}
+#landing .eval-kpi-card>span{background:var(--sp-surface-2)!important;border-color:var(--sp-border)!important;color:var(--sp-text-2)!important}
+#landing .eval-truth-col{background:var(--sp-surface)!important;border-color:var(--sp-border)!important}
+#landing .eval-truth-col.implemented:before{background:var(--sp-green)!important}
+#landing .eval-truth-col.prototype:before{background:var(--sp-amber)!important}
+#landing .eval-truth-col.future:before{background:var(--sp-future)!important}
+
+/* ---------- Validation / failure safe ---------- */
+#landing .sp-validation-proof.done{background:var(--sp-success-bg)!important;border-color:var(--sp-success-border)!important}
+#landing .sp-validation-proof.done span{background:var(--sp-success-bg)!important;color:var(--sp-green)!important}
+#landing .sp-validation-proof.pending{background:var(--sp-warning-bg)!important;border-color:var(--sp-warning-border)!important}
+#landing .sp-validation-proof.pending span{background:var(--sp-warning-bg)!important;color:var(--sp-amber)!important}
+
+/* ---------- Architecture ---------- */
+#landing .eval-architecture-preview{background:var(--sp-surface)!important;border-color:var(--sp-border)!important}
+#landing .eval-arch-layer{background:var(--sp-surface-2)!important;border-color:var(--sp-border)!important}
+#landing .eval-arch-layer.primary{background:var(--sp-soft-teal)!important;border-color:rgba(15,118,110,.20)!important}
+#landing .eval-arch-layer span,#landing .eval-research-chips span{background:var(--sp-surface)!important;border-color:var(--sp-border)!important;color:var(--sp-text)!important}
+#landing .eval-architecture-preview aside{background:rgba(49,107,154,.045)!important;border-color:rgba(49,107,154,.24)!important}
+
+/* ---------- Final CTA / footer ---------- */
+#landing .eval-final-cta{background:linear-gradient(135deg,#0B1F33 0%,#12344D 68%,#0F4C50 100%)!important}
+#landing .eval-final-cta:after{background:radial-gradient(circle at 86% 14%,rgba(75,184,175,.13),transparent 34%)!important}
+#landing .footer{background:#071925!important;color:#EAF2F5!important}
+#landing .footer p,#landing .sp-v4-footer-meta{color:#9FB3BE!important}
+#landing .footer a{color:#75D2C9!important}
+
+/* ---------- Unified auth ---------- */
+.spu-root{background:rgba(3,17,28,.70)!important}
+.spu-brand{background:linear-gradient(145deg,#081D2D,#10394A)!important;color:#EAF2F5!important}
+.spu-brand:after{opacity:.10!important}
+.spu-logo span{color:#75D2C9!important}
+.spu-brand p,.spu-flow div,.spu-proof{color:#BFD0D8!important}
+.spu-flow i{background:rgba(75,198,186,.11)!important;color:#75D2C9!important}
+.spu-demo-pill{background:var(--sp-warning-bg)!important;border-color:var(--sp-warning-border)!important;color:var(--sp-amber)!important}
+.spu-demo-pill:before{background:var(--sp-amber)!important}
+.spu-role.active{background:var(--sp-soft-teal)!important;border-color:rgba(15,118,110,.32)!important}
+.spu-field input,.spu-field select{background:var(--sp-surface)!important;border-color:var(--sp-border)!important;color:var(--sp-text)!important}
+.spu-field input:focus,.spu-field select:focus{border-color:var(--sp-teal-2)!important;box-shadow:0 0 0 3px rgba(13,148,136,.10)!important}
+.spu-note{background:var(--sp-warning-bg)!important;border-color:var(--sp-warning-border)!important;color:var(--sp-amber)!important}
+.spu-success{background:var(--sp-success-bg)!important;border-color:var(--sp-success-border)!important;color:var(--sp-green)!important}
+.spu-error{background:var(--sp-error-bg)!important;border-color:var(--sp-error-border)!important;color:var(--sp-red)!important}
+
+/* ---------- Customer / Worker workspaces ---------- */
+.connected-shell,.app-shell,#sihJudgeShell{background:var(--sp-bg)!important;color:var(--sp-text)!important}
+.connected-top,.judge-top,.app-top{background:var(--sp-ink)!important;color:#fff!important;box-shadow:0 8px 24px rgba(11,31,51,.12)!important}
+.connected-top .brand span,.judge-top .brand span,.app-top .brand span{color:#75D2C9!important}
+.connected-badge,.connected-success{background:var(--sp-success-bg)!important;border-color:var(--sp-success-border)!important;color:var(--sp-green)!important}
+.connected-demo-note,.demo-note{background:var(--sp-warning-bg)!important;border-color:var(--sp-warning-border)!important;color:var(--sp-amber)!important}
+.connected-error{background:var(--sp-error-bg)!important;border-color:var(--sp-error-border)!important;color:var(--sp-red)!important}
+.connected-step-label{background:var(--sp-soft-teal)!important;color:var(--sp-teal)!important}
+.connected-offer{background:var(--sp-success-bg)!important;border-color:var(--sp-success-border)!important;border-left-color:var(--sp-green)!important}
+.connected-progress-note,.connected-voice{background:var(--sp-soft-teal)!important;border-color:rgba(15,118,110,.18)!important}
+.connected-step.done span{background:var(--sp-success-bg)!important;border-color:var(--sp-success-border)!important;color:var(--sp-green)!important}
+.connected-step.active span{background:var(--sp-teal-2)!important;color:#fff!important}
+
+/* ---------- Admin / Federation ---------- */
+.judge-hero{background:var(--sp-ink-2)!important;color:#fff!important;border-color:rgba(255,255,255,.08)!important}
+.judge-hero:after{display:none!important}
+.judge-tab.active{background:var(--sp-soft-teal)!important;border-color:rgba(15,118,110,.28)!important;color:var(--sp-teal)!important}
+.judge-badge{background:var(--sp-success-bg)!important;border-color:var(--sp-success-border)!important;color:var(--sp-green)!important}
+.judge-badge.demo{background:var(--sp-warning-bg)!important;border-color:var(--sp-warning-border)!important;color:var(--sp-amber)!important}
+.judge-badge.exclude{background:var(--sp-error-bg)!important;border-color:var(--sp-error-border)!important;color:var(--sp-red)!important}
+.judge-note{background:rgba(49,107,154,.055)!important;border-left-color:var(--sp-blue)!important}
+.judge-success{background:var(--sp-success-bg)!important;border-color:var(--sp-success-border)!important;color:var(--sp-green)!important}
+.judge-error{background:var(--sp-error-bg)!important;border-color:var(--sp-error-border)!important;color:var(--sp-red)!important}
+
+/* ---------- Legacy application shell ---------- */
+.side button:hover,.side button.active,.tabs button.active{background:var(--sp-soft-teal)!important;color:var(--sp-teal)!important}
+.kpi,.panel,.list-item,.judge-card,.connected-card{background:var(--sp-surface)!important;border-color:var(--sp-border)!important}
+.toast{background:#0B293A!important;color:#EAF2F5!important}
+
+/* ---------- Dark mode tuned palette ---------- */
+html[data-sanpaid-theme="dark"] #landing .eval-nav,
+html[data-sanpaid-theme="dark"] #landing .eval-nav.sp-v4-scrolled{background:rgba(13,32,48,.94)!important;border-bottom-color:var(--sp-border)!important}
+html[data-sanpaid-theme="dark"] #landing .brand{color:var(--sp-text)!important}
+html[data-sanpaid-theme="dark"] #landing .navlinks a{color:var(--sp-muted)!important}
+html[data-sanpaid-theme="dark"] #landing .eval-hero{background:linear-gradient(180deg,#07131F,#0B1C29)!important}
+html[data-sanpaid-theme="dark"] #landing .eval-hero h1{color:var(--sp-text)!important}
+html[data-sanpaid-theme="dark"] #landing .eval-hero-system,
+html[data-sanpaid-theme="dark"] #landing .hero-seq,
+html[data-sanpaid-theme="dark"] #landing .problem-card,
+html[data-sanpaid-theme="dark"] #landing .eval-core-card,
+html[data-sanpaid-theme="dark"] #landing .eval-match,
+html[data-sanpaid-theme="dark"] #landing .eval-proof-panel,
+html[data-sanpaid-theme="dark"] #landing .eval-phone,
+html[data-sanpaid-theme="dark"] #landing .eval-kpi-card,
+html[data-sanpaid-theme="dark"] #landing .eval-truth-col,
+html[data-sanpaid-theme="dark"] #landing .eval-architecture-preview,
+html[data-sanpaid-theme="dark"] .connected-card,
+html[data-sanpaid-theme="dark"] .judge-card,
+html[data-sanpaid-theme="dark"] .kpi,
+html[data-sanpaid-theme="dark"] .panel,
+html[data-sanpaid-theme="dark"] .list-item{background:var(--sp-surface)!important;border-color:var(--sp-border)!important;color:var(--sp-text)!important}
+html[data-sanpaid-theme="dark"] #landing .eval-trust{background:rgba(13,32,48,.86)!important}
+html[data-sanpaid-theme="dark"] #landing .btn.secondary,
+html[data-sanpaid-theme="dark"] .connected-shell .btn.secondary,
+html[data-sanpaid-theme="dark"] #sihJudgeShell .btn.secondary,
+html[data-sanpaid-theme="dark"] .app-shell .btn.secondary{background:var(--sp-surface-2)!important;border-color:var(--sp-border)!important;color:var(--sp-text)!important}
+html[data-sanpaid-theme="dark"] .spu-brand{background:linear-gradient(145deg,#071925,#10394A)!important}
+html[data-sanpaid-theme="dark"] .spu-shell{background:var(--sp-surface)!important}
+html[data-sanpaid-theme="dark"] .spu-field input,
+html[data-sanpaid-theme="dark"] .spu-field select,
+html[data-sanpaid-theme="dark"] .spu-role{background:var(--sp-surface-2)!important;color:var(--sp-text)!important;border-color:var(--sp-border)!important}
+
+@media(prefers-reduced-motion:reduce){
+  #landing .btn,.connected-shell .btn,#sihJudgeShell .btn,.app-shell .btn,.spu-root button{transition:none!important}
+}
