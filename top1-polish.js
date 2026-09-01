@@ -90,7 +90,9 @@
   function loadAdminCommandCenter() {
     ensureStylesheet('sanpaidAdminCommandCenterStyles', 'admin-command-center.css');
     ensureStylesheet('sanpaidFederationGovtechStyles', 'federation-govtech.css');
+    ensureStylesheet('sanpaidFederationPortalStyles', 'federation-portal.css');
     ensureScript('sanpaidAdminCommandCenterScript', 'admin-command-center.js');
+    ensureScript('sanpaidFederationPortalScript', 'federation-portal.js');
   }
 
   function loadSelectionProofV4() {
