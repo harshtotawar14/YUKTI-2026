@@ -1,4 +1,4 @@
-/* SanPaid Design System v4 — single source of truth for landing + auth.
+/* SanPaid Design System v4 — single source of truth for landing, auth and role workspaces.
    Cooperative trust, clear status semantics, strict spacing and accessible motion. */
 :root{
   --sp-ink:#0b1f33;
@@ -60,9 +60,37 @@
   --sp-fast:180ms;
   --sp-med:300ms;
   --sp-slow:400ms;
+
+  /* Canonical semantic aliases. */
+  --color-bg:var(--sp-bg);
+  --color-surface:var(--sp-surface);
+  --color-text:var(--sp-text);
+  --color-muted:var(--sp-muted);
+  --color-primary:var(--sp-teal-2);
+  --color-success:var(--sp-green);
+  --color-warning:var(--sp-amber);
+  --color-danger:var(--sp-red);
+  --color-border:var(--sp-border);
+
+  /* Compatibility bridge so older dashboard components inherit this same system. */
+  --navy:var(--sp-ink);
+  --navy2:var(--sp-ink-2);
+  --navy3:var(--sp-ink-3);
+  --green:var(--sp-teal);
+  --green2:var(--sp-teal-2);
+  --soft:var(--sp-bg);
+  --line:var(--sp-border);
+  --text:var(--sp-text);
+  --muted:var(--sp-muted);
+  --warn:var(--sp-amber);
+  --danger:var(--sp-red);
+  --white:var(--sp-surface-solid);
+  --shadow:var(--sp-shadow-sm);
+  --r:var(--sp-radius-md);
 }
 
 html[data-sanpaid-theme="dark"]{
+  color-scheme:dark;
   --sp-bg:#07131f;
   --sp-bg-soft:#0b1c29;
   --sp-surface:#0d2030;
