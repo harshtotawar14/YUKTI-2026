@@ -4,6 +4,7 @@
   const BACKEND='https://sanpaid-sih-2026.onrender.com';
   const TOKEN_KEY='sanpaid_connected_demo_token_v1';
   const DEMO_EMAILS=new Set(['customer.connected@sanpaid.demo','worker1.connected@sanpaid.demo','worker2.connected@sanpaid.demo']);
+  const SAFE_CONNECTED_LEGACY=new Set(['/api/services','/api/worker/dashboard','/api/worker/availability']);
   const nativeFetch=window.fetch.bind(window);
   const NativeEventSource=window.EventSource;
   let healthTimer=null;
@@ -15,6 +16,15 @@
   function parseBody(init){try{return typeof init?.body==='string'?JSON.parse(init.body):{}}catch{return{}}}
   function direct(path){return `${BACKEND}${path}`;}
   function connectedPath(url){try{if(url.startsWith('/api/connected/'))return url;const parsed=new URL(url,location.href);if(parsed.origin===location.origin&&parsed.pathname.startsWith('/api/connected/'))return parsed.pathname+parsed.search;}catch{}return'';}
+  function safeLegacyPath(url){
+    if(!connectedShellActive()||!getToken())return'';
+    try{
+      const parsed=new URL(url,location.href);
+      if(parsed.origin!==location.origin)return'';
+      if(SAFE_CONNECTED_LEGACY.has(parsed.pathname))return parsed.pathname+parsed.search;
+    }catch{}
+    return'';
+  }
   function signalSync(snapshot){try{window.dispatchEvent(new CustomEvent('sanpaid:connected-sync',{detail:{snapshot,at:Date.now()}}));}catch{}}
 
   window.fetch=async function sanPaidConnectedFetch(input,init={}){
@@ -26,7 +36,7 @@
       if(!token)return new Response(JSON.stringify({error:'not_authenticated'}),{status:401,headers:{'Content-Type':'application/json'}});
       targetPath='/api/connected/auth/me';
     }else if(url==='/api/auth/logout'&&connectedShellActive()&&token){targetPath='/api/connected/auth/logout';isDemoLogout=true;}
-    else targetPath=connectedPath(url);
+    else targetPath=connectedPath(url)||safeLegacyPath(url);
     if(!targetPath)return nativeFetch(input,init);
 
     const headers=new Headers(init.headers||{});if(!headers.has('Content-Type')&&init.body)headers.set('Content-Type','application/json');if(!isDemoLogin&&token)headers.set('Authorization',`Bearer ${token}`);
