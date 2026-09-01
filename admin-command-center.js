@@ -2,6 +2,7 @@
   'use strict';
 
   const TOKEN_KEY='sanpaid_judge_demo_token_v1';
+  const ROLE_HINT_KEY='sanpaid_admin_role_hint_v1';
   const $=(s,r=document)=>r.querySelector(s);
   const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -25,13 +26,17 @@
     }
   };
 
-  let enhancedKey='';
   let refreshTimer=0;
   let shellObserver=null;
 
+  function storeRoleHint(role){try{if(ROLE_CONFIG[role])sessionStorage.setItem(ROLE_HINT_KEY,role)}catch{}}
+  function roleHint(){try{return sessionStorage.getItem(ROLE_HINT_KEY)||''}catch{return ''}}
+
   function currentRole(){
     const fromAuth=window.SanPaidAuth?.getRole?.();
-    if(ROLE_CONFIG[fromAuth])return fromAuth;
+    if(ROLE_CONFIG[fromAuth]){storeRoleHint(fromAuth);return fromAuth;}
+    const hinted=roleHint();
+    if(ROLE_CONFIG[hinted])return hinted;
     const email=String(window.SanPaidAuth?.getCurrentUser?.()?.email||'').toLowerCase();
     return email.includes('federation')?'FEDERATION_ADMIN':'COOPERATIVE_ADMIN';
   }
@@ -104,6 +109,7 @@
       tabs.insertAdjacentElement('beforebegin',panel);
     }
     const cfg=ROLE_CONFIG[role];
+    panel.dataset.role=role;
     panel.innerHTML=`
       <div class="admin-command-heading">
         <div><span class="admin-command-kicker">${esc(cfg.short)} workspace</span><h2>What needs attention now?</h2><p>Live read-only checks come from the connected backend. Write actions remain manual so this health check does not mutate demo state.</p></div>
@@ -208,16 +214,14 @@
     const content=$('#judgeContent');
     if(!shell||shell.classList.contains('judge-hidden')||!content||!$('.judge-tabs',content)||!$('.judge-hero',content))return;
     const role=currentRole();
-    const key=`${role}:${content.dataset.adminEnhanced||''}`;
+    const alreadyEnhanced=content.dataset.adminEnhanced===role&&!!$('#adminCommandSummary',content)&&!!$('.admin-role-badge',content);
+    if(alreadyEnhanced)return;
     roleHero(role);
     reorderTabs(role);
     summaryShell(role);
-    if(content.dataset.adminEnhanced!==role){
-      content.dataset.adminEnhanced=role;
-      enhancedKey=key;
-      setTimeout(()=>switchTo('overview'),60);
-      runHealth(role,false);
-    }
+    content.dataset.adminEnhanced=role;
+    setTimeout(()=>switchTo('overview'),60);
+    runHealth(role,false);
   }
 
   function schedule(){clearTimeout(refreshTimer);refreshTimer=setTimeout(enhance,60);}
@@ -238,6 +242,8 @@
     }else bodyObserver.observe(document.body,{childList:true,subtree:true});
 
     document.addEventListener('click',event=>{
+      const roleButton=event.target.closest?.('[data-judge-role]');
+      if(roleButton?.dataset?.judgeRole)storeRoleHint(roleButton.dataset.judgeRole);
       if(event.target.closest?.('#getStarted,[data-judge-role],#sihJudgeModeBtn,#judgeModeStatusBtn'))setTimeout(schedule,160);
     },true);
   }
