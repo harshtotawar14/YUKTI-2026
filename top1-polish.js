@@ -61,16 +61,21 @@
     ensureScript('sanpaidTop1ReadinessScript', 'top1-readiness.js');
   }
 
-  function loadSelectionReadyV3() {
-    ensureStylesheet('sanpaidDesignTokensV3', 'design-tokens.css');
+  function loadSharedDesignSystem() {
+    ensureStylesheet('sanpaidDesignTokensV4', 'design-tokens.css');
+    /* Keep the mature visual primitives from v3, but DO NOT load its old auth/runtime JS. */
     ensureStylesheet('sanpaidSelectionReadyV3Styles', 'selection-ready-v3.css');
-    ensureScript('sanpaidSelectionReadyV3Script', 'selection-ready-v3.js');
     ensureStylesheet('sanpaidSectionGapHotfix', 'section-gap-hotfix.css');
   }
 
   function loadUnifiedAuth() {
     ensureStylesheet('sanpaidUnifiedAuthStyles', 'auth-unified.css');
     ensureScript('sanpaidUnifiedAuthScript', 'auth-unified.js');
+  }
+
+  function loadMasterFinalV4() {
+    ensureStylesheet('sanpaidMasterFinalV4Styles', 'master-final-v4.css');
+    ensureScript('sanpaidMasterFinalV4Script', 'master-final-v4.js');
   }
 
   function polishLandingHero() {
@@ -171,8 +176,9 @@
     loadPremiumExperience();
     loadResearchUpgrades();
     loadTop1Readiness();
-    loadSelectionReadyV3();
+    loadSharedDesignSystem();
     loadUnifiedAuth();
+    loadMasterFinalV4();
 
     document.addEventListener('keydown', event => {
       const connectedDialog = document.querySelector('#connectedModalRoot [role="dialog"]');
