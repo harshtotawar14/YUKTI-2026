@@ -6,6 +6,7 @@
 
   function removeLegacyAuth(){
     $('#sanpaidAuthRoot')?.remove();
+    /* Short-lived safety guard for users arriving with an old cached runtime. */
     const observer=new MutationObserver(records=>{
       for(const record of records){
         for(const node of record.addedNodes){
@@ -16,6 +17,7 @@
       }
     });
     observer.observe(document.body,{childList:true,subtree:true});
+    setTimeout(()=>observer.disconnect(),8000);
   }
 
   function installSectionRhythm(){
@@ -90,7 +92,7 @@
       const r=(rankingBadge?.textContent||'').trim().toUpperCase();
       const offer=(offerRoot?.textContent||'').trim().toUpperCase();
       const eligibilityDone=e.length>0&&!/WAITING|RUN|CHECKING|ACTIVE/.test(e);
-      const rankingUnlocked=eligibilityDone||! /LOCKED/.test(r);
+      const rankingUnlocked=eligibilityDone||!/LOCKED/.test(r);
       const rankingDone=rankingUnlocked&&r.length>0&&!/LOCKED|WAITING|RUN|READY/.test(r);
       const choiceReady=rankingDone||/ACCEPT|DECLINE|OFFER/.test(offer);
       s1.dataset.state=eligibilityDone?'done':'active';s1.querySelector('i').textContent=eligibilityDone?'✓':'1';
@@ -131,7 +133,6 @@
     const meta=document.createElement('div');
     meta.className='sp-v4-footer-meta';
     meta.innerHTML='<span><b>SIH 2026 · PS ID 26089</b> · Selection Build v4</span><span>Updated 01 Sep 2026 · Prototype / Sandbox / Future integrations explicitly labeled</span>';
-    footer.insertAdjacentElement('afterend',meta);
     $('#landing .footer')?.appendChild(meta);
   }
 
@@ -185,14 +186,34 @@
     if(copy)copy.id='spV4RadiusHelp';
   }
 
+  function polishDynamicSections(){
+    installSectionRhythm();
+    installValidationProof();
+    $('#researchBackedUpgrades')?.querySelectorAll('[data-reveal]').forEach(n=>n.classList.add('sp-v4-reveal','sp-v4-visible'));
+    $('#top1Readiness')?.querySelectorAll('[data-reveal]').forEach(n=>n.classList.add('sp-v4-reveal','sp-v4-visible'));
+  }
+
   function ensureDynamicPolish(){
-    const observer=new MutationObserver(()=>{
-      installSectionRhythm();
-      installValidationProof();
-      $('#researchBackedUpgrades')?.querySelectorAll('[data-reveal]').forEach(n=>n.classList.add('sp-v4-visible'));
-      $('#top1Readiness')?.querySelectorAll('[data-reveal]').forEach(n=>n.classList.add('sp-v4-visible'));
+    const landing=$('#landing');
+    if(!landing)return;
+    let timer=0;
+    const observer=new MutationObserver(records=>{
+      const relevant=records.some(record=>Array.from(record.addedNodes).some(node=>node instanceof HTMLElement&&(
+        node.id==='researchBackedUpgrades'||node.id==='top1Readiness'||node.querySelector?.('#researchBackedUpgrades,#top1Readiness')
+      )));
+      if(!relevant)return;
+      clearTimeout(timer);
+      timer=setTimeout(()=>{
+        polishDynamicSections();
+        if($('#researchBackedUpgrades')&&$('#top1Readiness'))observer.disconnect();
+      },40);
     });
-    observer.observe($('#landing')||document.body,{childList:true,subtree:true});
+    observer.observe(landing,{childList:true,subtree:true});
+    setTimeout(()=>{
+      polishDynamicSections();
+      if($('#researchBackedUpgrades')&&$('#top1Readiness'))observer.disconnect();
+    },1200);
+    setTimeout(()=>observer.disconnect(),10000);
   }
 
   function start(){
