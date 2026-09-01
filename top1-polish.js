@@ -89,6 +89,7 @@
 
   function loadAdminCommandCenter() {
     ensureStylesheet('sanpaidAdminCommandCenterStyles', 'admin-command-center.css');
+    ensureStylesheet('sanpaidFederationGovtechStyles', 'federation-govtech.css');
     ensureScript('sanpaidAdminCommandCenterScript', 'admin-command-center.js');
   }
 
