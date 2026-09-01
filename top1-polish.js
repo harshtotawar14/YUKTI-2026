@@ -95,6 +95,7 @@
     ensureScript('sanpaidAdminCommandCenterScript', 'admin-command-center.js');
     ensureScript('sanpaidFederationPortalScript', 'federation-portal.js');
     ensureScript('sanpaidCooperativePortalScript', 'cooperative-portal.js');
+    ensureScript('sanpaidCooperativeDeployGuardScript', 'cooperative-deploy-guard.js');
   }
 
   function loadSelectionProofV4() {
