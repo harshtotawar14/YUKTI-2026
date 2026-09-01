@@ -78,9 +78,9 @@
     rail.className='sp-v4-demo-progress';
     rail.setAttribute('aria-label','Matching proof progress');
     rail.innerHTML=`
-      <div class="sp-v4-stage" id="spV4Eligibility" data-state="active"><i>1</i><div><b>Eligibility Gate</b><small>Rules decide who can proceed</small></div></div>
-      <div class="sp-v4-stage" id="spV4Ranking" data-state="locked"><i>2</i><div><b>Fair Ranking</b><small>Only eligible workers are ranked</small></div></div>
-      <div class="sp-v4-stage" id="spV4Choice" data-state="locked"><i>3</i><div><b>Worker Choice</b><small>Opportunity is offered, not forced</small></div></div>`;
+      <div class="sp-v4-stage" id="spV4Eligibility" data-state="active"><i>1</i><div><b>Eligibility Gate</b><small>Only verified, skilled and available workers continue</small></div></div>
+      <div class="sp-v4-stage" id="spV4Ranking" data-state="locked"><i>2</i><div><b>Fair Ranking</b><small>Eligible workers are ranked using visible factors</small></div></div>
+      <div class="sp-v4-stage" id="spV4Choice" data-state="locked"><i>3</i><div><b>Worker Choice</b><small>The worker can accept or decline without forced assignment</small></div></div>`;
     body.insertAdjacentElement('beforebegin',rail);
 
     const eligibilityBadge=$('#evalEligibilityBadge');
@@ -105,12 +105,64 @@
     $('#evalResetMatch')?.addEventListener('click',()=>setTimeout(derive,20));
   }
 
+  function simplifyPrimaryJourney(){
+    const live=$('#home [data-eval-open-connected]');
+    if(live)live.textContent='TRY LIVE PROTOTYPE';
+
+    const overview=$('#selectorResearchBtn');
+    if(overview){
+      overview.textContent='3-MINUTE SIH OVERVIEW';
+      overview.classList.remove('tertiary');
+      overview.classList.add('secondary','sp-ux-overview');
+    }
+
+    const matching=$('#heroMatchingCta');
+    if(matching){
+      matching.textContent='See matching logic';
+      matching.classList.remove('secondary','eval-secondary');
+      matching.classList.add('tertiary','sp-ux-text-link');
+    }
+
+    const access=$('#getStarted');
+    if(access&&!/^CONTINUE/i.test(access.textContent.trim()))access.textContent='ACCESS ROLES';
+
+    const mobileOverview=$('#mobileDrawer [data-open-selector="0"]');
+    if(mobileOverview)mobileOverview.textContent='GUIDED OVERVIEW';
+
+    const proof=$('#matching .eval-proof-bridge');
+    if(proof){
+      const title=$('b',proof),copy=$('span',proof),btn=$('button',proof);
+      if(title)title.textContent='Want to verify the live workflow?';
+      if(copy)copy.textContent='Open the same request across separate customer and worker sessions.';
+      if(btn)btn.textContent='OPEN LIVE PROTOTYPE';
+    }
+  }
+
   function normalizeQuickActions(){
     const details=$('#home .quick-booking-details');
     if(!details)return;
-    details.open=true;
+    details.open=false;
     const summary=$('summary',details);
-    if(summary)summary.textContent='Quick service & role actions';
+    if(summary)summary.textContent='Need a service or role? Quick actions';
+    const service=$('#bookServiceHero');if(service)service.textContent='I NEED A SERVICE';
+    const worker=$('#joinWorker');if(worker)worker.textContent='I AM A WORKER';
+    const coop=$('#coopLogin');if(coop)coop.textContent='COOPERATIVE ACCESS';
+  }
+
+  function standardizeDemoTerminology(root=document){
+    const exact=new Map([
+      ['GUIDED DEMO','GUIDED OVERVIEW'],
+      ['OPEN ROLE DEMOS','ACCESS ROLES'],
+      ['ROLE DEMOS','ACCESS ROLES'],
+      ['OPEN CONNECTED PROOF','OPEN LIVE PROTOTYPE'],
+      ['VERIFY WITH CONNECTED PROTOTYPE','OPEN LIVE PROTOTYPE'],
+      ['CONNECTED PROTOTYPE','LIVE PROTOTYPE']
+    ]);
+    $$('button',root).forEach(button=>{
+      const raw=button.textContent.trim();
+      const replacement=exact.get(raw.toUpperCase());
+      if(replacement)button.textContent=replacement;
+    });
   }
 
   function installValidationProof(){
@@ -189,6 +241,7 @@
   function polishDynamicSections(){
     installSectionRhythm();
     installValidationProof();
+    standardizeDemoTerminology($('#landing')||document);
     $('#researchBackedUpgrades')?.querySelectorAll('[data-reveal]').forEach(n=>n.classList.add('sp-v4-reveal','sp-v4-visible'));
     $('#top1Readiness')?.querySelectorAll('[data-reveal]').forEach(n=>n.classList.add('sp-v4-reveal','sp-v4-visible'));
   }
@@ -223,7 +276,9 @@
     installScrollState();
     installSafeReveal();
     installMatchingProgress();
+    simplifyPrimaryJourney();
     normalizeQuickActions();
+    standardizeDemoTerminology($('#landing'));
     installValidationProof();
     installFooterMeta();
     closeMobileDrawer();
