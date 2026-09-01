@@ -78,6 +78,10 @@
     ensureScript('sanpaidMasterFinalV4Script', 'master-final-v4.js');
   }
 
+  function loadSelectionProofV4() {
+    ensureScript('sanpaidSelectionProofV4Script', 'selection-proof-v4.js');
+  }
+
   function polishLandingHero() {
     const landing = document.getElementById('landing');
     const hero = document.getElementById('home');
@@ -179,6 +183,7 @@
     loadSharedDesignSystem();
     loadUnifiedAuth();
     loadMasterFinalV4();
+    loadSelectionProofV4();
 
     document.addEventListener('keydown', event => {
       const connectedDialog = document.querySelector('#connectedModalRoot [role="dialog"]');
