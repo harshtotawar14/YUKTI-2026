@@ -1,0 +1,127 @@
+/* SanPaid Federation Operations — GovTech-inspired regional command center.
+   No official government branding or affiliation is implied. */
+#sihJudgeShell.federation-govtech{--fed-side:264px;background:#F4F7F9!important;color:var(--sp-text)!important}
+#sihJudgeShell.federation-govtech .judge-main{width:min(1460px,100%)!important;max-width:1460px!important;display:grid;grid-template-columns:var(--fed-side) minmax(0,1fr);align-items:start;gap:18px;padding:20px clamp(14px,2.4vw,26px) 48px!important}
+#sihJudgeShell.federation-govtech #judgeContent>.judge-hero,
+#sihJudgeShell.federation-govtech #judgeContent>.admin-command-summary,
+#sihJudgeShell.federation-govtech #judgeContent>.judge-tabs,
+#sihJudgeShell.federation-govtech #judgeContent>.judge-section{grid-column:2;min-width:0}
+#sihJudgeShell.federation-govtech .judge-tabs{display:none!important}
+
+/* Government-style top operations bar */
+#sihJudgeShell.federation-govtech .judge-top{min-height:72px!important;padding:11px clamp(14px,2.4vw,28px)!important;background:#0B1F33!important;border-bottom:3px solid #0F766E!important;box-shadow:0 8px 22px rgba(11,31,51,.14)!important}
+#sihJudgeShell.federation-govtech .judge-top .brand{font-size:22px!important;letter-spacing:-.03em}
+#sihJudgeShell.federation-govtech .judge-top small{color:#B7C8D2!important;font-size:12px!important;letter-spacing:.01em}
+#sihJudgeShell.federation-govtech .judge-top-actions{gap:7px!important}
+#sihJudgeShell.federation-govtech .judge-live,#sihJudgeShell.federation-govtech .fed-last-sync{display:inline-flex;align-items:center;min-height:31px;padding:6px 9px;border:1px solid rgba(255,255,255,.14);border-radius:6px;background:rgba(255,255,255,.055);color:#D9E6EC!important;font-size:11.5px!important;font-weight:750}
+#sihJudgeShell.federation-govtech .judge-live{color:#86DAB3!important}
+
+/* Left Federation navigation */
+.fed-sidebar{grid-column:1;grid-row:1 / span 20;position:sticky;top:90px;max-height:calc(100vh - 110px);display:flex;flex-direction:column;overflow:hidden;border:1px solid #D8E1E5;border-radius:12px;background:#fff;box-shadow:0 6px 20px rgba(11,31,51,.055)}
+.fed-side-brand{padding:17px 16px 15px;border-bottom:1px solid #E2E8EB;background:#F8FAFB}
+.fed-side-brand>b{display:block;color:#0B1F33;font-size:20px;letter-spacing:-.035em}
+.fed-side-brand>span{display:block;margin-top:5px;color:#0F766E;font-size:10.5px;font-weight:900;letter-spacing:.075em}
+.fed-side-brand>small{display:block;margin-top:4px;color:#607381;font-size:11px;line-height:1.4}
+.fed-sidebar nav{display:flex;flex:1;flex-direction:column;gap:2px;overflow:auto;padding:8px}
+.fed-sidebar nav button{position:relative;width:100%;padding:10px 10px 10px 12px;text-align:left;border:1px solid transparent;border-radius:7px;background:transparent;color:#10283A;cursor:pointer;transition:background .16s ease,border-color .16s ease,color .16s ease}
+.fed-sidebar nav button:hover{background:#F0F4F5;border-color:#DCE5E9}
+.fed-sidebar nav button.active{background:#E8F5F2;border-color:#C3E2DC;color:#0F766E}
+.fed-sidebar nav button.active:before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:#0F766E}
+.fed-sidebar nav button>span{display:block;font-size:12.5px;font-weight:820}
+.fed-sidebar nav button>small{display:block;margin-top:2px;color:#71838E;font-size:10px;line-height:1.35}
+.fed-side-foot{padding:12px 14px;border-top:1px solid #E2E8EB;background:#F8FAFB}
+.fed-side-foot span,.fed-side-foot small{display:block}.fed-proto-label{color:#10283A;font-size:10.5px;font-weight:800}.fed-side-foot small{margin-top:4px;color:#71838E;font-size:9.5px;line-height:1.35}
+.fed-nav-toggle{display:none;grid-column:2;min-height:44px;padding:9px 12px;border:1px solid #D8E1E5;border-radius:8px;background:#fff;color:#10283A;font-weight:800;text-align:left}
+
+/* Federation page identity */
+#sihJudgeShell.federation-govtech .judge-hero{position:relative;margin:0!important;padding:21px 23px!important;border:1px solid #D8E1E5!important;border-radius:12px!important;background:#fff!important;box-shadow:none!important}
+#sihJudgeShell.federation-govtech .judge-hero h1{font-size:clamp(27px,3vw,36px)!important;line-height:1.08!important;letter-spacing:-.035em!important}
+#sihJudgeShell.federation-govtech .judge-hero p{max-width:860px!important;color:#607381!important;font-size:14px!important}
+#sihJudgeShell.federation-govtech .admin-role-badge{border-radius:5px!important;background:#E8F5F2!important;color:#0F766E!important;font-size:10px!important;letter-spacing:.045em}
+.fed-gov-truth{display:block;margin-top:9px;color:#71838E;font-size:10.5px;font-weight:650}
+
+/* Operational summary */
+#sihJudgeShell.federation-govtech .admin-command-summary{margin:0!important;padding:18px!important;border:1px solid #D8E1E5!important;border-radius:12px!important;background:#fff!important;box-shadow:none!important;scroll-margin-top:90px}
+#sihJudgeShell.federation-govtech .admin-command-heading{padding-bottom:14px;border-bottom:1px solid #E5EBEE}
+#sihJudgeShell.federation-govtech .admin-command-kicker{color:#0F766E!important}
+#sihJudgeShell.federation-govtech .admin-command-heading h2{font-size:22px!important}
+#sihJudgeShell.federation-govtech .admin-attention-grid{margin:14px 0 18px}
+#sihJudgeShell.federation-govtech .admin-attention-card{min-height:132px;border-radius:9px;box-shadow:none!important}
+#sihJudgeShell.federation-govtech .admin-attention-card:hover{transform:none;border-color:#AFC2CC;box-shadow:0 4px 14px rgba(11,31,51,.05)!important}
+#sihJudgeShell.federation-govtech .admin-attention-card>i{font-size:10.5px;text-transform:uppercase;letter-spacing:.035em}
+
+/* Regional KPI block */
+.fed-home-block,.fed-network-block,.fed-records-block,.fed-feature-audit{scroll-margin-top:92px}
+.fed-kpi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:0 0 18px}
+.fed-kpi{min-height:118px;padding:14px;border:1px solid #D8E1E5;border-radius:9px;background:#F9FBFC}
+.fed-kpi>span{display:block;color:#607381;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.035em}
+.fed-kpi>strong{display:block;margin:8px 0 6px;color:#0B1F33;font-size:29px;line-height:1;letter-spacing:-.04em}
+.fed-kpi>small{display:block;color:#71838E;font-size:10.5px;line-height:1.4}
+
+/* Network / records */
+.fed-network-block,.fed-records-block,.fed-feature-audit{margin-top:18px;padding-top:17px;border-top:1px solid #E5EBEE}
+.fed-section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:11px}
+.fed-section-head>div>span{display:block;color:#0F766E;font-size:10px;font-weight:900;letter-spacing:.065em}
+.fed-section-head h3{margin:3px 0 0!important;color:#10283A;font-size:18px!important}
+.fed-section-head>small{color:#71838E;font-size:10.5px;text-align:right}
+.fed-table{min-width:650px!important;border:1px solid #E0E7EA;border-radius:8px;overflow:hidden}
+.fed-table thead th,.fed-feature-table thead th{position:sticky;top:0;background:#EDF2F4!important;color:#314958!important;font-size:10.5px!important;font-weight:850!important;text-transform:uppercase;letter-spacing:.025em}
+.fed-table td{font-size:12px!important}
+.fed-empty{padding:15px;border:1px dashed #C8D5DB;border-radius:8px;background:#F8FAFB;color:#607381;font-size:12px}
+.fed-record-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.fed-record{padding:13px;border:1px solid #D8E1E5;border-radius:9px;background:#F9FBFC}
+.fed-record>span{display:block;color:#316B9A;font-size:10px;font-weight:900;letter-spacing:.04em;text-transform:uppercase}.fed-record>b{display:block;margin:5px 0;color:#10283A;font-size:13px}.fed-record>p{margin:0!important;color:#607381!important;font-size:11.5px!important}.fed-record>small{display:block;margin-top:7px;color:#71838E;font-size:9.5px}
+
+/* Runtime + feature verification */
+#sihJudgeShell.federation-govtech .admin-command-lower{margin-top:18px;padding-top:17px;border-top:1px solid #E5EBEE;scroll-margin-top:92px}
+#sihJudgeShell.federation-govtech .admin-scope-card,#sihJudgeShell.federation-govtech .admin-module-health{border-radius:9px!important;background:#F9FBFC!important}
+#sihJudgeShell.federation-govtech .admin-module-state{border-radius:4px;font-size:9px!important;text-transform:uppercase;letter-spacing:.02em}
+.fed-feature-matrix{overflow:hidden;border:1px solid #D8E1E5;border-radius:9px}
+.fed-feature-table{min-width:1100px!important}
+.fed-feature-table td{vertical-align:top;font-size:10.5px!important;line-height:1.42!important;color:#506676}
+.fed-feature-table td:first-child{color:#10283A;font-size:11px!important}
+.fed-matrix-note{margin:9px 1px 0!important;color:#71838E!important;font-size:10.5px!important;line-height:1.5!important}
+
+/* Existing operational modules */
+#sihJudgeShell.federation-govtech .judge-section{scroll-margin-top:88px}
+#sihJudgeShell.federation-govtech .judge-card{border-radius:10px!important;box-shadow:none!important}
+#sihJudgeShell.federation-govtech .judge-section-intro{border-left:3px solid #316B9A!important}
+#sihJudgeShell.federation-govtech .judge-kpi{border-radius:9px!important;background:#fff!important}
+#sihJudgeShell.federation-govtech .judge-badge{border-radius:5px!important}
+#sihJudgeShell.federation-govtech .judge-note,#sihJudgeShell.federation-govtech .judge-success,#sihJudgeShell.federation-govtech .judge-error{border-radius:7px!important}
+
+/* Dark mode remains administrative */
+html[data-sanpaid-theme="dark"] #sihJudgeShell.federation-govtech{background:var(--sp-bg)!important}
+html[data-sanpaid-theme="dark"] #sihJudgeShell.federation-govtech .fed-sidebar,
+html[data-sanpaid-theme="dark"] #sihJudgeShell.federation-govtech .judge-hero,
+html[data-sanpaid-theme="dark"] #sihJudgeShell.federation-govtech .admin-command-summary{background:var(--sp-surface)!important;border-color:var(--sp-border)!important}
+html[data-sanpaid-theme="dark"] .fed-side-brand,html[data-sanpaid-theme="dark"] .fed-side-foot,html[data-sanpaid-theme="dark"] .fed-kpi,html[data-sanpaid-theme="dark"] .fed-record{background:var(--sp-surface-2)!important;border-color:var(--sp-border)!important}
+html[data-sanpaid-theme="dark"] .fed-sidebar nav button{color:var(--sp-text)!important}html[data-sanpaid-theme="dark"] .fed-sidebar nav button:hover{background:var(--sp-surface-2)!important}
+html[data-sanpaid-theme="dark"] .fed-sidebar nav button.active{background:rgba(75,198,186,.12)!important;color:var(--sp-teal)!important}
+html[data-sanpaid-theme="dark"] .fed-section-head h3,html[data-sanpaid-theme="dark"] .fed-kpi>strong,html[data-sanpaid-theme="dark"] .fed-record>b{color:var(--sp-text)!important}
+
+@media(max-width:1100px){
+  #sihJudgeShell.federation-govtech{--fed-side:230px}
+  .fed-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fed-record-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:820px){
+  #sihJudgeShell.federation-govtech .judge-main{display:block!important;padding-top:12px!important}
+  #sihJudgeShell.federation-govtech #judgeContent>.judge-hero,#sihJudgeShell.federation-govtech #judgeContent>.admin-command-summary,#sihJudgeShell.federation-govtech #judgeContent>.judge-section{width:100%}
+  .fed-nav-toggle{display:block;position:sticky;top:72px;z-index:8;width:100%;margin:0 0 10px;background:#fff}
+  .fed-sidebar{position:fixed;z-index:20;left:0;top:72px;bottom:0;width:min(310px,88vw);max-height:none;border-radius:0 12px 12px 0;transform:translateX(-104%);transition:transform .2s ease;box-shadow:12px 0 34px rgba(7,25,37,.18)}
+  #judgeContent.fed-nav-open .fed-sidebar{transform:translateX(0)}
+  .fed-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #sihJudgeShell.federation-govtech .judge-hero{margin-bottom:10px!important}
+}
+@media(max-width:560px){
+  #sihJudgeShell.federation-govtech .judge-top{align-items:flex-start!important}
+  #sihJudgeShell.federation-govtech .fed-last-sync{display:none}
+  .fed-kpi-grid,.fed-record-grid{grid-template-columns:1fr}
+  .fed-section-head{align-items:flex-start;flex-direction:column}
+  .fed-section-head>small{text-align:left}
+  #sihJudgeShell.federation-govtech .admin-attention-grid{grid-template-columns:1fr!important}
+  #sihJudgeShell.federation-govtech .admin-command-heading{display:block}
+  #sihJudgeShell.federation-govtech .admin-command-heading .btn{width:100%;margin-top:10px}
+}
+@media(prefers-reduced-motion:reduce){.fed-sidebar,.fed-sidebar nav button,.admin-attention-card{transition:none!important}}
