@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanpaid-shell-v40';
+const CACHE_NAME = 'sanpaid-shell-v41';
 const APP_SHELL = [
   './',
   './index.html',
@@ -21,6 +21,7 @@ const APP_SHELL = [
   './section-gap-hotfix.css',
   './auth-unified.css',
   './master-final-v4.css',
+  './workspace-ui.css',
   './app.js',
   './voice-lazy-loader.js',
   './voice-request.js',
@@ -127,6 +128,7 @@ self.addEventListener('fetch', event => {
     '/auth-unified.js',
     '/master-final-v4.css',
     '/master-final-v4.js',
+    '/workspace-ui.css',
     '/selection-proof-v4.js'
   ].some(path => url.pathname.endsWith(path));
 
