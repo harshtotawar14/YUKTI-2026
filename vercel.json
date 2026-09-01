@@ -21,6 +21,8 @@
     {"source":"/federation-portal.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/cooperative-portal.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/cooperative-deploy-guard.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/demo-first-stable.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/customer-worker-dashboard.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/selection-proof-v4.js","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/judge-demo.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/hero-viewport-fix.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
@@ -40,7 +42,9 @@
     {"source":"/admin-command-center.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/federation-govtech.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
     {"source":"/federation-portal.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
-    {"source":"/cooperative-portal.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]}
+    {"source":"/cooperative-portal.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/demo-first-stable.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]},
+    {"source":"/customer-worker-dashboard.css","headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"}]}
   ],
   "rewrites": [
     {"source":"/api/:path*","destination":"https://sanpaid-sih-2026.onrender.com/api/:path*"}
