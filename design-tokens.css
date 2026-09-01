@@ -1,27 +1,39 @@
-/* SanPaid Design System v4 — single source of truth for landing, auth and role workspaces.
-   Cooperative trust, clear status semantics, strict spacing and accessible motion. */
+/* SanPaid Design System v5 — canonical color system for landing, auth and role workspaces.
+   Deep navy + teal + neutral surfaces + controlled semantic status colors. */
 :root{
-  --sp-ink:#0b1f33;
-  --sp-ink-2:#102f47;
-  --sp-ink-3:#173e57;
-  --sp-teal:#0f766e;
-  --sp-teal-2:#0c9488;
-  --sp-cyan:#43bdb4;
-  --sp-blue:#2f6fab;
-  --sp-amber:#b97512;
-  --sp-green:#15805d;
-  --sp-red:#b74343;
+  --sp-ink:#0B1F33;
+  --sp-ink-2:#12344D;
+  --sp-ink-3:#1A405B;
+  --sp-teal:#0F766E;
+  --sp-teal-2:#0D9488;
+  --sp-cyan:#4BB8AF;
+  --sp-blue:#316B9A;
+  --sp-amber:#A96813;
+  --sp-green:#167A5B;
+  --sp-red:#B24646;
+  --sp-future:#667784;
 
-  --sp-bg:#f6f8fa;
-  --sp-bg-soft:#eef3f5;
-  --sp-surface:#ffffff;
-  --sp-surface-solid:#ffffff;
-  --sp-surface-2:#f1f5f6;
-  --sp-text:#10283a;
-  --sp-muted:#5d7180;
-  --sp-border:#dbe5e9;
-  --sp-border-strong:#c8d6dc;
-  --sp-focus:#0c9488;
+  --sp-bg:#F6F8FA;
+  --sp-bg-soft:#F0F4F5;
+  --sp-surface:#FFFFFF;
+  --sp-surface-solid:#FFFFFF;
+  --sp-surface-2:#F0F4F5;
+  --sp-text:#10283A;
+  --sp-text-2:#506676;
+  --sp-muted:#6B7D89;
+  --sp-border:#DCE5E9;
+  --sp-border-strong:#CBD8DE;
+  --sp-focus:#0D9488;
+
+  --sp-success-bg:#EAF7F1;
+  --sp-success-border:#BFE4D4;
+  --sp-warning-bg:#FFF6E5;
+  --sp-warning-border:#EED29D;
+  --sp-error-bg:#FDF0F0;
+  --sp-error-border:#EAC1C1;
+  --sp-future-bg:#F0F3F5;
+  --sp-future-border:#D5DDE2;
+  --sp-soft-teal:#E8F5F2;
 
   --sp-font-display:"Space Grotesk","Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --sp-font-body:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
@@ -51,10 +63,10 @@
   --sp-radius-xl:28px;
   --sp-pill:999px;
 
-  --sp-shadow-sm:0 8px 24px rgba(11,31,51,.06);
-  --sp-shadow-md:0 18px 44px rgba(11,31,51,.09);
-  --sp-shadow-lg:0 28px 70px rgba(11,31,51,.13);
-  --sp-shadow-focus:0 0 0 4px rgba(12,148,136,.18);
+  --sp-shadow-sm:0 8px 24px rgba(11,31,51,.055);
+  --sp-shadow-md:0 18px 44px rgba(11,31,51,.085);
+  --sp-shadow-lg:0 28px 70px rgba(11,31,51,.12);
+  --sp-shadow-focus:0 0 0 4px rgba(13,148,136,.16);
 
   --sp-ease:cubic-bezier(.2,.75,.2,1);
   --sp-fast:180ms;
@@ -72,7 +84,7 @@
   --color-danger:var(--sp-red);
   --color-border:var(--sp-border);
 
-  /* Compatibility bridge so older dashboard components inherit this same system. */
+  /* Compatibility bridge: older components inherit the canonical palette. */
   --navy:var(--sp-ink);
   --navy2:var(--sp-ink-2);
   --navy3:var(--sp-ink-3);
@@ -84,6 +96,7 @@
   --muted:var(--sp-muted);
   --warn:var(--sp-amber);
   --danger:var(--sp-red);
+  --purple:var(--sp-blue);
   --white:var(--sp-surface-solid);
   --shadow:var(--sp-shadow-sm);
   --r:var(--sp-radius-md);
@@ -91,15 +104,33 @@
 
 html[data-sanpaid-theme="dark"]{
   color-scheme:dark;
-  --sp-bg:#07131f;
-  --sp-bg-soft:#0b1c29;
-  --sp-surface:#0d2030;
-  --sp-surface-solid:#102736;
-  --sp-surface-2:#102a3c;
-  --sp-text:#ecf5f8;
-  --sp-muted:#aac0cb;
-  --sp-border:#244052;
-  --sp-border-strong:#315267;
+  --sp-bg:#07131F;
+  --sp-bg-soft:#0B1C29;
+  --sp-surface:#0D2030;
+  --sp-surface-solid:#0D2030;
+  --sp-surface-2:#102A3C;
+  --sp-text:#ECF5F8;
+  --sp-text-2:#C5D6DE;
+  --sp-muted:#AAC0CB;
+  --sp-border:#294556;
+  --sp-border-strong:#365669;
+  --sp-teal:#4BC6BA;
+  --sp-teal-2:#42BBAF;
+  --sp-cyan:#65D1C7;
+  --sp-blue:#72A5CC;
+  --sp-green:#58C79B;
+  --sp-amber:#E0A652;
+  --sp-red:#E37777;
+  --sp-future:#A9BAC3;
+  --sp-soft-teal:rgba(75,198,186,.10);
+  --sp-success-bg:rgba(88,199,155,.10);
+  --sp-success-border:rgba(88,199,155,.26);
+  --sp-warning-bg:rgba(224,166,82,.10);
+  --sp-warning-border:rgba(224,166,82,.28);
+  --sp-error-bg:rgba(227,119,119,.10);
+  --sp-error-border:rgba(227,119,119,.28);
+  --sp-future-bg:rgba(169,186,195,.08);
+  --sp-future-border:rgba(169,186,195,.22);
   --sp-shadow-sm:0 8px 24px rgba(0,0,0,.18);
   --sp-shadow-md:0 18px 44px rgba(0,0,0,.25);
   --sp-shadow-lg:0 28px 70px rgba(0,0,0,.34);
