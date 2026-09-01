@@ -5,6 +5,11 @@
   const TOKEN_KEY='sanpaid_connected_demo_token_v1';
   const DEMO_EMAILS=new Set(['customer.connected@sanpaid.demo','worker1.connected@sanpaid.demo','worker2.connected@sanpaid.demo']);
   const SAFE_CONNECTED_LEGACY=new Set(['/api/services','/api/worker/dashboard','/api/worker/availability']);
+  const CONNECTED_FALLBACKS=new Map([
+    ['/api/connected/customer/services','/api/services'],
+    ['/api/connected/worker/dashboard','/api/worker/dashboard'],
+    ['/api/connected/worker/availability','/api/worker/availability']
+  ]);
   const nativeFetch=window.fetch.bind(window);
   const NativeEventSource=window.EventSource;
   let healthTimer=null;
@@ -25,6 +30,9 @@
     }catch{}
     return'';
   }
+  function fallbackFor(path){
+    try{const parsed=new URL(path,location.href);return CONNECTED_FALLBACKS.get(parsed.pathname)||'';}catch{return'';}
+  }
   function signalSync(snapshot){try{window.dispatchEvent(new CustomEvent('sanpaid:connected-sync',{detail:{snapshot,at:Date.now()}}));}catch{}}
 
   window.fetch=async function sanPaidConnectedFetch(input,init={}){
@@ -40,7 +48,12 @@
     if(!targetPath)return nativeFetch(input,init);
 
     const headers=new Headers(init.headers||{});if(!headers.has('Content-Type')&&init.body)headers.set('Content-Type','application/json');if(!isDemoLogin&&token)headers.set('Authorization',`Bearer ${token}`);
-    const response=await nativeFetch(direct(targetPath),{...init,headers,credentials:'omit',mode:'cors',cache:'no-store'});
+    let response=await nativeFetch(direct(targetPath),{...init,headers,credentials:'omit',mode:'cors',cache:'no-store'});
+    const fallback=response.status===404?fallbackFor(targetPath):'';
+    if(fallback&&token){
+      response=await nativeFetch(direct(fallback),{...init,headers,credentials:'omit',mode:'cors',cache:'no-store'});
+      if(response.ok)response.headers.get('x-sanpaid-fallback');
+    }
     if(isDemoLogin&&response.ok){try{const data=await response.clone().json();if(data?.demoToken)setToken(data.demoToken);}catch{}}
     if(isDemoLogout&&response.ok)setToken('');
     if(response.status===401&&targetPath.startsWith('/api/connected/')&&!isDemoLogin)setToken('');
