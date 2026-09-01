@@ -68,6 +68,11 @@
     ensureStylesheet('sanpaidSectionGapHotfix', 'section-gap-hotfix.css');
   }
 
+  function loadUnifiedAuth() {
+    ensureStylesheet('sanpaidUnifiedAuthStyles', 'auth-unified.css');
+    ensureScript('sanpaidUnifiedAuthScript', 'auth-unified.js');
+  }
+
   function polishLandingHero() {
     const landing = document.getElementById('landing');
     const hero = document.getElementById('home');
@@ -167,6 +172,7 @@
     loadResearchUpgrades();
     loadTop1Readiness();
     loadSelectionReadyV3();
+    loadUnifiedAuth();
 
     document.addEventListener('keydown', event => {
       const connectedDialog = document.querySelector('#connectedModalRoot [role="dialog"]');
