@@ -25,8 +25,8 @@ button,a,input,select,textarea{touch-action:manipulation}
 .modal-body,.modal-head{min-width:0}
 .field input,.field select,.field textarea{width:100%}
 .qr{max-width:70vw;max-height:70vw}
-.mobile-drawer-scrim{position:fixed;inset:0;background:rgba(5,15,28,.48);z-index:52;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
-.mobile-drawer-scrim.hidden{display:none!important}
+.mobile-drawer-scrim{position:fixed;inset:0;background:rgba(5,15,28,.48);z-index:100;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:auto}
+.mobile-drawer-scrim.hidden{display:none!important;pointer-events:none!important}
 body.mobile-drawer-open{overflow:hidden;overscroll-behavior:none}
 .mobile-drawer .drawer-title{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 4px 12px;border-bottom:1px solid var(--line);margin-bottom:8px}
 .mobile-drawer .drawer-title strong{font-size:15px;color:var(--navy2)}
@@ -57,9 +57,12 @@ body.mobile-drawer-open{overflow:hidden;overscroll-behavior:none}
   .app-main{grid-template-columns:1fr}
   .side{display:none}
   .content{padding:22px var(--mobile-page) calc(28px + env(safe-area-inset-bottom))}
-  .mobile-drawer{display:block;position:fixed!important;top:var(--mobile-nav-h)!important;right:0!important;bottom:0!important;left:auto!important;width:min(88vw,360px)!important;height:calc(100dvh - var(--mobile-nav-h))!important;max-height:calc(100dvh - var(--mobile-nav-h))!important;background:#fff!important;z-index:56!important;padding:12px max(12px,env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) 12px!important;border:0!important;border-left:1px solid var(--line)!important;border-radius:18px 0 0 0;box-shadow:-20px 0 55px rgba(11,25,48,.22);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}
-  .mobile-drawer.hidden{display:none!important}
+  .mobile-drawer{display:block;position:fixed!important;top:var(--mobile-nav-h)!important;right:0!important;bottom:0!important;left:auto!important;width:min(88vw,360px)!important;height:calc(100dvh - var(--mobile-nav-h))!important;max-height:calc(100dvh - var(--mobile-nav-h))!important;background:#fff!important;z-index:110!important;padding:12px max(12px,env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) 12px!important;border:0!important;border-left:1px solid var(--line)!important;border-radius:18px 0 0 0!important;box-shadow:-20px 0 55px rgba(11,25,48,.22)!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;pointer-events:auto}
+  .mobile-drawer.hidden{display:none!important;pointer-events:none!important}
   .mobile-drawer button,.mobile-drawer a{font-size:14px;width:100%;text-align:left;border-radius:10px}
+  /* Canonical public drawer owner. This intentionally outranks evaluator-final.css. */
+  html body #landing .eval-nav .mobile-drawer{display:block!important;position:fixed!important;top:var(--mobile-nav-h)!important;right:0!important;bottom:0!important;left:auto!important;width:min(88vw,360px)!important;height:calc(100dvh - var(--mobile-nav-h))!important;max-height:calc(100dvh - var(--mobile-nav-h))!important;padding:12px max(12px,env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) 12px!important;border:0!important;border-left:1px solid var(--line)!important;border-radius:18px 0 0 0!important;background:#fff!important;box-shadow:-20px 0 55px rgba(11,25,48,.22)!important;z-index:110!important;overflow-y:auto!important;overflow-x:hidden!important;pointer-events:auto!important}
+  html body #landing .eval-nav .mobile-drawer.hidden{display:none!important;pointer-events:none!important}
   .service-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   .benefit-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .problem-grid{grid-template-columns:1fr}
@@ -186,6 +189,7 @@ body.mobile-drawer-open{overflow:hidden;overscroll-behavior:none}
   .mobile-bottom-nav button{font-size:9px}
   #appUser{display:none}
   .mobile-drawer{width:100vw!important;border-radius:0!important}
+  html body #landing .eval-nav .mobile-drawer{width:100vw!important;border-radius:0!important}
 }
 
 @media(min-width:961px){
