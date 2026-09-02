@@ -15,8 +15,8 @@
   ];
   const LEGACY_STATE_KEY='sanpaid_demo_state_v2';
   const PREFILL_SERVICE_KEY='sanpaid_prefill_service_v1';
+  const PREFILL_AREA_KEY='sanpaid_prefill_area_v1';
   const $=(s,r=document)=>r.querySelector(s);
-  const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money=n=>`₹${Number(n||0).toLocaleString('en-IN')}`;
 
@@ -28,8 +28,8 @@
 
   function retireLegacyState(){
     try{localStorage.removeItem(LEGACY_STATE_KEY);}catch{}
-    const shell=$('#appShell');if(shell)shell.classList.add('hidden');
-    const resume=$('#resumeDemo');if(resume)resume.classList.add('hidden');
+    $('#appShell')?.classList.add('hidden');
+    $('#resumeDemo')?.classList.add('hidden');
   }
 
   function renderServices(){
@@ -50,42 +50,50 @@
     return null;
   }
 
-  function rememberService(service){
-    if(!service)return;
-    try{sessionStorage.setItem(PREFILL_SERVICE_KEY,String(service));}catch{}
-  }
+  function rememberService(service){try{service?sessionStorage.setItem(PREFILL_SERVICE_KEY,String(service)):sessionStorage.removeItem(PREFILL_SERVICE_KEY);}catch{}}
+  function rememberArea(area){try{area?sessionStorage.setItem(PREFILL_AREA_KEY,String(area)):sessionStorage.removeItem(PREFILL_AREA_KEY);}catch{}}
 
-  async function openRole(role,persona=null,mode='login'){
+  async function startBooking(service){
+    rememberService(service||$('#heroService')?.value||'Electrician');
     const auth=await waitForAuth();
     if(!auth){toast('Login workspace is still loading. Please retry.','warn');return false;}
     const current=auth.getRole?.();
-    if(current===role&&auth.isAuthenticated?.())return auth.openRoleWorkspace(role,persona);
-    auth.open(role,mode,persona);
+    if(current==='CUSTOMER'&&auth.isAuthenticated?.())return auth.openRoleWorkspace('CUSTOMER','CUSTOMER');
+    auth.open('CUSTOMER','login','CUSTOMER');
     return true;
   }
 
-  async function startBooking(service){rememberService(service||$('#heroService')?.value||'Electrician');return openRole('CUSTOMER','CUSTOMER','login');}
-  async function showRoles(){const auth=await waitForAuth();if(!auth){toast('Role access is still loading.','warn');return;}auth.open(auth.getRole?.()||'CUSTOMER','login');}
-  async function showWorkerRegistration(){return openRole('WORKER','WORKER_A','signup');}
+  function wireLandingUtilities(){
+    // Role-access buttons such as #getStarted, #coopLogin and Worker demo buttons
+    // are owned only by auth-unified.js. This file owns only service-selection utilities.
+    const book=$('#bookServiceHero');
+    if(book)book.onclick=()=>startBooking($('#heroService')?.value||'Electrician');
 
-  function wireLanding(){
-    const getStarted=$('#getStarted');if(getStarted)getStarted.onclick=showRoles;
-    const coop=$('#coopLogin');if(coop)coop.onclick=()=>openRole('COOPERATIVE_ADMIN',null,'login');
-    const join=$('#joinWorker');if(join)join.onclick=showWorkerRegistration;
-    const book=$('#bookServiceHero');if(book)book.onclick=()=>startBooking($('#heroService')?.value||'Electrician');
-    const search=$('#heroSearch');if(search)search.onclick=()=>{const area=$('#heroArea')?.value.trim();if(!area){toast('Enter your area first.','error');return;}try{sessionStorage.setItem('sanpaid_prefill_area_v1',area);}catch{}startBooking($('#heroService')?.value||'Electrician');};
-    document.addEventListener('click',e=>{const card=e.target.closest?.('#serviceGrid [data-service]');if(card){e.preventDefault();startBooking(card.dataset.service);}});
+    const search=$('#heroSearch');
+    if(search)search.onclick=()=>{
+      const area=$('#heroArea')?.value.trim();
+      if(!area){toast('Enter your area first.','error');return;}
+      rememberArea(area);
+      startBooking($('#heroService')?.value||'Electrician');
+    };
+
+    document.addEventListener('click',e=>{
+      const card=e.target.closest?.('#serviceGrid [data-service]');
+      if(!card)return;
+      e.preventDefault();
+      startBooking(card.dataset.service);
+    });
   }
 
-  function start(){retireLegacyState();renderServices();wireLanding();}
+  function start(){retireLegacyState();renderServices();wireLandingUtilities();}
 
   window.SanPaidDemo={
-    reset(){try{localStorage.removeItem(LEGACY_STATE_KEY);sessionStorage.removeItem(PREFILL_SERVICE_KEY);}catch{}location.reload();},
+    reset(){try{localStorage.removeItem(LEGACY_STATE_KEY);sessionStorage.removeItem(PREFILL_SERVICE_KEY);sessionStorage.removeItem(PREFILL_AREA_KEY);}catch{}location.reload();},
     state:()=>({mode:'CONNECTED_BACKEND_ONLY'}),
-    showRoles,
+    showRoles:async()=>{const auth=await waitForAuth();auth?.open?.(auth.getRole?.()||'CUSTOMER','login',auth.getPersona?.()||null);},
     startBooking
   };
-  window.SanPaidLanding={services:SERVICES,startBooking,showRoles};
+  window.SanPaidLanding={services:SERVICES,startBooking};
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
