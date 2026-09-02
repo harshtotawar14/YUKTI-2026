@@ -93,12 +93,17 @@ test('navigation does not contain empty or javascript pseudo-links',()=>{
   assert.deepEqual(bad,[],`Invalid links:\n${bad.join('\n')}`);
 });
 
-test('critical demo controls are present and wired',()=>{
-  const critical=['connectedDemoBtn','getStarted','menuBtn','heroMatchingCta','heroSearch','catalogRetry','bookServiceHero','joinWorker','coopLogin'];
+test('visible evaluator-critical controls are present and wired',()=>{
+  const critical=['connectedDemoBtn','getStarted','menuBtn','heroMatchingCta','runMatchBtn','evalRunRanking','evalResetMatch','evalOpenConnected','evalAdminPrototype','evalCapacityAction','evalFinalPrototype','evalFinalArchitecture'];
   const missing=critical.filter(id=>!ids.includes(id));
   const unwired=critical.filter(id=>ids.includes(id)&&!idReferenced(id)&&!new RegExp(`id=["']${id}["'][^>]*(?:data-eval-|data-open-)`).test(html));
   assert.deepEqual(missing,[],`Missing critical controls: ${missing.join(', ')}`);
   assert.deepEqual(unwired,[],`Unwired critical controls: ${unwired.join(', ')}`);
+});
+
+test('deploy build explicitly strips the permanently hidden legacy quick-access block',()=>{
+  const build=readFileSync(join(root,'scripts/build.mjs'),'utf8');
+  assert.match(build,/quick-booking-details/,'Build must remove the permanently hidden duplicate quick-access block from dist.');
 });
 
 test('public runtime has no obvious dead placeholder actions',()=>{
