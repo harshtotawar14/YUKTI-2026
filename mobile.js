@@ -108,6 +108,7 @@
 
     window.addEventListener('orientationchange',() => setTimeout(revealVisibleNow,180),{passive:true});
     window.addEventListener('pageshow',revealVisibleNow,{passive:true});
+    document.fonts?.ready?.then(revealVisibleNow).catch(()=>{});
     setTimeout(revealVisibleNow,600);
     setTimeout(revealVisibleNow,1600);
 
@@ -123,31 +124,31 @@
     if (!nodes.length) return;
 
     const startFallback = () => {
-      if (root.querySelector('.hero-active')) return;
-      root.dataset.mobileAnimationFallback = '1';
+      if (root.dataset.animationOwner === 'evaluator' || root.querySelector('.hero-active')) return;
+      root.dataset.animationOwner = 'mobile-fallback';
       const sequence = ['request','workers','gate','rank','offer','audit'];
       const run = () => {
-        if (root.dataset.mobileAnimationFallback !== '1') return;
+        if (root.dataset.animationOwner !== 'mobile-fallback') return;
         nodes.forEach(node => node.classList.remove('hero-active'));
         workers.forEach(worker => worker.classList.remove('hero-pass','hero-remove'));
         if (progress) progress.style.width = '0%';
         sequence.forEach((name,index) => {
           setTimeout(() => {
-            if (root.dataset.mobileAnimationFallback !== '1') return;
+            if (root.dataset.animationOwner !== 'mobile-fallback') return;
             const node = root.querySelector(`[data-hero-seq="${name}"]`);
             node?.classList.add('hero-active');
             if (name === 'gate') {
               workers.forEach(worker => worker.classList.add(worker.classList.contains('good')?'hero-pass':'hero-remove'));
             }
             if (progress) progress.style.width = `${Math.round(((index+1)/sequence.length)*100)}%`;
-          },160+index*850);
+          },120+index*820);
         });
-        root._mobileAnimationTimer = setTimeout(run,160+sequence.length*850+850);
+        root._mobileAnimationTimer = setTimeout(run,120+sequence.length*820+700);
       };
       run();
     };
 
-    setTimeout(startFallback,1200);
+    setTimeout(startFallback,900);
   }
 
   async function installPwa(){
@@ -212,12 +213,12 @@
   }
 
   function clearStaleDrawerLock(){
-    const drawer = document.getElementById('mobileDrawer');
-    if (!drawer || drawer.classList.contains('hidden')) {
-      document.body.classList.remove('mobile-drawer-open');
-      document.getElementById('mobileDrawerScrim')?.classList.add('hidden');
-      document.getElementById('menuBtn')?.setAttribute('aria-expanded','false');
+    if (window.SanPaidLanding?.recoverDrawerState) {
+      window.SanPaidLanding.recoverDrawerState();
+      return;
     }
+    const drawer = document.getElementById('mobileDrawer');
+    if (!drawer || drawer.classList.contains('hidden')) document.body.classList.remove('mobile-drawer-open');
   }
 
   function setupLifecycleRecovery(){
