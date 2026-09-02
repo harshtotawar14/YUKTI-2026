@@ -271,6 +271,7 @@
       return false;
     }
     if (meta.target === 'judge') {
+      window.SanPaidBootstrap?.loadAdministration?.();
       await ensureAdminBridge();
       if (!await waitForWorkspace('judge')) { toast('Administrative workspace is still loading. Please retry.'); return false; }
       saveWorkspace(roleKey, null, 'judge');
@@ -314,7 +315,7 @@
 
   function roleGrid() {
     return `<div class="spu-role-grid" role="group" aria-label="Choose role">${Object.entries(ROLE_META).map(([key, meta]) => `
-      <button type="button" class="spu-role ${state.requestedRole === key ? 'active' : ''}" data-spu-role="${key}">
+      <button type="button" class="spu-role ${state.requestedRole === key ? 'active' : ''}" data-spu-role="${key}" aria-pressed="${state.requestedRole === key ? 'true' : 'false'}">
         <span class="spu-role-code" aria-hidden="true">${meta.code}</span><b>${meta.label}</b>
       </button>`).join('')}</div>`;
   }
@@ -367,10 +368,10 @@
     content.innerHTML = `<span class="spu-demo-pill">PROTOTYPE ENVIRONMENT</span><h2 id="spuTitle">Access SanPaid</h2><p class="spu-sub">Select your authorized role and sign in.</p>
       ${roleGrid()}${workerContext}
       <form id="spuLoginForm" class="spu-form" novalidate>
-        <div class="spu-field"><label for="spuEmail">Email</label><input id="spuEmail" type="email" autocomplete="username" value="${esc(loginEmail)}" required></div>
-        <div class="spu-field spu-password"><label for="spuPassword">Password</label><input id="spuPassword" type="password" autocomplete="current-password" placeholder="Enter password" required><button class="spu-show" id="spuShowPassword" type="button">Show</button></div>
-        <label class="spu-remember"><input id="spuRemember" type="checkbox"><span>Remember this device</span></label>
-        <div id="spuLoginMessage" aria-live="polite"></div>
+        <div class="spu-field"><label for="spuEmail">Email</label><input id="spuEmail" name="email" type="email" inputmode="email" autocomplete="username" value="${esc(loginEmail)}" required></div>
+        <div class="spu-field spu-password"><label for="spuPassword">Password</label><input id="spuPassword" name="password" type="password" autocomplete="current-password" placeholder="Enter password" aria-describedby="spuLoginMessage" required><button class="spu-show" id="spuShowPassword" type="button" aria-controls="spuPassword" aria-pressed="false">Show</button></div>
+        <label class="spu-remember"><input id="spuRemember" name="remember" type="checkbox"><span>Remember this device</span></label>
+        <div id="spuLoginMessage" role="status" aria-live="polite"></div>
         <button class="spu-primary" id="spuLoginSubmit" type="submit">SIGN IN</button>
       </form>
       <div class="spu-helper"><b>${esc(meta.label)}:</b> ${esc(meta.help)}</div>`;
@@ -381,6 +382,7 @@
       const show = password.type === 'password';
       password.type = show ? 'text' : 'password';
       $('#spuShowPassword').textContent = show ? 'Hide' : 'Show';
+      $('#spuShowPassword').setAttribute('aria-pressed',show?'true':'false');
     };
     $('#spuLoginForm').onsubmit = async event => {
       event.preventDefault();
@@ -388,6 +390,7 @@
       const message = $('#spuLoginMessage');
       button.disabled = true;
       button.textContent = 'SIGNING IN…';
+      event.currentTarget.setAttribute('aria-busy','true');
       message.innerHTML = '';
       try {
         await login({
@@ -407,6 +410,7 @@
       } finally {
         button.disabled = false;
         button.textContent = 'SIGN IN';
+        event.currentTarget.setAttribute('aria-busy','false');
       }
     };
   }
@@ -429,7 +433,7 @@
       await logout({ silent: true, keepModal: true });
     }
     render();
-    setTimeout(() => $('.spu-close', authRoot)?.focus(), 0);
+    setTimeout(() => ($('#spuEmail', authRoot) || $('.spu-close', authRoot))?.focus(), 0);
   }
 
   function closeAuth() {

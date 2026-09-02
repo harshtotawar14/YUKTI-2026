@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://yukti-2026-liart.vercel.app/sitemap.xml

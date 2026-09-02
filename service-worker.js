@@ -1,10 +1,10 @@
-const CACHE_NAME='sanpaid-runtime-v66';
+const CACHE_NAME='sanpaid-runtime-v67';
 const FALLBACK_ASSETS=[
   './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./color-system-v5.css',
   './app.js','./mobile.js','./evaluator-final.css','./evaluator-final.js','./top1-polish.js',
   './connected-demo.css','./connected-demo.js','./auth-unified.css','./auth-unified.js',
   './customer-worker-dashboard.css','./customer-worker-dashboard.js','./handover-evidence.css','./handover-evidence.js',
-  './manifest.webmanifest','./app-icon.svg'
+  './manifest.webmanifest','./app-icon.svg','./social-preview.svg','./robots.txt','./sitemap.xml'
 ];
 
 self.addEventListener('install',event=>{

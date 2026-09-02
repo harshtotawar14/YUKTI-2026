@@ -2,6 +2,7 @@
   'use strict';
 
   const loaded=new Set();
+  let administrationLoaded=false;
 
   function stylesheet(id,href){
     if(document.getElementById(id)||loaded.has(href))return;
@@ -32,6 +33,8 @@
   }
 
   function loadAdministration(){
+    if(administrationLoaded)return;
+    administrationLoaded=true;
     stylesheet('sanpaidAdminCommandStyles','admin-command-center.css');
     stylesheet('sanpaidFederationGovtechStyles','federation-govtech.css');
     stylesheet('sanpaidFederationPortalStyles','federation-portal.css');
@@ -71,13 +74,13 @@
       version:'handover-bootstrap-v1',
       story:'Customer Request → Eligibility Gate → Fair Ranking → Worker Choice → Service-Start Verification → Service → Completion → Sandbox Payment → Rating → Audit Outcome',
       refreshEvidence:()=>window.SanPaidHandoverEvidence?.refresh?.(),
+      loadAdministration,
       closeAdminDrawers
     });
   }
 
   function start(){
     loadCore();
-    loadAdministration();
     wireAccessibility();
     exposeRuntimeStatus();
   }

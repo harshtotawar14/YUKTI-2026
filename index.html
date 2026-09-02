@@ -1,14 +1,28 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="SanPaid — AI-assisted cooperative workforce operating network for verified local services, eligibility-first matching, worker choice and cooperative governance.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="application-name" content="SanPaid">
 <meta name="theme-color" content="#F6F8FA">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>SanPaid — SIH 2026 Cooperative Workforce Network</title>
+<link rel="canonical" href="https://yukti-2026-liart.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SanPaid">
+<meta property="og:title" content="SanPaid — SIH 2026 Cooperative Workforce Network">
+<meta property="og:description" content="Eligibility-first matching, worker choice and auditable cooperative service operations in one connected prototype.">
+<meta property="og:url" content="https://yukti-2026-liart.vercel.app/">
+<meta property="og:image" content="https://yukti-2026-liart.vercel.app/social-preview.svg">
+<meta property="og:image:alt" content="SanPaid cooperative workforce network">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SanPaid — SIH 2026 Cooperative Workforce Network">
+<meta name="twitter:description" content="A connected prototype for trusted local services, fair worker opportunities and accountable governance.">
+<meta name="twitter:image" content="https://yukti-2026-liart.vercel.app/social-preview.svg">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="app-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="app-icon.svg">
@@ -28,6 +42,7 @@
 <link rel="stylesheet" id="sanpaidEvaluatorFinalStyles" href="evaluator-final.css">
 </head>
 <body>
+<a class="skip-link" href="#mainContent">Skip to main content</a>
 <div id="landing">
   <div class="ribbon">Smart India Hackathon 2026 · PS ID <b>26089</b> · Cooperative Gig Services Platform for Household &amp; Community Services</div>
 
@@ -44,10 +59,10 @@
       </div>
       <div class="actions">
         <span class="eval-sih-chip desktop-only">SIH 2026</span>
-        <button class="btn primary desktop-only" id="connectedDemoBtn" type="button">OPEN LIVE PROTOTYPE</button>
+        <button class="btn primary desktop-only" id="connectedDemoBtn" type="button">TRY CONNECTED DEMO</button>
         <button class="btn ghost desktop-only" id="getStarted" type="button">Role Access</button>
         <button class="btn secondary hidden" id="resumeDemo" type="button">Resume</button>
-        <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileDrawer">☰</button>
+        <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileDrawer">☰</button>
       </div>
     </div>
     <div id="mobileDrawer" class="mobile-drawer hidden" aria-hidden="true">
@@ -57,7 +72,7 @@
       <a href="#matching">Matching Proof</a>
       <a href="#operatingModel">Governance</a>
       <a href="#architecture">Architecture</a>
-      <button type="button" class="btn primary" data-eval-open-connected>OPEN LIVE PROTOTYPE</button>
+      <button type="button" class="btn primary" data-eval-open-connected>TRY CONNECTED DEMO</button>
       <button type="button" class="btn secondary" data-open-selector="0">Guided Demo</button>
     </div>
   </nav>
@@ -75,7 +90,7 @@
         </div>
 
         <div class="hero-ctas">
-          <button class="btn primary eval-primary" type="button" data-eval-open-connected>OPEN LIVE PROTOTYPE</button>
+          <button class="btn primary eval-primary" type="button" data-eval-open-connected>TRY CONNECTED DEMO</button>
           <button class="btn secondary eval-secondary" id="heroMatchingCta" type="button">SEE HOW MATCHING WORKS</button>
         </div>
         <div class="eval-hero-principle"><b>Rules First</b><span>•</span><b>AI-Assisted</b><span>•</span><b>Worker Choice</b><span>•</span><b>Auditable</b></div>
@@ -87,6 +102,10 @@
             <select id="heroService" aria-label="Service"></select>
             <input id="heroArea" aria-label="Area" placeholder="e.g. Karad Zone 1">
             <button class="btn primary" id="heroSearch" type="button">Find Local Service</button>
+          </div>
+          <div class="catalog-state-row">
+            <p id="catalogStatus" class="catalog-status" role="status" aria-live="polite">Checking connected service catalog…</p>
+            <button class="catalog-retry" id="catalogRetry" type="button" hidden>Retry catalog</button>
           </div>
           <div class="hero-secondary-actions">
             <button class="btn secondary small" id="bookServiceHero" type="button">Book Verified Service</button>
@@ -125,7 +144,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="mainContent" tabindex="-1">
     <section class="section eval-gap" id="problem">
       <div class="wrap">
         <div class="head" data-reveal>
@@ -314,7 +333,7 @@
         <span class="tag">Live Prototype</span>
         <h2>Trusted Services.<br>Fair Opportunities.<br>Accountable Governance.</h2>
         <p>Eligibility first. Worker choice protected. Cooperative and federation responsibility remain visible.</p>
-        <div class="eval-final-cta-actions"><button class="btn primary" id="evalFinalPrototype" type="button">OPEN LIVE PROTOTYPE</button><button class="btn secondary" type="button" data-eval-connected-persona="WORKER_A">EXPLORE WORKER FLOW</button><button class="btn tertiary" id="evalFinalArchitecture" type="button">VIEW ARCHITECTURE</button></div>
+        <div class="eval-final-cta-actions"><button class="btn primary" id="evalFinalPrototype" type="button">TRY CONNECTED DEMO</button><button class="btn secondary" type="button" data-eval-connected-persona="WORKER_A">EXPLORE WORKER FLOW</button><button class="btn tertiary" id="evalFinalArchitecture" type="button">VIEW ARCHITECTURE</button></div>
       </div>
     </section>
   </main>
@@ -333,9 +352,9 @@
     <div class="brand">San<span>Paid</span></div>
     <div class="actions">
       <span id="appUser"></span>
-      <button class="btn ghost small" id="homeFromApp" aria-label="Back to landing">Landing</button>
-      <button class="btn primary small" id="logoutBtn" aria-label="Logout">Logout</button>
-      <button class="menu-btn" id="appMenuBtn" aria-label="Open dashboard menu" aria-expanded="false" aria-controls="mobileAppDrawer">☰</button>
+      <button class="btn ghost small" id="homeFromApp" type="button" aria-label="Back to landing">Landing</button>
+      <button class="btn primary small" id="logoutBtn" type="button" aria-label="Logout">Logout</button>
+      <button class="menu-btn" id="appMenuBtn" type="button" aria-label="Open dashboard menu" aria-expanded="false" aria-controls="mobileAppDrawer">☰</button>
     </div>
   </header>
   <div class="app-main"><aside class="side" id="sideNav"></aside><main class="content" id="appContent"></main></div>

@@ -65,11 +65,11 @@ jobs:
             exit 1
           fi
 
-      - name: Verify coherent startup and v66 release
+      - name: Verify coherent startup and v67 release
         run: |
-          grep -F "release:'government-handover-v2'" app.js
-          grep -F "runtime:'v66'" app.js
-          grep -F 'sanpaid-runtime-v66' service-worker.js
+          grep -F "release:'government-handover-v3'" app.js
+          grep -F "runtime:'v67'" app.js
+          grep -F 'sanpaid-runtime-v67' service-worker.js
           grep -F 'design-tokens.css' index.html
           if grep -nE 'mobile-fix\.css|demo-preflight\.js' index.html; then
             echo 'Retired presentation/mobile files must not return to startup.'
@@ -80,6 +80,29 @@ jobs:
             exit 1
           fi
           grep -F "version:'handover-bootstrap-v1'" top1-polish.js
+          grep -F 'loadAdministration,' top1-polish.js
+          grep -F 'window.SanPaidBootstrap?.loadAdministration?.();' auth-unified.js
+          if sed -n '/function start()/,/^  }/p' top1-polish.js | grep -F 'loadAdministration();'; then
+            echo 'Administration assets must stay lazy and role-triggered.'
+            exit 1
+          fi
+
+      - name: Verify accessibility, discovery and security baseline
+        run: |
+          grep -F 'class="skip-link" href="#mainContent"' index.html
+          grep -F 'id="mainContent" tabindex="-1"' index.html
+          grep -F 'rel="canonical"' index.html
+          grep -F 'property="og:title"' index.html
+          grep -F 'id="catalogStatus"' index.html
+          grep -F 'id="catalogRetry"' index.html
+          grep -F 'Content-Security-Policy' vercel.json
+          if grep -F 'Content-Security-Policy-Report-Only' vercel.json; then
+            echo 'CSP must be enforced, not report-only.'
+            exit 1
+          fi
+          test -s robots.txt
+          test -s sitemap.xml
+          test -s social-preview.svg
 
       - name: Verify database-backed service catalog
         run: |
@@ -91,6 +114,28 @@ jobs:
             echo 'Static fallback must not claim current service pricing.'
             exit 1
           fi
+
+      - name: Verify deployed catalog contract
+        run: |
+          response_file="$(mktemp)"
+          curl --fail --silent --show-error --location \
+            --retry 4 --retry-delay 3 --retry-all-errors \
+            --connect-timeout 15 --max-time 60 \
+            --output "$response_file" \
+            https://yukti-2026-liart.vercel.app/api/public/services
+          node - "$response_file" <<'NODE'
+          const fs = require('fs');
+          const payload = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          if (payload.ok !== true || payload.source !== 'DATABASE_CONFIGURATION') {
+            throw new Error('Public catalog is not connected to database configuration.');
+          }
+          if (!Array.isArray(payload.services) || payload.services.length < 10) {
+            throw new Error('Public catalog returned too few services.');
+          }
+          const invalid = payload.services.find(service => !service.name || !Number.isFinite(Number(service.basePrice)));
+          if (invalid) throw new Error('Public catalog contains an invalid service contract.');
+          console.log(`Verified ${payload.services.length} database-backed services.`);
+          NODE
 
       - name: Verify matching truth on public landing
         run: |

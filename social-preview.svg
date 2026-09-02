@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">SanPaid cooperative workforce network</title>
+  <desc id="desc">Trusted local services, fair worker opportunities and accountable governance.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#0b1930"/>
+      <stop offset="1" stop-color="#153b57"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="75%" cy="20%" r="70%">
+      <stop stop-color="#2bc27b" stop-opacity=".35"/>
+      <stop offset="1" stop-color="#2bc27b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect x="70" y="70" width="1060" height="490" rx="32" fill="none" stroke="#ffffff" stroke-opacity=".13"/>
+  <text x="110" y="175" fill="#ffffff" font-family="Inter,Arial,sans-serif" font-size="60" font-weight="800">San<tspan fill="#2bc27b">Paid</tspan></text>
+  <text x="110" y="260" fill="#9fe2bf" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="700" letter-spacing="2">SIH 2026 · PS 26089</text>
+  <text x="110" y="350" fill="#ffffff" font-family="Inter,Arial,sans-serif" font-size="46" font-weight="750">Trusted services. Fair opportunities.</text>
+  <text x="110" y="410" fill="#ffffff" font-family="Inter,Arial,sans-serif" font-size="46" font-weight="750">Accountable governance.</text>
+  <text x="110" y="485" fill="#c9d5e4" font-family="Inter,Arial,sans-serif" font-size="24">Eligibility first · Worker choice · Auditable operations</text>
+</svg>

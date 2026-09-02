@@ -1,14 +1,16 @@
 (() => {
   'use strict';
 
-  const BUILD={release:'government-handover-v2',runtime:'v66',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
+  const BUILD={release:'government-handover-v3',runtime:'v67',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
   window.__SANPAID_BUILD__=Object.freeze(BUILD);
   console.info('[SanPaid build]',BUILD);
 
   const FALLBACK_SERVICES=[
     {name:'Electrician',icon:'EL'},{name:'Plumber',icon:'PL'},{name:'Carpenter',icon:'CP'},{name:'Painter',icon:'PT'},
-    {name:'Cleaner',icon:'CL'},{name:'Domestic Help',icon:'DH'},{name:'Caregiver',icon:'CG'},{name:'Driver',icon:'DR'},
-    {name:'Gardener',icon:'GD'},{name:'Technician',icon:'TC'}
+    {name:'Cleaner',icon:'CL'},{name:'Domestic Helper',icon:'DH'},{name:'Caregiver',icon:'CG'},{name:'Driver',icon:'DR'},
+    {name:'Gardener',icon:'GD'},{name:'Appliance Technician',icon:'AT'},{name:'AC Technician',icon:'AC'},
+    {name:'RO Technician',icon:'RO'},{name:'Pest Control Worker',icon:'PC'},{name:'Community Technician',icon:'CT'},
+    {name:'General Technician',icon:'GT'}
   ];
   const PREFILL_SERVICE_KEY='sanpaid_prefill_service_v1';
   const PREFILL_AREA_KEY='sanpaid_prefill_area_v1';
@@ -18,6 +20,7 @@
   const iconFor=name=>String(name||'SV').split(/\s+/).map(part=>part[0]||'').join('').slice(0,2).toUpperCase()||'SV';
   let catalog=[];
   let catalogSource='LOADING';
+  let catalogLoading=false;
   let mobileDrawerReturnFocus=null;
 
   function toast(message,type='success'){
@@ -62,13 +65,31 @@
       hero.innerHTML=services.map(service=>`<option value="${esc(service.name)}">${esc(service.name)}</option>`).join('');
       if(selected&&services.some(service=>service.name===selected))hero.value=selected;
     }
+    const status=$('#catalogStatus');
+    const retry=$('#catalogRetry');
+    if(status){
+      status.dataset.state=catalogSource.toLowerCase();
+      status.textContent=catalogSource==='DATABASE_CONFIGURATION'
+        ?`${services.length} connected services loaded from database configuration.`
+        :catalogSource==='LOADING'
+          ?'Checking connected service catalog…'
+          :'Connected catalog is temporarily unavailable. Service names are shown without current pricing.';
+    }
+    if(retry){
+      retry.hidden=catalogSource!=='STATIC_NAMES_ONLY';
+      retry.disabled=catalogLoading;
+    }
   }
 
   async function loadServiceCatalog(){
+    if(catalogLoading)return;
+    catalogLoading=true;
     catalogSource='LOADING';
     renderServices();
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),8000);
     try{
-      const response=await fetch('/api/public/services',{credentials:'include',cache:'no-store',headers:{Accept:'application/json'}});
+      const response=await fetch('/api/public/services',{credentials:'include',cache:'no-store',headers:{Accept:'application/json'},signal:controller.signal});
       const data=await response.json().catch(()=>({}));
       if(!response.ok||!Array.isArray(data.services))throw new Error(data.message||'catalog_unavailable');
       catalog=normalizedCatalog(data.services);
@@ -78,6 +99,9 @@
       catalog=[];
       catalogSource='STATIC_NAMES_ONLY';
       console.warn('[SanPaid catalog] connected service catalog unavailable; displaying service names without current pricing claim.',error?.message||error);
+    }finally{
+      clearTimeout(timeout);
+      catalogLoading=false;
     }
     renderServices();
     window.dispatchEvent(new CustomEvent('sanpaid:service-catalog',{detail:{source:catalogSource,services:catalog.length?catalog:FALLBACK_SERVICES}}));
@@ -138,6 +162,7 @@
     $('#bookServiceHero')?.addEventListener('click',()=>startBooking($('#heroService')?.value));
     $('#heroSearch')?.addEventListener('click',()=>{const area=$('#heroArea')?.value.trim();if(!area){toast('Enter your area first.','error');return;}rememberArea(area);startBooking($('#heroService')?.value);});
     document.addEventListener('click',event=>{const card=event.target.closest?.('#serviceGrid [data-service]');if(!card)return;event.preventDefault();startBooking(card.dataset.service);});
+    $('#catalogRetry')?.addEventListener('click',loadServiceCatalog);
   }
 
   function start(){
