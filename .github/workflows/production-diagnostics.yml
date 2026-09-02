@@ -1,0 +1,30 @@
+name: Production diagnostics
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  diagnose-production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe SanPaid production API safely
+        shell: bash
+        run: |
+          set -u
+          base='https://yukti-2026-brown.vercel.app'
+          for endpoint in '/api/connected/health' '/api/public/services'; do
+            body="$(mktemp)"
+            status="$(curl --silent --show-error --location --connect-timeout 15 --max-time 60 --output "$body" --write-out '%{http_code}' "$base$endpoint" || true)"
+            echo "Endpoint: $endpoint"
+            echo "HTTP: $status"
+            node - "$body" <<'NODE'
+          const fs=require('fs');
+          const file=process.argv[2];
+          let payload={};
+          try{payload=JSON.parse(fs.readFileSync(file,'utf8'));}catch{}
+          const safe={ok:payload.ok===true,error:payload.error||null,message:payload.message||null,source:payload.source||null,services:Array.isArray(payload.services)?payload.services.length:payload.services??null};
+          console.log(JSON.stringify(safe));
+          NODE
+          done
