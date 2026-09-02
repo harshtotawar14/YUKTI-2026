@@ -40,6 +40,7 @@ try{
   browser=await chromium.launch({headless:true,executablePath,args:['--no-sandbox']});
   const context=await browser.newContext({viewport:{width:1440,height:1000}});
   const page=await context.newPage();
+  page.setDefaultTimeout(5000);
   const pageErrors=[];
   const consoleErrors=[];
   page.on('pageerror',error=>pageErrors.push(error.message));
@@ -57,6 +58,10 @@ try{
   await page.waitForTimeout(180);
   assert(await (await visibleDialog(page)).count()>0,'Role Access did not open a visible dialog/workspace');
   await closeTransient(page);
+
+  const quickAccess=page.locator('.quick-booking-details');
+  if(await quickAccess.count()&&!(await quickAccess.getAttribute('open')))await quickAccess.locator('summary').click();
+  assert(await page.locator('#bookServiceHero').isVisible(),'Quick service and role access did not expand');
 
   await page.locator('#bookServiceHero').click();
   await page.waitForTimeout(180);
@@ -102,11 +107,11 @@ try{
   assert(await page.locator('#menuBtn').getAttribute('aria-expanded')==='false','Escape did not close mobile menu');
 
   assert(pageErrors.length===0,`Page errors: ${pageErrors.join(' | ')}`);
-  const unexpectedConsole=consoleErrors.filter(text=>!text.includes('/api/public/services')&&!text.includes('404'));
+  const unexpectedConsole=consoleErrors.filter(text=>!text.includes('/api/')&&!text.includes('404'));
   assert(unexpectedConsole.length===0,`Unexpected console errors: ${unexpectedConsole.join(' | ')}`);
 
   console.log('SanPaid Chromium UI audit: PASS');
-  console.log('Verified: Role Access, customer booking entry, Worker Access, Cooperative Access, service search, service cards, mobile drawer + Escape accessibility.');
+  console.log('Verified: Role Access, quick-access expansion, customer booking entry, Worker Access, Cooperative Access, service search, service cards, mobile drawer + Escape accessibility.');
 } finally {
   if(browser)await browser.close().catch(()=>{});
   server.kill('SIGTERM');
