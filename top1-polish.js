@@ -3,6 +3,7 @@
 
   const loaded=new Set();
   let administrationLoaded=false;
+  let customerWorkerLoaded=false;
 
   function stylesheet(id,href){
     if(document.getElementById(id)||loaded.has(href))return;
@@ -20,15 +21,19 @@
     document.body.appendChild(node);
   }
 
-  function loadCore(){
+  function loadBase(){
     stylesheet('sanpaidDesignTokens','design-tokens.css');
     stylesheet('sanpaidSelectionStyles','selection-ready-v3.css');
     stylesheet('sanpaidWorkspaceStyles','workspace-ui.css');
     stylesheet('sanpaidColorSystem','color-system-v5.css');
     stylesheet('sanpaidAuthStyles','auth-unified.css');
-    stylesheet('sanpaidCustomerWorkerStyles','customer-worker-dashboard.css');
-
     script('sanpaidAuthRuntime','auth-unified.js');
+  }
+
+  function loadCustomerWorker(){
+    if(customerWorkerLoaded)return;
+    customerWorkerLoaded=true;
+    stylesheet('sanpaidCustomerWorkerStyles','customer-worker-dashboard.css');
     script('sanpaidCustomerWorkerRuntime','customer-worker-dashboard.js');
   }
 
@@ -57,6 +62,22 @@
     document.body.classList.remove('admin-mobile-nav-open');
   }
 
+  function wireIntentLoading(){
+    document.addEventListener('pointerdown',event=>{
+      const target=event.target.closest?.('[data-eval-open-connected],[data-eval-connected-persona],#connectedDemoBtn,#getStarted,#evalOpenConnected,#evalFinalPrototype');
+      if(target)loadCustomerWorker();
+      const admin=event.target.closest?.('#evalAdminPrototype,[data-open-role="COOPERATIVE_ADMIN"],[data-open-role="FEDERATION_ADMIN"]');
+      if(admin)loadAdministration();
+    },{capture:true,passive:true});
+
+    document.addEventListener('focusin',event=>{
+      const target=event.target.closest?.('[data-eval-open-connected],[data-eval-connected-persona],#connectedDemoBtn,#getStarted,#evalOpenConnected,#evalFinalPrototype');
+      if(target)loadCustomerWorker();
+      const admin=event.target.closest?.('#evalAdminPrototype,[data-open-role="COOPERATIVE_ADMIN"],[data-open-role="FEDERATION_ADMIN"]');
+      if(admin)loadAdministration();
+    });
+  }
+
   function wireAccessibility(){
     document.addEventListener('keydown',event=>{
       if(event.key==='Escape')closeAdminDrawers();
@@ -71,16 +92,18 @@
 
   function exposeRuntimeStatus(){
     window.SanPaidBootstrap=Object.freeze({
-      version:'handover-bootstrap-v1',
+      version:'handover-bootstrap-v2',
       story:'Customer Request → Eligibility Gate → Fair Ranking → Worker Choice → Service-Start Verification → Service → Completion → Sandbox Payment → Rating → Audit Outcome',
       refreshEvidence:()=>window.SanPaidHandoverEvidence?.refresh?.(),
+      loadCustomerWorker,
       loadAdministration,
       closeAdminDrawers
     });
   }
 
   function start(){
-    loadCore();
+    loadBase();
+    wireIntentLoading();
     wireAccessibility();
     exposeRuntimeStatus();
   }

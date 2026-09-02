@@ -15,12 +15,23 @@ function resolveCommit(){
   catch{return 'LOCAL_BUILD';}
 }
 
+function cleanLandingHtml(html){
+  // This block is permanently hidden by the evaluator landing CSS and duplicates
+  // the canonical Role Access / Golden Demo entry points. Keep it out of the
+  // deployable artifact while the physical frontend-source migration is pending.
+  return html
+    .replace(/\s*<details class="quick-booking-details">[\s\S]*?<\/details>/,'')
+    .replace('SOURCE READY — LIVE VERIFICATION PENDING','IMPLEMENTED IN SOURCE — DEPLOY VERIFICATION REQUIRED');
+}
+
 rmSync(output,{recursive:true,force:true});
 mkdirSync(output,{recursive:true});
 
 for(const entry of readdirSync(root,{withFileTypes:true})){
   if(!entry.isFile()||!publicExtensions.has(extname(entry.name)))continue;
-  cpSync(resolve(root,entry.name),resolve(output,entry.name));
+  const source=resolve(root,entry.name),destination=resolve(output,entry.name);
+  if(entry.name==='index.html')writeFileSync(destination,cleanLandingHtml(readFileSync(source,'utf8')));
+  else cpSync(source,destination);
 }
 
 const buildInfo={
