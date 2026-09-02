@@ -2,6 +2,7 @@
 
 const handler=require('./[...path].js');
 const matchingRoutes=require('../backend/src/matching/connected-routes.cjs');
+const publicProof=require('../backend/src/proof/public-summary.cjs');
 
 module.exports=async function stableApiEntrypoint(req,res){
   const requestUrl=new URL(req.url,'https://sanpaid.local');
@@ -10,9 +11,10 @@ module.exports=async function stableApiEntrypoint(req,res){
   const suffix=requestUrl.searchParams.toString();
   req.url=`/api/${rawPath}${suffix?`?${suffix}`:''}`;
   try{
+    if(await publicProof.handle(req,res,rawPath))return;
     if(await matchingRoutes.handle(req,res,rawPath))return;
   }catch(error){
-    console.error('[sanpaid-matching]',rawPath,error.code||error.message);
+    console.error('[sanpaid-api-adapter]',rawPath,error.code||error.message);
     const status=Number(error.status)||500;
     res.statusCode=status;
     res.setHeader('Content-Type','application/json; charset=utf-8');
