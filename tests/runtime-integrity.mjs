@@ -33,7 +33,9 @@ assert.doesNotMatch(read('README.md'),/Demo@20\d{2}/,'README exposes a shared de
 
 const vercel=read('vercel.json');
 assert.match(vercel,/connect-src 'self'/,'CSP must keep browser API calls same-origin');
-assert.match(vercel,/sanpaid-sih-2026\.onrender\.com\/api/,'Vercel must proxy /api to the backend');
+assert.ok(!vercel.includes('onrender.com'),'Vercel must not proxy API traffic to the deleted Render service');
+assert.ok(existsSync(resolve(root,'api/[...path].js')),'Vercel catch-all API is missing');
+assert.ok(existsSync(resolve(root,'database/schema.sql')),'PostgreSQL schema is missing');
 
 const runtime=read('connected-runtime-fix.js');
 assert.match(runtime,/window\.SanPaidApi=Object\.freeze/,'Canonical API client is missing');
@@ -43,7 +45,7 @@ assert.match(read('evaluator-final.js'),/SanPaidReadiness\?\.require/,'Evaluator
 assert.match(read('selector-mode.js'),/SanPaidReadiness\?\.require/,'Guided connected entry bypasses readiness');
 
 const serviceWorker=read('service-worker.js');
-assert.match(serviceWorker,/sanpaid-runtime-v69/,'Expected service-worker runtime v69');
+assert.match(serviceWorker,/sanpaid-runtime-v70/,'Expected service-worker runtime v70');
 assert.match(serviceWorker,/Promise\.allSettled/,'Service-worker precache must tolerate individual asset failure');
 assert.match(serviceWorker,/pathname\.startsWith\('\/api\/'\)/,'Service worker must not cache API requests');
 assert.match(serviceWorker,/build-info\.json/,'Service worker must not cache deployment identity');

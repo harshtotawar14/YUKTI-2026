@@ -20,6 +20,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install locked dependencies
+        run: npm ci
+
       - name: Check canonical runtime JavaScript syntax
         run: |
           node --check app.js
@@ -39,6 +42,11 @@ jobs:
           node --check cooperative-deploy-guard.js
           node --check handover-evidence.js
           node --check service-worker.js
+          node --check 'api/[...path].js'
+          node --check api/_lib/db.cjs
+          node --check api/_lib/policy.cjs
+          node --check api/_lib/security.cjs
+          node -e "require('./api/[...path].js')"
 
       - name: Run repository integrity suite
         run: npm test
@@ -73,11 +81,11 @@ jobs:
             exit 1
           fi
 
-      - name: Verify coherent startup and v69 release
+      - name: Verify coherent startup and v70 release
         run: |
-          grep -F "release:'deployment-truth-gate'" app.js
-          grep -F "runtime:'v69'" app.js
-          grep -F 'sanpaid-runtime-v69' service-worker.js
+          grep -F "release:'connected-backend-rebuild'" app.js
+          grep -F "runtime:'v70'" app.js
+          grep -F 'sanpaid-runtime-v70' service-worker.js
           grep -F 'design-tokens.css' index.html
           if grep -nE 'mobile-fix\.css|demo-preflight\.js' index.html; then
             echo 'Retired presentation/mobile files must not return to startup.'
@@ -132,7 +140,7 @@ jobs:
           const fs = require('fs');
           const info = JSON.parse(fs.readFileSync('dist/build-info.json', 'utf8'));
           if (info.commitSha !== process.env.GITHUB_SHA) throw new Error('Build identity does not match the tested commit.');
-          if (info.runtime !== 'v69') throw new Error('Unexpected runtime identity.');
+          if (info.runtime !== 'v70') throw new Error('Unexpected runtime identity.');
           NODE
 
       - name: Verify matching truth on public landing
@@ -248,7 +256,7 @@ jobs:
           const fs = require('fs');
           const [file, expectedSha] = process.argv.slice(2);
           const info = JSON.parse(fs.readFileSync(file, 'utf8'));
-          if (info.product !== 'SanPaid' || info.runtime !== 'v69' || info.commitSha !== expectedSha) process.exit(1);
+          if (info.product !== 'SanPaid' || info.runtime !== 'v70' || info.commitSha !== expectedSha) process.exit(1);
           NODE
               then
                 ready=1

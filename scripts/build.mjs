@@ -26,7 +26,7 @@ for(const entry of readdirSync(root,{withFileTypes:true})){
 const buildInfo={
   product:'SanPaid',
   version:packageMetadata.version,
-  runtime:'v69',
+  runtime:'v70',
   commitSha:resolveCommit(),
   builtAt:new Date().toISOString(),
   source:'harshtotawar14/YUKTI-2026',

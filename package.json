@@ -1,12 +1,16 @@
 {
   "name": "sanpaid-yukti-2026",
-  "version": "0.69.0",
+  "version": "0.70.0",
   "private": true,
-  "description": "SanPaid SIH 2026 connected prototype frontend",
+  "description": "SanPaid SIH 2026 connected cooperative services prototype",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node tests/runtime-integrity.mjs",
-    "check": "node tests/runtime-integrity.mjs"
+    "test": "node tests/runtime-integrity.mjs && node --test tests/backend-policy.test.mjs",
+    "check": "npm test",
+    "migrate": "node scripts/migrate.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.16.3"
   },
   "engines": {
     "node": ">=20"
