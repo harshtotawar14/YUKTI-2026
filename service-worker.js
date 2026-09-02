@@ -3,7 +3,8 @@ const FALLBACK_ASSETS=[
   './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./color-system-v5.css',
   './app.js','./mobile.js','./evaluator-final.css','./evaluator-final.js','./top1-polish.js',
   './connected-demo.css','./connected-demo.js','./auth-unified.css','./auth-unified.js',
-  './customer-worker-dashboard.css','./customer-worker-dashboard.js','./manifest.webmanifest','./app-icon.svg'
+  './customer-worker-dashboard.css','./customer-worker-dashboard.js','./handover-evidence.css','./handover-evidence.js',
+  './manifest.webmanifest','./app-icon.svg'
 ];
 
 self.addEventListener('install',event=>{
