@@ -26,9 +26,11 @@ try{
   page.on('console',msg=>{if(msg.type()==='error')consoleErrors.push(msg.text());});
   await page.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});await page.waitForTimeout(1000);
 
-  for(const id of ['connectedDemoBtn','getStarted','heroMatchingCta','menuBtn']){
+  for(const id of ['connectedDemoBtn','getStarted','heroMatchingCta']){
     const node=page.locator(`#${id}`);assert(await node.count()===1,`#${id} missing`);assert(await node.isVisible(),`#${id} is not visible on desktop`);
   }
+  assert(await page.locator('#menuBtn').count()===1,'#menuBtn missing');
+  assert(!(await page.locator('#menuBtn').isVisible()),'#menuBtn should stay hidden on desktop');
 
   await page.locator('#getStarted').click();await page.waitForTimeout(200);
   const roleDialog=await visibleDialog(page);assert(await roleDialog.count()>0,'Role Access did not open a visible dialog/workspace');
