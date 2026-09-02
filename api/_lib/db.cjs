@@ -1,6 +1,6 @@
 'use strict';
 
-const {readFileSync}=require('node:fs');
+const {readFileSync,readdirSync}=require('node:fs');
 const {resolve}=require('node:path');
 const {Pool}=require('pg');
 const {hashPassword}=require('./security.cjs');
@@ -16,6 +16,11 @@ function getPool(){
     pool=new Pool({connectionString,max:5,idleTimeoutMillis:10000,connectionTimeoutMillis:10000,ssl:local?false:{rejectUnauthorized:false}});
   }
   return pool;
+}
+
+function migrationSql(){
+  const directory=resolve(__dirname,'../../database/migrations');
+  return readdirSync(directory).filter(name=>/^\d+_.+\.sql$/.test(name)).sort().map(name=>({name,sql:readFileSync(resolve(directory,name),'utf8')}));
 }
 
 async function seed(client){
@@ -65,11 +70,11 @@ async function ensureDatabase(){
       const client=await getPool().connect();
       try{
         const schema=readFileSync(resolve(__dirname,'../../database/schema.sql'),'utf8');
-        const complaintMigration=readFileSync(resolve(__dirname,'../../database/migrations/002_complaints_sla.sql'),'utf8');
+        const migrations=migrationSql();
         await client.query('BEGIN');
-        await client.query("SELECT pg_advisory_xact_lock(hashtext('sanpaid-schema-v2'))");
+        await client.query("SELECT pg_advisory_xact_lock(hashtext('sanpaid-schema-v3'))");
         await client.query(schema);
-        await client.query(complaintMigration);
+        for(const migration of migrations)await client.query(migration.sql);
         await seed(client);
         await client.query('COMMIT');
       }catch(error){await client.query('ROLLBACK').catch(()=>{});readyPromise=null;throw error;}finally{client.release();}
@@ -85,4 +90,4 @@ async function transaction(work){
   catch(error){await client.query('ROLLBACK').catch(()=>{});throw error;}finally{client.release();}
 }
 
-module.exports={getPool,ensureDatabase,query,transaction};
+module.exports={getPool,ensureDatabase,query,transaction,migrationSql};
