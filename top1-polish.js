@@ -2,6 +2,7 @@
   'use strict';
 
   let declineReturnFocus = null;
+  let formalizeTimers = [];
 
   function ensureStylesheet(id, href) {
     if (document.getElementById(id)) return;
@@ -84,6 +85,7 @@
       #landing .eval-mini-request,#landing .eval-mini-workers,#landing .eval-mini-gate,#landing .eval-mini-rank,#landing .eval-mini-offer,#landing .eval-mini-audit{border-radius:8px!important}
       #landing .eval-phone,#landing .sp-readiness,#landing #researchBackedUpgrades,#landing #top1Readiness,#landing #demoReadiness{display:none!important}
       #premiumThemeToggle{display:none!important}
+
       .connected-top,.judge-top,.app-top{background:var(--gov-navy)!important}
       .connected-card,.coop-card,.fed-card,.judge-card,.admin-command-card{border-radius:10px!important;box-shadow:0 6px 18px rgba(11,31,51,.05)!important}
       .connected-shell .btn,.spu-root button,#sihJudgeShell .btn{border-radius:8px!important}
@@ -92,10 +94,31 @@
       .spu-role-code{display:grid;place-items:center;min-width:32px;height:32px;padding:0 6px;border-radius:7px;background:#E9F4F2;color:var(--gov-teal);font-size:11px;font-weight:850;letter-spacing:.03em}
       .spu-role{gap:9px!important;align-items:center!important}
       .spu-demo-pill{border-radius:6px!important}
+
+      #sihJudgeShell .judge-tabs{display:none!important}
+      #sihJudgeShell #judgePresentation{display:none!important}
+      #sihJudgeShell .judge-hero .judge-badge{border-radius:6px!important}
+      #sihJudgeShell .coop-nav-group.system,#sihJudgeShell .fed-nav-group.system{display:none!important}
+
+      #coopSidebar [data-coop-target="coop-verification"],
+      #coopSidebar [data-coop-target="coop-skills"],
+      #coopSidebar [data-coop-target="matching"],
+      #coopSidebar [data-coop-target="coop-quality"],
+      #coopSidebar [data-coop-target="planning"],
+      #coopSidebar [data-coop-target="welfare"],
+      #coopSidebar [data-coop-target="coop-health"],
+      #coopSidebar [data-coop-target="golden"],
+      #coopSidebar [data-coop-target="research"]{display:none!important}
+
+      #fedSidebar [data-fed-target="matching"],
+      #fedSidebar [data-fed-target="golden"],
+      #fedSidebar [data-fed-target="research"]{display:none!important}
+
       .sp-service-unavailable{margin:0 0 14px;padding:14px 16px;border:1px solid #E5C98F;border-left:4px solid #A96813;border-radius:8px;background:#FFF8EA;color:#604212;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
       .sp-service-unavailable strong{display:block;color:#51380E;margin-bottom:3px}
       .sp-service-unavailable span{display:block;font-size:12px;line-height:1.5}
       .sp-service-unavailable button{min-height:38px}
+
       @media(max-width:768px){
         #landing .section{padding:48px 0!important}
         #landing .eval-hero{padding-top:38px!important}
@@ -122,6 +145,10 @@
   function polishGovernmentLanding() {
     const landing = document.getElementById('landing');
     if (!landing) return;
+
+    document.title = 'SanPaid — Cooperative Workforce Service Platform';
+    const description = document.querySelector('meta[name="description"]');
+    if (description) description.setAttribute('content', 'SanPaid is a role-based cooperative workforce service platform for verified local services, fair opportunity allocation and accountable cooperative governance.');
 
     landing.querySelector('.ribbon')?.remove();
     document.querySelector('link[href="mobile-fix.css"]')?.remove();
@@ -196,6 +223,80 @@
     }
   }
 
+  function setNavItem(sidebar, target, label, description) {
+    const button = sidebar?.querySelector(`[data-coop-target="${target}"],[data-fed-target="${target}"]`);
+    if (!button) return;
+    const title = button.querySelector('span') || button;
+    const detail = button.querySelector('small');
+    title.textContent = label;
+    if (detail) detail.textContent = description;
+  }
+
+  function formalizeAdminShell() {
+    const shell = document.getElementById('sihJudgeShell');
+    if (!shell || shell.classList.contains('judge-hidden')) return;
+    const role = String(window.SanPaidAuth?.getRole?.() || shell.dataset.adminRole || '').toUpperCase();
+    if (!['COOPERATIVE_ADMIN', 'FEDERATION_ADMIN'].includes(role)) return;
+
+    const topSmall = shell.querySelector('.judge-top small');
+    const hero = shell.querySelector('.judge-hero');
+    const badge = hero?.querySelector('.judge-badge');
+    const heading = hero?.querySelector('h1');
+    const copy = hero?.querySelector('p');
+    const truth = shell.querySelector('#coopGovTruth,#fedGovTruth');
+    const presentation = shell.querySelector('#judgePresentation');
+    if (presentation) presentation.hidden = true;
+
+    if (role === 'COOPERATIVE_ADMIN') {
+      if (topSmall) topSmall.textContent = 'Cooperative Administration · Authorized Operations Workspace';
+      if (badge) badge.textContent = 'AUTHORIZED COOPERATIVE OPERATIONS';
+      if (heading) heading.textContent = 'Cooperative Administration';
+      if (copy) copy.textContent = 'Manage verified workforce, services, complaints, capacity and outcomes within the authorized cooperative scope.';
+      if (truth) truth.textContent = 'Prototype environment · Not an official government portal';
+      const sidebar = document.getElementById('coopSidebar');
+      const sideBrand = sidebar?.querySelector('.coop-side-brand');
+      if (sideBrand) sideBrand.innerHTML = '<b>SanPaid</b><span>COOPERATIVE ADMINISTRATION</span><small>Authorized local operations</small>';
+      const sideFoot = sidebar?.querySelector('.coop-side-foot');
+      if (sideFoot) sideFoot.innerHTML = '<span>Cooperative Administration</span><small>Authorized cooperative scope</small>';
+      setNavItem(sidebar, 'coop-home', 'Overview', 'Local operational priorities');
+      setNavItem(sidebar, 'coop-workers', 'Workforce & Trust', 'Workers, verification and eligibility');
+      setNavItem(sidebar, 'coop-services', 'Services & Matching', 'Bookings, allocation and service state');
+      setNavItem(sidebar, 'coop-complaints', 'Complaints & SLA', 'Grievances and escalation');
+      setNavItem(sidebar, 'coop-capacity', 'Capacity & Planning', 'Demand, availability and gaps');
+      setNavItem(sidebar, 'coop-payments', 'Payments & Outcomes', 'Transactions and service outcomes');
+      setNavItem(sidebar, 'coop-training', 'Training & Welfare', 'Workforce development and readiness');
+      setNavItem(sidebar, 'coop-activity', 'Audit & System', 'Activity, controls and system status');
+      const toggle = document.getElementById('coopNavToggle');
+      if (toggle) toggle.textContent = 'Administration Menu';
+    } else {
+      if (topSmall) topSmall.textContent = 'Federation Oversight · Regional Governance Workspace';
+      if (badge) badge.textContent = 'FEDERATION OVERSIGHT';
+      if (heading) heading.textContent = 'Federation Oversight & Coordination';
+      if (copy) copy.textContent = 'Review cooperative network capacity, regional escalations, workforce planning and governance within the authorized federation scope.';
+      if (truth) truth.textContent = 'Prototype environment · Not an official government portal';
+      const sidebar = document.getElementById('fedSidebar');
+      const sideBrand = sidebar?.querySelector('.fed-side-brand');
+      if (sideBrand) sideBrand.innerHTML = '<b>SanPaid</b><span>FEDERATION OVERSIGHT</span><small>Regional governance workspace</small>';
+      const sideFoot = sidebar?.querySelector('.fed-side-foot');
+      if (sideFoot) sideFoot.innerHTML = '<span>Federation Oversight</span><small>Authorized regional scope</small>';
+      setNavItem(sidebar, 'fed-home', 'Overview', 'Regional operational priorities');
+      setNavItem(sidebar, 'fed-network', 'Cooperative Network', 'Aggregate cooperative visibility');
+      setNavItem(sidebar, 'planning', 'Demand & Capacity', 'Regional demand, capacity and skills');
+      setNavItem(sidebar, 'trust', 'Policy & Trust Governance', 'Verification and governance controls');
+      setNavItem(sidebar, 'capacity', 'Capacity Exchange', 'Cross-cooperative coordination');
+      setNavItem(sidebar, 'complaint', 'Appeals & SLA', 'Escalation and grievance oversight');
+      setNavItem(sidebar, 'welfare', 'Workforce Development', 'Training and welfare readiness');
+      setNavItem(sidebar, 'fed-health', 'Audit & System', 'Runtime status and technical verification');
+      const toggle = document.getElementById('fedNavToggle');
+      if (toggle) toggle.textContent = 'Oversight Menu';
+    }
+  }
+
+  function scheduleAdminFormalization() {
+    formalizeTimers.forEach(clearTimeout);
+    formalizeTimers = [0, 180, 520, 1100, 2200].map(delay => setTimeout(formalizeAdminShell, delay));
+  }
+
   function focusable(root) {
     return [...root.querySelectorAll('button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')]
       .filter(element => !element.hidden && element.getClientRects().length);
@@ -255,6 +356,7 @@
     loadAdministration();
     injectGovernmentStyles();
     polishGovernmentLanding();
+    scheduleAdminFormalization();
 
     document.addEventListener('keydown', event => {
       const connectedDialog = document.querySelector('#connectedModalRoot [role="dialog"]');
@@ -271,6 +373,7 @@
 
     document.addEventListener('click', event => {
       handleAdminNavClick(event);
+      if (event.target.closest?.('[data-spu-role],#spuLoginSubmit,#getStarted,#coopLogin,[data-judge-role]')) scheduleAdminFormalization();
       const decline = event.target.closest?.('[data-reject-offer]');
       if (decline) {
         declineReturnFocus = decline;
@@ -289,9 +392,11 @@
       if (window.innerWidth > 820) closeAdminNav();
       else syncAdminNavLock();
     }, { passive: true });
+    window.addEventListener('pageshow', scheduleAdminFormalization, { passive: true });
 
     window.SanPaidRuntimeStatus = Object.assign({}, window.SanPaidRuntimeStatus, {
       presentationLayer: 'GOVERNMENT_READY',
+      primaryAdminNavigation: 'CONSOLIDATED',
       premiumRuntime: 'RETIRED',
       syntheticFallback: 'RETIRED',
       demoPreflight: 'RETIRED'
