@@ -26,6 +26,7 @@ jobs:
           node --check connected-service-ui.js
           node --check connected-commerce-ui.js
           node --check customer-worker-dashboard.js
+          node --check judge-demo.js
           node --check top1-polish.js
           node --check admin-command-center.js
           node --check cooperative-portal.js
@@ -40,6 +41,8 @@ jobs:
             --exclude-dir=.git --exclude-dir=node_modules | wc -l)
           test "$count" -eq 1 || { echo "Expected exactly one window.fetch wrapper; found $count"; exit 1; }
           grep -F 'window.fetch=async function sanPaidFetch' connected-runtime-fix.js
+          grep -F "backend:'same-origin'" connected-runtime-fix.js
+          grep -F "mode:'SAME_ORIGIN_AUTHENTICATED_API'" connected-runtime-fix.js
 
       - name: Enforce one public mobile drawer owner
         run: |
@@ -64,12 +67,21 @@ jobs:
           grep -F "root.dataset.animationOwner === 'evaluator'" mobile.js
           grep -F "presentationLayer: 'GOVERNMENT_READY'" top1-polish.js
 
-      - name: Reject exposed credentials and evaluator-only public runtime
+      - name: Reject exposed credentials and legacy admin login
         run: |
-          if grep -nF 'Demo@2026' auth-unified.js; then
-            echo 'Canonical authentication must not embed the demo password.'
+          if grep -R -n --include='*.js' -F 'Demo@2026' . --exclude-dir=.git --exclude-dir=node_modules; then
+            echo 'Frontend source must not embed the demo password anywhere.'
             exit 1
           fi
+          if grep -nE 'const PASSWORD=|data-judge-role=.*login|Password for isolated' judge-demo.js; then
+            echo 'Legacy direct administration login returned.'
+            exit 1
+          fi
+          grep -F "legacyJudgeLogin:'RETIRED'" judge-demo.js
+          grep -F "administrationAuth:'UNIFIED_ROLE_ACCESS'" judge-demo.js
+
+      - name: Reject evaluator-only public runtime
+        run: |
           if grep -nE 'loadPremiumExperience|loadResearchUpgrades|loadTop1Readiness|loadDemoFirstStable|loadSelectionProofV4|loadMasterFinalV4' top1-polish.js; then
             echo 'Evaluator-only decorative runtime must stay retired from government-ready startup.'
             exit 1
