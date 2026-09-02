@@ -8,7 +8,7 @@ const source=readFileSync(join(root,'backend/src/capacity/routes.cjs'),'utf8');
 
 test('capacity exchange never auto-transfers workers',()=>{
   assert.match(source,/automaticTransfer:false/);
-  assert.match(source,/Worker consent/);
+  assert.match(source,/workerConsentRequired:true/);
   assert.match(source,/Authorized approval is still required/);
 });
 
