@@ -30,7 +30,8 @@ jobs:
           node --check admin-command-center.js
           node --check cooperative-portal.js
           node --check federation-portal.js
-          node --check demo-first-stable.js
+          node --check cooperative-deploy-guard.js
+          node --check demo-preflight.js
           node --check service-worker.js
 
       - name: Enforce one connected fetch transport
@@ -54,12 +55,35 @@ jobs:
           fi
           grep -F 'html body #landing .eval-nav .mobile-drawer' mobile.css
 
-      - name: Verify mobile runtime release markers
+      - name: Verify government handover release markers
         run: |
-          grep -F "release:'mobile-runtime-v64'" app.js
-          grep -F "sanpaid-runtime-v64" service-worker.js
+          grep -F "release:'government-handover-v1'" app.js
+          grep -F "runtime:'v65'" app.js
+          grep -F "sanpaid-runtime-v65" service-worker.js
           grep -F "root.dataset.animationOwner='evaluator'" evaluator-final.js
           grep -F "root.dataset.animationOwner === 'evaluator'" mobile.js
+          grep -F "presentationLayer: 'GOVERNMENT_READY'" top1-polish.js
+
+      - name: Reject exposed credentials and evaluator-only public runtime
+        run: |
+          if grep -nF 'Demo@2026' auth-unified.js; then
+            echo 'Canonical authentication must not embed the demo password.'
+            exit 1
+          fi
+          if grep -nE 'loadPremiumExperience|loadResearchUpgrades|loadTop1Readiness|loadDemoFirstStable|loadSelectionProofV4|loadMasterFinalV4' top1-polish.js; then
+            echo 'Evaluator-only decorative runtime must stay retired from government-ready startup.'
+            exit 1
+          fi
+          grep -F "demoPreflight: 'RETIRED_FROM_PUBLIC_UI'" demo-preflight.js
+          grep -F "legacyAdminLogin: 'GATED_BY_UNIFIED_AUTH'" demo-preflight.js
+
+      - name: Reject synthetic administrative fallback
+        run: |
+          if grep -nE 'fillSynthetic|SYNTHETIC DEMO DATA|Demo Worker A|Demo Worker B' cooperative-deploy-guard.js; then
+            echo 'Administrative availability guard must never substitute synthetic operational records.'
+            exit 1
+          fi
+          grep -F 'No synthetic operational data is being substituted.' cooperative-deploy-guard.js
 
       - name: Reject legacy local state in connected role runtime
         run: |
