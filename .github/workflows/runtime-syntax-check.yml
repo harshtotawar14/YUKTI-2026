@@ -32,6 +32,7 @@ jobs:
           node --check cooperative-portal.js
           node --check federation-portal.js
           node --check cooperative-deploy-guard.js
+          node --check handover-evidence.js
           node --check demo-preflight.js
           node --check service-worker.js
 
@@ -67,6 +68,21 @@ jobs:
           grep -F "root.dataset.animationOwner === 'evaluator'" mobile.js
           grep -F "presentationLayer: 'GOVERNMENT_READY'" top1-polish.js
 
+      - name: Verify connected handover evidence layer
+        run: |
+          grep -F "handover-evidence.css?v=20260902-1" cooperative-deploy-guard.js
+          grep -F "handover-evidence.js?v=20260902-1" cooperative-deploy-guard.js
+          grep -F "./handover-evidence.css" service-worker.js
+          grep -F "./handover-evidence.js" service-worker.js
+          grep -F "/api/cooperative-admin/trust-lifecycle" handover-evidence.js
+          grep -F "/api/cooperative-admin/complaints/" handover-evidence.js
+          grep -F "No synthetic timeline is substituted." handover-evidence.js
+          grep -F "No synthetic worker records are substituted." handover-evidence.js
+          if grep -n 'setInterval' handover-evidence.js; then
+            echo 'Handover evidence must not add recurring polling.'
+            exit 1
+          fi
+
       - name: Reject exposed credentials and legacy admin login
         run: |
           if grep -R -n --include='*.js' -F 'Demo@2026' . --exclude-dir=.git --exclude-dir=node_modules; then
@@ -91,8 +107,8 @@ jobs:
 
       - name: Reject synthetic administrative fallback
         run: |
-          if grep -nE 'fillSynthetic|SYNTHETIC DEMO DATA|Demo Worker A|Demo Worker B' cooperative-deploy-guard.js; then
-            echo 'Administrative availability guard must never substitute synthetic operational records.'
+          if grep -nE 'fillSynthetic|SYNTHETIC DEMO DATA|Demo Worker A|Demo Worker B' cooperative-deploy-guard.js handover-evidence.js; then
+            echo 'Administrative runtime must never substitute synthetic operational records.'
             exit 1
           fi
           grep -F 'No synthetic operational data is being substituted.' cooperative-deploy-guard.js
