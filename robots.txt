@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://yukti-2026-liart.vercel.app/sitemap.xml
+Sitemap: https://yukti-2026-brown.vercel.app/sitemap.xml
