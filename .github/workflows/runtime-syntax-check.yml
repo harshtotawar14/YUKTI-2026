@@ -61,8 +61,8 @@ jobs:
 
       - name: Verify government handover release markers
         run: |
-          grep -F "release:'government-handover-v1'" app.js
-          grep -F "runtime:'v65'" app.js
+          grep -F "release:'government-handover-v2'" app.js
+          grep -F "runtime:'v66'" app.js
           grep -F "sanpaid-runtime-v66" service-worker.js
           grep -F "root.dataset.animationOwner='evaluator'" evaluator-final.js
           grep -F "root.dataset.animationOwner === 'evaluator'" mobile.js
