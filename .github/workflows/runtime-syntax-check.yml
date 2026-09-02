@@ -18,6 +18,8 @@ jobs:
       - name: Check canonical runtime JavaScript syntax
         run: |
           node --check app.js
+          node --check mobile.js
+          node --check evaluator-final.js
           node --check auth-unified.js
           node --check connected-runtime-fix.js
           node --check connected-demo.js
@@ -36,6 +38,14 @@ jobs:
             --exclude-dir=.git --exclude-dir=node_modules | wc -l)
           test "$count" -eq 1 || { echo "Expected exactly one window.fetch wrapper; found $count"; exit 1; }
           grep -F 'window.fetch=async function sanPaidFetch' connected-runtime-fix.js
+
+      - name: Enforce one public mobile drawer owner
+        run: |
+          grep -F 'function wireMobileNavigation' app.js
+          if grep -nE 'menuBtn|mobileDrawerScrim|function openDrawer|function closeAllDrawers' mobile.js; then
+            echo 'mobile.js must not own public navigation; app.js is the canonical mobile drawer owner.'
+            exit 1
+          fi
 
       - name: Reject legacy local state in connected role runtime
         run: |
