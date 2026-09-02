@@ -5,6 +5,29 @@
   let probeTimer = 0;
   let shellObserver = null;
 
+  function ensureStylesheet(id, href) {
+    if (document.getElementById(id)) return;
+    const link = document.createElement('link');
+    link.id = id;
+    link.rel = 'stylesheet';
+    link.href = href;
+    document.head.appendChild(link);
+  }
+
+  function ensureScript(id, src) {
+    if (document.getElementById(id)) return;
+    const script = document.createElement('script');
+    script.id = id;
+    script.src = src;
+    script.defer = true;
+    document.body.appendChild(script);
+  }
+
+  function loadHandoverEvidence() {
+    ensureStylesheet('sanpaidHandoverEvidenceStyles', 'handover-evidence.css?v=20260902-1');
+    ensureScript('sanpaidHandoverEvidenceScript', 'handover-evidence.js?v=20260902-1');
+  }
+
   function token() {
     try { return sessionStorage.getItem(TOKEN_KEY) || ''; } catch { return ''; }
   }
@@ -72,6 +95,7 @@
       const response = await request(path);
       if (response.ok) {
         removeNotice();
+        if (force) window.SanPaidHandoverEvidence?.refresh?.();
         return;
       }
       if (response.status === 401 || response.status === 403) {
@@ -105,6 +129,7 @@
   }
 
   function start() {
+    loadHandoverEvidence();
     attachShellObserver();
     window.addEventListener('online', schedule);
     window.addEventListener('pageshow', schedule);
