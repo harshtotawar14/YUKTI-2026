@@ -63,7 +63,7 @@ jobs:
         run: |
           grep -F "release:'government-handover-v1'" app.js
           grep -F "runtime:'v65'" app.js
-          grep -F "sanpaid-runtime-v65" service-worker.js
+          grep -F "sanpaid-runtime-v66" service-worker.js
           grep -F "root.dataset.animationOwner='evaluator'" evaluator-final.js
           grep -F "root.dataset.animationOwner === 'evaluator'" mobile.js
           grep -F "presentationLayer: 'GOVERNMENT_READY'" top1-polish.js
@@ -78,6 +78,8 @@ jobs:
           grep -F "/api/cooperative-admin/complaints/" handover-evidence.js
           grep -F "No synthetic timeline is substituted." handover-evidence.js
           grep -F "No synthetic worker records are substituted." handover-evidence.js
+          grep -F "COMPLAINT EVIDENCE TIMELINE" handover-evidence.js
+          grep -F "WORKER TRUST LIFECYCLE" handover-evidence.js
           if grep -n 'setInterval' handover-evidence.js; then
             echo 'Handover evidence must not add recurring polling.'
             exit 1
