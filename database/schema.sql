@@ -86,11 +86,18 @@ CREATE TABLE IF NOT EXISTS booking_offers (
   rank INTEGER NOT NULL,
   status TEXT NOT NULL DEFAULT 'PENDING',
   decline_reason TEXT,
+  matching_score NUMERIC(6,2),
+  factor_scores JSONB NOT NULL DEFAULT '{}'::jsonb,
+  reason_codes JSONB NOT NULL DEFAULT '[]'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   responded_at TIMESTAMPTZ,
   UNIQUE(booking_id, worker_id)
 );
+ALTER TABLE booking_offers ADD COLUMN IF NOT EXISTS matching_score NUMERIC(6,2);
+ALTER TABLE booking_offers ADD COLUMN IF NOT EXISTS factor_scores JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE booking_offers ADD COLUMN IF NOT EXISTS reason_codes JSONB NOT NULL DEFAULT '[]'::jsonb;
 CREATE INDEX IF NOT EXISTS booking_offers_worker_idx ON booking_offers(worker_id, status, created_at DESC);
+CREATE INDEX IF NOT EXISTS booking_offers_booking_rank_idx ON booking_offers(booking_id, rank);
 
 CREATE TABLE IF NOT EXISTS booking_history (
   id BIGSERIAL PRIMARY KEY,
