@@ -12,12 +12,13 @@
   const signal=source=>{try{window.dispatchEvent(new CustomEvent('sanpaid:connected-sync',{detail:{source,at:Date.now()}}));}catch{}};
 
   async function req(path,opt={}){
+    if(window.SanPaidApi?.request)return window.SanPaidApi.request(path,opt);
     const r=await fetch(path,{...opt,credentials:'include',headers:{...(opt.body?{'Content-Type':'application/json'}:{}),...(opt.headers||{})},cache:'no-store'});
     const d=await r.json().catch(()=>({}));
     if(!r.ok){const e=new Error(d.message||d.error||`Request failed (${r.status})`);e.status=r.status;throw e;}
     return d;
   }
-  const post=(path,body={})=>req(path,{method:'POST',body:JSON.stringify(body)});
+  const post=(path,body={})=>window.SanPaidApi?.post?window.SanPaidApi.post(path,body):req(path,{method:'POST',body:JSON.stringify(body)});
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const human=s=>({ACCEPTED:'Worker Assigned',ON_THE_WAY:'Worker On The Way',ARRIVED:'Worker Arrived',IDENTITY_VERIFIED:'Identity Verified',CUSTOMER_CONFIRMED:'Customer Confirmed',IN_PROGRESS:'Service In Progress',AWAITING_CUSTOMER_CONFIRMATION:'Waiting for Customer Completion',COMPLETED:'Service Completed',PAID:'Payment Completed'}[String(s||'')]||String(s||'').toLowerCase().replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase()));
 

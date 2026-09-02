@@ -442,12 +442,13 @@
     notice?.classList.add('hidden');
   }
 
-  function openConnected() {
+  async function openConnected() {
     stopAuto();
     if (!window.ConnectedSanPaid?.open) {
       showNotice('Interactive proof is starting. The guided SIH overview is available now. Please retry in a moment.');
       return;
     }
+    if (window.SanPaidReadiness?.require && !(await window.SanPaidReadiness.require())) return;
     close({noHistory:true});
     window.ConnectedSanPaid.open();
   }
@@ -523,7 +524,7 @@
     const lowerConnected = document.querySelector('#guidedDemo #connectedDemoBtn');
     if (lowerConnected) {
       lowerConnected.textContent = 'Open Working Prototype';
-      lowerConnected.onclick = () => window.ConnectedSanPaid?.open?.();
+      lowerConnected.onclick = openConnected;
     }
   }
 

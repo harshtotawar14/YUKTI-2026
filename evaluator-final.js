@@ -184,8 +184,9 @@
     });
   }
 
-  function openConnected(persona=null){
+  async function openConnected(persona=null){
     window.SanPaidLanding?.closeMobileDrawer?.(false);
+    if(window.SanPaidReadiness?.require&&!(await window.SanPaidReadiness.require()))return;
     if(window.ConnectedSanPaid?.open){window.ConnectedSanPaid.open(persona||null);return;}
     window.SanPaidDemo?.showRoles?.();
   }

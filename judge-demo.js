@@ -37,6 +37,10 @@
   }
 
   async function api(path,opt={}){
+    if(window.SanPaidApi?.request){
+      const activeToken=token||getToken();
+      return window.SanPaidApi.request(path,{...opt,token:activeToken||undefined});
+    }
     const headers=new Headers(opt.headers||{});
     const activeToken=token||getToken();
     if(activeToken)headers.set('Authorization',`Bearer ${activeToken}`);

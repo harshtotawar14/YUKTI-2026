@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD={release:'government-handover-v3',runtime:'v67',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
+  const BUILD={release:'deep-repair-foundation',runtime:'v68',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
   window.__SANPAID_BUILD__=Object.freeze(BUILD);
   console.info('[SanPaid build]',BUILD);
 
@@ -89,9 +89,9 @@
     const controller=new AbortController();
     const timeout=setTimeout(()=>controller.abort(),8000);
     try{
-      const response=await fetch('/api/public/services',{credentials:'include',cache:'no-store',headers:{Accept:'application/json'},signal:controller.signal});
-      const data=await response.json().catch(()=>({}));
-      if(!response.ok||!Array.isArray(data.services))throw new Error(data.message||'catalog_unavailable');
+      if(!window.SanPaidApi?.get)throw new Error('api_client_unavailable');
+      const data=await window.SanPaidApi.get('/api/public/services',{bearer:false,headers:{Accept:'application/json'},signal:controller.signal,timeoutMs:8000});
+      if(!Array.isArray(data.services))throw new Error(data.message||'catalog_unavailable');
       catalog=normalizedCatalog(data.services);
       if(!catalog.length)throw new Error('empty_catalog');
       catalogSource='DATABASE_CONFIGURATION';

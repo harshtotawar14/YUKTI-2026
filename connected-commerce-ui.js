@@ -9,8 +9,8 @@
   const getSession=key=>{try{return sessionStorage.getItem(key)||''}catch{return''}};
   const setSession=(key,value)=>{try{value?sessionStorage.setItem(key,String(value)):sessionStorage.removeItem(key)}catch{}};
   const signal=source=>{try{window.dispatchEvent(new CustomEvent('sanpaid:connected-sync',{detail:{source,at:Date.now()}}));}catch{}};
-  async function req(path,opt={}){const r=await fetch(path,{...opt,credentials:'include',headers:{...(opt.body?{'Content-Type':'application/json'}:{}),...(opt.headers||{})},cache:'no-store'});const d=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(d.message||d.error||`Request failed (${r.status})`);e.status=r.status;throw e;}return d;}
-  const post=(p,b={})=>req(p,{method:'POST',body:JSON.stringify(b)});
+  async function req(path,opt={}){if(window.SanPaidApi?.request)return window.SanPaidApi.request(path,opt);const r=await fetch(path,{...opt,credentials:'include',headers:{...(opt.body?{'Content-Type':'application/json'}:{}),...(opt.headers||{})},cache:'no-store'});const d=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(d.message||d.error||`Request failed (${r.status})`);e.status=r.status;throw e;}return d;}
+  const post=(p,b={})=>window.SanPaidApi?.post?window.SanPaidApi.post(p,b):req(p,{method:'POST',body:JSON.stringify(b)});
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:2});
   const human=s=>String(s||'').toLowerCase().replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase());

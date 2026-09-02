@@ -52,7 +52,12 @@ Old `app.js` maintained fake users, bookings, workers, payments, complaints and 
 ### 5. Stale service-worker assets could survive deployment
 The previous service worker precached a very large list of JS/CSS files and kept multiple runtime generations available.
 
-**Fix:** `sanpaid-runtime-v60` uses network-first HTML/JS/CSS loading and deletes older SanPaid caches.
+**Fix:** `sanpaid-runtime-v68` uses network-first HTML/JS/CSS loading, deletes older SanPaid caches and precaches assets independently so one optional asset cannot cancel the entire installation.
+
+### 6. Some browser modules bypassed the same-origin API policy
+`credibility-layer.js` and `workforce-intelligence.js` called the Render host directly while the enforced CSP allowed only `connect-src 'self'`.
+
+**Fix:** browser API traffic now uses `/api/*` through the Vercel proxy. A Golden Demo readiness gate verifies backend health and the database-backed catalog before connected Customer/Worker access.
 
 ## Backend Source Status
 

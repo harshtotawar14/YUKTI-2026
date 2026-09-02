@@ -1,4 +1,4 @@
-const CACHE_NAME='sanpaid-runtime-v67';
+const CACHE_NAME='sanpaid-runtime-v68';
 const FALLBACK_ASSETS=[
   './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./color-system-v5.css',
   './app.js','./mobile.js','./evaluator-final.css','./evaluator-final.js','./top1-polish.js',
@@ -8,7 +8,18 @@ const FALLBACK_ASSETS=[
 ];
 
 self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(FALLBACK_ASSETS)).catch(()=>undefined).then(()=>self.skipWaiting()));
+  event.waitUntil((async()=>{
+    const cache=await caches.open(CACHE_NAME);
+    const results=await Promise.allSettled(FALLBACK_ASSETS.map(async asset=>{
+      const request=new Request(asset,{cache:'reload'});
+      const response=await fetch(request);
+      if(!response.ok)throw new Error(`Precache failed: ${asset} (${response.status})`);
+      await cache.put(request,response);
+    }));
+    const failed=results.filter(result=>result.status==='rejected');
+    if(failed.length)console.warn(`[SanPaid SW] ${failed.length} optional shell assets were not precached.`);
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate',event=>{

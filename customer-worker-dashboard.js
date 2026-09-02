@@ -28,8 +28,8 @@
   function label(s,text=null){return `<span class="cw-status ${statusClass(s)}">${esc(text||human(s))}</span>`;}
   function empty(text){return `<div class="cw-empty">${esc(text)}</div>`;}
 
-  async function req(path,opt={}){const r=await fetch(path,{...opt,credentials:'include',cache:'no-store',headers:{...(opt.body?{'Content-Type':'application/json'}:{}),...(opt.headers||{})}});const d=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(d.message||d.error||`Request failed (${r.status})`);e.status=r.status;e.data=d;throw e;}return d;}
-  const post=(path,body={})=>req(path,{method:'POST',body:JSON.stringify(body)});
+  async function req(path,opt={}){if(window.SanPaidApi?.request)return window.SanPaidApi.request(path,opt);const r=await fetch(path,{...opt,credentials:'include',cache:'no-store',headers:{...(opt.body?{'Content-Type':'application/json'}:{}),...(opt.headers||{})}});const d=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(d.message||d.error||`Request failed (${r.status})`);e.status=r.status;e.data=d;throw e;}return d;}
+  const post=(path,body={})=>window.SanPaidApi?.post?window.SanPaidApi.post(path,body):req(path,{method:'POST',body:JSON.stringify(body)});
   const settled=async promise=>{try{return{ok:true,data:await promise}}catch(error){return{ok:false,error}}};
   function handleAuthError(error){if(Number(error?.status)===401)window.SanPaidAuth?.handleExpiredSession?.();}
 

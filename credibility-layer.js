@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BACKEND='https://sanpaid-sih-2026.onrender.com';
+  const API_ROOT='';
   let proofCache=null;
   let proofPromise=null;
   let judgeWrapped=false;
@@ -37,7 +37,7 @@
     if(proofPromise&&!force)return proofPromise;
     const controller=new AbortController();
     const timer=setTimeout(()=>controller.abort(),8500);
-    proofPromise=fetch(`${BACKEND}/api/public-proof/summary`,{method:'GET',mode:'cors',credentials:'omit',cache:'no-store',signal:controller.signal})
+    proofPromise=fetch(`${API_ROOT}/api/public-proof/summary`,{method:'GET',credentials:'same-origin',cache:'no-store',signal:controller.signal})
       .then(async response=>{
         const data=await response.json().catch(()=>({}));
         if(!response.ok||!data.ok)throw new Error(data.message||'Interactive proof is starting.');

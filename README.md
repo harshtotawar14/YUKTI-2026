@@ -6,7 +6,7 @@ Smart India Hackathon 2026 prototype for **PS ID 26089 — Cooperative Gig Servi
 
 - `index.html` — SanPaid landing/app shell with mobile/PWA + Connected SIH Demo entry.
 - `styles.css` — shared desktop/base styling.
-- `mobile.css` / `mobile-fix.css` — mobile-first responsive and dashboard behaviour.
+- `mobile.css` — canonical mobile-first responsive and dashboard behaviour.
 - `connected-demo.css` — responsive connected-demo UI.
 - `app.js` / `voice-request.js` — browser-local fallback/rehearsal demo.
 - `mobile.js` — mobile navigation/PWA/connectivity runtime.
@@ -63,12 +63,11 @@ Connected commerce:
 
 ## Connected demo accounts
 
-Isolated SIH demo identities only:
-
-- Customer: `customer.connected@sanpaid.demo`
-- Worker A: `worker1.connected@sanpaid.demo`
-- Worker B: `worker2.connected@sanpaid.demo`
-- Password: `Demo@2026`
+The connected flow uses isolated SIH-only Customer, Worker A, Worker B,
+Cooperative Admin and Federation Admin identities. Passwords are deliberately
+not stored in this public repository. Obtain the current event-scoped demo
+credentials from the project owner immediately before a rehearsal or judging
+session.
 
 Worker A and Worker B are VERIFIED + AVAILABLE Electrician workers in `Karad Zone 1`.
 
@@ -138,17 +137,46 @@ The service worker caches only the static application shell. `/api/*` and SSE re
 
 ## Deployment truth — important
 
-**Source implementation and database migrations are ready, but do not call the new connected path live until deployment is verified.**
+**Source implementation and database migrations are ready, but a source commit is not treated as a successful live deployment.**
 
 Expected wiring:
 
 `YUKTI-2026 frontend → same-origin /api proxy → sanpaid-sih-2026.onrender.com → shared PostgreSQL database`
 
-At the latest deployment check, Render was still reporting the older live backend commit, so the new connected routers were **not yet observed as deployed live**.
+The public frontend is configured at `https://yukti-2026-liart.vercel.app/`.
+Every Golden Demo entry now runs a same-origin readiness gate against the
+connected backend and database-backed service catalog. A failed dependency
+blocks connected role access instead of displaying a fake successful write.
 
-The current Vercel project also historically points to `SanPaid-sih-2026`, not `YUKTI-2026`. `YUKTI-2026` therefore still needs to be imported/linked/deployed before the new frontend connected screens can be verified on a public YUKTI URL.
+The current branch must still be deployed and the complete two-device flow
+must be rerun after deployment. The readiness gate proves dependency response;
+it does not replace lifecycle testing.
 
 Do not claim production/live cross-device behaviour until both sides are deployed and a real two-browser/two-phone run passes.
+
+## Runtime integrity checks
+
+The frontend has a dependency-free validation suite:
+
+```bash
+npm test
+```
+
+It verifies JavaScript syntax, local asset references, unique HTML IDs,
+same-origin browser API policy, CSP/proxy alignment, service-worker safety,
+public credential hygiene and the single Golden Demo CTA contract.
+
+## Feature truth matrix
+
+| Capability | Source | Database-backed | Live verification required | Production integration |
+|---|---:|---:|---:|---:|
+| Customer booking and worker offers | Implemented | Yes | Yes | Prototype |
+| Eligibility and deterministic ranking | Implemented | Yes | Yes | Prototype policy |
+| Identity verification | Implemented | Yes | Yes | Sandbox |
+| Payment, invoice and rating | Implemented | Yes | Yes | Sandbox |
+| Cooperative evidence and complaints | Implemented | Yes | Yes | Prototype |
+| Maps/route ETA | Design-ready | No | Not applicable | Future authorized integration |
+| Welfare/insurance systems | Design-ready | No | Not applicable | Future authorized integration |
 
 ## Next hardening priorities
 
