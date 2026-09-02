@@ -1,0 +1,30 @@
+name: SanPaid Frontend Runtime Syntax
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check canonical runtime JavaScript
+        run: |
+          node --check app.js
+          node --check auth-unified.js
+          node --check connected-runtime-fix.js
+          node --check connected-demo.js
+          node --check connected-service-ui.js
+          node --check connected-commerce-ui.js
+          node --check customer-worker-dashboard.js
+          node --check top1-polish.js
+          node --check admin-command-center.js
+          node --check cooperative-portal.js
+          node --check federation-portal.js
+          node --check demo-first-stable.js
