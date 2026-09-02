@@ -1,0 +1,131 @@
+name: SanPaid Source Integrity
+
+concurrency:
+  group: sanpaid-source-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_production:
+        description: Run manual production verification against the configured Vercel URL
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  source-integrity:
+    name: Source integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Check critical JavaScript syntax
+        run: |
+          node --check app.js
+          node --check mobile.js
+          node --check evaluator-final.js
+          node --check auth-unified.js
+          node --check connected-runtime-fix.js
+          node --check connected-demo.js
+          node --check connected-service-ui.js
+          node --check connected-commerce-ui.js
+          node --check customer-worker-dashboard.js
+          node --check judge-demo.js
+          node --check top1-polish.js
+          node --check admin-command-center.js
+          node --check cooperative-portal.js
+          node --check federation-portal.js
+          node --check service-worker.js
+          node --check api/index.js
+          node --check 'api/[...path].js'
+          node --check api/_lib/db.cjs
+          node --check api/_lib/policy.cjs
+          node --check api/_lib/security.cjs
+          find backend/src -type f -name '*.cjs' -print0 | xargs -0 -n1 node --check
+
+      - name: Run repository test suite
+        run: npm test
+
+      - name: Enforce source-of-truth runtime constraints
+        run: |
+          if grep -R -n --include='*.js' -F 'Demo@2026' . --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=dist; then
+            echo 'Frontend/runtime source must not embed a demo password.'
+            exit 1
+          fi
+          if grep -nE 'window\.fetch\s*=|window\.EventSource\s*=' connected-runtime-fix.js connected-demo.js; then
+            echo 'Global fetch/EventSource monkey patches are forbidden.'
+            exit 1
+          fi
+          grep -F 'window.SanPaidApi=Object.freeze' connected-runtime-fix.js
+          grep -F "mode:'EXPLICIT_SAME_ORIGIN_API_CLIENT'" connected-runtime-fix.js
+          grep -F 'window.SanPaidSync=Object.freeze' connected-runtime-fix.js
+          grep -F 'function wireMobileNavigation' app.js
+          grep -F 'function setDrawerOpenState' app.js
+          grep -F "release:'connected-backend-rebuild'" app.js
+          grep -F "runtime:'v70'" app.js
+          grep -F 'sanpaid-runtime-v70' service-worker.js
+          grep -F "version:'handover-bootstrap-v1'" top1-polish.js
+          grep -F 'loadAdministration,' top1-polish.js
+          if sed -n '/function start()/,/^  }/p' top1-polish.js | grep -F 'loadAdministration();'; then
+            echo 'Administration assets must remain lazy.'
+            exit 1
+          fi
+
+      - name: Verify security and accessibility baseline
+        run: |
+          grep -F 'class="skip-link" href="#mainContent"' index.html
+          grep -F 'id="mainContent" tabindex="-1"' index.html
+          grep -F 'Content-Security-Policy' vercel.json
+          if grep -F 'Content-Security-Policy-Report-Only' vercel.json; then
+            echo 'CSP must be enforced, not report-only.'
+            exit 1
+          fi
+          grep -F "if(url.pathname.startsWith('/api/')||url.pathname==='/build-info.json')return" service-worker.js
+          grep -F "fetch(request,{cache:'no-store'})" service-worker.js
+
+      - name: Build local deployable artifact
+        run: |
+          npm run build
+          test -s dist/index.html
+          test -s dist/build-info.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const info=JSON.parse(fs.readFileSync('dist/build-info.json','utf8'));
+          if(info.commitSha!==process.env.GITHUB_SHA) throw new Error('Build identity does not match tested commit.');
+          if(info.runtime!=='v70') throw new Error('Unexpected runtime identity.');
+          const html=fs.readFileSync('dist/index.html','utf8');
+          if(html.includes('quick-booking-details')) throw new Error('Hidden duplicate quick-access block leaked into deploy artifact.');
+          NODE
+
+  production-verification:
+    name: Manual production verification
+    if: github.event_name == 'workflow_dispatch' && inputs.run_production == true
+    needs: source-integrity
+    runs-on: ubuntu-latest
+    env:
+      SANPAID_PRODUCTION_URL: ${{ vars.SANPAID_PRODUCTION_URL }}
+      SANPAID_E2E_PASSWORD: ${{ secrets.SANPAID_E2E_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify explicit production target exists
+        run: |
+          if [ -z "$SANPAID_PRODUCTION_URL" ]; then
+            echo 'SANPAID_PRODUCTION_URL repository variable is required for manual production verification.'
+            exit 1
+          fi
+      - name: Run production E2E only on explicit manual request
+        run: node scripts/production-e2e.mjs
