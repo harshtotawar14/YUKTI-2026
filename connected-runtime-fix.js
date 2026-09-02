@@ -85,8 +85,8 @@
     addEventListener(type,handler){if(!this.listeners.has(type))this.listeners.set(type,new Set());this.listeners.get(type).add(handler);}
     removeEventListener(type,handler){this.listeners.get(type)?.delete(handler);}
     emit(type,payload){const event={type,data:JSON.stringify(payload)};this.listeners.get(type)?.forEach(fn=>{try{fn(event)}catch{}});}
-    schedule(delay=3000){if(this.closed)return;clearTimeout(this.timer);this.timer=setTimeout(this.tick,delay);}
-    signature(snapshot){return JSON.stringify({role:snapshot?.role||'',bookings:snapshot?.bookings||[],offers:snapshot?.offers||[]});}
+    schedule(delay=3200){if(this.closed)return;clearTimeout(this.timer);this.timer=setTimeout(this.tick,delay);}
+    signature(snapshot){return JSON.stringify({role:snapshot?.role||'',revision:snapshot?.revision||'0',bookings:snapshot?.bookings||[],offers:snapshot?.offers||[]});}
     async tick(){
       if(this.closed)return;
       const shell=document.getElementById('connectedShell');
@@ -97,7 +97,7 @@
         const snapshot=await response.json(),sig=this.signature(snapshot);this.readyState=1;
         if(!this.opened){this.opened=true;try{this.onopen?.({type:'open'});}catch{}}
         if(sig!==this.lastSignature){this.lastSignature=sig;this.emit('snapshot',snapshot);signalSync(snapshot);}
-        setTop('● Live','#8ee2b5');this.schedule(3000);
+        setTop('● Live','#8ee2b5');this.schedule(3200);
       }catch(error){this.readyState=0;setTop('● Reconnecting…','#ffb66e');try{this.onerror?.(error);}catch{}this.schedule(4500);}
     }
     close(){this.closed=true;this.readyState=2;clearTimeout(this.timer);this.timer=null;}
