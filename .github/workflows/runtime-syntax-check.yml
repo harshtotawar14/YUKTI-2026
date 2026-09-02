@@ -228,15 +228,22 @@ jobs:
               'https://yukti-2026-tqt6.vercel.app'
             )
           fi
-          build_file="$(mktemp)"
           ready=0
-          for attempt in $(seq 1 60); do
-            for candidate in "${candidates[@]}"; do
-              status="$(curl --silent --show-error --location \
-                --connect-timeout 10 --max-time 30 \
-                --output "$build_file" --write-out '%{http_code}' \
-                "$candidate/build-info.json" || true)"
-              if [ "$status" = '200' ] && node - "$build_file" "$GITHUB_SHA" <<'NODE'
+          probe_dir="$(mktemp -d)"
+          for attempt in $(seq 1 12); do
+            for index in "${!candidates[@]}"; do
+              candidate="${candidates[$index]}"
+              (curl --silent --show-error --location \
+                --connect-timeout 3 --max-time 10 \
+                --output "$probe_dir/$index.body" --write-out '%{http_code}' \
+                "$candidate/build-info.json" > "$probe_dir/$index.status" || true) &
+            done
+            wait || true
+            for index in "${!candidates[@]}"; do
+              candidate="${candidates[$index]}"
+              status="$(tr -cd '0-9' < "$probe_dir/$index.status" 2>/dev/null || true)"
+              [ -n "$status" ] || status='000'
+              if [ "$status" = '200' ] && node - "$probe_dir/$index.body" "$GITHUB_SHA" 2>/dev/null <<'NODE'
           const fs = require('fs');
           const [file, expectedSha] = process.argv.slice(2);
           const info = JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -248,7 +255,7 @@ jobs:
                 echo "Production is serving commit ${GITHUB_SHA} at ${candidate}."
                 break 2
               fi
-              echo "Attempt ${attempt}/60: ${candidate} is not serving this commit (HTTP ${status})."
+              echo "Attempt ${attempt}/12: ${candidate} is not serving this commit (HTTP ${status})."
             done
             sleep 10
           done
