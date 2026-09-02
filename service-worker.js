@@ -1,5 +1,10 @@
-const CACHE_NAME='sanpaid-runtime-v64';
-const FALLBACK_ASSETS=['./','./index.html','./styles.css','./mobile.css','./app.js','./mobile.js','./evaluator-final.css','./evaluator-final.js','./connected-demo.css','./auth-unified.css','./manifest.webmanifest','./app-icon.svg'];
+const CACHE_NAME='sanpaid-runtime-v65';
+const FALLBACK_ASSETS=[
+  './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./color-system-v5.css',
+  './app.js','./mobile.js','./evaluator-final.css','./evaluator-final.js','./top1-polish.js',
+  './connected-demo.css','./connected-demo.js','./auth-unified.css','./auth-unified.js',
+  './customer-worker-dashboard.css','./customer-worker-dashboard.js','./manifest.webmanifest','./app-icon.svg'
+];
 
 self.addEventListener('install',event=>{
   event.waitUntil(
@@ -20,7 +25,9 @@ self.addEventListener('activate',event=>{
 
 self.addEventListener('message',event=>{
   if(event.data?.type==='SKIP_WAITING')self.skipWaiting();
-  if(event.data?.type==='CLEAR_SANPAID_CACHE')event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('sanpaid-')).map(k=>caches.delete(k)))));
+  if(event.data?.type==='CLEAR_SANPAID_CACHE'){
+    event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('sanpaid-')).map(key=>caches.delete(key)))));
+  }
 });
 
 async function networkFirst(request,fallbackKey=null){
@@ -58,7 +65,10 @@ self.addEventListener('fetch',event=>{
     event.respondWith(
       caches.open(CACHE_NAME).then(async cache=>{
         const cached=await cache.match(request);
-        const network=fetch(request).then(response=>{if(response&&response.ok)cache.put(request,response.clone()).catch(()=>{});return response;}).catch(()=>cached);
+        const network=fetch(request).then(response=>{
+          if(response&&response.ok)cache.put(request,response.clone()).catch(()=>{});
+          return response;
+        }).catch(()=>cached);
         return cached||network;
       })
     );
