@@ -1,6 +1,10 @@
 (() => {
   'use strict';
 
+  const BUILD={release:'mobile-runtime-v64',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
+  window.__SANPAID_BUILD__=Object.freeze(BUILD);
+  console.info('[SanPaid build]',BUILD);
+
   const SERVICES=[
     {name:'Electrician',icon:'⚡',price:249},
     {name:'Plumber',icon:'🔧',price:279},
@@ -95,31 +99,40 @@
     return [...drawer.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter(el=>el.getClientRects().length);
   }
 
+  function setDrawerOpenState(open){
+    const drawer=$('#mobileDrawer'),btn=$('#menuBtn'),scrim=ensureDrawerScrim();
+    if(!drawer||!btn)return;
+    drawer.classList.toggle('hidden',!open);
+    drawer.setAttribute('aria-hidden',open?'false':'true');
+    btn.setAttribute('aria-expanded',open?'true':'false');
+    btn.setAttribute('aria-label',open?'Close menu':'Open menu');
+    scrim.classList.toggle('hidden',!open);
+    scrim.setAttribute('aria-hidden',open?'false':'true');
+    document.body.classList.toggle('mobile-drawer-open',open);
+  }
+
   function openMobileDrawer(){
     const drawer=ensureDrawerStructure(),btn=$('#menuBtn');
-    if(!drawer||!btn)return;
+    if(!drawer||!btn||window.innerWidth>960)return;
     mobileDrawerReturnFocus=document.activeElement;
-    drawer.classList.remove('hidden');
-    drawer.setAttribute('aria-hidden','false');
-    btn.setAttribute('aria-expanded','true');
-    btn.setAttribute('aria-label','Close menu');
-    ensureDrawerScrim().classList.remove('hidden');
-    document.body.classList.add('mobile-drawer-open');
+    setDrawerOpenState(true);
     requestAnimationFrame(()=>drawer.querySelector('.drawer-close')?.focus());
   }
 
   function closeMobileDrawer(restoreFocus=true){
-    const drawer=$('#mobileDrawer'),btn=$('#menuBtn'),scrim=$('#mobileDrawerScrim');
+    const drawer=$('#mobileDrawer');
     if(!drawer)return;
-    drawer.classList.add('hidden');
-    drawer.setAttribute('aria-hidden','true');
-    btn?.setAttribute('aria-expanded','false');
-    btn?.setAttribute('aria-label','Open menu');
-    scrim?.classList.add('hidden');
-    document.body.classList.remove('mobile-drawer-open');
+    setDrawerOpenState(false);
     const target=mobileDrawerReturnFocus;
     mobileDrawerReturnFocus=null;
     if(restoreFocus&&target?.isConnected)requestAnimationFrame(()=>target.focus());
+  }
+
+  function recoverDrawerState(){
+    const drawer=$('#mobileDrawer');
+    if(!drawer)return;
+    const shouldBeClosed=drawer.classList.contains('hidden')||drawer.getAttribute('aria-hidden')==='true'||window.innerWidth>960;
+    if(shouldBeClosed)setDrawerOpenState(false);
   }
 
   function toggleMobileDrawer(){
@@ -135,9 +148,9 @@
     btn.addEventListener('click',toggleMobileDrawer);
     drawer.addEventListener('click',event=>{
       const link=event.target.closest('a[href^="#"]');
-      if(link){setTimeout(()=>closeMobileDrawer(false),0);return;}
+      if(link){queueMicrotask(()=>closeMobileDrawer(false));return;}
       const action=event.target.closest('button');
-      if(action&&!action.classList.contains('drawer-close'))setTimeout(()=>closeMobileDrawer(false),0);
+      if(action&&!action.classList.contains('drawer-close'))queueMicrotask(()=>closeMobileDrawer(false));
     });
     document.addEventListener('keydown',event=>{
       if(drawer.classList.contains('hidden'))return;
@@ -148,14 +161,13 @@
       if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
       else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
     });
-    window.addEventListener('resize',()=>{if(window.innerWidth>960&&!drawer.classList.contains('hidden'))closeMobileDrawer(false);},{passive:true});
-    window.addEventListener('pageshow',()=>{
-      if(drawer.classList.contains('hidden'))document.body.classList.remove('mobile-drawer-open');
-    });
+    window.addEventListener('resize',()=>{if(window.innerWidth>960)closeMobileDrawer(false);},{passive:true});
+    window.addEventListener('pageshow',recoverDrawerState,{passive:true});
+    window.addEventListener('orientationchange',()=>setTimeout(recoverDrawerState,120),{passive:true});
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)recoverDrawerState();});
   }
 
   function wireLandingUtilities(){
-    // Unified auth owns role access. This file owns service selection + one mobile drawer.
     const book=$('#bookServiceHero');
     if(book)book.onclick=()=>startBooking($('#heroService')?.value||'Electrician');
 
@@ -175,7 +187,13 @@
     });
   }
 
-  function start(){retireLegacyState();renderServices();wireMobileNavigation();wireLandingUtilities();}
+  function start(){
+    retireLegacyState();
+    renderServices();
+    wireMobileNavigation();
+    wireLandingUtilities();
+    recoverDrawerState();
+  }
 
   window.SanPaidDemo={
     reset(){try{localStorage.removeItem(LEGACY_STATE_KEY);sessionStorage.removeItem(PREFILL_SERVICE_KEY);sessionStorage.removeItem(PREFILL_AREA_KEY);}catch{}location.reload();},
@@ -183,7 +201,7 @@
     showRoles:async()=>{const auth=await waitForAuth();auth?.open?.(auth.getRole?.()||'CUSTOMER','login',auth.getPersona?.()||null);},
     startBooking
   };
-  window.SanPaidLanding={services:SERVICES,startBooking,closeMobileDrawer};
+  window.SanPaidLanding={services:SERVICES,startBooking,openMobileDrawer,closeMobileDrawer,recoverDrawerState};
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
