@@ -152,6 +152,12 @@ The current branch must still be deployed and the complete two-device flow
 must be rerun after deployment. The readiness gate proves dependency response;
 it does not replace lifecycle testing.
 
+Latest verified deployment evidence: GitHub Actions run 63 received HTTP 404
+from the public `/api/public/services` URL. This confirms that the current
+production target is not yet serving the repository's API rewrite. The new
+readiness gate will therefore block the connected Golden Demo until the Vercel
+project is linked/deployed correctly.
+
 Do not claim production/live cross-device behaviour until both sides are deployed and a real two-browser/two-phone run passes.
 
 ## Runtime integrity checks
