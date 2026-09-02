@@ -2,11 +2,14 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
-    "api/[...path].js": {
+    "api/index.js": {
       "includeFiles": "database/schema.sql",
       "maxDuration": 30
     }
   },
+  "rewrites": [
+    {"source":"/api/:path*","destination":"/api?path=:path*"}
+  ],
   "headers": [
     {"source":"/","headers":[
       {"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"},
