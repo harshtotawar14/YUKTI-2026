@@ -221,6 +221,7 @@ jobs:
             esac
           else
             candidates=(
+              'https://yukti-2026-brown.vercel.app'
               'https://yukti-2026-git-main-yukti8.vercel.app'
               'https://yukti-2026.vercel.app'
               'https://yukti-2026-yukti8.vercel.app'
