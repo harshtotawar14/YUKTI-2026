@@ -1,7 +1,6 @@
 (() => {
   'use strict';
 
-  const BACKEND='https://sanpaid-sih-2026.onrender.com';
   const TOKEN_KEY='sanpaid_connected_demo_token_v1';
   const DEMO_EMAILS=new Set(['customer.connected@sanpaid.demo','worker1.connected@sanpaid.demo','worker2.connected@sanpaid.demo']);
   const nativeFetch=window.fetch.bind(window);
@@ -11,21 +10,25 @@
   function getToken(){try{return sessionStorage.getItem(TOKEN_KEY)||''}catch{return''}}
   function setToken(value){try{value?sessionStorage.setItem(TOKEN_KEY,value):sessionStorage.removeItem(TOKEN_KEY)}catch{}}
   function rawUrl(input){if(typeof input==='string')return input;if(input instanceof URL)return input.href;return input?.url||'';}
-  function pathname(url){try{return new URL(url,location.href).pathname}catch{return String(url||'').split('?')[0]}}
-  function pathWithQuery(url){try{const u=new URL(url,location.href);return u.pathname+u.search}catch{return String(url||'')}}
+  function parsed(url){try{return new URL(url,location.href)}catch{return null}}
+  function pathname(url){return parsed(url)?.pathname||String(url||'').split('?')[0]}
+  function pathWithQuery(url){const u=parsed(url);return u?u.pathname+u.search:String(url||'')}
   function parseBody(init){try{return typeof init?.body==='string'?JSON.parse(init.body):{}}catch{return{}}}
-  function direct(path){return `${BACKEND}${path}`;}
   function connectedPath(url){const p=pathWithQuery(url);return p.startsWith('/api/connected/')?p:'';}
+  function normalizedApiInput(input){
+    const url=rawUrl(input),u=parsed(url);
+    if(!u||!u.pathname.startsWith('/api/'))return input;
+    if(u.origin===location.origin)return input;
+    return `${u.pathname}${u.search}`;
+  }
   function signalSync(snapshot){try{window.dispatchEvent(new CustomEvent('sanpaid:connected-sync',{detail:{snapshot,at:Date.now()}}));}catch{}}
   function jsonResponse(data,status=200){return new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}})}
 
   async function fetchWithConnectedAuth(path,init={}){
-    const token=getToken();
-    if(token){
-      const headers=new Headers(init.headers||{});if(init.body&&!headers.has('Content-Type'))headers.set('Content-Type','application/json');headers.set('Authorization',`Bearer ${token}`);
-      try{return await nativeFetch(direct(path),{...init,headers,credentials:'omit',mode:'cors',cache:'no-store'});}catch{}
-    }
-    return nativeFetch(path,{...init,credentials:'include',cache:'no-store'});
+    const headers=new Headers(init.headers||{}),token=getToken();
+    if(init.body&&!headers.has('Content-Type'))headers.set('Content-Type','application/json');
+    if(token)headers.set('Authorization',`Bearer ${token}`);
+    return nativeFetch(path,{...init,headers,credentials:'include',cache:'no-store'});
   }
 
   async function compatibilityFallback(path,init,response){
@@ -48,6 +51,7 @@
   }
 
   window.fetch=async function sanPaidFetch(input,init={}){
+    input=normalizedApiInput(input);
     const url=rawUrl(input),path=pathname(url);
 
     if(path==='/api/auth/login'){
@@ -70,7 +74,7 @@
     }
 
     const cpath=connectedPath(url);
-    if(!cpath)return nativeFetch(input,init);
+    if(!cpath)return nativeFetch(input,{...init,credentials:init.credentials||'same-origin'});
 
     let response=await fetchWithConnectedAuth(cpath,init);
     response=await compatibilityFallback(cpath,init,response);
@@ -108,7 +112,7 @@
     window.EventSource.CONNECTING=NativeEventSource.CONNECTING??0;window.EventSource.OPEN=NativeEventSource.OPEN??1;window.EventSource.CLOSED=NativeEventSource.CLOSED??2;window.EventSource.prototype=NativeEventSource.prototype;
   }else window.EventSource=ConnectedPollingSource;
 
-  window.SanPaidConnectedTransport={backend:BACKEND,mode:'SAME_ORIGIN_AUTH_WITH_CONNECTED_BEARER_FALLBACK',hasSession:()=>!!getToken(),clearSession:()=>setToken('')};
+  window.SanPaidConnectedTransport={backend:'same-origin',mode:'SAME_ORIGIN_AUTHENTICATED_API',hasSession:()=>!!getToken(),clearSession:()=>setToken('')};
 
   function setStatusRow(label,badgeText,detail,tone='orange'){
     document.querySelectorAll('#status tbody tr').forEach(row=>{const cells=row.querySelectorAll('td');if(!cells.length||!cells[0].textContent.includes(label))return;const badge=cells[1]?.querySelector('.badge');if(badge){badge.textContent=badgeText;badge.className=`badge ${tone==='green'?'b-green':'b-orange'}`;}if(detail&&cells[2])cells[2].textContent=detail;});
