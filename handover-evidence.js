@@ -16,6 +16,7 @@
   let activeComplaintId = 0;
   let refreshTimer = 0;
   let observer = null;
+  let retryTimers = [];
 
   function token() {
     try { return sessionStorage.getItem(TOKEN_KEY) || ''; } catch { return ''; }
@@ -198,7 +199,8 @@
         select.disabled = true;
         select.innerHTML = '<option>No complaints recorded</option>';
         renderComplaintMeta(null);
-        $('#coopEvidenceTimeline').innerHTML = '<div class="handover-empty"><b>No complaint records</b><span>No local complaint exists in the connected cooperative scope.</span></div>';
+        const root = $('#coopEvidenceTimeline');
+        if (root) root.innerHTML = '<div class="handover-empty"><b>No complaint records</b><span>No local complaint exists in the connected cooperative scope.</span></div>';
         return;
       }
       select.disabled = false;
@@ -244,9 +246,14 @@
     await loadComplaints();
   }
 
-  function schedule() {
+  function schedule(delay = 450) {
     clearTimeout(refreshTimer);
-    refreshTimer = setTimeout(refresh, 450);
+    refreshTimer = setTimeout(refresh, delay);
+  }
+
+  function scheduleRetries() {
+    retryTimers.forEach(clearTimeout);
+    retryTimers = [0, 280, 850, 1700].map(delay => setTimeout(() => schedule(0), delay));
   }
 
   function attach() {
@@ -256,16 +263,19 @@
       return;
     }
     observer?.disconnect();
-    observer = new MutationObserver(schedule);
-    observer.observe(shell, { attributes:true, attributeFilter:['class','data-admin-role'], childList:true, subtree:true });
-    schedule();
+    observer = new MutationObserver(scheduleRetries);
+    observer.observe(shell, { attributes:true, attributeFilter:['class','data-admin-role'] });
+    scheduleRetries();
   }
 
   function start() {
     attach();
-    window.addEventListener('online', schedule);
-    window.addEventListener('pageshow', schedule);
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) schedule(); });
+    window.addEventListener('online', scheduleRetries);
+    window.addEventListener('pageshow', scheduleRetries);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) scheduleRetries(); });
+    document.addEventListener('click', event => {
+      if (event.target.closest?.('[data-spu-role],#spuLoginSubmit,#getStarted,#coopLogin,[data-judge-role]')) scheduleRetries();
+    }, true);
     window.SanPaidHandoverEvidence = { refresh };
   }
 
