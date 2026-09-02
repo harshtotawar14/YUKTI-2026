@@ -9,6 +9,10 @@
     return window.matchMedia(`(max-width:${MOBILE_BREAKPOINT}px)`).matches;
   }
 
+  function prefersReducedMotion(){
+    return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches === true;
+  }
+
   function showConnection(message, offline=false, autoHide=true){
     let banner = document.getElementById('connectionBanner');
     if (!banner) {
@@ -52,6 +56,98 @@
       if (!isMobile() || !event.target.matches('input,textarea,select')) return;
       setTimeout(() => event.target.scrollIntoView({block:'center',behavior:'smooth'}),180);
     });
+  }
+
+  function revealElement(el,index=0){
+    if (!el || el.classList.contains('is-visible')) return;
+    el.style.transitionDelay = `${Math.min(index*55,165)}ms`;
+    el.classList.add('is-visible');
+  }
+
+  function setupMobileMotionRecovery(){
+    if (!isMobile()) return;
+    const landing = document.getElementById('landing');
+    if (!landing) return;
+    const elements = Array.from(landing.querySelectorAll('[data-reveal]'));
+    if (!elements.length) return;
+
+    if (prefersReducedMotion()) {
+      elements.forEach(el => el.classList.add('is-visible'));
+      return;
+    }
+
+    landing.classList.add('eval-motion-ready');
+
+    const revealVisibleNow = () => {
+      const viewport = window.visualViewport?.height || window.innerHeight || 700;
+      elements.forEach((el,index) => {
+        if (el.classList.contains('is-visible')) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < viewport*1.08 && rect.bottom > -40) revealElement(el,index%4);
+      });
+    };
+
+    revealVisibleNow();
+    requestAnimationFrame(() => requestAnimationFrame(revealVisibleNow));
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          revealElement(entry.target);
+          observer.unobserve(entry.target);
+        });
+      },{threshold:0.01,rootMargin:'0px 0px 18% 0px'});
+      elements.forEach(el => {
+        if (!el.classList.contains('is-visible')) observer.observe(el);
+      });
+    } else {
+      const onScroll = debounce(revealVisibleNow,40);
+      window.addEventListener('scroll',onScroll,{passive:true});
+    }
+
+    window.addEventListener('orientationchange',() => setTimeout(revealVisibleNow,180),{passive:true});
+    window.addEventListener('pageshow',revealVisibleNow,{passive:true});
+    setTimeout(revealVisibleNow,600);
+    setTimeout(revealVisibleNow,1600);
+
+    setupHeroSequenceFallback();
+  }
+
+  function setupHeroSequenceFallback(){
+    const root = document.getElementById('evalHeroSystem');
+    if (!root || prefersReducedMotion()) return;
+    const nodes = Array.from(root.querySelectorAll('[data-hero-seq]'));
+    const workers = Array.from(root.querySelectorAll('.hero-worker'));
+    const progress = document.getElementById('evalHeroProgress');
+    if (!nodes.length) return;
+
+    const startFallback = () => {
+      if (root.querySelector('.hero-active')) return;
+      root.dataset.mobileAnimationFallback = '1';
+      const sequence = ['request','workers','gate','rank','offer','audit'];
+      const run = () => {
+        if (root.dataset.mobileAnimationFallback !== '1') return;
+        nodes.forEach(node => node.classList.remove('hero-active'));
+        workers.forEach(worker => worker.classList.remove('hero-pass','hero-remove'));
+        if (progress) progress.style.width = '0%';
+        sequence.forEach((name,index) => {
+          setTimeout(() => {
+            if (root.dataset.mobileAnimationFallback !== '1') return;
+            const node = root.querySelector(`[data-hero-seq="${name}"]`);
+            node?.classList.add('hero-active');
+            if (name === 'gate') {
+              workers.forEach(worker => worker.classList.add(worker.classList.contains('good')?'hero-pass':'hero-remove'));
+            }
+            if (progress) progress.style.width = `${Math.round(((index+1)/sequence.length)*100)}%`;
+          },160+index*850);
+        });
+        root._mobileAnimationTimer = setTimeout(run,160+sequence.length*850+850);
+      };
+      run();
+    };
+
+    setTimeout(startFallback,1200);
   }
 
   async function installPwa(){
@@ -144,6 +240,7 @@
     clearStaleDrawerLock();
     setupConnectivity();
     setupVisualViewport();
+    setupMobileMotionRecovery();
     setupInstallPrompt();
     setupServiceWorker();
     setupLifecycleRecovery();
