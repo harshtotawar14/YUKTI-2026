@@ -1,6 +1,9 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "git": {
+    "deploymentEnabled": false
+  },
   "functions": {
     "api/index.js": {
       "includeFiles": "database/schema.sql",
