@@ -15,7 +15,7 @@
   const PREFILL_SERVICE_KEY='sanpaid_prefill_service_v1';
   const PREFILL_AREA_KEY='sanpaid_prefill_area_v1';
   const $=(selector,root=document)=>root.querySelector(selector);
-  const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
   const money=value=>`₹${Number(value||0).toLocaleString('en-IN',{maximumFractionDigits:2})}`;
   const iconFor=name=>String(name||'SV').split(/\s+/).map(part=>part[0]||'').join('').slice(0,2).toUpperCase()||'SV';
   let catalog=[];
@@ -110,16 +110,20 @@
     return null;
   }
 
+  async function openRoleAccess(role){
+    const auth=await waitForAuth();
+    if(!auth){toast('Login workspace is still loading. Please retry.','warn');return false;}
+    if(auth.getRole?.()===role&&auth.isAuthenticated?.())return auth.openRoleWorkspace(role,role);
+    auth.open(role,role);
+    return true;
+  }
+
   function rememberService(service){try{service?sessionStorage.setItem(PREFILL_SERVICE_KEY,String(service)):sessionStorage.removeItem(PREFILL_SERVICE_KEY);}catch{}}
   function rememberArea(area){try{area?sessionStorage.setItem(PREFILL_AREA_KEY,String(area)):sessionStorage.removeItem(PREFILL_AREA_KEY);}catch{}}
 
   async function startBooking(service){
     rememberService(service||$('#heroService')?.value||catalog[0]?.name||FALLBACK_SERVICES[0].name);
-    const auth=await waitForAuth();
-    if(!auth){toast('Login workspace is still loading. Please retry.','warn');return false;}
-    if(auth.getRole?.()==='CUSTOMER'&&auth.isAuthenticated?.())return auth.openRoleWorkspace('CUSTOMER','CUSTOMER');
-    auth.open('CUSTOMER','CUSTOMER');
-    return true;
+    return openRoleAccess('CUSTOMER');
   }
 
   function ensureDrawerStructure(){
@@ -155,6 +159,7 @@
 
   function wireLandingUtilities(){
     $('#bookServiceHero')?.addEventListener('click',()=>startBooking($('#heroService')?.value));
+    $('#joinWorker')?.addEventListener('click',()=>openRoleAccess('WORKER'));
     $('#heroSearch')?.addEventListener('click',()=>{const area=$('#heroArea')?.value.trim();if(!area){toast('Enter your area first.','error');return;}rememberArea(area);startBooking($('#heroService')?.value);});
     document.addEventListener('click',event=>{const card=event.target.closest?.('#serviceGrid [data-service]');if(!card)return;event.preventDefault();startBooking(card.dataset.service);});
     $('#catalogRetry')?.addEventListener('click',loadServiceCatalog);
@@ -167,7 +172,7 @@
   window.SanPaidLanding={
     get services(){return catalog.length?catalog:FALLBACK_SERVICES;},
     get catalogSource(){return catalogSource;},
-    reloadServiceCatalog:loadServiceCatalog,startBooking,openMobileDrawer,closeMobileDrawer,recoverDrawerState
+    reloadServiceCatalog:loadServiceCatalog,startBooking,openRoleAccess,openMobileDrawer,closeMobileDrawer,recoverDrawerState
   };
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
