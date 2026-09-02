@@ -19,7 +19,9 @@ function cleanLandingHtml(html){
   // This block is permanently hidden by the evaluator landing CSS and duplicates
   // the canonical Role Access / Golden Demo entry points. Keep it out of the
   // deployable artifact while the physical frontend-source migration is pending.
-  return html.replace(/\s*<details class="quick-booking-details">[\s\S]*?<\/details>/,'');
+  return html
+    .replace(/\s*<details class="quick-booking-details">[\s\S]*?<\/details>/,'')
+    .replace('SOURCE READY — LIVE VERIFICATION PENDING','IMPLEMENTED IN SOURCE — DEPLOY VERIFICATION REQUIRED');
 }
 
 rmSync(output,{recursive:true,force:true});
