@@ -1,4 +1,4 @@
-name: SanPaid Frontend Runtime Syntax
+name: SanPaid Frontend Runtime Integrity
 
 on:
   push:
@@ -7,14 +7,15 @@ on:
     branches: [main]
 
 jobs:
-  syntax:
+  runtime-integrity:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Check canonical runtime JavaScript
+
+      - name: Check canonical runtime JavaScript syntax
         run: |
           node --check app.js
           node --check auth-unified.js
@@ -28,3 +29,38 @@ jobs:
           node --check cooperative-portal.js
           node --check federation-portal.js
           node --check demo-first-stable.js
+
+      - name: Enforce one connected fetch transport
+        run: |
+          count=$(grep -R --include='*.js' -F 'window.fetch=' . \
+            --exclude-dir=.git --exclude-dir=node_modules | wc -l)
+          test "$count" -eq 1 || { echo "Expected exactly one window.fetch wrapper; found $count"; exit 1; }
+          grep -F 'window.fetch=async function sanPaidFetch' connected-runtime-fix.js
+
+      - name: Reject legacy local state in connected role runtime
+        run: |
+          for file in auth-unified.js connected-demo.js connected-service-ui.js connected-commerce-ui.js customer-worker-dashboard.js; do
+            if grep -nE 'localStorage\.(getItem|setItem)\(' "$file"; then
+              echo "Legacy localStorage runtime state found in $file"
+              exit 1
+            fi
+          done
+
+      - name: Reject recurring role-dashboard pollers and observer rewrites
+        run: |
+          if grep -n 'setInterval' connected-service-ui.js connected-commerce-ui.js customer-worker-dashboard.js; then
+            echo 'Connected role modules must use the central snapshot sync instead of recurring setInterval polling.'
+            exit 1
+          fi
+          if grep -n 'MutationObserver' customer-worker-dashboard.js; then
+            echo 'Customer/Worker dashboard must not rewrite itself from a whole-page MutationObserver.'
+            exit 1
+          fi
+
+      - name: Ensure legacy app engine remains retired
+        run: |
+          grep -F "mode:'CONNECTED_BACKEND_ONLY'" app.js
+          if grep -nE 'DEMO_USERS|DEFAULT_WORKERS|function renderCustomerHome|function renderWorkerHome|function paymentModal' app.js; then
+            echo 'Legacy local demo engine returned to app.js.'
+            exit 1
+          fi
