@@ -15,7 +15,7 @@
   const PREFILL_SERVICE_KEY='sanpaid_prefill_service_v1';
   const PREFILL_AREA_KEY='sanpaid_prefill_area_v1';
   const $=(selector,root=document)=>root.querySelector(selector);
-  const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
+  const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const money=value=>`₹${Number(value||0).toLocaleString('en-IN',{maximumFractionDigits:2})}`;
   const iconFor=name=>String(name||'SV').split(/\s+/).map(part=>part[0]||'').join('').slice(0,2).toUpperCase()||'SV';
   let catalog=[];
