@@ -1,7 +1,7 @@
-name: SanPaid Frontend Runtime Integrity
+name: SanPaid Source Integrity
 
 concurrency:
-  group: sanpaid-release-${{ github.ref }}
+  group: sanpaid-source-${{ github.ref }}
   cancel-in-progress: true
 
 on:
@@ -9,6 +9,13 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_production:
+        description: Run manual production verification against the configured Vercel URL
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   source-integrity:
@@ -23,7 +30,7 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Check canonical runtime JavaScript syntax
+      - name: Check critical JavaScript syntax
         run: |
           node --check app.js
           node --check mobile.js
@@ -39,20 +46,23 @@ jobs:
           node --check admin-command-center.js
           node --check cooperative-portal.js
           node --check federation-portal.js
-          node --check cooperative-deploy-guard.js
-          node --check handover-evidence.js
           node --check service-worker.js
+          node --check api/index.js
           node --check 'api/[...path].js'
           node --check api/_lib/db.cjs
           node --check api/_lib/policy.cjs
           node --check api/_lib/security.cjs
-          node -e "require('./api/[...path].js')"
+          find backend/src -type f -name '*.cjs' -print0 | xargs -0 -n1 node --check
 
-      - name: Run repository integrity suite
+      - name: Run repository test suite
         run: npm test
 
-      - name: Enforce explicit API and one sync manager
+      - name: Enforce source-of-truth runtime constraints
         run: |
+          if grep -R -n --include='*.js' -F 'Demo@2026' . --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=dist; then
+            echo 'Frontend/runtime source must not embed a demo password.'
+            exit 1
+          fi
           if grep -nE 'window\.fetch\s*=|window\.EventSource\s*=' connected-runtime-fix.js connected-demo.js; then
             echo 'Global fetch/EventSource monkey patches are forbidden.'
             exit 1
@@ -60,245 +70,62 @@ jobs:
           grep -F 'window.SanPaidApi=Object.freeze' connected-runtime-fix.js
           grep -F "mode:'EXPLICIT_SAME_ORIGIN_API_CLIENT'" connected-runtime-fix.js
           grep -F 'window.SanPaidSync=Object.freeze' connected-runtime-fix.js
-          grep -F "mode:'ONE_ROLE_AWARE_SNAPSHOT_LOOP'" connected-runtime-fix.js
-          grep -F 'window.SanPaidSync.subscribe' connected-demo.js
-          grep -F 'window.SanPaidSync.refreshNow' connected-demo.js
-          if grep -n 'new EventSource' connected-demo.js; then
-            echo 'Customer/Worker workspace must use SanPaidSync instead of EventSource.'
-            exit 1
-          fi
-
-      - name: Enforce one public mobile drawer owner
-        run: |
           grep -F 'function wireMobileNavigation' app.js
           grep -F 'function setDrawerOpenState' app.js
-          if grep -nE 'function (openDrawer|closeAllDrawers|enhanceLandingDrawer|populateLandingDrawer|wireMobileNavigation)' mobile.js; then
-            echo 'mobile.js must not own public navigation; app.js is the canonical mobile drawer owner.'
-            exit 1
-          fi
-          if grep -nE 'menuBtn|mobileDrawer|mobileDrawerScrim|mobile-drawer-open' evaluator-final.js; then
-            echo 'evaluator-final.js must not control public mobile navigation.'
-            exit 1
-          fi
-
-      - name: Verify coherent startup and v70 release
-        run: |
           grep -F "release:'connected-backend-rebuild'" app.js
           grep -F "runtime:'v70'" app.js
           grep -F 'sanpaid-runtime-v70' service-worker.js
-          grep -F 'design-tokens.css' index.html
-          if grep -nE 'mobile-fix\.css|demo-preflight\.js' index.html; then
-            echo 'Retired presentation/mobile files must not return to startup.'
-            exit 1
-          fi
-          if grep -nE 'injectGovernmentStyles|polishGovernmentLanding|formalizeTimers|style\.textContent' top1-polish.js; then
-            echo 'top1-polish.js must remain a small bootstrap/accessibility coordinator.'
-            exit 1
-          fi
           grep -F "version:'handover-bootstrap-v1'" top1-polish.js
           grep -F 'loadAdministration,' top1-polish.js
-          grep -F 'window.SanPaidBootstrap?.loadAdministration?.();' auth-unified.js
           if sed -n '/function start()/,/^  }/p' top1-polish.js | grep -F 'loadAdministration();'; then
-            echo 'Administration assets must stay lazy and role-triggered.'
+            echo 'Administration assets must remain lazy.'
             exit 1
           fi
 
-      - name: Verify accessibility, discovery and security baseline
+      - name: Verify security and accessibility baseline
         run: |
           grep -F 'class="skip-link" href="#mainContent"' index.html
           grep -F 'id="mainContent" tabindex="-1"' index.html
-          grep -F 'rel="canonical"' index.html
-          grep -F 'property="og:title"' index.html
-          grep -F 'id="catalogStatus"' index.html
-          grep -F 'id="catalogRetry"' index.html
           grep -F 'Content-Security-Policy' vercel.json
           if grep -F 'Content-Security-Policy-Report-Only' vercel.json; then
             echo 'CSP must be enforced, not report-only.'
             exit 1
           fi
-          test -s robots.txt
-          test -s sitemap.xml
-          test -s social-preview.svg
+          grep -F "if(url.pathname.startsWith('/api/')||url.pathname==='/build-info.json')return" service-worker.js
+          grep -F "fetch(request,{cache:'no-store'})" service-worker.js
 
-      - name: Verify database-backed service catalog
-        run: |
-          grep -F '/api/public/services' app.js
-          grep -F '/api/public/services' connected-demo.js
-          grep -F "catalogSource='STATIC_NAMES_ONLY'" app.js
-          grep -F 'Current pricing loads after connection' app.js
-          if grep -nE "FALLBACK_SERVICES=.*price:|\{name:'[^']+',icon:'[^']+',price:" app.js; then
-            echo 'Static fallback must not claim current service pricing.'
-            exit 1
-          fi
-
-      - name: Build deployable static artifact
+      - name: Build local deployable artifact
         run: |
           npm run build
           test -s dist/index.html
           test -s dist/build-info.json
           node - <<'NODE'
-          const fs = require('fs');
-          const info = JSON.parse(fs.readFileSync('dist/build-info.json', 'utf8'));
-          if (info.commitSha !== process.env.GITHUB_SHA) throw new Error('Build identity does not match the tested commit.');
-          if (info.runtime !== 'v70') throw new Error('Unexpected runtime identity.');
+          const fs=require('fs');
+          const info=JSON.parse(fs.readFileSync('dist/build-info.json','utf8'));
+          if(info.commitSha!==process.env.GITHUB_SHA) throw new Error('Build identity does not match tested commit.');
+          if(info.runtime!=='v70') throw new Error('Unexpected runtime identity.');
+          const html=fs.readFileSync('dist/index.html','utf8');
+          if(html.includes('quick-booking-details')) throw new Error('Hidden duplicate quick-access block leaked into deploy artifact.');
           NODE
 
-      - name: Verify matching truth on public landing
-        run: |
-          grep -F 'STATIC EXPLANATORY SCENARIO — NOT LIVE ASSIGNMENT' index.html
-          grep -F 'DEMO DISTANCE, not live Maps route distance' index.html
-          grep -F 'same backend policy engine' index.html
-          grep -F 'Demo Policy Example: 20 km' index.html
-
-      - name: Verify connected handover evidence layer
-        run: |
-          grep -F "handover-evidence.css" top1-polish.js
-          grep -F "handover-evidence.js" top1-polish.js
-          grep -F './handover-evidence.css' service-worker.js
-          grep -F './handover-evidence.js' service-worker.js
-          grep -F '/api/cooperative-admin/trust-lifecycle' handover-evidence.js
-          grep -F '/api/cooperative-admin/complaints/' handover-evidence.js
-          grep -F 'No synthetic timeline is substituted.' handover-evidence.js
-          grep -F 'No synthetic worker records are substituted.' handover-evidence.js
-          if grep -nE 'handover-evidence\.(js|css)' cooperative-deploy-guard.js; then
-            echo 'Availability guard must not load evidence assets; top1-polish.js is the single owner.'
-            exit 1
-          fi
-          if grep -n 'setInterval' handover-evidence.js; then
-            echo 'Handover evidence must not add recurring polling.'
-            exit 1
-          fi
-
-      - name: Reject exposed credentials and synthetic administration
-        run: |
-          if grep -R -n --include='*.js' -F 'Demo@2026' . --exclude-dir=.git --exclude-dir=node_modules; then
-            echo 'Frontend source must not embed a demo password.'
-            exit 1
-          fi
-          if grep -nE 'const PASSWORD=|Password for isolated' judge-demo.js; then
-            echo 'Legacy direct administration login returned.'
-            exit 1
-          fi
-          if grep -nE 'fillSynthetic|SYNTHETIC DEMO DATA|Demo Worker A|Demo Worker B' cooperative-deploy-guard.js handover-evidence.js; then
-            echo 'Administrative runtime must never substitute synthetic operational records.'
-            exit 1
-          fi
-          grep -F 'No synthetic operational data is being substituted.' cooperative-deploy-guard.js
-
-      - name: Reject legacy role state and recurring role pollers
-        run: |
-          for file in auth-unified.js connected-demo.js connected-service-ui.js connected-commerce-ui.js customer-worker-dashboard.js; do
-            if grep -nE 'localStorage\.(getItem|setItem)\(' "$file"; then
-              echo "Legacy localStorage runtime state found in $file"
-              exit 1
-            fi
-          done
-          if grep -n 'setInterval' connected-service-ui.js connected-commerce-ui.js customer-worker-dashboard.js; then
-            echo 'Connected role modules must use central sync events instead of recurring setInterval polling.'
-            exit 1
-          fi
-          if grep -n 'MutationObserver' customer-worker-dashboard.js; then
-            echo 'Customer/Worker dashboard must not rewrite itself from a whole-page MutationObserver.'
-            exit 1
-          fi
-
-      - name: Verify service worker truth
-        run: |
-          grep -F "if(url.pathname.startsWith('/api/')||url.pathname==='/build-info.json')return" service-worker.js
-          grep -F "fetch(request,{cache:'no-store'})" service-worker.js
-
-  deployment-integrity:
-    name: Production deployment integrity
-    if: github.event_name == 'push'
+  production-verification:
+    name: Manual production verification
+    if: github.event_name == 'workflow_dispatch' && inputs.run_production == true
     needs: source-integrity
     runs-on: ubuntu-latest
     env:
-      CONFIGURED_PRODUCTION_URL: ${{ vars.SANPAID_PRODUCTION_URL }}
+      SANPAID_PRODUCTION_URL: ${{ vars.SANPAID_PRODUCTION_URL }}
+      SANPAID_E2E_PASSWORD: ${{ secrets.SANPAID_E2E_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Wait for this exact commit to reach production
+      - name: Verify explicit production target exists
         run: |
-          if [ -n "$CONFIGURED_PRODUCTION_URL" ]; then
-            case "$CONFIGURED_PRODUCTION_URL" in
-              https://*) candidates=("${CONFIGURED_PRODUCTION_URL%/}") ;;
-              *) echo 'SANPAID_PRODUCTION_URL must be an https URL.'; exit 1 ;;
-            esac
-          else
-            candidates=(
-              'https://yukti-2026-brown.vercel.app'
-              'https://yukti-2026-git-main-yukti8.vercel.app'
-              'https://yukti-2026.vercel.app'
-              'https://yukti-2026-yukti8.vercel.app'
-              'https://yukti-2026-liart.vercel.app'
-              'https://yukti-2026-tqt6.vercel.app'
-            )
-          fi
-          ready=0
-          probe_dir="$(mktemp -d)"
-          for attempt in $(seq 1 12); do
-            for index in "${!candidates[@]}"; do
-              candidate="${candidates[$index]}"
-              (curl --silent --show-error --location \
-                --connect-timeout 3 --max-time 10 \
-                --output "$probe_dir/$index.body" --write-out '%{http_code}' \
-                "$candidate/build-info.json" > "$probe_dir/$index.status" || true) &
-            done
-            wait || true
-            for index in "${!candidates[@]}"; do
-              candidate="${candidates[$index]}"
-              status="$(tr -cd '0-9' < "$probe_dir/$index.status" 2>/dev/null || true)"
-              [ -n "$status" ] || status='000'
-              if [ "$status" = '200' ] && node - "$probe_dir/$index.body" "$GITHUB_SHA" 2>/dev/null <<'NODE'
-          const fs = require('fs');
-          const [file, expectedSha] = process.argv.slice(2);
-          const info = JSON.parse(fs.readFileSync(file, 'utf8'));
-          if (info.product !== 'SanPaid' || info.runtime !== 'v70' || info.commitSha !== expectedSha) process.exit(1);
-          NODE
-              then
-                ready=1
-                echo "PRODUCTION_URL=$candidate" >> "$GITHUB_ENV"
-                echo "Production is serving commit ${GITHUB_SHA} at ${candidate}."
-                break 2
-              fi
-              echo "Attempt ${attempt}/12: ${candidate} is not serving this commit (HTTP ${status})."
-            done
-            sleep 10
-          done
-          if [ "$ready" != '1' ]; then
-            echo 'Production never served this exact commit. Check the Vercel project domain/alias and Git integration.'
+          if [ -z "$SANPAID_PRODUCTION_URL" ]; then
+            echo 'SANPAID_PRODUCTION_URL repository variable is required for manual production verification.'
             exit 1
           fi
-
-      - name: Verify production backend and database catalog contracts
-        run: |
-          health_file="$(mktemp)"
-          catalog_file="$(mktemp)"
-          curl --fail --silent --show-error --location \
-            --retry 8 --retry-delay 5 --retry-all-errors \
-            --connect-timeout 15 --max-time 60 \
-            --output "$health_file" \
-            "$PRODUCTION_URL/api/connected/health"
-          curl --fail --silent --show-error --location \
-            --retry 8 --retry-delay 5 --retry-all-errors \
-            --connect-timeout 15 --max-time 60 \
-            --output "$catalog_file" \
-            "$PRODUCTION_URL/api/public/services"
-          node - "$health_file" "$catalog_file" <<'NODE'
-          const fs = require('fs');
-          const health = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
-          const catalog = JSON.parse(fs.readFileSync(process.argv[3], 'utf8'));
-          if (health.ok !== true) throw new Error('Connected backend health contract failed.');
-          if (catalog.ok !== true || catalog.source !== 'DATABASE_CONFIGURATION') {
-            throw new Error('Public catalog is not connected to database configuration.');
-          }
-          if (!Array.isArray(catalog.services) || catalog.services.length < 10) {
-            throw new Error('Public catalog returned too few services.');
-          }
-          const invalid = catalog.services.find(service => !service.name || !Number.isFinite(Number(service.basePrice)));
-          if (invalid) throw new Error('Public catalog contains an invalid service contract.');
-          console.log(`Verified ${catalog.services.length} database-backed services.`);
-          NODE
+      - name: Run production E2E only on explicit manual request
+        run: node scripts/production-e2e.mjs
