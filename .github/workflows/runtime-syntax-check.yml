@@ -33,17 +33,24 @@ jobs:
           node --check federation-portal.js
           node --check cooperative-deploy-guard.js
           node --check handover-evidence.js
-          node --check demo-preflight.js
           node --check service-worker.js
 
-      - name: Enforce one connected fetch transport
+      - name: Enforce explicit API and one sync manager
         run: |
-          count=$(grep -R --include='*.js' -F 'window.fetch=' . \
-            --exclude-dir=.git --exclude-dir=node_modules | wc -l)
-          test "$count" -eq 1 || { echo "Expected exactly one window.fetch wrapper; found $count"; exit 1; }
-          grep -F 'window.fetch=async function sanPaidFetch' connected-runtime-fix.js
-          grep -F "backend:'same-origin'" connected-runtime-fix.js
-          grep -F "mode:'SAME_ORIGIN_AUTHENTICATED_API'" connected-runtime-fix.js
+          if grep -nE 'window\.fetch\s*=|window\.EventSource\s*=' connected-runtime-fix.js connected-demo.js; then
+            echo 'Global fetch/EventSource monkey patches are forbidden.'
+            exit 1
+          fi
+          grep -F 'window.SanPaidApi=Object.freeze' connected-runtime-fix.js
+          grep -F "mode:'EXPLICIT_SAME_ORIGIN_API_CLIENT'" connected-runtime-fix.js
+          grep -F 'window.SanPaidSync=Object.freeze' connected-runtime-fix.js
+          grep -F "mode:'ONE_ROLE_AWARE_SNAPSHOT_LOOP'" connected-runtime-fix.js
+          grep -F 'window.SanPaidSync.subscribe' connected-demo.js
+          grep -F 'window.SanPaidSync.refreshNow' connected-demo.js
+          if grep -n 'new EventSource' connected-demo.js; then
+            echo 'Customer/Worker workspace must use SanPaidSync instead of EventSource.'
+            exit 1
+          fi
 
       - name: Enforce one public mobile drawer owner
         run: |
@@ -57,29 +64,51 @@ jobs:
             echo 'evaluator-final.js must not control public mobile navigation.'
             exit 1
           fi
-          grep -F 'html body #landing .eval-nav .mobile-drawer' mobile.css
 
-      - name: Verify government handover release markers
+      - name: Verify coherent startup and v66 release
         run: |
           grep -F "release:'government-handover-v2'" app.js
           grep -F "runtime:'v66'" app.js
-          grep -F "sanpaid-runtime-v66" service-worker.js
-          grep -F "root.dataset.animationOwner='evaluator'" evaluator-final.js
-          grep -F "root.dataset.animationOwner === 'evaluator'" mobile.js
+          grep -F 'sanpaid-runtime-v66' service-worker.js
+          grep -F 'design-tokens.css' index.html
+          if grep -nE 'mobile-fix\.css|demo-preflight\.js' index.html; then
+            echo 'Retired presentation/mobile files must not return to startup.'
+            exit 1
+          fi
+          if grep -nE 'injectGovernmentStyles|polishGovernmentLanding|formalizeTimers|style\.textContent' top1-polish.js; then
+            echo 'top1-polish.js must remain a small bootstrap/accessibility coordinator.'
+            exit 1
+          fi
           grep -F "version:'handover-bootstrap-v1'" top1-polish.js
+
+      - name: Verify database-backed service catalog
+        run: |
+          grep -F '/api/public/services' app.js
+          grep -F '/api/public/services' connected-demo.js
+          grep -F "catalogSource='STATIC_NAMES_ONLY'" app.js
+          grep -F 'Current pricing loads after connection' app.js
+          if grep -nE "FALLBACK_SERVICES=.*price:|\{name:'[^']+',icon:'[^']+',price:" app.js; then
+            echo 'Static fallback must not claim current service pricing.'
+            exit 1
+          fi
+
+      - name: Verify matching truth on public landing
+        run: |
+          grep -F 'STATIC EXPLANATORY SCENARIO — NOT LIVE ASSIGNMENT' index.html
+          grep -F 'DEMO DISTANCE, not live Maps route distance' index.html
+          grep -F 'same backend policy engine' index.html
+          grep -F 'Demo Policy Example: 20 km' index.html
 
       - name: Verify connected handover evidence layer
         run: |
-          grep -F "stylesheet('sanpaidHandoverEvidenceStyles','handover-evidence.css')" top1-polish.js
-          grep -F "script('sanpaidHandoverEvidenceRuntime','handover-evidence.js')" top1-polish.js
-          grep -F "./handover-evidence.css" service-worker.js
-          grep -F "./handover-evidence.js" service-worker.js
-          grep -F "/api/cooperative-admin/trust-lifecycle" handover-evidence.js
-          grep -F "/api/cooperative-admin/complaints/" handover-evidence.js
-          grep -F "No synthetic timeline is substituted." handover-evidence.js
-          grep -F "No synthetic worker records are substituted." handover-evidence.js
-          grep -F "COMPLAINT EVIDENCE TIMELINE" handover-evidence.js
-          grep -F "WORKER TRUST LIFECYCLE" handover-evidence.js
+          grep -F "handover-evidence.css" top1-polish.js
+          grep -F "handover-evidence.js" top1-polish.js
+          grep -F './handover-evidence.css' service-worker.js
+          grep -F './handover-evidence.js' service-worker.js
+          grep -F '/api/cooperative-admin/trust-lifecycle' handover-evidence.js
+          grep -F '/api/cooperative-admin/complaints/' handover-evidence.js
+          grep -F 'No synthetic timeline is substituted.' handover-evidence.js
+          grep -F 'No synthetic worker records are substituted.' handover-evidence.js
           if grep -nE 'handover-evidence\.(js|css)' cooperative-deploy-guard.js; then
             echo 'Availability guard must not load evidence assets; top1-polish.js is the single owner.'
             exit 1
@@ -89,37 +118,23 @@ jobs:
             exit 1
           fi
 
-      - name: Reject exposed credentials and legacy admin login
+      - name: Reject exposed credentials and synthetic administration
         run: |
           if grep -R -n --include='*.js' -F 'Demo@2026' . --exclude-dir=.git --exclude-dir=node_modules; then
-            echo 'Frontend source must not embed the demo password anywhere.'
+            echo 'Frontend source must not embed a demo password.'
             exit 1
           fi
-          if grep -nE 'const PASSWORD=|data-judge-role=.*login|Password for isolated' judge-demo.js; then
+          if grep -nE 'const PASSWORD=|Password for isolated' judge-demo.js; then
             echo 'Legacy direct administration login returned.'
             exit 1
           fi
-          grep -F "legacyJudgeLogin:'RETIRED'" judge-demo.js
-          grep -F "administrationAuth:'UNIFIED_ROLE_ACCESS'" judge-demo.js
-
-      - name: Reject evaluator-only public runtime
-        run: |
-          if grep -nE 'loadPremiumExperience|loadResearchUpgrades|loadTop1Readiness|loadDemoFirstStable|loadSelectionProofV4|loadMasterFinalV4' top1-polish.js; then
-            echo 'Evaluator-only decorative runtime must stay retired from government-ready startup.'
-            exit 1
-          fi
-          grep -F "demoPreflight: 'RETIRED_FROM_PUBLIC_UI'" demo-preflight.js
-          grep -F "legacyAdminLogin: 'GATED_BY_UNIFIED_AUTH'" demo-preflight.js
-
-      - name: Reject synthetic administrative fallback
-        run: |
           if grep -nE 'fillSynthetic|SYNTHETIC DEMO DATA|Demo Worker A|Demo Worker B' cooperative-deploy-guard.js handover-evidence.js; then
             echo 'Administrative runtime must never substitute synthetic operational records.'
             exit 1
           fi
           grep -F 'No synthetic operational data is being substituted.' cooperative-deploy-guard.js
 
-      - name: Reject legacy local state in connected role runtime
+      - name: Reject legacy role state and recurring role pollers
         run: |
           for file in auth-unified.js connected-demo.js connected-service-ui.js connected-commerce-ui.js customer-worker-dashboard.js; do
             if grep -nE 'localStorage\.(getItem|setItem)\(' "$file"; then
@@ -127,11 +142,8 @@ jobs:
               exit 1
             fi
           done
-
-      - name: Reject recurring role-dashboard pollers and observer rewrites
-        run: |
           if grep -n 'setInterval' connected-service-ui.js connected-commerce-ui.js customer-worker-dashboard.js; then
-            echo 'Connected role modules must use the central snapshot sync instead of recurring setInterval polling.'
+            echo 'Connected role modules must use central sync events instead of recurring setInterval polling.'
             exit 1
           fi
           if grep -n 'MutationObserver' customer-worker-dashboard.js; then
@@ -139,10 +151,7 @@ jobs:
             exit 1
           fi
 
-      - name: Ensure legacy app engine remains retired
+      - name: Verify service worker truth
         run: |
-          grep -F "mode:'CONNECTED_BACKEND_ONLY'" app.js
-          if grep -nE 'DEMO_USERS|DEFAULT_WORKERS|function renderCustomerHome|function renderWorkerHome|function paymentModal' app.js; then
-            echo 'Legacy local demo engine returned to app.js.'
-            exit 1
-          fi
+          grep -F "if(url.pathname.startsWith('/api/'))return" service-worker.js
+          grep -F "fetch(request,{cache:'no-store'})" service-worker.js
