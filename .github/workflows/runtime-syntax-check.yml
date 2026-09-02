@@ -66,7 +66,7 @@ jobs:
           grep -F "sanpaid-runtime-v66" service-worker.js
           grep -F "root.dataset.animationOwner='evaluator'" evaluator-final.js
           grep -F "root.dataset.animationOwner === 'evaluator'" mobile.js
-          grep -F "presentationLayer: 'GOVERNMENT_READY'" top1-polish.js
+          grep -E "presentationLayer:[[:space:]]*'GOVERNMENT_READY'" top1-polish.js
 
       - name: Verify connected handover evidence layer
         run: |
