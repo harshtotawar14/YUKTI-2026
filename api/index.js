@@ -5,6 +5,7 @@ const matchingRoutes=require('../backend/src/matching/connected-routes.cjs');
 const publicProof=require('../backend/src/proof/public-summary.cjs');
 const judgeTruth=require('../backend/src/judge/truth-routes.cjs');
 const workerProfile=require('../backend/src/worker/profile-routes.cjs');
+const complaints=require('../backend/src/complaints/routes.cjs');
 
 module.exports=async function stableApiEntrypoint(req,res){
   const requestUrl=new URL(req.url,'https://sanpaid.local');
@@ -17,6 +18,7 @@ module.exports=async function stableApiEntrypoint(req,res){
     if(await matchingRoutes.handle(req,res,rawPath))return;
     if(await judgeTruth.handle(req,res,rawPath))return;
     if(await workerProfile.handle(req,res,rawPath))return;
+    if(await complaints.handle(req,res,rawPath))return;
   }catch(error){
     console.error('[sanpaid-api-adapter]',rawPath,error.code||error.message);
     const status=Number(error.status)||500;

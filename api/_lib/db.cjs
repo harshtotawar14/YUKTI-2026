@@ -65,9 +65,11 @@ async function ensureDatabase(){
       const client=await getPool().connect();
       try{
         const schema=readFileSync(resolve(__dirname,'../../database/schema.sql'),'utf8');
+        const complaintMigration=readFileSync(resolve(__dirname,'../../database/migrations/002_complaints_sla.sql'),'utf8');
         await client.query('BEGIN');
-        await client.query("SELECT pg_advisory_xact_lock(hashtext('sanpaid-schema-v1'))");
+        await client.query("SELECT pg_advisory_xact_lock(hashtext('sanpaid-schema-v2'))");
         await client.query(schema);
+        await client.query(complaintMigration);
         await seed(client);
         await client.query('COMMIT');
       }catch(error){await client.query('ROLLBACK').catch(()=>{});readyPromise=null;throw error;}finally{client.release();}
