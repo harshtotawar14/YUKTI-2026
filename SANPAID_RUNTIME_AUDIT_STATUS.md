@@ -10,7 +10,7 @@ One canonical runtime per responsibility. Connected backend data wins over legac
 | `app.js` | REWRITTEN | KEEP LEAN | Old file contained a second localStorage login/booking/payment/dashboard engine. It now only handles landing utilities and routes users into unified auth. |
 | `auth-unified.js` | REWRITTEN | CANONICAL AUTH | Saves Customer/Worker connected token, Admin/Federation judge token, restores backend session, stores tab-level active workspace and resumes it after refresh. |
 | `connected-runtime-fix.js` | REWRITTEN | CANONICAL CONNECTED TRANSPORT | Auth remains same-origin; connected APIs use bearer/cookie fallback. `/api/auth/me` can restore from connected bearer token. |
-| `service-worker.js` | REWRITTEN | KEEP | Old large shell cache replaced with network-first runtime cache. Old `sanpaid-*` caches are deleted on activation. APIs are not cached. |
+| `service-worker.js` | REWRITTEN | KEEP | Old large shell cache replaced with network-first runtime cache. Old `sanpaid-*` caches are deleted on activation. APIs and deployment identity are not cached. |
 | `connected-demo.js` | KEEP | AUDITED CORE | Owns connected Customer/Worker shell, booking request and worker offer UI. Must remain backend-connected. |
 | `connected-service-ui.js` | KEEP | AUDITED FEATURE MODULE | Service lifecycle actions remain connected to backend service routes. |
 | `connected-commerce-ui.js` | KEEP | AUDITED FEATURE MODULE | Additional charges, sandbox checkout/payment/invoice/rating. |
@@ -21,11 +21,9 @@ One canonical runtime per responsibility. Connected backend data wins over legac
 | `admin-command-center.js` | KEEP | ADMIN UI LAYER | Cooperative/Federation command-center renderer. |
 | `cooperative-portal.js` | KEEP | ROLE-SPECIFIC UI | Cooperative Admin portal augmentation. |
 | `federation-portal.js` | KEEP | ROLE-SPECIFIC UI | Federation regional portal augmentation. |
-| `demo-first-stable.js` | KEEP WITH CAUTION | PRESENTATION/ROLE NAV LAYER | Adds admin/federation navigation and truthful fallback views. It must not become another auth or data source. |
-| `master-final-v4.js` | KEEP WITH CAUTION | LANDING UX POLISH | Mostly landing/accessibility polish. Contains redundant unified-entry guards; canonical auth capture should remain authoritative. |
 | `top1-polish.js` | KEEP AS LOADER | RUNTIME LOADER | Dynamically loads modern auth/dashboard/admin layers. Avoid adding more duplicate loaders. |
-| legacy `#appShell` HTML | RETIRED | DO NOT USE | Old localStorage application shell remains hidden for compatibility but is no longer the application runtime. |
-| `sanpaid_demo_state_v2` | RETIRED | CLEARED | Synthetic local application state is removed by the lean landing controller. |
+| legacy `#appShell`, `voice-lazy-loader.js`, `voice-request.js` | REMOVED | DELETE | The hidden localStorage application/voice engine duplicated the connected Customer flow and could create misleading browser-local state. |
+| `scripts/build.mjs` | NEW | KEEP | Produces the deployable static artifact and `/build-info.json` with the exact commit identity. |
 
 ## Critical Root Causes Found
 
@@ -47,12 +45,12 @@ The old fetch override intercepted auth requests in ways that could prevent norm
 ### 4. Two application engines were active
 Old `app.js` maintained fake users, bookings, workers, payments, complaints and dashboards in localStorage while the connected system used backend/PostgreSQL.
 
-**Fix:** old local application engine is retired. `app.js` is now a landing router only.
+**Fix:** old local application engine, hidden shell and lazy legacy voice module are removed. `app.js` is now a landing router only; connected voice remains in `connected-demo.js`.
 
 ### 5. Stale service-worker assets could survive deployment
 The previous service worker precached a very large list of JS/CSS files and kept multiple runtime generations available.
 
-**Fix:** `sanpaid-runtime-v68` uses network-first HTML/JS/CSS loading, deletes older SanPaid caches and precaches assets independently so one optional asset cannot cancel the entire installation.
+**Fix:** `sanpaid-runtime-v69` uses network-first HTML/JS/CSS loading, deletes older SanPaid caches, never caches `/build-info.json`, and precaches assets independently so one optional asset cannot cancel the entire installation.
 
 ### 6. Some browser modules bypassed the same-origin API policy
 `credibility-layer.js` and `workforce-intelligence.js` called the Render host directly while the enforced CSP allowed only `connect-src 'self'`.
@@ -61,9 +59,7 @@ The previous service worker precached a very large list of JS/CSS files and kept
 
 ## Backend Source Status
 
-`backend/src/server-v15.js` imports and mounts `connected-role-dashboard-router.js` under `/api/connected` after the global connected authentication gate.
-
-New role-dashboard source includes Customer service catalog/timeline/support and Worker dashboard/availability/schedule/notifications functionality. These source routes require the latest backend deployment before they can be called live.
+**BACKEND SOURCE NOT AVAILABLE FOR AUDIT.** The referenced `harshtotawar14/SanPaid-sih-2026` repository is not accessible through the currently connected GitHub installation, and no backend directory exists in this frontend repository. Route and database behavior must not be claimed as source-verified until that repository is connected.
 
 ## Refresh Acceptance Tests Required
 
@@ -81,6 +77,6 @@ These must be browser-tested against the deployed frontend + database-connected 
 
 ## Deployment Truth
 
-Frontend GitHub status currently reports one successful `yukti-2026` Vercel deployment and one separate `yukti-2026-tqt6` target blocked by Vercel build-rate-limit. Do not assume the `tqt6` URL contains the newest commit until that target builds successfully.
+CI now reports `Source integrity` and `Production deployment integrity` separately. Production requires the active URL to serve `/build-info.json` for the exact pushed commit, then pass backend health and database catalog contracts. Configure the repository variable `SANPAID_PRODUCTION_URL` when the active Vercel domain changes.
 
-Backend source and backend live deployment must be checked separately. Source-ready is not the same as database-connected live.
+Backend source, backend live deployment and database behavior must be checked separately. Source-ready is not the same as database-connected live.

@@ -1,4 +1,4 @@
-const CACHE_NAME='sanpaid-runtime-v68';
+const CACHE_NAME='sanpaid-runtime-v69';
 const FALLBACK_ASSETS=[
   './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./color-system-v5.css',
   './app.js','./mobile.js','./evaluator-final.css','./evaluator-final.js','./top1-polish.js',
@@ -48,7 +48,7 @@ async function networkFirst(request,fallbackKey=null){
 self.addEventListener('fetch',event=>{
   const request=event.request;if(request.method!=='GET')return;
   const url=new URL(request.url);if(url.origin!==self.location.origin)return;
-  if(url.pathname.startsWith('/api/'))return;
+  if(url.pathname.startsWith('/api/')||url.pathname==='/build-info.json')return;
   if(request.mode==='navigate'){event.respondWith(networkFirst(request,'./index.html'));return;}
   if(/\.(?:js|css|html)$/i.test(url.pathname)){event.respondWith(networkFirst(request));return;}
   if(/\.(?:svg|png|jpg|jpeg|webp|ico|woff2?)$/i.test(url.pathname)){

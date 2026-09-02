@@ -61,7 +61,6 @@
         <span class="eval-sih-chip desktop-only">SIH 2026</span>
         <button class="btn primary desktop-only" id="connectedDemoBtn" type="button">START GOLDEN DEMO</button>
         <button class="btn ghost desktop-only" id="getStarted" type="button">Role Access</button>
-        <button class="btn secondary hidden" id="resumeDemo" type="button">Resume</button>
         <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileDrawer">☰</button>
       </div>
     </div>
@@ -298,9 +297,9 @@
 
     <section class="section white eval-truth" id="status">
       <div class="wrap">
-        <div class="head" data-reveal><span class="tag">08 — Prototype Truth</span><h2>What works today</h2><p>Working connected functions, sandbox capabilities and future authorized integrations remain clearly separated.</p></div>
+        <div class="head" data-reveal><span class="tag">08 — Prototype Truth</span><h2>What is implemented today</h2><p>Source-ready connected functions, sandbox capabilities and future authorized integrations remain clearly separated. Live verification is granted only after the deployed two-session flow passes.</p></div>
         <div class="eval-truth-grid" data-reveal>
-          <article class="eval-truth-col implemented"><small>CONNECTED / IMPLEMENTED</small><h3>WORKING</h3><ul><li>Customer Booking</li><li>Canonical Eligibility + Ranking Engine</li><li>Worker Accept / Decline</li><li>Same-Booking Reassignment</li><li>Service State Workflow</li><li>Cooperative Scope</li><li>Complaint / Evidence Records</li></ul></article>
+          <article class="eval-truth-col implemented"><small>CONNECTED SOURCE</small><h3>SOURCE READY — LIVE VERIFICATION PENDING</h3><ul><li>Customer Booking</li><li>Canonical Eligibility + Ranking Engine</li><li>Worker Accept / Decline</li><li>Same-Booking Reassignment</li><li>Service State Workflow</li><li>Cooperative Scope</li><li>Complaint / Evidence Records</li></ul></article>
           <article class="eval-truth-col prototype"><small>CONTROLLED PROTOTYPE</small><h3>SANDBOX / DEMO</h3><ul><li>Identity / Liveness Verification</li><li>Booking-Specific Service Verification</li><li>Sandbox Payment</li><li>Explanatory Matching Animation</li><li>Demo Distance</li></ul></article>
           <article class="eval-truth-col future"><small>AUTHORIZED NEXT PHASE</small><h3>FUTURE INTEGRATION</h3><ul><li>Production KYC</li><li>Maps / Routes Distance</li><li>Insurance / Welfare Systems</li><li>Production Payment Infrastructure</li><li>Government / Federation Integrations</li></ul></article>
         </div>
@@ -347,23 +346,8 @@
   </footer>
 </div>
 
-<div id="appShell" class="app-shell hidden">
-  <header class="app-top">
-    <div class="brand">San<span>Paid</span></div>
-    <div class="actions">
-      <span id="appUser"></span>
-      <button class="btn ghost small" id="homeFromApp" type="button" aria-label="Back to landing">Landing</button>
-      <button class="btn primary small" id="logoutBtn" type="button" aria-label="Logout">Logout</button>
-      <button class="menu-btn" id="appMenuBtn" type="button" aria-label="Open dashboard menu" aria-expanded="false" aria-controls="mobileAppDrawer">☰</button>
-    </div>
-  </header>
-  <div class="app-main"><aside class="side" id="sideNav"></aside><main class="content" id="appContent"></main></div>
-  <div class="mobile-drawer hidden" id="mobileAppDrawer" aria-hidden="true"><p>Loading mobile navigation…</p></div>
-</div>
-
 <div id="toastWrap" class="toast-wrap"></div>
 <script src="app.js"></script>
-<script src="voice-lazy-loader.js"></script>
 <script src="mobile.js"></script>
 <script src="connected-demo.js"></script>
 <script src="connected-service-ui.js"></script>

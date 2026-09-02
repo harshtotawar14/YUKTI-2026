@@ -7,7 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  runtime-integrity:
+  source-integrity:
+    name: Source integrity
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -68,11 +69,11 @@ jobs:
             exit 1
           fi
 
-      - name: Verify coherent startup and v68 release
+      - name: Verify coherent startup and v69 release
         run: |
-          grep -F "release:'deep-repair-foundation'" app.js
-          grep -F "runtime:'v68'" app.js
-          grep -F 'sanpaid-runtime-v68' service-worker.js
+          grep -F "release:'deployment-truth-gate'" app.js
+          grep -F "runtime:'v69'" app.js
+          grep -F 'sanpaid-runtime-v69' service-worker.js
           grep -F 'design-tokens.css' index.html
           if grep -nE 'mobile-fix\.css|demo-preflight\.js' index.html; then
             echo 'Retired presentation/mobile files must not return to startup.'
@@ -118,33 +119,17 @@ jobs:
             exit 1
           fi
 
-      - name: Verify deployed catalog contract
-        if: github.event_name == 'push'
+      - name: Build deployable static artifact
         run: |
-          response_file="$(mktemp)"
-          curl --fail --silent --show-error --location \
-            --retry 4 --retry-delay 3 --retry-all-errors \
-            --connect-timeout 15 --max-time 60 \
-            --output "$response_file" \
-            https://yukti-2026-liart.vercel.app/api/public/services
-          node - "$response_file" <<'NODE'
+          npm run build
+          test -s dist/index.html
+          test -s dist/build-info.json
+          node - <<'NODE'
           const fs = require('fs');
-          const payload = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
-          if (payload.ok !== true || payload.source !== 'DATABASE_CONFIGURATION') {
-            throw new Error('Public catalog is not connected to database configuration.');
-          }
-          if (!Array.isArray(payload.services) || payload.services.length < 10) {
-            throw new Error('Public catalog returned too few services.');
-          }
-          const invalid = payload.services.find(service => !service.name || !Number.isFinite(Number(service.basePrice)));
-          if (invalid) throw new Error('Public catalog contains an invalid service contract.');
-          console.log(`Verified ${payload.services.length} database-backed services.`);
+          const info = JSON.parse(fs.readFileSync('dist/build-info.json', 'utf8'));
+          if (info.commitSha !== process.env.GITHUB_SHA) throw new Error('Build identity does not match the tested commit.');
+          if (info.runtime !== 'v69') throw new Error('Unexpected runtime identity.');
           NODE
-
-      - name: Preserve deployment verification boundary on pull requests
-        if: github.event_name == 'pull_request'
-        run: |
-          echo 'Source integrity passed. The production catalog contract is verified only after the main branch deployment.'
 
       - name: Verify matching truth on public landing
         run: |
@@ -207,5 +192,80 @@ jobs:
 
       - name: Verify service worker truth
         run: |
-          grep -F "if(url.pathname.startsWith('/api/'))return" service-worker.js
+          grep -F "if(url.pathname.startsWith('/api/')||url.pathname==='/build-info.json')return" service-worker.js
           grep -F "fetch(request,{cache:'no-store'})" service-worker.js
+
+  deployment-integrity:
+    name: Production deployment integrity
+    if: github.event_name == 'push'
+    needs: source-integrity
+    runs-on: ubuntu-latest
+    env:
+      PRODUCTION_URL: ${{ vars.SANPAID_PRODUCTION_URL || 'https://yukti-2026-liart.vercel.app' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Wait for this exact commit to reach production
+        run: |
+          case "$PRODUCTION_URL" in
+            https://*) ;;
+            *) echo 'SANPAID_PRODUCTION_URL must be an https URL.'; exit 1 ;;
+          esac
+          build_file="$(mktemp)"
+          ready=0
+          for attempt in $(seq 1 60); do
+            status="$(curl --silent --show-error --location \
+              --connect-timeout 10 --max-time 30 \
+              --output "$build_file" --write-out '%{http_code}' \
+              "$PRODUCTION_URL/build-info.json" || true)"
+            if [ "$status" = '200' ] && node - "$build_file" "$GITHUB_SHA" <<'NODE'
+          const fs = require('fs');
+          const [file, expectedSha] = process.argv.slice(2);
+          const info = JSON.parse(fs.readFileSync(file, 'utf8'));
+          if (info.product !== 'SanPaid' || info.runtime !== 'v69' || info.commitSha !== expectedSha) process.exit(1);
+          NODE
+            then
+              ready=1
+              echo "Production is serving commit ${GITHUB_SHA}."
+              break
+            fi
+            echo "Attempt ${attempt}/60: production build is not current yet (HTTP ${status})."
+            sleep 10
+          done
+          if [ "$ready" != '1' ]; then
+            echo 'Production never served this exact commit. Check the Vercel project domain/alias and Git integration.'
+            exit 1
+          fi
+
+      - name: Verify production backend and database catalog contracts
+        run: |
+          health_file="$(mktemp)"
+          catalog_file="$(mktemp)"
+          curl --fail --silent --show-error --location \
+            --retry 8 --retry-delay 5 --retry-all-errors \
+            --connect-timeout 15 --max-time 60 \
+            --output "$health_file" \
+            "$PRODUCTION_URL/api/connected/health"
+          curl --fail --silent --show-error --location \
+            --retry 8 --retry-delay 5 --retry-all-errors \
+            --connect-timeout 15 --max-time 60 \
+            --output "$catalog_file" \
+            "$PRODUCTION_URL/api/public/services"
+          node - "$health_file" "$catalog_file" <<'NODE'
+          const fs = require('fs');
+          const health = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          const catalog = JSON.parse(fs.readFileSync(process.argv[3], 'utf8'));
+          if (health.ok !== true) throw new Error('Connected backend health contract failed.');
+          if (catalog.ok !== true || catalog.source !== 'DATABASE_CONFIGURATION') {
+            throw new Error('Public catalog is not connected to database configuration.');
+          }
+          if (!Array.isArray(catalog.services) || catalog.services.length < 10) {
+            throw new Error('Public catalog returned too few services.');
+          }
+          const invalid = catalog.services.find(service => !service.name || !Number.isFinite(Number(service.basePrice)));
+          if (invalid) throw new Error('Public catalog contains an invalid service contract.');
+          console.log(`Verified ${catalog.services.length} database-backed services.`);
+          NODE
