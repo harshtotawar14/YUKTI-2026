@@ -80,3 +80,5 @@ These must be browser-tested against the deployed frontend + database-connected 
 CI now reports `Source integrity` and `Production deployment integrity` separately. Production requires the active URL to serve `/build-info.json` for the exact pushed commit, then pass backend health and database catalog contracts. Configure the repository variable `SANPAID_PRODUCTION_URL` when the active Vercel domain changes.
 
 Backend source, Vercel function deployment and database behavior are checked separately. Source-ready is not the same as database-connected live.
+
+Deployment verification refresh triggered after connecting the managed PostgreSQL database in Vercel.
