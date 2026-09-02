@@ -1,0 +1,34 @@
+name: SanPaid Production E2E
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'api/**'
+      - 'database/**'
+      - 'scripts/production-e2e.mjs'
+      - '.github/workflows/production-e2e.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  production-e2e:
+    runs-on: ubuntu-latest
+    env:
+      SANPAID_PRODUCTION_URL: https://yukti-2026-brown.vercel.app
+      SANPAID_E2E_PASSWORD: ${{ secrets.SANPAID_E2E_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run production public and authenticated E2E contracts
+        run: node scripts/production-e2e.mjs
+      - name: Explain authenticated E2E secret requirement
+        if: ${{ env.SANPAID_E2E_PASSWORD == '' }}
+        run: |
+          echo 'Public production contracts passed.'
+          echo 'Authenticated lifecycle was skipped because repository secret SANPAID_E2E_PASSWORD is not configured.'
+          echo 'Set that secret to the same value as Vercel SANPAID_DEMO_PASSWORD, then re-run this workflow.'
