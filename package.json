@@ -5,7 +5,7 @@
   "description": "SanPaid SIH 2026 connected cooperative services prototype",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node tests/runtime-integrity.mjs && node --test tests/backend-policy.test.mjs tests/matching-policy.test.mjs tests/public-proof-truth.test.mjs tests/judge-truth.test.mjs tests/worker-truth.test.mjs tests/ui-contract.test.mjs",
+    "test": "node tests/runtime-integrity.mjs && node --test tests/backend-policy.test.mjs tests/matching-policy.test.mjs tests/public-proof-truth.test.mjs tests/judge-truth.test.mjs tests/worker-truth.test.mjs tests/complaints-sla.test.mjs tests/ui-contract.test.mjs",
     "check": "npm test",
     "migrate": "node scripts/migrate.mjs"
   },
