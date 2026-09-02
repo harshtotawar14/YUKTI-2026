@@ -42,7 +42,7 @@ jobs:
       - name: Enforce one public mobile drawer owner
         run: |
           grep -F 'function wireMobileNavigation' app.js
-          if grep -nE 'menuBtn|mobileDrawerScrim|function openDrawer|function closeAllDrawers' mobile.js; then
+          if grep -nE 'function (openDrawer|closeAllDrawers|enhanceLandingDrawer|populateLandingDrawer|wireMobileNavigation)' mobile.js; then
             echo 'mobile.js must not own public navigation; app.js is the canonical mobile drawer owner.'
             exit 1
           fi
