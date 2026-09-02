@@ -10,10 +10,12 @@ Smart India Hackathon 2026 prototype for **PS ID 26089 — Cooperative Gig Servi
 - `connected-demo.css` — responsive connected-demo UI.
 - `app.js` — lean landing controller and database-catalog entry routing.
 - `mobile.js` — mobile navigation/PWA/connectivity runtime.
-- `connected-demo.js` — shared-backend Customer/Worker booking, voice, matching, offer and SSE flow.
+- `connected-demo.js` — shared-backend Customer/Worker booking, voice, matching and offer flow.
 - `connected-service-ui.js` — connected travel/arrival/dual-verification/service/completion UI.
 - `connected-commerce-ui.js` — connected extra-charge approval, sandbox checkout, invoice and rating UI.
-- `vercel.json` — same-origin `/api/*` proxy to the shared SanPaid Render backend.
+- `api/[...path].js` — canonical same-origin Vercel API for auth, booking, worker choice, lifecycle, commerce and administration.
+- `database/schema.sql` — idempotent PostgreSQL schema for the rebuilt backend.
+- `vercel.json` — static frontend, security headers and local serverless API deployment.
 - `manifest.webmanifest` / `service-worker.js` / `app-icon.svg` — PWA shell.
 - `scripts/build.mjs` — reproducible Vercel artifact builder with exact commit identity.
 - `docs/final-sih-demo-hardening/` — final SIH hardening specification.
@@ -26,7 +28,7 @@ Connected Golden Demo source flow now reaches:
 
 `Customer Device → backend login → Voice/Text Request → PostgreSQL Booking → Eligibility Gate → Worker A Offer → Listen → Accept/Reject → Worker B fallback when rejected → Customer shared update → Travel → Arrive → SANDBOX Identity Check → One-Time Booking Token → Customer Confirms Booked Worker → backend-enforced Start Service → optional Additional Work Approval → Completion Request → Customer Completion Confirmation → SANDBOX Payment → Persisted Invoice → Rating`
 
-Frontend documentation references a backend named `harshtotawar14/SanPaid-sih-2026`, but that repository is not available through the currently connected GitHub installation. Backend source and database claims therefore require separate access and verification.
+The deleted Render service is no longer part of the runtime. Backend source now lives in this repository and deploys with the same Vercel project. PostgreSQL remains external durable state through `DATABASE_URL`.
 
 ## Connected API families
 
@@ -37,7 +39,7 @@ Core two-device booking:
 - `GET /api/connected/customer/bookings/:id`
 - `GET /api/connected/worker/offers`
 - `POST /api/connected/worker/offers/:id/respond`
-- `GET /api/connected/events` — SSE snapshots
+- `GET /api/connected/snapshot` — role-scoped connected state
 
 Connected service lifecycle:
 
@@ -67,12 +69,12 @@ not stored in this public repository. Obtain the current event-scoped demo
 credentials from the project owner immediately before a rehearsal or judging
 session.
 
-Worker A and Worker B are VERIFIED + AVAILABLE Electrician workers in `Karad Zone 1`.
+Worker A and Worker B are seeded as VERIFIED + AVAILABLE workers in the YUKTI cooperative.
 
 Database ranking smoke check confirms:
 
-1. Worker A — 2.3 KM, rating 4.8
-2. Worker B — 4.1 KM, rating 4.6
+1. Worker A — demo distance 3.2 km, rating 4.91
+2. Worker B — demo distance 6.4 km, rating 4.72
 
 Therefore the intended judge fallback scenario is deterministic: Worker A receives the first offer; if rejected, Worker B is next among the exact-zone connected demo workers.
 
@@ -119,13 +121,14 @@ Indexes were verified for worker-offer lookup and `(booking_id, worker_id)` uniq
 - duplicate rating prevented by booking uniqueness;
 - API/SSE requests are excluded from PWA cache.
 
-## Database smoke test
+## Backend configuration
 
-A rollback-only full lifecycle smoke transaction successfully passed the shared database schema/constraints for:
+Set these Vercel Production environment variables before connected verification:
 
-`booking → Worker A reject → Worker B accept → on the way → arrived → identity → token → customer confirm → in progress → approved extra charge → completion → sandbox payment → invoice → rating`
+- `DATABASE_URL` — PostgreSQL connection string with SSL enabled.
+- `SANPAID_DEMO_PASSWORD` — event-scoped password of at least 8 characters used to seed the five isolated demo accounts.
 
-The transaction ended with `ROLLBACK`, so no permanent smoke booking/payment/rating record was left behind.
+The first API request applies `database/schema.sql` and idempotently seeds cooperatives, 12 services, Customer, Worker A, Worker B, Cooperative Admin and Federation Admin. Session and service-start tokens are high-entropy random values stored only as SHA-256 hashes. Run `npm run migrate` when a controlled migration step is preferred.
 
 ## Mobile / PWA
 
@@ -139,7 +142,7 @@ The service worker caches only the static application shell. `/api/*` and SSE re
 
 Expected wiring:
 
-`YUKTI-2026 frontend → same-origin /api proxy → sanpaid-sih-2026.onrender.com → shared PostgreSQL database`
+`YUKTI-2026 frontend → same-origin Vercel /api function → PostgreSQL database`
 
 The production URL is supplied to CI through the `SANPAID_PRODUCTION_URL`
 repository variable, with `https://yukti-2026-brown.vercel.app/` as the current
@@ -191,9 +194,9 @@ Demo CTA contract.
 
 P1–P5 core connected implementation is now present in source/database. Next priorities are:
 
-1. Verify Render backend deployment and `/api/connected/health`.
-2. Deploy/link `YUKTI-2026` frontend.
-3. Run real two-browser/two-phone Golden Demo and fix any runtime/network/cookie issue.
+1. Provision PostgreSQL and configure the three Production environment variables.
+2. Verify `/api/connected/health` and `/api/public/services` on the production Vercel domain.
+3. Run the real two-browser/two-phone Golden Demo and fix any runtime/network/cookie issue.
 4. Deepen Cooperative Command Center with DB-derived KPIs and verification actions.
 5. Connect Cooperative/Federation Capacity Exchange with worker consent.
 6. Connect Complaint + L1→L2→L3 SLA + audit timeline.

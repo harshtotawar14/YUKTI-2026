@@ -50,16 +50,16 @@ Old `app.js` maintained fake users, bookings, workers, payments, complaints and 
 ### 5. Stale service-worker assets could survive deployment
 The previous service worker precached a very large list of JS/CSS files and kept multiple runtime generations available.
 
-**Fix:** `sanpaid-runtime-v69` uses network-first HTML/JS/CSS loading, deletes older SanPaid caches, never caches `/build-info.json`, and precaches assets independently so one optional asset cannot cancel the entire installation.
+**Fix:** `sanpaid-runtime-v70` uses network-first HTML/JS/CSS loading, deletes older SanPaid caches, never caches `/build-info.json`, and precaches assets independently so one optional asset cannot cancel the entire installation.
 
 ### 6. Some browser modules bypassed the same-origin API policy
-`credibility-layer.js` and `workforce-intelligence.js` called the Render host directly while the enforced CSP allowed only `connect-src 'self'`.
+`credibility-layer.js` and `workforce-intelligence.js` previously called a deleted Render host directly while the enforced CSP allowed only `connect-src 'self'`.
 
-**Fix:** browser API traffic now uses `/api/*` through the Vercel proxy. A Golden Demo readiness gate verifies backend health and the database-backed catalog before connected Customer/Worker access.
+**Fix:** browser API traffic now uses the repository-owned `/api/*` Vercel functions. A Golden Demo readiness gate verifies backend health and the database-backed catalog before connected Customer/Worker access.
 
 ## Backend Source Status
 
-**BACKEND SOURCE NOT AVAILABLE FOR AUDIT.** The referenced `harshtotawar14/SanPaid-sih-2026` repository is not accessible through the currently connected GitHub installation, and no backend directory exists in this frontend repository. Route and database behavior must not be claimed as source-verified until that repository is connected.
+**BACKEND SOURCE REBUILT IN THIS REPOSITORY.** `api/[...path].js`, `api/_lib/*` and `database/schema.sql` are now the canonical deployable backend. The deleted/suspended Render service is not used. Live/database-backed claims remain pending until Vercel has a valid `DATABASE_URL` and the production contract passes.
 
 ## Refresh Acceptance Tests Required
 
@@ -79,4 +79,4 @@ These must be browser-tested against the deployed frontend + database-connected 
 
 CI now reports `Source integrity` and `Production deployment integrity` separately. Production requires the active URL to serve `/build-info.json` for the exact pushed commit, then pass backend health and database catalog contracts. Configure the repository variable `SANPAID_PRODUCTION_URL` when the active Vercel domain changes.
 
-Backend source, backend live deployment and database behavior must be checked separately. Source-ready is not the same as database-connected live.
+Backend source, Vercel function deployment and database behavior are checked separately. Source-ready is not the same as database-connected live.

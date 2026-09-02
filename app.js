@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD={release:'deployment-truth-gate',runtime:'v69',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
+  const BUILD={release:'connected-backend-rebuild',runtime:'v70',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
   window.__SANPAID_BUILD__=Object.freeze(BUILD);
   console.info('[SanPaid build]',BUILD);
 
