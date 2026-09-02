@@ -31,6 +31,7 @@ jobs:
           node --check cooperative-portal.js
           node --check federation-portal.js
           node --check demo-first-stable.js
+          node --check service-worker.js
 
       - name: Enforce one connected fetch transport
         run: |
@@ -42,10 +43,23 @@ jobs:
       - name: Enforce one public mobile drawer owner
         run: |
           grep -F 'function wireMobileNavigation' app.js
+          grep -F 'function setDrawerOpenState' app.js
           if grep -nE 'function (openDrawer|closeAllDrawers|enhanceLandingDrawer|populateLandingDrawer|wireMobileNavigation)' mobile.js; then
             echo 'mobile.js must not own public navigation; app.js is the canonical mobile drawer owner.'
             exit 1
           fi
+          if grep -nE 'menuBtn|mobileDrawer|mobileDrawerScrim|mobile-drawer-open' evaluator-final.js; then
+            echo 'evaluator-final.js must not control public mobile navigation.'
+            exit 1
+          fi
+          grep -F 'html body #landing .eval-nav .mobile-drawer' mobile.css
+
+      - name: Verify mobile runtime release markers
+        run: |
+          grep -F "release:'mobile-runtime-v64'" app.js
+          grep -F "sanpaid-runtime-v64" service-worker.js
+          grep -F "root.dataset.animationOwner='evaluator'" evaluator-final.js
+          grep -F "root.dataset.animationOwner === 'evaluator'" mobile.js
 
       - name: Reject legacy local state in connected role runtime
         run: |
