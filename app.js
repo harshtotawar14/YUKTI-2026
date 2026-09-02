@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD={release:'deep-repair-foundation',runtime:'v68',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
+  const BUILD={release:'deployment-truth-gate',runtime:'v69',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
   window.__SANPAID_BUILD__=Object.freeze(BUILD);
   console.info('[SanPaid build]',BUILD);
 
@@ -27,11 +27,6 @@
     let wrap=$('#toastWrap');
     if(!wrap){wrap=document.createElement('div');wrap.id='toastWrap';wrap.className='toast-wrap';document.body.appendChild(wrap);}
     const node=document.createElement('div');node.className=`toast ${type}`;node.textContent=message;wrap.appendChild(node);setTimeout(()=>node.remove(),3000);
-  }
-
-  function retireLegacyShell(){
-    $('#appShell')?.classList.add('hidden');
-    $('#resumeDemo')?.classList.add('hidden');
   }
 
   function normalizedCatalog(rows){
@@ -166,7 +161,7 @@
   }
 
   function start(){
-    retireLegacyShell();renderServices();wireMobileNavigation();wireLandingUtilities();recoverDrawerState();loadServiceCatalog();
+    renderServices();wireMobileNavigation();wireLandingUtilities();recoverDrawerState();loadServiceCatalog();
   }
 
   window.SanPaidLanding={

@@ -49,7 +49,7 @@
       else options.signal.addEventListener('abort',relayAbort,{once:true});
     }
     try{
-      const {timeoutMs:_timeoutMs,bearer:_bearer,token:_token,signal:_signal,...fetchOptions}=options;
+      const {timeoutMs:_timeoutMs,bearer:_bearer,token:_token,signal:_signal,retry:_retry,...fetchOptions}=options;
       const response=await fetch(path,{...fetchOptions,headers,signal:controller.signal,credentials:options.credentials||'include',cache:options.cache||'no-store'});
       if(response.status===401)clearRoleToken(path);
       return response;
@@ -93,8 +93,30 @@
 
   const readinessState={running:null,prompt:null,last:null};
   const readinessChecks=[
-    {id:'backend',label:'Connected backend',run:()=>get('/api/connected/health',{bearer:false,timeoutMs:12000})},
-    {id:'catalog',label:'Database service catalog',run:()=>get('/api/public/services',{bearer:false,timeoutMs:12000})}
+    {
+      id:'frontend',label:'Deployed frontend build',
+      run:()=>get('/build-info.json',{bearer:false,timeoutMs:8000,retry:false}),
+      validate:data=>data?.product==='SanPaid'&&data?.runtime==='v69'&&Boolean(data?.commitSha),
+      detail:data=>`${String(data.commitSha).slice(0,7)} · ${data.runtime}`
+    },
+    {id:'backend',label:'Connected backend',run:()=>get('/api/connected/health',{bearer:false,timeoutMs:12000}),validate:data=>data?.ok===true},
+    {
+      id:'auth',label:'Authentication route',
+      run:async()=>{const response=await raw('/api/auth/me',{bearer:false,timeoutMs:12000,retry:false});return {ok:[200,401].includes(response.status),status:response.status};},
+      validate:data=>data?.ok===true,
+      detail:data=>`HTTP ${data.status} · route available`
+    },
+    {
+      id:'snapshot',label:'Connected snapshot route',
+      run:async()=>{const response=await raw('/api/connected/snapshot',{bearer:false,timeoutMs:12000,retry:false});return {ok:[200,401,403].includes(response.status),status:response.status};},
+      validate:data=>data?.ok===true,
+      detail:data=>`HTTP ${data.status} · route available`
+    },
+    {
+      id:'catalog',label:'Database service catalog',run:()=>get('/api/public/services',{bearer:false,timeoutMs:12000}),
+      validate:data=>data?.ok===true&&data?.source==='DATABASE_CONFIGURATION'&&Array.isArray(data?.services)&&data.services.length>0,
+      detail:data=>`${data.services.length} database-configured services`
+    }
   ];
   function readinessRoot(){
     let root=document.getElementById('sanpaidReadiness');
@@ -114,10 +136,15 @@
       const started=performance.now();
       try{
         const data=await check.run();
-        const valid=check.id==='catalog'?data?.ok===true&&Array.isArray(data.services)&&data.services.length>0:data?.ok===true;
-        return {id:check.id,ok:valid,detail:valid?`${Math.round(performance.now()-started)} ms · ready`:'Unexpected response contract'};
+        const valid=check.validate?check.validate(data):data?.ok===true;
+        const description=valid?(check.detail?.(data)||`${Math.round(performance.now()-started)} ms · ready`):'Unexpected response contract';
+        return {id:check.id,ok:valid,detail:description};
       }catch(error){return {id:check.id,ok:false,detail:error?.message||'Connection failed'};}
-    })).then(results=>{readinessState.last={ok:results.every(item=>item.ok),results,checkedAt:Date.now()};return readinessState.last;}).finally(()=>{readinessState.running=null;});
+    })).then(results=>{
+      readinessState.last={ok:results.every(item=>item.ok),results,checkedAt:Date.now()};
+      try{window.dispatchEvent(new CustomEvent('sanpaid:readiness-result',{detail:readinessState.last}));}catch{}
+      return readinessState.last;
+    }).finally(()=>{readinessState.running=null;});
     return readinessState.running;
   }
   function requireReadiness(){

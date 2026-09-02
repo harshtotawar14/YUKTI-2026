@@ -4,31 +4,29 @@ Smart India Hackathon 2026 prototype for **PS ID 26089 — Cooperative Gig Servi
 
 ## Current repository handoff
 
-- `index.html` — SanPaid landing/app shell with mobile/PWA + Connected SIH Demo entry.
+- `index.html` — SanPaid landing page with mobile/PWA + Connected SIH Demo entry.
 - `styles.css` — shared desktop/base styling.
 - `mobile.css` — canonical mobile-first responsive and dashboard behaviour.
 - `connected-demo.css` — responsive connected-demo UI.
-- `app.js` / `voice-request.js` — browser-local fallback/rehearsal demo.
+- `app.js` — lean landing controller and database-catalog entry routing.
 - `mobile.js` — mobile navigation/PWA/connectivity runtime.
 - `connected-demo.js` — shared-backend Customer/Worker booking, voice, matching, offer and SSE flow.
 - `connected-service-ui.js` — connected travel/arrival/dual-verification/service/completion UI.
 - `connected-commerce-ui.js` — connected extra-charge approval, sandbox checkout, invoice and rating UI.
 - `vercel.json` — same-origin `/api/*` proxy to the shared SanPaid Render backend.
 - `manifest.webmanifest` / `service-worker.js` / `app-icon.svg` — PWA shell.
+- `scripts/build.mjs` — reproducible Vercel artifact builder with exact commit identity.
 - `docs/final-sih-demo-hardening/` — final SIH hardening specification.
 
-## Connected SIH implementation present in source + database
+## Connected SIH implementation present in source
 
-The repository has two modes:
-
-1. **Main fallback/rehearsal mode** — browser-local state.
-2. **Connected Two-Device Demo** — shared PostgreSQL backend path for separate Customer and Worker sessions/devices.
+The public product has one operational mode: the **Connected Two-Device Demo** backed by the configured API and shared PostgreSQL state. The landing-page matching animation is explanatory only; it is not a second local booking engine.
 
 Connected Golden Demo source flow now reaches:
 
 `Customer Device → backend login → Voice/Text Request → PostgreSQL Booking → Eligibility Gate → Worker A Offer → Listen → Accept/Reject → Worker B fallback when rejected → Customer shared update → Travel → Arrive → SANDBOX Identity Check → One-Time Booking Token → Customer Confirms Booked Worker → backend-enforced Start Service → optional Additional Work Approval → Completion Request → Customer Completion Confirmation → SANDBOX Payment → Persisted Invoice → Rating`
 
-The backend implementation lives in `harshtotawar14/SanPaid-sih-2026` and uses the existing SanPaid PostgreSQL/Supabase database.
+Frontend documentation references a backend named `harshtotawar14/SanPaid-sih-2026`, but that repository is not available through the currently connected GitHub installation. Backend source and database claims therefore require separate access and verification.
 
 ## Connected API families
 
@@ -143,20 +141,23 @@ Expected wiring:
 
 `YUKTI-2026 frontend → same-origin /api proxy → sanpaid-sih-2026.onrender.com → shared PostgreSQL database`
 
-The public frontend is configured at `https://yukti-2026-liart.vercel.app/`.
-Every Golden Demo entry now runs a same-origin readiness gate against the
-connected backend and database-backed service catalog. A failed dependency
-blocks connected role access instead of displaying a fake successful write.
+The production URL is supplied to CI through the `SANPAID_PRODUCTION_URL`
+repository variable, with `https://yukti-2026-liart.vercel.app/` retained only
+as the current fallback value. Every Golden Demo entry now runs a same-origin
+readiness gate against the exact deployed build, connected backend,
+authentication route, snapshot route and database-backed service catalog. A
+failed dependency blocks connected role access instead of displaying a fake
+successful write.
 
 The current branch must still be deployed and the complete two-device flow
 must be rerun after deployment. The readiness gate proves dependency response;
 it does not replace lifecycle testing.
 
-Latest verified deployment evidence: GitHub Actions run 63 received HTTP 404
-from the public `/api/public/services` URL. This confirms that the current
-production target is not yet serving the repository's API rewrite. The new
-readiness gate will therefore block the connected Golden Demo until the Vercel
-project is linked/deployed correctly.
+CI keeps source integrity and production deployment integrity as separate
+jobs. Production passes only when `/build-info.json` reports the exact pushed
+commit and the backend health/catalog contracts pass. If the fallback alias is
+stale or deleted, configure `SANPAID_PRODUCTION_URL` to the active Vercel
+production domain instead of weakening the check.
 
 Do not claim production/live cross-device behaviour until both sides are deployed and a real two-browser/two-phone run passes.
 
@@ -166,11 +167,13 @@ The frontend has a dependency-free validation suite:
 
 ```bash
 npm test
+npm run build
 ```
 
 It verifies JavaScript syntax, local asset references, unique HTML IDs,
 same-origin browser API policy, CSP/proxy alignment, service-worker safety,
-public credential hygiene and the single Golden Demo CTA contract.
+public credential hygiene, reproducible build identity and the single Golden
+Demo CTA contract.
 
 ## Feature truth matrix
 
