@@ -29,9 +29,9 @@ Status meanings:
 | Invoice | IMPLEMENTED FOR SANDBOX FLOW | Generated and persisted with sandbox payment. |
 | Rating | IMPLEMENTED | Completed booking rating E2E passed. |
 | Worker earnings ledger | VERIFY NEXT | Do not claim until dedicated ledger proof is green. |
-| Complaint creation | SOURCE EXISTS / VERIFY NEXT | Support/complaint tables and routes exist; dossier SLA/evidence acceptance needs dedicated tests. |
-| Complaint SLA escalation | VERIFY NEXT | Must prove configurable threshold + escalation. |
-| Complaint evidence timeline | VERIFY NEXT | Must prove booking/start/price/payment/admin evidence chain. |
+| Complaint creation | IMPLEMENTED IN SOURCE | Customer-owned booking validation, severity, configurable SLA selection and complaint event/audit evidence are covered by automated source contracts; deployment E2E pending. |
+| Complaint SLA escalation | IMPLEMENTED IN SOURCE / PROTOTYPE OPERATIONS | Configurable per-cooperative/category/severity policy, overdue escalation state and admin notification exist. Escalation is evaluated during complaint API activity; a durable background scheduler is future hardening. |
+| Complaint evidence timeline | IMPLEMENTED IN SOURCE | Case-scoped timeline aggregates complaint events, booking states, additional charges, payment/invoice and audit events; deployment E2E pending. |
 | Cooperative Admin dashboard | IMPLEMENTED CORE | Scoped booking workspace E2E passed; deeper governance actions need module-specific tests. |
 | Federation view | IMPLEMENTED CORE | Judge/federation overview/planning/workforce routes E2E passed. |
 | Capacity exchange | PROTOTYPE / VERIFY NEXT | Data model/UI exists; consent + authorized cross-coop assignment semantics need dedicated E2E. |
