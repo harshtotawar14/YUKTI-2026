@@ -1,5 +1,5 @@
-const CACHE_NAME='sanpaid-runtime-v63';
-const FALLBACK_ASSETS=['./','./index.html','./styles.css','./mobile.css','./app.js','./mobile.js','./connected-demo.css','./auth-unified.css','./manifest.webmanifest','./app-icon.svg'];
+const CACHE_NAME='sanpaid-runtime-v64';
+const FALLBACK_ASSETS=['./','./index.html','./styles.css','./mobile.css','./app.js','./mobile.js','./evaluator-final.css','./evaluator-final.js','./connected-demo.css','./auth-unified.css','./manifest.webmanifest','./app-icon.svg'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(
