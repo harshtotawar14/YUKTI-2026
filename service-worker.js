@@ -1,4 +1,4 @@
-const CACHE_NAME='sanpaid-runtime-v65';
+const CACHE_NAME='sanpaid-runtime-v66';
 const FALLBACK_ASSETS=[
   './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./color-system-v5.css',
   './app.js','./mobile.js','./evaluator-final.css','./evaluator-final.js','./top1-polish.js',
@@ -8,27 +8,16 @@ const FALLBACK_ASSETS=[
 ];
 
 self.addEventListener('install',event=>{
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache=>cache.addAll(FALLBACK_ASSETS))
-      .catch(()=>undefined)
-      .then(()=>self.skipWaiting())
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(FALLBACK_ASSETS)).catch(()=>undefined).then(()=>self.skipWaiting()));
 });
 
 self.addEventListener('activate',event=>{
-  event.waitUntil(
-    caches.keys()
-      .then(keys=>Promise.all(keys.filter(key=>key.startsWith('sanpaid-')&&key!==CACHE_NAME).map(key=>caches.delete(key))))
-      .then(()=>self.clients.claim())
-  );
+  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('sanpaid-')&&key!==CACHE_NAME).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));
 });
 
 self.addEventListener('message',event=>{
   if(event.data?.type==='SKIP_WAITING')self.skipWaiting();
-  if(event.data?.type==='CLEAR_SANPAID_CACHE'){
-    event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('sanpaid-')).map(key=>caches.delete(key)))));
-  }
+  if(event.data?.type==='CLEAR_SANPAID_CACHE')event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('sanpaid-')).map(key=>caches.delete(key)))));
 });
 
 async function networkFirst(request,fallbackKey=null){
@@ -46,32 +35,16 @@ async function networkFirst(request,fallbackKey=null){
 }
 
 self.addEventListener('fetch',event=>{
-  const request=event.request;
-  if(request.method!=='GET')return;
-  const url=new URL(request.url);
-  if(url.origin!==self.location.origin)return;
+  const request=event.request;if(request.method!=='GET')return;
+  const url=new URL(request.url);if(url.origin!==self.location.origin)return;
   if(url.pathname.startsWith('/api/'))return;
-
-  if(request.mode==='navigate'){
-    event.respondWith(networkFirst(request,'./index.html'));
-    return;
-  }
-
-  if(/\.(?:js|css|html)$/i.test(url.pathname)){
-    event.respondWith(networkFirst(request));
-    return;
-  }
-
+  if(request.mode==='navigate'){event.respondWith(networkFirst(request,'./index.html'));return;}
+  if(/\.(?:js|css|html)$/i.test(url.pathname)){event.respondWith(networkFirst(request));return;}
   if(/\.(?:svg|png|jpg|jpeg|webp|ico|woff2?)$/i.test(url.pathname)){
-    event.respondWith(
-      caches.open(CACHE_NAME).then(async cache=>{
-        const cached=await cache.match(request);
-        const network=fetch(request).then(response=>{
-          if(response&&response.ok)cache.put(request,response.clone()).catch(()=>{});
-          return response;
-        }).catch(()=>cached);
-        return cached||network;
-      })
-    );
+    event.respondWith(caches.open(CACHE_NAME).then(async cache=>{
+      const cached=await cache.match(request);
+      const network=fetch(request).then(response=>{if(response&&response.ok)cache.put(request,response.clone()).catch(()=>{});return response;}).catch(()=>cached);
+      return cached||network;
+    }));
   }
 });
