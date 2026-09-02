@@ -1,21 +1,21 @@
 (() => {
   'use strict';
 
-  const BUILD={release:'mobile-runtime-v64',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
+  const BUILD={release:'government-handover-v1',runtime:'v65',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
   window.__SANPAID_BUILD__=Object.freeze(BUILD);
   console.info('[SanPaid build]',BUILD);
 
   const SERVICES=[
-    {name:'Electrician',icon:'⚡',price:249},
-    {name:'Plumber',icon:'🔧',price:279},
-    {name:'Carpenter',icon:'🪚',price:299},
-    {name:'Painter',icon:'🎨',price:349},
-    {name:'Cleaner',icon:'🧹',price:199},
-    {name:'Domestic Help',icon:'🏠',price:229},
-    {name:'Caregiver',icon:'🤝',price:399},
-    {name:'Driver',icon:'🚗',price:349},
-    {name:'Gardener',icon:'🌿',price:249},
-    {name:'Technician',icon:'🛠️',price:299}
+    {name:'Electrician',icon:'EL',price:249},
+    {name:'Plumber',icon:'PL',price:279},
+    {name:'Carpenter',icon:'CP',price:299},
+    {name:'Painter',icon:'PT',price:349},
+    {name:'Cleaner',icon:'CL',price:199},
+    {name:'Domestic Help',icon:'DH',price:229},
+    {name:'Caregiver',icon:'CG',price:399},
+    {name:'Driver',icon:'DR',price:349},
+    {name:'Gardener',icon:'GD',price:249},
+    {name:'Technician',icon:'TC',price:299}
   ];
   const LEGACY_STATE_KEY='sanpaid_demo_state_v2';
   const PREFILL_SERVICE_KEY='sanpaid_prefill_service_v1';
@@ -40,7 +40,7 @@
   function renderServices(){
     const grid=$('#serviceGrid');
     if(grid&&!grid.dataset.connectedCatalog){
-      grid.innerHTML=SERVICES.map(s=>`<button class="card service-card" type="button" data-service="${esc(s.name)}"><span class="service-icon">${s.icon}</span><strong>${esc(s.name)}</strong><span class="price">From ${money(s.price)}</span></button>`).join('');
+      grid.innerHTML=SERVICES.map(s=>`<button class="card service-card" type="button" data-service="${esc(s.name)}"><span class="service-icon" aria-hidden="true">${s.icon}</span><strong>${esc(s.name)}</strong><span class="price">From ${money(s.price)}</span></button>`).join('');
       grid.dataset.connectedCatalog='1';
     }
     const hero=$('#heroService');
@@ -64,7 +64,7 @@
     if(!auth){toast('Login workspace is still loading. Please retry.','warn');return false;}
     const current=auth.getRole?.();
     if(current==='CUSTOMER'&&auth.isAuthenticated?.())return auth.openRoleWorkspace('CUSTOMER','CUSTOMER');
-    auth.open('CUSTOMER','login','CUSTOMER');
+    auth.open('CUSTOMER','CUSTOMER');
     return true;
   }
 
@@ -198,7 +198,7 @@
   window.SanPaidDemo={
     reset(){try{localStorage.removeItem(LEGACY_STATE_KEY);sessionStorage.removeItem(PREFILL_SERVICE_KEY);sessionStorage.removeItem(PREFILL_AREA_KEY);}catch{}location.reload();},
     state:()=>({mode:'CONNECTED_BACKEND_ONLY'}),
-    showRoles:async()=>{const auth=await waitForAuth();auth?.open?.(auth.getRole?.()||'CUSTOMER','login',auth.getPersona?.()||null);},
+    showRoles:async()=>{const auth=await waitForAuth();auth?.open?.(auth.getRole?.()||'CUSTOMER',auth.getPersona?.()||null);},
     startBooking
   };
   window.SanPaidLanding={services:SERVICES,startBooking,openMobileDrawer,closeMobileDrawer,recoverDrawerState};
