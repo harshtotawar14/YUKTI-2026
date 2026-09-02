@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BACKEND='https://sanpaid-sih-2026.onrender.com';
+  const API_ROOT='';
   const JUDGE_TOKEN_KEY='sanpaid_judge_demo_token_v1';
   let publicCache=null;
   let publicPromise=null;
@@ -16,7 +16,7 @@
     if(publicCache&&!force)return publicCache;
     if(publicPromise&&!force)return publicPromise;
     const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8000);
-    publicPromise=fetch(`${BACKEND}/api/public-proof/summary`,{mode:'cors',credentials:'omit',cache:'no-store',signal:controller.signal})
+    publicPromise=fetch(`${API_ROOT}/api/public-proof/summary`,{credentials:'same-origin',cache:'no-store',signal:controller.signal})
       .then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.message||'Proof unavailable');publicCache=d;return d;})
       .finally(()=>{clearTimeout(timer);publicPromise=null;});
     return publicPromise;
@@ -27,14 +27,14 @@
     if(!token)throw new Error('Judge login required');
     if(judgeCache&&!force)return judgeCache;
     if(judgePromise&&!force)return judgePromise;
-    judgePromise=fetch(`${BACKEND}/api/connected/judge/workforce-intelligence`,{mode:'cors',credentials:'omit',cache:'no-store',headers:{Authorization:`Bearer ${token}`}})
+    judgePromise=fetch(`${API_ROOT}/api/connected/judge/workforce-intelligence`,{credentials:'same-origin',cache:'no-store',headers:{Authorization:`Bearer ${token}`}})
       .then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.message||'Workforce intelligence unavailable');judgeCache=d;return d;})
       .finally(()=>{judgePromise=null;});
     return judgePromise;
   }
 
   async function fetchWorkerPassport(){
-    const r=await fetch(`${BACKEND}/api/connected/workforce/passport`,{mode:'cors',credentials:'include',cache:'no-store',headers:{'Content-Type':'application/json'}});
+    const r=await fetch(`${API_ROOT}/api/connected/workforce/passport`,{credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json'}});
     const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.message||'Trust Passport unavailable');return d.passport;
   }
 
@@ -152,7 +152,7 @@
     const original=button.textContent;button.disabled=true;button.textContent='Updating…';
     try{
       const body={action};if(action==='APPROVE')body.expiresAt=new Date(Date.now()+365*86400000).toISOString();
-      const r=await fetch(`${BACKEND}/api/connected/judge/credentials/${credentialId}/reverify`,{method:'POST',mode:'cors',credentials:'omit',cache:'no-store',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify(body)});
+      const r=await fetch(`${API_ROOT}/api/connected/judge/credentials/${credentialId}/reverify`,{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify(body)});
       const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.message||'Re-verification failed');
       judgeCache=null;publicCache=null;const active=document.querySelector('#sihJudgeShell .judge-section.active [data-wi-judge]');active?.remove();await enhanceJudge();
     }catch(e){button.disabled=false;button.textContent=original;}

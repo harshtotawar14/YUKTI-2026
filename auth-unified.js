@@ -279,6 +279,11 @@
       return true;
     }
     if (!await waitForWorkspace('connected')) { toast('Service workspace is still loading. Please retry.'); return false; }
+    if (window.SanPaidReadiness?.run) {
+      let readiness = window.SanPaidReadiness.getLastResult?.();
+      if (!readiness || Date.now() - Number(readiness.checkedAt || 0) > 60000) readiness = await window.SanPaidReadiness.run();
+      if (!readiness?.ok && window.SanPaidReadiness.require && !(await window.SanPaidReadiness.require())) return false;
+    }
     const finalPersona = roleKey === 'WORKER' ? (requestedPersona || personaForUser(user)) : requestedPersona;
     saveWorkspace(roleKey, finalPersona, 'connected');
     await window.ConnectedSanPaid.open(finalPersona);
@@ -487,6 +492,11 @@
       event.preventDefault();
       event.stopImmediatePropagation();
       const [role, persona] = request;
+      const needsConnectedPreflight = role === 'CUSTOMER' || role === 'WORKER';
+      if (needsConnectedPreflight && window.SanPaidReadiness?.require) {
+        const ready = await window.SanPaidReadiness.require();
+        if (!ready) return;
+      }
       const user = await restoreSession();
       if (user && roleKeyFromUser(user) === role && personaMatches(user, persona)) openRoleWorkspace(role, persona);
       else openAuth(role, persona);

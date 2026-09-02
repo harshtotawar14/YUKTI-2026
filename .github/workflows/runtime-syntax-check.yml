@@ -35,6 +35,9 @@ jobs:
           node --check handover-evidence.js
           node --check service-worker.js
 
+      - name: Run repository integrity suite
+        run: npm test
+
       - name: Enforce explicit API and one sync manager
         run: |
           if grep -nE 'window\.fetch\s*=|window\.EventSource\s*=' connected-runtime-fix.js connected-demo.js; then
@@ -65,11 +68,11 @@ jobs:
             exit 1
           fi
 
-      - name: Verify coherent startup and v67 release
+      - name: Verify coherent startup and v68 release
         run: |
-          grep -F "release:'government-handover-v3'" app.js
-          grep -F "runtime:'v67'" app.js
-          grep -F 'sanpaid-runtime-v67' service-worker.js
+          grep -F "release:'deep-repair-foundation'" app.js
+          grep -F "runtime:'v68'" app.js
+          grep -F 'sanpaid-runtime-v68' service-worker.js
           grep -F 'design-tokens.css' index.html
           if grep -nE 'mobile-fix\.css|demo-preflight\.js' index.html; then
             echo 'Retired presentation/mobile files must not return to startup.'
@@ -116,6 +119,7 @@ jobs:
           fi
 
       - name: Verify deployed catalog contract
+        if: github.event_name == 'push'
         run: |
           response_file="$(mktemp)"
           curl --fail --silent --show-error --location \
@@ -136,6 +140,11 @@ jobs:
           if (invalid) throw new Error('Public catalog contains an invalid service contract.');
           console.log(`Verified ${payload.services.length} database-backed services.`);
           NODE
+
+      - name: Preserve deployment verification boundary on pull requests
+        if: github.event_name == 'pull_request'
+        run: |
+          echo 'Source integrity passed. The production catalog contract is verified only after the main branch deployment.'
 
       - name: Verify matching truth on public landing
         run: |
