@@ -142,8 +142,8 @@ Expected wiring:
 `YUKTI-2026 frontend → same-origin /api proxy → sanpaid-sih-2026.onrender.com → shared PostgreSQL database`
 
 The production URL is supplied to CI through the `SANPAID_PRODUCTION_URL`
-repository variable, with `https://yukti-2026-liart.vercel.app/` retained only
-as the current fallback value. Every Golden Demo entry now runs a same-origin
+repository variable, with `https://yukti-2026-brown.vercel.app/` as the current
+production-domain fallback. Every Golden Demo entry now runs a same-origin
 readiness gate against the exact deployed build, connected backend,
 authentication route, snapshot route and database-backed service catalog. A
 failed dependency blocks connected role access instead of displaying a fake
