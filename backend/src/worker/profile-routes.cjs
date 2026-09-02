@@ -12,14 +12,14 @@ function clean(value,max=500){return String(value??'').trim().slice(0,max);}
 
 async function dashboard(req,res,user){
   method(req,'GET');
-  const [jobs,earnings,payments,coop]=await Promise.all([
+  const [jobs,earnings,ledger,coop]=await Promise.all([
     query(`SELECT count(*) FILTER(WHERE status=ANY($2))::int AS active FROM bookings WHERE assigned_worker_id=$1`,[user.worker_id,ACTIVE_STATES]),
-    query(`SELECT coalesce(sum(p.amount),0) AS total,coalesce(sum(p.amount) FILTER(WHERE p.created_at::date=current_date),0) AS today,coalesce(sum(p.amount) FILTER(WHERE p.created_at>=now()-interval '7 days'),0) AS week FROM payments p JOIN bookings b ON b.id=p.booking_id WHERE b.assigned_worker_id=$1`,[user.worker_id]),
-    query(`SELECT p.amount,p.created_at,s.name AS service,b.booking_code FROM payments p JOIN bookings b ON b.id=p.booking_id JOIN services s ON s.id=b.service_id WHERE b.assigned_worker_id=$1 ORDER BY p.created_at DESC LIMIT 20`,[user.worker_id]),
+    query(`SELECT coalesce(sum(net_earnings),0) AS total,coalesce(sum(net_earnings) FILTER(WHERE created_at::date=current_date),0) AS today,coalesce(sum(net_earnings) FILTER(WHERE created_at>=now()-interval '7 days'),0) AS week FROM worker_earnings_ledger WHERE worker_id=$1`,[user.worker_id]),
+    query(`SELECT l.*,s.name AS service,b.booking_code FROM worker_earnings_ledger l JOIN bookings b ON b.id=l.booking_id JOIN services s ON s.id=b.service_id WHERE l.worker_id=$1 ORDER BY l.created_at DESC LIMIT 20`,[user.worker_id]),
     query(`SELECT c.id,c.name,c.region FROM workers w JOIN cooperatives c ON c.id=w.cooperative_id WHERE w.id=$1`,[user.worker_id])
   ]);
   const earning=earnings.rows[0],cooperative=coop.rows[0]||null;
-  return send(res,200,{ok:true,profile:{id:Number(user.worker_id),name:user.name,available:user.availability_status==='AVAILABLE',availabilityStatus:user.availability_status,rating:Number(user.rating),identityStatus:user.identity_status,cooperative:cooperative?{id:Number(cooperative.id),name:cooperative.name,region:cooperative.region}:null},jobs:{active:jobs.rows[0].active},earnings:{today:Number(earning.today),week:Number(earning.week),total:Number(earning.total),payments:payments.rows.map(x=>({amount:Number(x.amount),createdAt:x.created_at,service:x.service,bookingCode:x.booking_code}))}});
+  return send(res,200,{ok:true,profile:{id:Number(user.worker_id),name:user.name,available:user.availability_status==='AVAILABLE',availabilityStatus:user.availability_status,rating:Number(user.rating),identityStatus:user.identity_status,cooperative:cooperative?{id:Number(cooperative.id),name:cooperative.name,region:cooperative.region}:null},jobs:{active:jobs.rows[0].active},earnings:{source:'WORKER_EARNINGS_LEDGER',today:Number(earning.today),week:Number(earning.week),total:Number(earning.total),entries:ledger.rows.map(x=>({id:Number(x.id),bookingCode:x.booking_code,service:x.service,grossServiceAmount:Number(x.gross_service_amount),approvedAdditions:Number(x.approved_additions),cooperativeCharge:Number(x.cooperative_charge),platformCharge:Number(x.platform_charge),netEarnings:Number(x.net_earnings),createdAt:x.created_at}))}});
 }
 
 async function availability(req,res,user){
