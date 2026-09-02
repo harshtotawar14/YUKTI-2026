@@ -75,7 +75,7 @@
     title.className='drawer-title';
     title.innerHTML='<strong>SanPaid Menu</strong><button type="button" class="drawer-close" aria-label="Close menu">✕</button>';
     drawer.insertBefore(title,drawer.firstChild);
-    title.querySelector('.drawer-close').addEventListener('click',closeMobileDrawer);
+    title.querySelector('.drawer-close').addEventListener('click',()=>closeMobileDrawer(true));
     return drawer;
   }
 
@@ -86,7 +86,7 @@
     scrim.id='mobileDrawerScrim';
     scrim.className='mobile-drawer-scrim hidden';
     scrim.setAttribute('aria-hidden','true');
-    scrim.addEventListener('click',closeMobileDrawer);
+    scrim.addEventListener('click',()=>closeMobileDrawer(true));
     document.body.appendChild(scrim);
     return scrim;
   }
@@ -108,7 +108,7 @@
     requestAnimationFrame(()=>drawer.querySelector('.drawer-close')?.focus());
   }
 
-  function closeMobileDrawer(){
+  function closeMobileDrawer(restoreFocus=true){
     const drawer=$('#mobileDrawer'),btn=$('#menuBtn'),scrim=$('#mobileDrawerScrim');
     if(!drawer)return;
     drawer.classList.add('hidden');
@@ -119,13 +119,13 @@
     document.body.classList.remove('mobile-drawer-open');
     const target=mobileDrawerReturnFocus;
     mobileDrawerReturnFocus=null;
-    if(target?.isConnected)requestAnimationFrame(()=>target.focus());
+    if(restoreFocus&&target?.isConnected)requestAnimationFrame(()=>target.focus());
   }
 
   function toggleMobileDrawer(){
     const drawer=ensureDrawerStructure();
     if(!drawer)return;
-    drawer.classList.contains('hidden')?openMobileDrawer():closeMobileDrawer();
+    drawer.classList.contains('hidden')?openMobileDrawer():closeMobileDrawer(true);
   }
 
   function wireMobileNavigation(){
@@ -134,23 +134,28 @@
     ensureDrawerScrim();
     btn.addEventListener('click',toggleMobileDrawer);
     drawer.addEventListener('click',event=>{
-      if(event.target.closest('a[href^="#"]'))closeMobileDrawer();
+      const link=event.target.closest('a[href^="#"]');
+      if(link){setTimeout(()=>closeMobileDrawer(false),0);return;}
+      const action=event.target.closest('button');
+      if(action&&!action.classList.contains('drawer-close'))setTimeout(()=>closeMobileDrawer(false),0);
     });
     document.addEventListener('keydown',event=>{
       if(drawer.classList.contains('hidden'))return;
-      if(event.key==='Escape'){event.preventDefault();closeMobileDrawer();return;}
+      if(event.key==='Escape'){event.preventDefault();closeMobileDrawer(true);return;}
       if(event.key!=='Tab')return;
       const nodes=drawerFocusable(drawer);if(!nodes.length)return;
       const first=nodes[0],last=nodes[nodes.length-1];
       if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
       else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
     });
-    window.addEventListener('resize',()=>{if(window.innerWidth>960&&!drawer.classList.contains('hidden'))closeMobileDrawer();},{passive:true});
+    window.addEventListener('resize',()=>{if(window.innerWidth>960&&!drawer.classList.contains('hidden'))closeMobileDrawer(false);},{passive:true});
+    window.addEventListener('pageshow',()=>{
+      if(drawer.classList.contains('hidden'))document.body.classList.remove('mobile-drawer-open');
+    });
   }
 
   function wireLandingUtilities(){
-    // Role-access buttons such as #getStarted, #coopLogin and Worker demo buttons
-    // are owned only by auth-unified.js. This file owns service selection + public mobile navigation.
+    // Unified auth owns role access. This file owns service selection + one mobile drawer.
     const book=$('#bookServiceHero');
     if(book)book.onclick=()=>startBooking($('#heroService')?.value||'Electrician');
 
@@ -162,10 +167,10 @@
       startBooking($('#heroService')?.value||'Electrician');
     };
 
-    document.addEventListener('click',e=>{
-      const card=e.target.closest?.('#serviceGrid [data-service]');
+    document.addEventListener('click',event=>{
+      const card=event.target.closest?.('#serviceGrid [data-service]');
       if(!card)return;
-      e.preventDefault();
+      event.preventDefault();
       startBooking(card.dataset.service);
     });
   }
