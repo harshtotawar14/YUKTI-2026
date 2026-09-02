@@ -1,5 +1,9 @@
 name: SanPaid Frontend Runtime Integrity
 
+concurrency:
+  group: sanpaid-release-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [main]
@@ -201,7 +205,7 @@ jobs:
     needs: source-integrity
     runs-on: ubuntu-latest
     env:
-      PRODUCTION_URL: ${{ vars.SANPAID_PRODUCTION_URL || 'https://yukti-2026-liart.vercel.app' }}
+      CONFIGURED_PRODUCTION_URL: ${{ vars.SANPAID_PRODUCTION_URL }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -210,29 +214,42 @@ jobs:
 
       - name: Wait for this exact commit to reach production
         run: |
-          case "$PRODUCTION_URL" in
-            https://*) ;;
-            *) echo 'SANPAID_PRODUCTION_URL must be an https URL.'; exit 1 ;;
-          esac
+          if [ -n "$CONFIGURED_PRODUCTION_URL" ]; then
+            case "$CONFIGURED_PRODUCTION_URL" in
+              https://*) candidates=("${CONFIGURED_PRODUCTION_URL%/}") ;;
+              *) echo 'SANPAID_PRODUCTION_URL must be an https URL.'; exit 1 ;;
+            esac
+          else
+            candidates=(
+              'https://yukti-2026-git-main-yukti8.vercel.app'
+              'https://yukti-2026.vercel.app'
+              'https://yukti-2026-yukti8.vercel.app'
+              'https://yukti-2026-liart.vercel.app'
+              'https://yukti-2026-tqt6.vercel.app'
+            )
+          fi
           build_file="$(mktemp)"
           ready=0
           for attempt in $(seq 1 60); do
-            status="$(curl --silent --show-error --location \
-              --connect-timeout 10 --max-time 30 \
-              --output "$build_file" --write-out '%{http_code}' \
-              "$PRODUCTION_URL/build-info.json" || true)"
-            if [ "$status" = '200' ] && node - "$build_file" "$GITHUB_SHA" <<'NODE'
+            for candidate in "${candidates[@]}"; do
+              status="$(curl --silent --show-error --location \
+                --connect-timeout 10 --max-time 30 \
+                --output "$build_file" --write-out '%{http_code}' \
+                "$candidate/build-info.json" || true)"
+              if [ "$status" = '200' ] && node - "$build_file" "$GITHUB_SHA" <<'NODE'
           const fs = require('fs');
           const [file, expectedSha] = process.argv.slice(2);
           const info = JSON.parse(fs.readFileSync(file, 'utf8'));
           if (info.product !== 'SanPaid' || info.runtime !== 'v69' || info.commitSha !== expectedSha) process.exit(1);
           NODE
-            then
-              ready=1
-              echo "Production is serving commit ${GITHUB_SHA}."
-              break
-            fi
-            echo "Attempt ${attempt}/60: production build is not current yet (HTTP ${status})."
+              then
+                ready=1
+                echo "PRODUCTION_URL=$candidate" >> "$GITHUB_ENV"
+                echo "Production is serving commit ${GITHUB_SHA} at ${candidate}."
+                break 2
+              fi
+              echo "Attempt ${attempt}/60: ${candidate} is not serving this commit (HTTP ${status})."
+            done
             sleep 10
           done
           if [ "$ready" != '1' ]; then
