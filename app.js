@@ -19,6 +19,7 @@
   const $=(s,r=document)=>r.querySelector(s);
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money=n=>`₹${Number(n||0).toLocaleString('en-IN')}`;
+  let mobileDrawerReturnFocus=null;
 
   function toast(message,type='success'){
     let wrap=$('#toastWrap');
@@ -63,9 +64,93 @@
     return true;
   }
 
+  function ensureDrawerStructure(){
+    const drawer=$('#mobileDrawer');
+    if(!drawer||drawer.dataset.mobileReady==='1')return drawer;
+    drawer.dataset.mobileReady='1';
+    drawer.setAttribute('role','dialog');
+    drawer.setAttribute('aria-modal','true');
+    drawer.setAttribute('aria-label','SanPaid mobile navigation');
+    const title=document.createElement('div');
+    title.className='drawer-title';
+    title.innerHTML='<strong>SanPaid Menu</strong><button type="button" class="drawer-close" aria-label="Close menu">✕</button>';
+    drawer.insertBefore(title,drawer.firstChild);
+    title.querySelector('.drawer-close').addEventListener('click',closeMobileDrawer);
+    return drawer;
+  }
+
+  function ensureDrawerScrim(){
+    let scrim=$('#mobileDrawerScrim');
+    if(scrim)return scrim;
+    scrim=document.createElement('div');
+    scrim.id='mobileDrawerScrim';
+    scrim.className='mobile-drawer-scrim hidden';
+    scrim.setAttribute('aria-hidden','true');
+    scrim.addEventListener('click',closeMobileDrawer);
+    document.body.appendChild(scrim);
+    return scrim;
+  }
+
+  function drawerFocusable(drawer){
+    return [...drawer.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter(el=>el.getClientRects().length);
+  }
+
+  function openMobileDrawer(){
+    const drawer=ensureDrawerStructure(),btn=$('#menuBtn');
+    if(!drawer||!btn)return;
+    mobileDrawerReturnFocus=document.activeElement;
+    drawer.classList.remove('hidden');
+    drawer.setAttribute('aria-hidden','false');
+    btn.setAttribute('aria-expanded','true');
+    btn.setAttribute('aria-label','Close menu');
+    ensureDrawerScrim().classList.remove('hidden');
+    document.body.classList.add('mobile-drawer-open');
+    requestAnimationFrame(()=>drawer.querySelector('.drawer-close')?.focus());
+  }
+
+  function closeMobileDrawer(){
+    const drawer=$('#mobileDrawer'),btn=$('#menuBtn'),scrim=$('#mobileDrawerScrim');
+    if(!drawer)return;
+    drawer.classList.add('hidden');
+    drawer.setAttribute('aria-hidden','true');
+    btn?.setAttribute('aria-expanded','false');
+    btn?.setAttribute('aria-label','Open menu');
+    scrim?.classList.add('hidden');
+    document.body.classList.remove('mobile-drawer-open');
+    const target=mobileDrawerReturnFocus;
+    mobileDrawerReturnFocus=null;
+    if(target?.isConnected)requestAnimationFrame(()=>target.focus());
+  }
+
+  function toggleMobileDrawer(){
+    const drawer=ensureDrawerStructure();
+    if(!drawer)return;
+    drawer.classList.contains('hidden')?openMobileDrawer():closeMobileDrawer();
+  }
+
+  function wireMobileNavigation(){
+    const drawer=ensureDrawerStructure(),btn=$('#menuBtn');
+    if(!drawer||!btn)return;
+    ensureDrawerScrim();
+    btn.addEventListener('click',toggleMobileDrawer);
+    drawer.addEventListener('click',event=>{
+      if(event.target.closest('a[href^="#"]'))closeMobileDrawer();
+    });
+    document.addEventListener('keydown',event=>{
+      if(drawer.classList.contains('hidden'))return;
+      if(event.key==='Escape'){event.preventDefault();closeMobileDrawer();return;}
+      if(event.key!=='Tab')return;
+      const nodes=drawerFocusable(drawer);if(!nodes.length)return;
+      const first=nodes[0],last=nodes[nodes.length-1];
+      if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+      else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+    });
+    window.addEventListener('resize',()=>{if(window.innerWidth>960&&!drawer.classList.contains('hidden'))closeMobileDrawer();},{passive:true});
+  }
+
   function wireLandingUtilities(){
     // Role-access buttons such as #getStarted, #coopLogin and Worker demo buttons
-    // are owned only by auth-unified.js. This file owns only service-selection utilities.
+    // are owned only by auth-unified.js. This file owns service selection + public mobile navigation.
     const book=$('#bookServiceHero');
     if(book)book.onclick=()=>startBooking($('#heroService')?.value||'Electrician');
 
@@ -85,7 +170,7 @@
     });
   }
 
-  function start(){retireLegacyState();renderServices();wireLandingUtilities();}
+  function start(){retireLegacyState();renderServices();wireMobileNavigation();wireLandingUtilities();}
 
   window.SanPaidDemo={
     reset(){try{localStorage.removeItem(LEGACY_STATE_KEY);sessionStorage.removeItem(PREFILL_SERVICE_KEY);sessionStorage.removeItem(PREFILL_AREA_KEY);}catch{}location.reload();},
@@ -93,7 +178,7 @@
     showRoles:async()=>{const auth=await waitForAuth();auth?.open?.(auth.getRole?.()||'CUSTOMER','login',auth.getPersona?.()||null);},
     startBooking
   };
-  window.SanPaidLanding={services:SERVICES,startBooking};
+  window.SanPaidLanding={services:SERVICES,startBooking,closeMobileDrawer};
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
