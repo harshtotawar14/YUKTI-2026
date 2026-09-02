@@ -2,13 +2,6 @@ name: SanPaid Production E2E
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'api/**'
-      - 'database/**'
-      - 'scripts/production-e2e.mjs'
-      - '.github/workflows/production-e2e.yml'
 
 permissions:
   contents: read
