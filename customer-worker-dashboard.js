@@ -2,8 +2,8 @@
   'use strict';
 
   const BOOKING_KEY='sanpaid_connected_booking_id';
-  const CUSTOMER_NAV=[['overview','Overview'],['book','Book Service'],['booking','My Booking'],['verify','Verify Worker'],['payment','Payment & Invoice'],['support','Support & Updates']];
-  const WORKER_NAV=[['overview','Overview'],['offers','Job Requests'],['current','Current Job'],['schedule','Schedule & Availability'],['passport','Trust Passport'],['earnings','Earnings'],['updates','Updates']];
+  const CUSTOMER_NAV=[['overview','Overview'],['book','Book Service'],['booking','My Booking'],['verify','Verify Worker'],['payment','Payment'],['support','Support']];
+  const WORKER_NAV=[['overview','Overview'],['offers','Job Requests'],['current','Current Job'],['schedule','Availability'],['passport','Trust Passport'],['earnings','Earnings'],['updates','Updates']];
   const CUSTOMER_STEPS=['Request','Eligibility','Worker Choice','Arrival','Verification','Service','Payment'];
   const WORKER_STEPS=['Understand','Choose','Travel','Verify','Work','Complete','Paid'];
   let refreshBusy=false,refreshQueued=false,lastRole='';
@@ -44,7 +44,6 @@
 
   function navHtml(r){const items=r==='CUSTOMER'?CUSTOMER_NAV:WORKER_NAV,current=activeView(r);return `<nav class="cw-nav" aria-label="${r==='CUSTOMER'?'Customer':'Worker'} dashboard"><div class="cw-nav-title"><b>${r==='CUSTOMER'?'Customer':'Worker'} Workspace</b><small>${r==='CUSTOMER'?'Service journey':'Work journey'}</small></div>${items.map(([id,name])=>`<button type="button" data-cw-view-btn="${id}" class="${current===id?'active':''}"><span>${esc(name)}</span></button>`).join('')}</nav>`;}
   function view(id,title,subtitle,body){return `<section class="cw-view" data-cw-view="${id}" ${activeView(lastRole||role())===id?'':'hidden'}><div class="cw-view-head"><div><span>${esc(title.toUpperCase())}</span><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div></div>${body}</section>`;}
-  function quick(id,title,subtitle,badge=''){return `<button type="button" class="cw-quick" data-cw-view-btn="${id}"><span>${esc(badge)}</span><b>${esc(title)}</b><small>${esc(subtitle)}</small></button>`;}
   function activate(host,r,id){const valid=(r==='CUSTOMER'?CUSTOMER_NAV:WORKER_NAV).some(x=>x[0]===id);if(!valid)return;setActiveView(r,id);$$('[data-cw-view]',host).forEach(v=>v.hidden=v.dataset.cwView!==id);$$('[data-cw-view-btn]',host).forEach(b=>b.classList.toggle('active',b.dataset.cwViewBtn===id));$(`[data-cw-view="${id}"]`,host)?.scrollIntoView({behavior:'smooth',block:'start'});adoptModules(host,r);}
   function wireNav(host,r){$$('[data-cw-view-btn]',host).forEach(b=>b.onclick=()=>activate(host,r,b.dataset.cwViewBtn));}
 
