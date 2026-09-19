@@ -36,6 +36,7 @@ assert.match(vercel,/connect-src 'self'/,'CSP must keep browser API calls same-o
 assert.ok(!vercel.includes('onrender.com'),'Vercel must not proxy API traffic to the deleted Render service');
 assert.ok(existsSync(resolve(root,'api/[...path].js')),'Vercel catch-all API is missing');
 assert.ok(existsSync(resolve(root,'database/schema.sql')),'PostgreSQL schema is missing');
+assert.ok(existsSync(resolve(root,'api/_lib/demo-access.cjs')),'Public demo credential policy module is missing');
 
 const runtime=read('connected-runtime-fix.js');
 assert.match(runtime,/window\.SanPaidApi=Object\.freeze/,'Canonical API client is missing');
@@ -61,5 +62,7 @@ assert.ok(!html.includes('<h3>WORKING</h3>'),'Public feature truth still makes a
 
 assert.ok(html.includes('START GOLDEN DEMO'),'Primary Golden Demo CTA is missing');
 assert.ok(!html.includes('TRY CONNECTED DEMO'),'Legacy competing demo CTA remains');
+const e2e=read('scripts/production-e2e.mjs');
+assert.ok(e2e.indexOf('/estimate`')<e2e.indexOf('/identity`'),'Production E2E must approve the estimate before identity/service start.');
 
 console.log(`SanPaid runtime integrity passed: ${jsFiles.length} JavaScript files, ${localAssets.length} local assets, ${ids.length} unique IDs.`);

@@ -4,6 +4,7 @@ const {readFileSync,readdirSync}=require('node:fs');
 const {resolve}=require('node:path');
 const {Pool}=require('pg');
 const {hashPassword}=require('./security.cjs');
+const {PUBLIC_DEMO_PASSWORD,DEMO_ACCOUNTS,DEMO_WORKER_EMAILS}=require('./demo-access.cjs');
 
 let pool;
 let readyPromise;
@@ -24,8 +25,8 @@ function migrationSql(){
 }
 
 async function seed(client){
-  const password=process.env.SANPAID_DEMO_PASSWORD;
-  if(!password||password.length<8)throw Object.assign(new Error('SANPAID_DEMO_PASSWORD must contain at least 8 characters.'),{status:503,code:'DEMO_PASSWORD_NOT_CONFIGURED'});
+  const password=process.env.SANPAID_DEMO_PASSWORD||PUBLIC_DEMO_PASSWORD;
+  if(password.length<8)throw Object.assign(new Error('Demo password must contain at least 8 characters.'),{status:503,code:'DEMO_PASSWORD_INVALID'});
   const passwordHash=await hashPassword(password);
   const services=[
     ['Electrician','electrician','⚡',499],['Plumber','plumber','🔧',449],['Carpenter','carpenter','🪚',549],
@@ -42,26 +43,21 @@ async function seed(client){
       ON CONFLICT(slug) DO UPDATE SET name=EXCLUDED.name,icon=EXCLUDED.icon,base_price=EXCLUDED.base_price,active=true`,[name,slug,icon,price]);
   }
   const coop=(await client.query("SELECT id FROM cooperatives WHERE code='YUKTI-01'")).rows[0];
-  const accounts=[
-    ['customer.connected@sanpaid.demo','Demo Customer','CUSTOMER'],
-    ['worker1.connected@sanpaid.demo','Asha Verma','WORKER'],
-    ['worker2.connected@sanpaid.demo','Ravi Kumar','WORKER'],
-    ['admin.connected@sanpaid.demo','Cooperative Admin','COOPERATIVE_ADMIN'],
-    ['federation.connected@sanpaid.demo','Federation Admin','FEDERATION_ADMIN']
-  ];
-  for(const [email,name,role] of accounts){
+  for(const {email,name,role} of DEMO_ACCOUNTS){
     await client.query(`INSERT INTO users(email,name,role,password_hash,cooperative_id) VALUES($1,$2,$3,$4,$5)
       ON CONFLICT(email) DO UPDATE SET name=EXCLUDED.name,role=EXCLUDED.role,password_hash=EXCLUDED.password_hash,cooperative_id=EXCLUDED.cooperative_id,active=true`,[email,name,role,passwordHash,coop.id]);
   }
-  const workerUsers=(await client.query("SELECT id,email FROM users WHERE role='WORKER' ORDER BY email")).rows;
+  const workerUsers=(await client.query('SELECT id,email FROM users WHERE email=ANY($1::text[]) ORDER BY email',[DEMO_WORKER_EMAILS])).rows;
   for(let index=0;index<workerUsers.length;index+=1){
     const row=workerUsers[index];
     await client.query(`INSERT INTO workers(user_id,cooperative_id,identity_status,availability_status,rating,demo_distance_km)
-      VALUES($1,$2,'VERIFIED','AVAILABLE',$3,$4) ON CONFLICT(user_id) DO UPDATE SET cooperative_id=EXCLUDED.cooperative_id`,[row.id,coop.id,index?4.72:4.91,index?6.4:3.2]);
+      VALUES($1,$2,'VERIFIED','AVAILABLE',$3,$4)
+      ON CONFLICT(user_id) DO UPDATE SET cooperative_id=EXCLUDED.cooperative_id,identity_status='VERIFIED',availability_status='AVAILABLE',rating=EXCLUDED.rating,demo_distance_km=EXCLUDED.demo_distance_km,updated_at=now()`,[row.id,coop.id,index?4.72:4.91,index?6.4:3.2]);
   }
   await client.query(`INSERT INTO worker_skills(worker_id,service_id,status)
-    SELECT w.id,s.id,'VERIFIED' FROM workers w CROSS JOIN services s
-    ON CONFLICT(worker_id,service_id) DO UPDATE SET status='VERIFIED'`);
+    SELECT w.id,s.id,'VERIFIED' FROM workers w JOIN users u ON u.id=w.user_id CROSS JOIN services s
+    WHERE u.email=ANY($1::text[])
+    ON CONFLICT(worker_id,service_id) DO UPDATE SET status='VERIFIED'`,[DEMO_WORKER_EMAILS]);
 }
 
 async function ensureDatabase(){

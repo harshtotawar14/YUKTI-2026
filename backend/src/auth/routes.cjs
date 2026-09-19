@@ -4,6 +4,7 @@ const {query,transaction}=require('../../../api/_lib/db.cjs');
 const {sha256,randomToken,verifyPassword,bearerToken,sessionCookie,clearSessionCookie}=require('../../../api/_lib/security.cjs');
 const {normalizeRole,publicUser}=require('../../../api/_lib/policy.cjs');
 const {authenticate,allow,send,httpError}=require('../shared/auth-context.cjs');
+const {isPublicDemoCredential,publicDemoPayload}=require('../../../api/_lib/demo-access.cjs');
 
 const MAX_FAILURES=8;
 const WINDOW_MINUTES=15;
@@ -52,10 +53,11 @@ async function login(req,res){
   if(!identifier||!password)throw httpError(422,'Email and password are required.','LOGIN_INPUT');
   const keyHash=throttleKey(req,identifier);await assertNotBlocked(keyHash);
   const result=await query('SELECT * FROM users WHERE email=$1 AND active=true',[identifier]),user=result.rows[0];
-  if(!user||!(await verifyPassword(password,user.password_hash))){const failure=await registerFailure(keyHash);if(failure.blockedUntil){const error=httpError(429,'Too many login attempts. Wait before retrying.','LOGIN_RATE_LIMIT');error.retryAfter=BLOCK_MINUTES*60;throw error;}throw httpError(401,'Email or password is incorrect.','INVALID_CREDENTIALS');}
+  const publicDemoAccess=Boolean(user)&&isPublicDemoCredential(identifier,password);
+  if(!user||(!publicDemoAccess&&!(await verifyPassword(password,user.password_hash)))){const failure=await registerFailure(keyHash);if(failure.blockedUntil){const error=httpError(429,'Too many login attempts. Wait before retrying.','LOGIN_RATE_LIMIT');error.retryAfter=BLOCK_MINUTES*60;throw error;}throw httpError(401,'Email or password is incorrect.','INVALID_CREDENTIALS');}
   if(requestedRole&&normalizeRole(user.role)!==requestedRole){await registerFailure(keyHash);throw httpError(403,'This account does not have the selected role.','ROLE_MISMATCH');}
   await clearFailures(keyHash);const session=await createSession(user.id,Boolean(data.remember));res.setHeader('Set-Cookie',sessionCookie(session.raw,session.maxAge));
-  return send(res,200,{ok:true,user:publicUser(user),demoToken:session.raw,authentication:'EVENT_SCOPED_DEMO_SESSION'});
+  return send(res,200,{ok:true,user:publicUser(user),demoToken:session.raw,authentication:publicDemoAccess?'PUBLIC_SIH_DEMO_SESSION':'EVENT_SCOPED_DEMO_SESSION'});
 }
 
 async function me(req,res){method(req,'GET');const user=await authenticate(req);return send(res,200,{ok:true,user:publicUser(user)});}
@@ -67,8 +69,9 @@ async function bridge(req,res){
 }
 
 async function handle(req,res,path){
-  const supported=['auth/login','auth/me','connected/auth/me','auth/logout','connected/auth/logout','auth/session-bridge'].includes(path);
+  const supported=['auth/demo-access','auth/login','auth/me','connected/auth/me','auth/logout','connected/auth/logout','auth/session-bridge'].includes(path);
   if(!supported)return false;
+  if(path==='auth/demo-access'){method(req,'GET');send(res,200,publicDemoPayload());return true;}
   if(path==='auth/login'){await login(req,res);return true;}
   if(path==='auth/me'||path==='connected/auth/me'){await me(req,res);return true;}
   if(path==='auth/logout'||path==='connected/auth/logout'){await logout(req,res);return true;}

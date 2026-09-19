@@ -1,10 +1,9 @@
 'use strict';
 
 const {query,transaction,ensureDatabase}=require('./_lib/db.cjs');
-const {sha256,randomToken,verifyPassword,bearerToken,sessionCookie,clearSessionCookie}=require('./_lib/security.cjs');
+const {sha256,randomToken,bearerToken}=require('./_lib/security.cjs');
 const {transition,normalizeRole,publicUser}=require('./_lib/policy.cjs');
 
-const loginAttempts=new Map();
 const ACTIVE_STATES=['OFFERING','FINDING_REPLACEMENT','ACCEPTED','ON_THE_WAY','ARRIVED','IDENTITY_VERIFIED','CUSTOMER_CONFIRMED','IN_PROGRESS','AWAITING_CUSTOMER_CONFIRMATION','COMPLETED','PAYMENT_PENDING'];
 
 function httpError(status,message,code){return Object.assign(new Error(message),{status,code});}
@@ -58,36 +57,6 @@ async function setBookingState(client,row,user,action,note){
   await client.query('UPDATE bookings SET status=$2,updated_at=now() WHERE id=$1',[row.id,next]);
   await history(client,row.id,next,note,user);await audit(client,user,`BOOKING_${next}`,{bookingId:row.id});
   return next;
-}
-
-async function createSession(userId,remember=false){
-  const raw=randomToken(32),days=remember?7:1,maxAge=days*86400;
-  await query("DELETE FROM sessions WHERE expires_at<=now()");
-  await query("INSERT INTO sessions(user_id,token_hash,expires_at) VALUES($1,$2,now()+($3||' days')::interval)",[userId,sha256(raw),String(days)]);
-  return {raw,maxAge};
-}
-
-async function authRoutes(req,res,path){
-  if(path==='auth/login'){
-    method(req,'POST');const data=body(req),identifier=clean(data.identifier,200).toLowerCase(),requestedRole=normalizeRole(data.role);
-    const key=`${req.headers['x-forwarded-for']||'client'}:${identifier}`;const attempt=loginAttempts.get(key)||{count:0,at:0};
-    if(attempt.count>=8&&Date.now()-attempt.at<15*60*1000)throw httpError(429,'Too many login attempts. Wait before retrying.','LOGIN_RATE_LIMIT');
-    const result=await query('SELECT * FROM users WHERE email=$1 AND active=true',[identifier]);const user=result.rows[0];
-    if(!user||!(await verifyPassword(clean(data.password,200),user.password_hash))){loginAttempts.set(key,{count:attempt.count+1,at:Date.now()});throw httpError(401,'Email or password is incorrect.','INVALID_CREDENTIALS');}
-    if(requestedRole&&normalizeRole(user.role)!==requestedRole)throw httpError(403,'This account does not have the selected role.','ROLE_MISMATCH');
-    loginAttempts.delete(key);const session=await createSession(user.id,Boolean(data.remember));res.setHeader('Set-Cookie',sessionCookie(session.raw,session.maxAge));
-    return send(res,200,{ok:true,user:publicUser(user),demoToken:session.raw,authentication:'EVENT_SCOPED_DEMO_SESSION'});
-  }
-  if(path==='auth/me'||path==='connected/auth/me'){
-    method(req,'GET');const user=await authenticate(req);return send(res,200,{ok:true,user:publicUser(user)});
-  }
-  if(path==='auth/logout'||path==='connected/auth/logout'){
-    method(req,'POST');const token=bearerToken(req);if(token)await query('DELETE FROM sessions WHERE token_hash=$1',[sha256(token)]);res.setHeader('Set-Cookie',clearSessionCookie());return send(res,200,{ok:true});
-  }
-  if(path==='auth/session-bridge'){
-    method(req,'POST');const user=await authenticate(req);allow(user,['COOPERATIVE_ADMIN','FEDERATION_ADMIN']);const session=await createSession(user.id,false);return send(res,200,{ok:true,demoToken:session.raw,user:publicUser(user)});
-  }
-  return false;
 }
 
 async function publicRoutes(req,res,path){
@@ -289,7 +258,6 @@ module.exports=async function handler(req,res){
   const path=pathOf(req);
   try{
     if(await publicRoutes(req,res,path)!==false)return;
-    if(await authRoutes(req,res,path)!==false)return;
     const user=await authenticate(req);
     if(path==='connected/snapshot')return snapshot(req,res,user);
     if(path==='connected/bookings')return createBooking(req,res,user);

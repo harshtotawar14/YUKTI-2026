@@ -6,6 +6,7 @@ import {join} from 'node:path';
 
 const require=createRequire(import.meta.url);
 const auth=require('../backend/src/auth/routes.cjs');
+const demo=require('../api/_lib/demo-access.cjs');
 const root=new URL('..',import.meta.url).pathname;
 
 test('login throttle hashes address and identifier instead of storing them raw',()=>{
@@ -43,4 +44,41 @@ test('stable API adapter owns authentication before legacy catch-all',()=>{
 test('normal browser session cookie remains HttpOnly Secure SameSite Lax',()=>{
   const security=readFileSync(join(root,'api/_lib/security.cjs'),'utf8');
   assert.match(security,/HttpOnly; Secure; SameSite=Lax/);
+});
+
+test('public SIH demo credential is limited to the five isolated demo accounts',()=>{
+  assert.equal(demo.DEMO_ACCOUNTS.length,5);
+  for(const account of demo.DEMO_ACCOUNTS)assert.equal(demo.isPublicDemoCredential(account.email,demo.PUBLIC_DEMO_PASSWORD),true);
+  assert.equal(demo.isPublicDemoCredential('someone@example.com',demo.PUBLIC_DEMO_PASSWORD),false);
+  assert.equal(demo.isPublicDemoCredential('admin.connected@sanpaid.demo','wrong-password'),false);
+});
+
+test('demo seeding never upgrades arbitrary worker accounts or arbitrary skills',()=>{
+  const source=readFileSync(join(root,'api/_lib/db.cjs'),'utf8');
+  assert.match(source,/DEMO_WORKER_EMAILS/);
+  assert.match(source,/email=ANY\(\$1::text\[\]\)/);
+  assert.doesNotMatch(source,/WHERE role='WORKER' ORDER BY email/);
+  assert.match(source,/WHERE u\.email=ANY\(\$1::text\[\]\)/);
+});
+
+test('stable auth is the only login implementation',()=>{
+  const legacy=readFileSync(join(root,'api/[...path].js'),'utf8');
+  assert.doesNotMatch(legacy,/async function authRoutes/);
+  assert.doesNotMatch(legacy,/loginAttempts=new Map/);
+  const stable=readFileSync(join(root,'backend/src/auth/routes.cjs'),'utf8');
+  assert.match(stable,/auth\/demo-access/);
+  assert.match(stable,/isPublicDemoCredential/);
+});
+
+test('login UI obtains public demo credentials from backend instead of embedding them',()=>{
+  const ui=readFileSync(join(root,'auth-unified.js'),'utf8');
+  assert.match(ui,/\/api\/auth\/demo-access/);
+  assert.match(ui,/spuUseDemo/);
+  assert.doesNotMatch(ui,/SanPaid@26089/);
+});
+
+test('worker demo selector uses an explicit DOM collection before forEach',()=>{
+  const ui=readFileSync(join(root,'auth-unified.js'),'utf8');
+  assert.match(ui,/querySelectorAll\('\[data-spu-worker-demo\]'\)/);
+  assert.doesNotMatch(ui,/\$\('\[data-spu-worker-demo\]'[^\n]*\.forEach/);
 });

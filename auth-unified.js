@@ -44,7 +44,9 @@
     requestedPersona: 'CUSTOMER',
     lastFocus: null,
     restorePromise: null,
-    resuming: false
+    resuming: false,
+    demoAccess: null,
+    demoAccessPromise: null
   };
 
   const $ = (s, r = document) => r.querySelector(s);
@@ -124,6 +126,28 @@
     return data;
   }
   const post = (path, body = {}) => jsonFetch(path, { method: 'POST', body: JSON.stringify(body) });
+
+  async function loadDemoAccess(force = false) {
+    if (state.demoAccess && !force) return state.demoAccess;
+    if (state.demoAccessPromise && !force) return state.demoAccessPromise;
+    state.demoAccessPromise = jsonFetch('/api/auth/demo-access', { credentials: 'omit' })
+      .then(data => {
+        state.demoAccess = data?.ok ? data : null;
+        const authRoot = document.getElementById('sanpaidUnifiedAuthRoot');
+        if (authRoot && !authRoot.hidden && !state.user && !state.checking) render();
+        return state.demoAccess;
+      })
+      .catch(() => null)
+      .finally(() => { state.demoAccessPromise = null; });
+    return state.demoAccessPromise;
+  }
+
+  function demoAccountFor(role, persona) {
+    const accounts = Array.isArray(state.demoAccess?.accounts) ? state.demoAccess.accounts : [];
+    if (role === 'WORKER' && persona) return accounts.find(account => account.role === role && account.persona === persona) || null;
+    return accounts.find(account => account.role === role) || null;
+  }
+
 
   function toast(message) {
     $('.spu-toast')?.remove();
@@ -217,7 +241,13 @@
   }
 
   async function logout({ silent = false, keepModal = false } = {}) {
-    try { await post('/api/auth/logout', {}); } catch {}
+    const bearerTokens = [...new Set([readConnectedToken(), readJudgeToken()].filter(Boolean))];
+    await Promise.allSettled([
+      post('/api/auth/logout', {}),
+      ...bearerTokens.map(token => jsonFetch('/api/auth/logout', {
+        method: 'POST', credentials: 'omit', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify({})
+      }))
+    ]);
     clearTokens();
     clearWorkspace();
     state.user = null;
@@ -346,7 +376,7 @@
     const persona = personaForUser(state.user) || meta.persona;
     content.innerHTML = `<span class="spu-demo-pill">AUTHORIZED SESSION</span><h2 id="spuTitle">Welcome back</h2><p class="spu-sub">Your valid session is active.</p>
       <div class="spu-current"><div class="spu-current-top"><span class="spu-current-role">${esc(meta.label)}</span><span class="spu-demo-pill">SESSION RESTORED</span></div>
-      <h3>${esc(state.user?.fullName || state.user?.email || 'SanPaid user')}</h3><p>${esc(state.user?.email || '')}</p>
+      <h3>${esc(state.user?.name || state.user?.email || 'SanPaid user')}</h3><p>${esc(state.user?.email || '')}</p>
       <div class="spu-current-actions"><button class="spu-primary" id="spuContinue" type="button">Continue to workspace</button><button class="spu-secondary" id="spuSwitch" type="button">Switch Role</button><button class="spu-secondary spu-danger" id="spuLogout" type="button">Logout</button></div></div>`;
     $('#spuContinue').onclick = () => { closeAuth(); openRoleWorkspace(key, persona); };
     $('#spuSwitch').onclick = async () => { await logout({ silent: true, keepModal: true }); state.requestedRole = 'CUSTOMER'; state.requestedPersona = 'CUSTOMER'; render(); };
@@ -354,7 +384,7 @@
   }
 
   function loginError(error) {
-    if (error.status === 400) return 'Enter both email and password.';
+    if (error.status === 400 || error.status === 422) return 'Enter both email and password.';
     if (error.status === 401) return 'Email, password or selected role did not match.';
     if (error.status === 403) return 'This role is not authorized for this account.';
     if (error.status === 429) return 'Too many attempts. Please wait and retry.';
@@ -365,13 +395,17 @@
     if (state.user) return renderCurrent();
     const meta = ROLE_META[state.requestedRole] || ROLE_META.CUSTOMER;
     const content = $('#spuContent', root());
-    const loginEmail = expectedEmail(state.requestedRole, state.requestedPersona);
+    const demoAccount = demoAccountFor(state.requestedRole, state.requestedPersona);
+    const loginEmail = demoAccount?.email || expectedEmail(state.requestedRole, state.requestedPersona);
     const workerContext = state.requestedRole === 'WORKER'
-      ? `<div class="spu-status-card"><small>Selected worker workspace</small><b>${state.requestedPersona === 'WORKER_B' ? 'Replacement worker account' : 'Primary worker account'}</b></div>`
+      ? `<div class="spu-status-card"><small>Selected worker workspace</small><b>${state.requestedPersona === 'WORKER_B' ? 'Replacement worker account' : 'Primary worker account'}</b><div class="spu-worker-switch"><button type="button" data-spu-worker-demo="WORKER_A" class="${state.requestedPersona === 'WORKER_A' ? 'active' : ''}">Worker A</button><button type="button" data-spu-worker-demo="WORKER_B" class="${state.requestedPersona === 'WORKER_B' ? 'active' : ''}">Worker B</button></div></div>`
       : '';
+    const demoAccessCard = state.demoAccess?.password
+      ? `<div class="spu-demo-access"><div><small>PUBLIC DEMO LOGIN</small><b>Use these credentials for the selected role</b><p>Prototype accounts only. Anyone evaluating SanPaid can sign in.</p></div><div class="spu-demo-credentials"><span>ID</span><code>${esc(loginEmail)}</code><span>Password</span><code>${esc(state.demoAccess.password)}</code></div><button type="button" class="spu-demo-use" id="spuUseDemo">USE DEMO CREDENTIALS</button></div>`
+      : `<div class="spu-demo-access loading"><div><small>PUBLIC DEMO LOGIN</small><b>Loading demo credentials…</b><p>The connected backend must be available before sign-in.</p></div></div>`;
 
     content.innerHTML = `<span class="spu-demo-pill">PROTOTYPE ENVIRONMENT</span><h2 id="spuTitle">Access SanPaid</h2><p class="spu-sub">Select your authorized role and sign in.</p>
-      ${roleGrid()}${workerContext}
+      ${roleGrid()}${workerContext}${demoAccessCard}
       <form id="spuLoginForm" class="spu-form" novalidate>
         <div class="spu-field"><label for="spuEmail">Email</label><input id="spuEmail" name="email" type="email" inputmode="email" autocomplete="username" value="${esc(loginEmail)}" required></div>
         <div class="spu-field spu-password"><label for="spuPassword">Password</label><input id="spuPassword" name="password" type="password" autocomplete="current-password" placeholder="Enter password" aria-describedby="spuLoginMessage" required><button class="spu-show" id="spuShowPassword" type="button" aria-controls="spuPassword" aria-pressed="false">Show</button></div>
@@ -382,7 +416,23 @@
       <div class="spu-helper"><b>${esc(meta.label)}:</b> ${esc(meta.help)}</div>`;
 
     wireRoleGrid();
+    Array.from(root().querySelectorAll('[data-spu-worker-demo]')).forEach(button => {
+      button.onclick = () => {
+        state.requestedRole = 'WORKER';
+        state.requestedPersona = button.dataset.spuWorkerDemo;
+        render();
+      };
+    });
     const password = $('#spuPassword');
+    const useDemo = $('#spuUseDemo');
+    if (useDemo && state.demoAccess?.password) {
+      useDemo.onclick = () => {
+        $('#spuEmail').value = loginEmail;
+        password.value = state.demoAccess.password;
+        password.focus();
+        toast('Public demo credentials filled.');
+      };
+    }
     $('#spuShowPassword').onclick = () => {
       const show = password.type === 'password';
       password.type = show ? 'text' : 'password';
@@ -433,6 +483,7 @@
     authRoot.hidden = false;
     document.body.style.overflow = 'hidden';
     renderChecking();
+    loadDemoAccess().catch(() => {});
     await restoreSession();
     if (state.user && roleKeyFromUser(state.user) === role && role === 'WORKER' && !personaMatches(state.user, state.requestedPersona)) {
       await logout({ silent: true, keepModal: true });
@@ -551,7 +602,7 @@
     publish();
     installCaptureGuards();
     updateAccessUI();
-    await restoreSession();
+    await Promise.allSettled([loadDemoAccess(), restoreSession()]);
     await resumeWorkspace();
     [400, 1000, 2200].forEach(ms => setTimeout(() => { publish(); updateAccessUI(); }, ms));
   }

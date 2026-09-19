@@ -1,5 +1,8 @@
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url);
+const {PUBLIC_DEMO_PASSWORD}=require('../api/_lib/demo-access.cjs');
 const base=(process.env.SANPAID_PRODUCTION_URL||'https://yukti-2026-brown.vercel.app').replace(/\/$/,'');
-const password=process.env.SANPAID_E2E_PASSWORD||'';
+const password=process.env.SANPAID_E2E_PASSWORD||PUBLIC_DEMO_PASSWORD;
 
 function assert(condition,message){if(!condition)throw new Error(message);}
 async function request(path,{method='GET',token,body,expected}={}){
@@ -33,11 +36,6 @@ const proof=(await request('/api/public-proof/summary',{expected:200})).payload;
 assert(proof.ok===true&&Number(proof.workers)>=2&&Number(proof.cooperatives)>=1,'Public proof contract invalid.');
 await request('/api/connected/snapshot',{expected:401});
 console.log('Public contracts + auth guard: PASS');
-
-if(!password){
-  console.log('Authenticated E2E skipped: SANPAID_E2E_PASSWORD is not configured in this runner.');
-  process.exit(0);
-}
 
 const customer=await login('customer.connected@sanpaid.demo','CUSTOMER');
 const worker1=await login('worker1.connected@sanpaid.demo','WORKER');
@@ -73,6 +71,13 @@ console.log('Worker reject -> fallback -> accept: PASS');
 
 await request(`/api/connected/jobs/${bookingId}/travel`,{method:'POST',token:acceptingToken,body:{},expected:200});
 await request(`/api/connected/jobs/${bookingId}/arrive`,{method:'POST',token:acceptingToken,body:{},expected:200});
+const estimate=(await request(`/api/connected/worker/jobs/${bookingId}/estimate`,{method:'POST',token:acceptingToken,body:{items:[{description:'Electrical service labour',amount:499},{description:'Demo service material',amount:75}],note:'Production E2E itemized estimate'},expected:201})).payload;
+assert(estimate.estimate?.status==='PENDING','Worker estimate was not created.');
+const customerEstimate=(await request(`/api/connected/bookings/${bookingId}/estimate`,{token:customer,expected:200})).payload;
+assert(customerEstimate.estimate?.status==='PENDING','Customer cannot see the pending estimate.');
+const approvedEstimate=(await request(`/api/connected/customer/bookings/${bookingId}/estimate/decision`,{method:'POST',token:customer,body:{decision:'APPROVE'},expected:200})).payload;
+assert(approvedEstimate.estimate?.status==='APPROVED','Customer estimate approval failed.');
+console.log('Arrival -> itemized estimate -> customer approval: PASS');
 const identity=(await request(`/api/connected/jobs/${bookingId}/identity`,{method:'POST',token:acceptingToken,body:{},expected:200})).payload;
 assert(identity.token,'Identity step did not return a one-time token.');
 await request(`/api/connected/service-start/${encodeURIComponent(identity.token)}`,{token:customer,expected:200});
