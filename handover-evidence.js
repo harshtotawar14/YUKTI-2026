@@ -159,7 +159,7 @@
     if (actions) {
       actions.hidden = false;
       const status = String(complaint.status || '').toUpperCase();
-      $('[data-complaint-action]', actions).forEach(button => {
+      $$('[data-complaint-action]', actions).forEach(button => {
         const action = button.dataset.complaintAction;
         button.hidden = status === 'RESOLVED' ? action !== 'REOPEN' : action === 'REOPEN' || (status === 'IN_REVIEW' && action === 'START_REVIEW');
       });
