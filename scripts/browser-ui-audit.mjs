@@ -28,6 +28,11 @@ try{
   page.on('console',msg=>{if(msg.type()==='error')consoleErrors.push(msg.text());});
   await page.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});await page.waitForTimeout(1000);
   assertProfessionalCopy(await page.locator('body').innerText(),'Landing page');
+  const heroText=(await page.locator('#home').innerText()).toLowerCase();
+  for(const phrase of ['not another worker-listing app','cooperative capacity exchange','demand-to-workforce loop'])assert(heroText.includes(phrase),`Hero is missing first-glance differentiator: ${phrase}`);
+  const heroBottom=await page.locator('.hero-controls').evaluate(node=>node.getBoundingClientRect().bottom);
+  assert(heroBottom<1000,'Core differentiators must remain inside the initial 1440×1000 evaluator viewport');
+  await assertNoHorizontalOverflow(page,'#home','Desktop hero');
   const heroText=(await page.locator('.hero').innerText()).toLowerCase();
   for(const phrase of ['cooperative capacity exchange','demand-to-workforce loop','stakeholder-informed design','5 findings mapped'])assert(heroText.includes(phrase),`Hero is missing evaluator-critical phrase: ${phrase}`);
   assert(await page.locator('.hero-usp').count()===2,'Hero must expose exactly two core USP cards');
