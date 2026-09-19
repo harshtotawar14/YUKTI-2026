@@ -60,8 +60,8 @@ assert.match(runtime,/id:'snapshot',label:'Connected snapshot route'/,'Readiness
 assert.ok(html.includes('IMPLEMENTED IN CURRENT BUILD'),'Public status section must identify the connected core as implemented in the current build');
 assert.ok(!html.includes('<h3>WORKING</h3>'),'Public feature truth still makes an unconditional working claim');
 
-assert.ok(html.includes('START GOLDEN DEMO'),'Primary Golden Demo CTA is missing');
-assert.ok(!html.includes('TRY CONNECTED DEMO'),'Legacy competing demo CTA remains');
+assert.ok(html.includes('OPEN PLATFORM'),'Primary platform CTA is missing');
+assert.ok(!html.includes('TRY CONNECTED DEMO'),'Legacy competing CTA remains');
 const e2e=read('scripts/production-e2e.mjs');
 assert.ok(e2e.indexOf('/estimate`')<e2e.indexOf('/identity`'),'Production E2E must approve the estimate before identity/service start.');
 
