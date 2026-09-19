@@ -43,7 +43,9 @@ try{
   const roleDialog=await visibleDialog(page);assert(await roleDialog.count()>0,'Role Access did not open a visible dialog/workspace');
   const roleText=(await roleDialog.textContent()||'').toLowerCase();
   for(const role of ['customer','worker','cooperative','federation'])assert(roleText.includes(role),`Role Access does not expose ${role} access`);
-  assert(roleText.includes('shared platform access'),'Role Access does not expose shared access guidance');
+  assert(roleText.includes('reviewer access'),'Role Access does not expose secondary reviewer access');
+  assert(!(await page.locator('.spu-review-access').evaluate(node=>node.hasAttribute('open'))),'Reviewer access must stay collapsed by default');
+  assert((await page.locator('#spuEmail').inputValue())==='','Normal sign-in must not be prefilled with reviewer credentials');
   assertProfessionalCopy(roleText,'Role Access');
   await closeTransient(page);
 
