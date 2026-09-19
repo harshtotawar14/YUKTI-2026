@@ -17,6 +17,39 @@ async function assertNoHorizontalOverflow(page,selector,where){const ok=await pa
 async function visibleDialog(page){return page.locator('[role="dialog"]:visible, dialog:visible, .modal:visible, .auth-modal:visible, .selector-modal:visible').first();}
 async function closeTransient(page){await page.keyboard.press('Escape').catch(()=>{});await page.waitForTimeout(120);const close=page.locator('button[aria-label*="Close" i]:visible, button[data-close]:visible, .close:visible').first();if(await close.count())await close.click({timeout:500}).catch(()=>{});await page.waitForTimeout(120);}
 
+async function openMockRoleWorkspace(context,role){
+  const rolePage=await context.newPage();rolePage.setDefaultTimeout(5000);
+  const user=role==='CUSTOMER'
+    ?{id:101,role:'CUSTOMER',fullName:'Review Customer',name:'Review Customer'}
+    :{id:201,role:'WORKER',fullName:'Amit Worker',name:'Amit Worker',worker_id:11};
+  await rolePage.route('**/api/**',async route=>{
+    const u=new URL(route.request().url()),path=u.pathname;
+    let payload={ok:true};
+    if(path==='/api/auth/demo-access')payload={ok:true,accounts:[]};
+    else if(path==='/api/auth/me')payload={ok:true,user};
+    else if(path==='/api/connected/health')payload={ok:true};
+    else if(path==='/api/public/services'||path==='/api/connected/customer/services')payload={ok:true,source:'DATABASE_CONFIGURATION',services:[{name:'Electrician',basePrice:499,icon:'⚡'},{name:'Plumber',basePrice:399,icon:'🔧'}]};
+    else if(path==='/api/connected/snapshot')payload={role,bookings:[]};
+    else if(path==='/api/connected/customer/notifications')payload={ok:true,notifications:[]};
+    else if(path==='/api/connected/customer/support')payload={ok:true,requests:[]};
+    else if(path==='/api/connected/worker/offers')payload=[];
+    else if(path==='/api/connected/worker/dashboard')payload={ok:true,profile:{name:'Amit Worker',available:true,availabilityStatus:'AVAILABLE',rating:4.8,identityStatus:'VERIFIED'},jobs:{active:0},earnings:{today:0,week:0,total:0,payments:[]}};
+    else if(path==='/api/connected/workforce/passport')payload={ok:true,passport:{workerId:11,name:'Amit Worker',cooperative:{id:1,name:'Local Cooperative',region:'Kolhapur'},identityVerified:true,identityStatus:'VERIFIED',availabilityStatus:'AVAILABLE',rating:4.8,completedJobs:3,currentEligibility:'ELIGIBLE',skills:[{name:'Electrician',status:'VERIFIED',verified:true}],credentials:[],credentialScope:'SANPAID_SERVICE_HISTORY_NOT_GOVERNMENT_CERTIFICATE'}};
+    else if(path==='/api/connected/worker/notifications')payload={ok:true,notifications:[]};
+    else if(path==='/api/connected/worker/schedule')payload={ok:true,date:'2026-09-19',slots:[],suggestedSlots:[],empty:true};
+    else if(path==='/api/connected/worker/capacity-offers')payload=[];
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(payload)});
+  });
+  await rolePage.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});await rolePage.waitForTimeout(450);
+  await rolePage.evaluate(async({role,user})=>{
+    window.SanPaidAuth.restoreSession=async()=>user;
+    window.SanPaidAuth.getCurrentUser=()=>user;
+    await window.ConnectedSanPaid.open(role==='CUSTOMER'?'CUSTOMER':'WORKER_A');
+  },{role,user});
+  await rolePage.waitForTimeout(1850);
+  return rolePage;
+}
+
 let browser;
 try{
   await waitServer();
@@ -157,9 +190,33 @@ try{
     }
   }
 
+  // Authenticated Customer/Worker workspace release audit with deterministic API fixtures.
+  const customerPage=await openMockRoleWorkspace(context,'CUSTOMER');
+  await customerPage.setViewportSize({width:390,height:844});await customerPage.waitForTimeout(120);
+  const customerDashboard=customerPage.locator('.cw-dashboard.customer');
+  await customerDashboard.waitFor({state:'visible'});
+  const customerText=(await customerDashboard.innerText()).toLowerCase();
+  for(const phrase of ['book service','payment & invoice','verify worker','support'])assert(customerText.includes(phrase),`Customer workspace missing: ${phrase}`);
+  assertProfessionalCopy(customerText,'Customer workspace');
+  await assertNoHorizontalOverflow(customerPage,'#connectedShell','390px Customer workspace');
+  await customerPage.close();
+
+  const workerPage=await openMockRoleWorkspace(context,'WORKER');
+  await workerPage.setViewportSize({width:390,height:844});await workerPage.waitForTimeout(120);
+  const workerDashboard=workerPage.locator('.cw-dashboard.worker');
+  await workerDashboard.waitFor({state:'visible'});
+  const workerText=(await workerDashboard.innerText()).toLowerCase();
+  for(const phrase of ['job requests','availability','trust passport','earnings'])assert(workerText.includes(phrase),`Worker workspace missing: ${phrase}`);
+  await workerPage.locator('[data-cw-view-btn="schedule"]').first().click();await workerPage.waitForTimeout(100);
+  const scheduleText=(await workerPage.locator('[data-cw-view="schedule"]').innerText()).toLowerCase();
+  for(const phrase of ['quick schedule update','review update','working slots'])assert(scheduleText.includes(phrase),`Worker schedule UX missing: ${phrase}`);
+  assertProfessionalCopy(workerText,'Worker workspace');
+  await assertNoHorizontalOverflow(workerPage,'#connectedShell','390px Worker workspace');
+  await workerPage.close();
+
   assert(pageErrors.length===0,`Page errors: ${pageErrors.join(' | ')}`);
   const unexpectedConsole=consoleErrors.filter(text=>!text.includes('/api/')&&!text.includes('404'));
   assert(unexpectedConsole.length===0,`Unexpected console errors: ${unexpectedConsole.join(' | ')}`);
   console.log('SanPaid Chromium UI audit: PASS');
-  console.log('Verified desktop/tablet/mobile navigation and Platform Tour across 360, 375, 390, 412, 430, 768, 1000, 1024 and 1440px release widths, including overflow and close-state recovery.');
+  console.log('Verified landing/Platform Tour release widths plus authenticated Customer and Worker workspaces at 390px, including role navigation, schedule UX, overflow and close-state recovery.');
 } finally {if(browser)await browser.close().catch(()=>{});server.kill('SIGTERM');}
