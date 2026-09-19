@@ -262,25 +262,36 @@
 
   function initNav(){
     const nav=$('.master-v2 .nav');if(!nav)return;
-    const links=$$('.navlinks a[href^="#"]',nav);
+    const links=$('.navlinks a[href^="#"]',nav);
     const sections=links.map(link=>document.querySelector(link.getAttribute('href'))).filter(Boolean);
+    let clickLockUntil=0;
 
+    const setActive=id=>{
+      links.forEach(link=>{
+        const current=link.getAttribute('href')===`#${id}`;
+        link.classList.toggle('is-active',current);
+        if(current)link.setAttribute('aria-current','location');
+        else link.removeAttribute('aria-current');
+      });
+    };
     const syncCompact=()=>nav.classList.toggle('nav-compact',window.scrollY>24);
     const syncActive=()=>{
-      if(!sections.length)return;
+      if(!sections.length||Date.now()<clickLockUntil)return;
       const marker=(nav.getBoundingClientRect().bottom||90)+72;
       let active=sections[0];
       for(const section of sections){
         if(section.getBoundingClientRect().top<=marker)active=section;
         else break;
       }
-      links.forEach(link=>{
-        const current=link.getAttribute('href')===`#${active.id}`;
-        link.classList.toggle('is-active',current);
-        if(current)link.setAttribute('aria-current','location');
-        else link.removeAttribute('aria-current');
-      });
+      setActive(active.id);
     };
+    links.forEach(link=>link.addEventListener('click',()=>{
+      const id=link.getAttribute('href')?.slice(1);
+      if(!id)return;
+      setActive(id);
+      clickLockUntil=Date.now()+800;
+      setTimeout(()=>{clickLockUntil=0;syncActive();},850);
+    }));
     const sync=()=>{syncCompact();syncActive();};
     sync();
     window.addEventListener('scroll',sync,{passive:true});
