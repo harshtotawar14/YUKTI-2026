@@ -170,9 +170,14 @@ async function lifecycle(req,res,user,bookingId,action){
 
 async function identity(req,res,user,bookingId){
   method(req,'POST');allow(user,['WORKER']);const raw=randomToken(12);const result=await transaction(async client=>{
-    const row=await ownedBooking(bookingId,user,{worker:true,lock:true,client});const next=await setBookingState(client,row,user,'identity','Sandbox worker identity verified; one-time customer code issued.');
+    const row=await ownedBooking(bookingId,user,{worker:true,lock:true,client});
+    const estimate=(await client.query('SELECT status,total FROM service_estimates WHERE booking_id=$1',[bookingId])).rows[0];
+    if(!estimate||estimate.status!=='APPROVED')throw httpError(409,'Customer approval of the itemized estimate is required before service-start verification.','ESTIMATE_APPROVAL_REQUIRED');
+    const next=await setBookingState(client,row,user,'identity','Sandbox worker identity verified after customer-approved estimate; one-time customer code issued.');
     await client.query("UPDATE service_start_tokens SET used_at=now() WHERE booking_id=$1 AND used_at IS NULL",[bookingId]);
-    await client.query("INSERT INTO service_start_tokens(booking_id,token_hash,expires_at) VALUES($1,$2,now()+interval '20 minutes')",[bookingId,sha256(raw)]);return {status:next};
+    await client.query("INSERT INTO service_start_tokens(booking_id,token_hash,expires_at) VALUES($1,$2,now()+interval '20 minutes')",[bookingId,sha256(raw)]);
+    await audit(client,user,'SERVICE_START_UNLOCKED_AFTER_ESTIMATE',{bookingId,details:{estimateTotal:Number(estimate.total)}});
+    return {status:next,estimateTotal:Number(estimate.total)};
   });return send(res,200,{ok:true,...result,token:raw,expiresInSeconds:1200,sandbox:true});
 }
 
