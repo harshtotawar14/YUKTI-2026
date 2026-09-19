@@ -83,7 +83,7 @@
   }
 
   function stateBadge(label,tone='neutral'){return `<span class="admin-module-state ${tone}">${esc(label)}</span>`;}
-  function setFedActive(target){$('#sihJudgeShell [data-fed-target]').forEach(btn=>{const active=btn.dataset.fedTarget===target;btn.classList.toggle('active',active);if(active)btn.setAttribute('aria-current','page');else btn.removeAttribute('aria-current');});}
+  function setFedActive(target){$$('#sihJudgeShell [data-fed-target]').forEach(btn=>{const active=btn.dataset.fedTarget===target;btn.classList.toggle('active',active);if(active)btn.setAttribute('aria-current','page');else btn.removeAttribute('aria-current');});}
   function switchTo(id){setFedActive(id);window.SanPaidJudgeMode?.switchTab?.(id);setTimeout(()=>$('#sihJudgeShell .judge-section.active')?.scrollIntoView({behavior:'smooth',block:'start'}),60);closeFedNav();}
   function scrollFed(id){setFedActive(id);$(`#${id}`)?.scrollIntoView({behavior:'smooth',block:'start'});closeFedNav();}
 
