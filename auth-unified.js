@@ -369,6 +369,38 @@
     });
   }
 
+  function renderRoleChooser() {
+    const content = $('#spuContent', root());
+    content.innerHTML = `<span class="spu-demo-pill">ROLE ACCESS</span>
+      <h2 id="spuTitle">Choose your workspace</h2>
+      <p class="spu-sub">Select the role you want to access. Each role opens only its authorized workspace.</p>
+      <div class="spu-role-grid spu-role-grid-entry" role="group" aria-label="Choose SanPaid role">
+        ${Object.entries(ROLE_META).map(([key, meta]) => `
+          <button type="button" class="spu-role" data-spu-entry-role="${key}">
+            <span class="spu-role-code" aria-hidden="true">${meta.code}</span>
+            <b>${meta.label}</b>
+            <small>${meta.help}</small>
+          </button>`).join('')}
+      </div>
+      <div class="spu-helper"><b>Role-based access:</b> Customer and Worker use service workspaces. Cooperative and Federation roles open governance workspaces.</div>`;
+    $('[data-spu-entry-role]', root()).forEach(button => {
+      button.onclick = () => {
+        const role = button.dataset.spuEntryRole;
+        const persona = ROLE_META[role]?.persona || null;
+        openAuth(role, persona);
+      };
+    });
+  }
+
+  function openRoleChooser() {
+    state.lastFocus = document.activeElement;
+    const authRoot = root();
+    authRoot.hidden = false;
+    document.body.style.overflow = 'hidden';
+    renderRoleChooser();
+    setTimeout(() => ($('[data-spu-entry-role]', authRoot) || $('.spu-close', authRoot))?.focus(), 0);
+  }
+
   function renderChecking() {
     const content = $('#spuContent', root());
     content.innerHTML = `<h2 id="spuTitle">Checking session…</h2><p class="spu-sub">Restoring your authorized SanPaid session.</p><div class="spu-checking"><span class="spu-spinner"></span><b>CHECKING SESSION</b></div>`;
@@ -541,7 +573,7 @@
         event.preventDefault(); event.stopImmediatePropagation(); await logout({ silent: true }); openAuth('CUSTOMER'); return;
       }
       if (target.closest?.('#getStarted,#spMobileAccess')) {
-        event.preventDefault(); event.stopImmediatePropagation(); openAuth(roleKeyFromUser(state.user) || 'CUSTOMER', personaForUser(state.user)); return;
+        event.preventDefault(); event.stopImmediatePropagation(); openRoleChooser(); return;
       }
       const request = roleFromTrigger(target);
       if (!request) return;
@@ -596,10 +628,11 @@
         state.user = null; clearTokens(); clearWorkspace(); updateAccessUI(); openAuth(state.requestedRole || 'CUSTOMER', state.requestedPersona);
       },
       open: openAuth,
+      openRoleChooser,
       close: closeAuth,
       clearWorkspace
     };
-    window.SanPaidAccess = { open: openAuth, close: closeAuth };
+    window.SanPaidAccess = { open: openAuth, openRoles: openRoleChooser, close: closeAuth };
   }
 
   async function start() {
