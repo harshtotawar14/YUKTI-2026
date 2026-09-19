@@ -45,7 +45,7 @@ assert.match(read('evaluator-final.js'),/SanPaidReadiness\?\.require/,'Evaluator
 assert.match(read('selector-mode.js'),/SanPaidReadiness\?\.require/,'Guided connected entry bypasses readiness');
 
 const serviceWorker=read('service-worker.js');
-assert.match(serviceWorker,/sanpaid-runtime-v71/,'Expected service-worker runtime v70');
+assert.match(serviceWorker,/sanpaid-runtime-v70/,'Expected service-worker runtime v70');
 assert.match(serviceWorker,/Promise\.allSettled/,'Service-worker precache must tolerate individual asset failure');
 assert.match(serviceWorker,/pathname\.startsWith\('\/api\/'\)/,'Service worker must not cache API requests');
 assert.match(serviceWorker,/build-info\.json/,'Service worker must not cache deployment identity');

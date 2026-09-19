@@ -6,6 +6,7 @@
   let customerWorkerLoaded=false;
   let roleShellLoaded=false;
   let enhancementsLoaded=false;
+  let authLoaded=false;
 
   function stylesheet(id,href){
     if(document.getElementById(id)||loaded.has(href))return;
@@ -32,15 +33,21 @@
     script('sanpaidWorkforceIntelligenceScript','workforce-intelligence.js');
   }
 
+  function loadAuth(){
+    if(authLoaded)return;
+    authLoaded=true;
+    stylesheet('sanpaidAuthStyles','auth-unified.css');
+    script('sanpaidAuthRuntime','auth-unified.js');
+  }
+
   function loadRoleShell(){
     if(roleShellLoaded)return;
     roleShellLoaded=true;
+    loadAuth();
     stylesheet('sanpaidDesignTokens','design-tokens.css');
     stylesheet('sanpaidSelectionStyles','selection-ready-v3.css');
     stylesheet('sanpaidWorkspaceStyles','workspace-ui.css');
     stylesheet('sanpaidColorSystem','color-system-v5.css');
-    stylesheet('sanpaidAuthStyles','auth-unified.css');
-    script('sanpaidAuthRuntime','auth-unified.js');
     loadEnhancements();
   }
 
@@ -118,6 +125,7 @@
   }
 
   function start(){
+    loadAuth();
     wireIntentLoading();
     wireAccessibility();
     exposeRuntimeStatus();

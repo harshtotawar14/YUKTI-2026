@@ -1,4 +1,4 @@
-const CACHE_NAME='sanpaid-runtime-v71';
+const CACHE_NAME='sanpaid-runtime-v70';
 const FALLBACK_ASSETS=[
   './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./master-v2.css',
   './connected-demo.css','./judge-demo.css','./selector-mode.css',

@@ -1,6 +1,6 @@
 {
   "name": "sanpaid-yukti-2026",
-  "version": "0.71.0",
+  "version": "0.70.0",
   "private": true,
   "description": "SanPaid SIH 2026 connected cooperative services prototype",
   "scripts": {
