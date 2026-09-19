@@ -26,6 +26,8 @@ body.sanpaid-v2 button,body.sanpaid-v2 input,body.sanpaid-v2 select{font:inherit
   radial-gradient(circle at 82% 8%,rgba(50,116,187,.10),transparent 24rem),
   linear-gradient(180deg,#fff 0,#f8fafc 34rem,#fff 34rem,#fff 100%)}
 .master-v2 .wrap{width:min(1180px,calc(100% - 40px));margin:0 auto}
+.master-v2 .section,.master-v2 #home{scroll-margin-top:92px}
+.master-v2 :is(a,button,select,input,textarea):focus-visible{outline:3px solid rgba(18,61,115,.24);outline-offset:3px}
 .master-v2 .ribbon{background:var(--v2-blue-2);color:#fff;text-align:center;padding:8px 18px;font-size:12px;letter-spacing:.025em}
 .master-v2 .nav{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.94);backdrop-filter:blur(18px);border-bottom:1px solid rgba(220,228,238,.85)}
 .master-v2 .navin{min-height:72px;display:flex;align-items:center;gap:26px}
@@ -184,6 +186,7 @@ body.sanpaid-v2>.skip-link:focus{left:16px;top:16px;z-index:100;background:#fff;
   .master-v2 .evidence-stat:nth-child(4){border-left:0}
   .master-v2 .navlinks{display:none}
   .master-v2 .menu-btn{display:inline-grid;place-items:center}
+  .master-v2 .mobile-drawer{left:auto;right:20px;width:min(420px,calc(100vw - 40px));top:80px}
 }
 @media (max-width:720px){
   .master-v2 .wrap{width:min(100% - 26px,1180px)}
