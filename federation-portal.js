@@ -25,7 +25,7 @@
 
   function ensureProfile(){
     const actions=$('#sihJudgeShell.federation-govtech .judge-top-actions');
-    if(!actions||$('#fedProfileChip',actions))return;
+    if(!actions)return;$('#coopProfileChip',actions)?.remove();if($('#fedProfileChip',actions))return;
     const user=window.SanPaidAuth?.getCurrentUser?.()||{};
     const name=String(user.full_name||user.fullName||user.name||'Federation Admin');
     const chip=document.createElement('div');

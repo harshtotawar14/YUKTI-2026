@@ -92,7 +92,7 @@
 
   function roleHero(role){
     const cfg=ROLE_CONFIG[role],shell=$('#sihJudgeShell');if(!shell)return;
-    shell.dataset.adminRole=role;shell.classList.add('admin-command-center');shell.classList.toggle('federation-govtech',role==='FEDERATION_ADMIN');
+    shell.dataset.adminRole=role;shell.classList.add('admin-command-center');shell.classList.toggle('federation-govtech',role==='FEDERATION_ADMIN');shell.classList.toggle('cooperative-govtech',role==='COOPERATIVE_ADMIN');const content=$('#judgeContent',shell);if(role==='FEDERATION_ADMIN'){content?.classList.remove('coop-nav-open');$('#coopSidebar',content)?.remove();$('#coopNavToggle',content)?.remove();$('#coopProfileChip',shell)?.remove();}else{content?.classList.remove('fed-nav-open');$('#fedSidebar',content)?.remove();$('#fedNavToggle',content)?.remove();$('#fedProfileChip',shell)?.remove();}
     const topSmall=$('.judge-top small',shell);if(topSmall)topSmall.textContent=role==='FEDERATION_ADMIN'?'Federation Operations · Regional Governance Workspace':`${cfg.short} · Governed Operations Workspace`;
     const hero=$('.judge-hero',shell);if(!hero)return;
     const badge=$('.judge-badge',hero),h1=$('h1',hero),p=$('p',hero);

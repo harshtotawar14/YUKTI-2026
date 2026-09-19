@@ -317,6 +317,32 @@ test('customer and worker dashboards stay compact and action-led',()=>{
   assert.match(connected,/AUTHORIZED WORKSPACE/,'Connected workspace should retain a compact session identity bar.');
 });
 
+
+test('four role dashboards protect status semantics and active navigation',()=>{
+  const dashboard=readFileSync(join(root,'customer-worker-dashboard.js'),'utf8');
+  const cooperative=readFileSync(join(root,'cooperative-portal.js'),'utf8');
+  const workforce=readFileSync(join(root,'workforce-intelligence.js'),'utf8');
+  assert.match(dashboard,/STATUS_TONES\.risk\.has\(value\)[\s\S]*STATUS_TONES\.good\.has\(value\)/,'Customer/Worker negative statuses must be evaluated before positive statuses.');
+  assert.match(dashboard,/aria-current="page"/,'Customer/Worker navigation must expose the active view.');
+  const coopBadge=(cooperative.match(/function badge\(value,tone\)\{[^\n]+/)||[])[0]||'';
+  assert.ok(coopBadge.indexOf('UNAVAILABLE')>=0&&coopBadge.indexOf('UNAVAILABLE')<coopBadge.indexOf('VERIFIED|BALANCED'),'Cooperative negative availability/eligibility states must win before positive badge states.');
+  const wiStatus=(workforce.match(/const statusClass=s=>\{[^\n]+/)||[])[0]||'';
+  assert.ok(wiStatus.indexOf('NOT_ELIGIBLE')>=0&&wiStatus.indexOf('NOT_ELIGIBLE')<wiStatus.indexOf('ELIGIBLE|VALID'),'Workforce negative eligibility must win before positive eligibility.');
+});
+
+test('admin role switching removes stale opposite-role chrome',()=>{
+  const admin=readFileSync(join(root,'admin-command-center.js'),'utf8');
+  const coop=readFileSync(join(root,'cooperative-portal.js'),'utf8');
+  const fed=readFileSync(join(root,'federation-portal.js'),'utf8');
+  assert.match(admin,/classList\.toggle\('cooperative-govtech',role==='COOPERATIVE_ADMIN'\)/,'Admin shell must explicitly own Cooperative styling by role.');
+  for(const id of ['coopSidebar','coopNavToggle','coopProfileChip','fedSidebar','fedNavToggle','fedProfileChip']){
+    assert.ok(admin.includes(id),`Role switch cleanup is missing ${id}`);
+  }
+  assert.match(coop,/if\(!\$\('#coopSidebar \[aria-current="page"\]'\)\)setActiveNav\('coop-home'\)/,'Cooperative refresh must preserve the current sidebar location.');
+  assert.match(coop,/\$\('#fedProfileChip',actions\)\?\.remove\(\)/,'Cooperative workspace must remove a stale Federation profile chip.');
+  assert.match(fed,/\$\('#coopProfileChip',actions\)\?\.remove\(\)/,'Federation workspace must remove a stale Cooperative profile chip.');
+});
+
 test('public JavaScript does not call forEach on the single-element selector helper',()=>{
   const failures=[];
   for(const file of scripts){
