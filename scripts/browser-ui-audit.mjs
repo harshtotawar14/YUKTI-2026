@@ -323,9 +323,14 @@ try{
   for(const phrase of ['cross-cooperative requests','sla escalations','regional capacity gap','planning confidence','active cooperatives','verified workers'])assert(federationText.includes(phrase),`Federation Admin workspace missing: ${phrase}`);
   assertProfessionalCopy(federationText,'Federation Admin workspace');
   await assertNoHorizontalOverflow(federationPage,'#sihJudgeShell','390px Federation Admin workspace');
+  const fedToggle=federationPage.locator('#fedNavToggle');
+  assert(await fedToggle.count()===1,'Federation mobile navigation toggle missing');
+  await fedToggle.click();await federationPage.waitForTimeout(80);
+  assert(await fedToggle.getAttribute('aria-expanded')==='true','Federation mobile navigation did not open');
   const capacityNav=federationPage.locator('[data-fed-target="capacity"]').first();
   assert(await capacityNav.count()===1,'Federation capacity navigation missing');
   await capacityNav.click();await federationPage.waitForTimeout(120);
+  assert(await fedToggle.getAttribute('aria-expanded')==='false','Federation mobile navigation did not close after navigation');
   const capacityText=(await federationPage.locator('#judge-capacity').innerText()).toLowerCase();
   for(const phrase of ['capacity governance','worker consent','authorized approval'])assert(capacityText.includes(phrase),`Federation capacity workspace missing: ${phrase}`);
   await federationPage.close();
