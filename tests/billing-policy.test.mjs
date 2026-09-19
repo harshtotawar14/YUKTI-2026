@@ -58,4 +58,21 @@ test('database compatibility bootstrap loads numbered migrations in sorted order
   assert.deepEqual(names,[...names].sort());
   assert.ok(names.includes('002_complaints_sla.sql'));
   assert.ok(names.includes('003_billing_ledger.sql'));
+  assert.ok(names.includes('004_service_estimates.sql'));
+});
+
+test('pre-service itemized estimate is customer-approved before identity verification',()=>{
+  const billing=readFileSync(join(root,'backend/src/billing/routes.cjs'),'utf8');
+  const api=readFileSync(join(root,'api/[...path].js'),'utf8');
+  const ui=readFileSync(join(root,'connected-service-ui.js'),'utf8');
+  const migration=readFileSync(join(root,'database/migrations/004_service_estimates.sql'),'utf8');
+  assert.match(migration,/CREATE TABLE IF NOT EXISTS service_estimates/);
+  assert.match(billing,/SERVICE_ESTIMATE_SUBMITTED/);
+  assert.match(billing,/customerApprovalRequired:true/);
+  assert.match(billing,/identityVerificationUnlocked/);
+  assert.match(api,/ESTIMATE_APPROVAL_REQUIRED/);
+  assert.match(api,/service_estimates WHERE booking_id=\$1/);
+  assert.match(ui,/worker\/jobs\/\$\{id\}\/estimate/);
+  assert.match(ui,/estimate\/decision/);
+  assert.match(ui,/Estimate Approval/);
 });
