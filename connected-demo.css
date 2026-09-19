@@ -24,3 +24,16 @@ body:has(#connectedShell:not(.hidden))>#landing{visibility:hidden;pointer-events
 .readiness-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
 body.readiness-open{overflow:hidden}
 @media(max-width:560px){.readiness-backdrop{padding:10px}.readiness-dialog{padding:20px;border-radius:18px}.readiness-actions{display:grid;grid-template-columns:1fr}.readiness-actions .btn{width:100%}}
+
+/* Customer + Worker final opportunity/payment polish */
+.connected-badge{background:rgba(49,107,154,.12);border-color:rgba(49,107,154,.26);color:#D8E8F5}
+.connected-offer{border-color:#D7E3EC;background:#F8FBFE}
+.connected-earnings b{color:var(--sp-blue,#316B9A)}
+.connected-offer-reason{background:#F4F8FC;border-color:#D7E3EC}
+.connected-reason-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.connected-reason-tags span{display:inline-flex;align-items:center;min-height:28px;padding:5px 8px;border:1px solid #C8D9E8;border-radius:999px;background:#EEF4FA;color:#315E86;font-size:10px;font-weight:800}
+.connected-payment-actions{align-items:flex-end}
+.connected-payment-method{display:grid;gap:5px;min-width:min(240px,100%);color:#425D6D;font-size:11px;font-weight:800}
+.connected-payment-method select{min-height:48px;border:1px solid #C8D6DF;border-radius:10px;background:#fff;color:#10283A;padding:10px 11px;font:inherit}
+.connected-choice-list label:has(input:checked){border-color:#7FA8C9;background:#F1F6FB}
+@media(max-width:560px){.connected-payment-actions{display:grid;grid-template-columns:1fr}.connected-payment-actions>*{width:100%}.connected-reason-tags{display:grid;grid-template-columns:1fr}.connected-reason-tags span{justify-content:center}}
