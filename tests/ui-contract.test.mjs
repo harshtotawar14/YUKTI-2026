@@ -123,3 +123,51 @@ test('public runtime has no obvious dead placeholder actions',()=>{
   }
   assert.deepEqual(suspicious,[],`Placeholder runtime code found: ${suspicious.join(', ')}`);
 });
+
+
+test('landing mirrors the locked SIH PPT narrative',()=>{
+  const required=[
+    'Trusted nearby workers are hard to find',
+    'Similar jobs can receive different quotes',
+    'Digital adoption needs support',
+    'Insurance coverage is uneven',
+    'In-home service needs identity assurance',
+    'Customer Demand',
+    'Trust Gate',
+    'Fair Allocation',
+    'Service-Start Verification',
+    'Delivery + Billing',
+    'Digital Service Passport',
+    'Cooperative Capacity Exchange',
+    'Demand-to-Workforce Loop',
+    'Better access to local work opportunities',
+    'Baseline',
+    'Measure KPIs',
+    'Validate Impact',
+    'SOURCE / FINDING',
+    'SANPAID DECISION'
+  ];
+  const missing=required.filter(phrase=>!html.includes(phrase));
+  assert.deepEqual(missing,[],`PPT-aligned website phrases missing: ${missing.join(', ')}`);
+});
+
+test('mobile Platform Tour owns drawer cleanup and responsive overflow protection',()=>{
+  const selectorJs=readFileSync(join(root,'selector-mode.js'),'utf8');
+  const selectorCss=readFileSync(join(root,'selector-mode.css'),'utf8');
+  const mobileCss=readFileSync(join(root,'mobile.css'),'utf8');
+  assert.match(selectorJs,/SanPaidLanding\?\.closeMobileDrawer/,'Platform Tour must close the canonical mobile drawer state before opening.');
+  assert.match(selectorCss,/\.selector-mode\{[^}]*overflow-x:hidden/,'Platform Tour shell must block horizontal overflow.');
+  assert.match(selectorCss,/#selectorAuto\{grid-column:1\/-1;grid-row:2\}/,'Mobile walkthrough controls need an explicit two-row layout.');
+  assert.doesNotMatch(mobileCss,/\.eval-nav\s+\.mobile-drawer/,'Deleted evaluator navigation overrides must not remain in mobile CSS.');
+});
+
+test('public JavaScript does not call forEach on the single-element selector helper',()=>{
+  const failures=[];
+  for(const file of scripts){
+    const rel=relative(root,file);
+    if(rel.startsWith('tests/')||rel.startsWith('scripts/'))continue;
+    const text=readFileSync(file,'utf8');
+    if(/(^|[^$])\$\([^\n;]*\)\.forEach\s*\(/m.test(text))failures.push(rel);
+  }
+  assert.deepEqual(failures,[],`Single-element selector used with forEach: ${failures.join(', ')}`);
+});
