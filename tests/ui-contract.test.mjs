@@ -302,6 +302,21 @@ test('admin roadmaps stay secondary and federation navigation has no duplicate i
   assert.doesNotMatch(federation,/insert\('fed-admin-readiness'/,'Federation sidebar must not promote the secondary roadmap.');
 });
 
+
+test('customer and worker dashboards stay compact and action-led',()=>{
+  const dashboard=readFileSync(join(root,'customer-worker-dashboard.js'),'utf8');
+  const dashboardCss=readFileSync(join(root,'customer-worker-dashboard.css'),'utf8');
+  const connected=readFileSync(join(root,'connected-demo.js'),'utf8');
+  assert.doesNotMatch(dashboard,/cw-quick-grid|function quick\(/,'Dashboard must not duplicate navigation with a quick-action grid.');
+  assert.match(dashboard,/function nextCustomerView\(/,'Customer overview needs a contextual next-step route.');
+  assert.match(dashboard,/function nextWorkerView\(/,'Worker overview needs a contextual next-step route.');
+  assert.match(dashboard,/class="cw-next-action"/,'Overview must expose one clear next action.');
+  assert.doesNotMatch(dashboard,/deployed backend|deploy-pending|Connected backend unavailable/i,'User-facing dashboard copy exposes internal deployment language.');
+  assert.doesNotMatch(dashboardCss,/\.cw-quick\b|\.cw-quick-grid\b/,'Removed quick-action UI must not leave dead dashboard CSS.');
+  assert.doesNotMatch(connected,/connected-app-heading/,'Connected workspace must not render a duplicate dashboard heading card.');
+  assert.match(connected,/AUTHORIZED WORKSPACE/,'Connected workspace should retain a compact session identity bar.');
+});
+
 test('public JavaScript does not call forEach on the single-element selector helper',()=>{
   const failures=[];
   for(const file of scripts){
