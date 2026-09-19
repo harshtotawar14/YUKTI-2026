@@ -14,7 +14,7 @@
       description:'Manage worker verification, service delivery, complaints, local capacity and fair opportunity allocation from one governed workspace.',
       scope:['Workers','Verification','Bookings','Complaints','Local Capacity'],
       order:['overview','trust','matching','complaint','capacity','planning','golden','research','security','welfare','control'],
-      labels:{overview:'Command Center',trust:'Worker Trust',matching:'Fair Matching',complaint:'Complaints & SLA',capacity:'Capacity Exchange',planning:'Workforce Planning',golden:'System Proof',research:'Architecture & Research',security:'Security & Scale',welfare:'Welfare & Growth',control:'System Control'}
+      labels:{overview:'Command Center',trust:'Worker Trust',matching:'Fair Matching',complaint:'Complaints & SLA',capacity:'Capacity Exchange',planning:'Workforce Planning',golden:'Technical Verification',research:'Architecture & Research',security:'Security & Scale',welfare:'Welfare & Growth',control:'System Control'}
     },
     FEDERATION_ADMIN:{
       short:'Federation Admin',
@@ -22,7 +22,7 @@
       description:'Regional workforce visibility, capacity coordination, escalation oversight and cooperative governance in one auditable operating workspace.',
       scope:['Regional Network','Cross-Cooperative Capacity','L3 Escalations','Skill Gaps','Governance'],
       order:['overview','capacity','complaint','planning','trust','matching','welfare','golden','research','security','control'],
-      labels:{overview:'Regional Command',capacity:'Capacity Network',complaint:'Escalations & SLA',planning:'Planning & Intelligence',trust:'Trust Governance',matching:'Matching Policy',welfare:'Welfare Readiness',golden:'System Proof',research:'Architecture & Research',security:'Security & Scale',control:'System Control'}
+      labels:{overview:'Regional Command',capacity:'Capacity Network',complaint:'Escalations & SLA',planning:'Planning & Intelligence',trust:'Trust Governance',matching:'Matching Policy',welfare:'Welfare Readiness',golden:'Technical Verification',research:'Architecture & Research',security:'Security & Scale',control:'System Control'}
     }
   };
 
@@ -36,14 +36,14 @@
     ['matching','Matching Policy','Eligibility-first transparency'],
     ['fed-health','Feature Verification','Frontend / API / DB status'],
     ['welfare','Welfare Readiness','Future authorized integrations'],
-    ['golden','System Proof','System verification and evidence'],
+    ['golden','Technical Verification','Runtime verification and evidence'],
     ['research','Architecture & Research','Technical evidence']
   ];
 
   const FEATURE_CATALOG=[
     {name:'Federation authentication',front:'SanPaidAuth + Federation role',back:'/api/auth/login · /api/auth/me · session bridge',db:'users · sessions',auth:'FEDERATION_ADMIN',mode:'READ'},
     {name:'Regional Command Center',front:'Federation Overview',back:'GET /api/connected/judge/overview',db:'workers · cooperatives · bookings · complaints · payment_ledger',auth:'ADMIN / FEDERATION',mode:'READ'},
-    {name:'System readiness',front:'System Proof / Module Health',back:'GET /api/connected/judge/readiness',db:'users · workers · booking_assignment_offers',auth:'ADMIN / FEDERATION',mode:'READ'},
+    {name:'System readiness',front:'Technical Verification / Module Health',back:'GET /api/connected/judge/readiness',db:'users · workers · booking_assignment_offers',auth:'ADMIN / FEDERATION',mode:'READ'},
     {name:'Fair matching explanation',front:'Matching Policy',back:'GET /api/connected/judge/match/:bookingId',db:'bookings · workers · worker_skills · worker_documents',auth:'ADMIN / FEDERATION',mode:'READ'},
     {name:'Demand & skill planning',front:'Planning & Intelligence',back:'GET /api/connected/judge/planning',db:'bookings · workers · worker_skills · demand_forecasts',auth:'ADMIN / FEDERATION',mode:'READ'},
     {name:'Capacity request',front:'Capacity Exchange',back:'POST /api/connected/judge/capacity/request',db:'capacity_requests',auth:'ADMIN / FEDERATION',mode:'WRITE'},
@@ -102,7 +102,7 @@
     const badge=$('.judge-badge',hero),h1=$('h1',hero),p=$('p',hero);
     if(badge){badge.textContent=role==='FEDERATION_ADMIN'?'FEDERATION OPERATIONS':'COOPERATIVE OPERATIONS WORKSPACE';badge.classList.add('admin-role-badge');}
     if(h1)h1.textContent=cfg.title;if(p)p.textContent=cfg.description;
-    const presentation=$('#judgePresentation',hero);if(presentation)presentation.textContent=role==='FEDERATION_ADMIN'?'System Proof View':'Presentation View';
+    const presentation=$('#judgePresentation',hero);if(presentation)presentation.textContent=role==='FEDERATION_ADMIN'?'Technical Verification':'Presentation View';
     if(role==='FEDERATION_ADMIN'&&!$('#fedGovTruth',hero)){const truth=document.createElement('small');truth.id='fedGovTruth';truth.className='fed-gov-truth';truth.textContent='Regional cooperative operations platform · External administrative integrations are shown only when authorized';p?.insertAdjacentElement('afterend',truth);}
   }
 
