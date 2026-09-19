@@ -36,6 +36,7 @@ try{
   const roleDialog=await visibleDialog(page);assert(await roleDialog.count()>0,'Role Access did not open a visible dialog/workspace');
   const roleText=(await roleDialog.textContent()||'').toLowerCase();
   for(const role of ['customer','worker','cooperative','federation'])assert(roleText.includes(role),`Role Access does not expose ${role} access`);
+  assert(roleText.includes('public demo login'),'Role Access does not expose public demo login guidance');
   await closeTransient(page);
 
   const matchingBefore=await page.locator('#matching').boundingBox();
