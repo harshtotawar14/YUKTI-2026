@@ -151,7 +151,7 @@ try{
   assert(await page.locator('.hero-usp').count()===2,'Hero must expose exactly two core USP cards');
   await assertNoHorizontalOverflow(page,'.hero','Desktop hero');
 
-  for(const id of ['connectedDemoBtn','getStarted','heroTourCta']){
+  for(const id of ['getStarted','heroTourCta']){
     const node=page.locator(`#${id}`);assert(await node.count()===1,`#${id} missing`);assert(await node.isVisible(),`#${id} is not visible on desktop`);
   }
   assert(await page.locator('#menuBtn').count()===1,'#menuBtn missing');
@@ -161,7 +161,6 @@ try{
   const roleDialog=await visibleDialog(page);assert(await roleDialog.count()>0,'Role Access did not open a visible dialog/workspace');
   const roleText=(await roleDialog.textContent()||'').toLowerCase();
   for(const role of ['customer','worker','cooperative','federation'])assert(roleText.includes(role),`Role Access does not expose ${role} access`);
-  assert(roleText.includes('shared platform access'),'Role Access does not expose shared access guidance');
   assertProfessionalCopy(roleText,'Role Access');
   await closeTransient(page);
 
@@ -177,14 +176,14 @@ try{
   await page.keyboard.press('Escape');await page.waitForTimeout(120);
   assert(!(await desktopSelector.isVisible()),'Escape did not close desktop Platform Tour');
 
-  const matchingBefore=await page.locator('#matching').boundingBox();
-  await page.locator('.navlinks a[href="#matching"]').click();await page.waitForTimeout(450);
-  const matchingAfter=await page.locator('#matching').boundingBox();
-  assert(Boolean(matchingBefore&&matchingAfter),'Matching section missing');
-  assert(await page.evaluate(()=>window.scrollY)>100,'Workflow navigation did not navigate toward matching proof');
+  const flowBefore=await page.locator('#how').boundingBox();
+  await page.locator('.navlinks a[href="#how"]').click();await page.waitForTimeout(450);
+  const flowAfter=await page.locator('#how').boundingBox();
+  assert(Boolean(flowBefore&&flowAfter),'How it works section missing');
+  assert(await page.evaluate(()=>window.scrollY)>100,'How it works navigation did not reach the service flow');
 
   await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(200);
-  await page.locator('#connectedDemoBtn').click();await page.waitForTimeout(350);
+  await page.locator('#evalOpenConnected').click();await page.waitForTimeout(350);
   const demoFeedback=page.locator('[role="dialog"]:visible, .toast:visible, [role="status"]:visible, .modal:visible').first();
   assert(await demoFeedback.count()>0,'OPEN PLATFORM produced no visible feedback when local API readiness is unavailable');
   assertProfessionalCopy(await demoFeedback.innerText(),'Platform readiness');

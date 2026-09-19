@@ -526,7 +526,7 @@
   }
 
   function simplifyLanding() {
-    document.getElementById('connectedDemoSection')?.remove();
+    // The redesigned landing uses this section for visible trust controls.
     document.getElementById('sihJudgeModeBtn')?.remove();
 
     const connected = document.getElementById('connectedDemoBtn');

@@ -383,7 +383,7 @@
           </button>`).join('')}
       </div>
       <div class="spu-helper"><b>Role-based access:</b> Customer and Worker use service workspaces. Cooperative and Federation roles open governance workspaces.</div>`;
-    $('[data-spu-entry-role]', root()).forEach(button => {
+    $$('[data-spu-entry-role]', root()).forEach(button => {
       button.onclick = () => {
         const role = button.dataset.spuEntryRole;
         const persona = ROLE_META[role]?.persona || null;
@@ -572,7 +572,7 @@
       if (target.closest?.('#connectedSwitch')) {
         event.preventDefault(); event.stopImmediatePropagation(); await logout({ silent: true }); openAuth('CUSTOMER'); return;
       }
-      if (target.closest?.('#getStarted,#spMobileAccess')) {
+      if (target.closest?.('#getStarted,#spMobileAccess,[data-platform-access]')) {
         event.preventDefault(); event.stopImmediatePropagation(); openRoleChooser(); return;
       }
       const request = roleFromTrigger(target);
@@ -595,7 +595,7 @@
     const key = roleKeyFromUser(state.user);
     const meta = ROLE_META[key];
     const button = $('#getStarted');
-    if (button) button.textContent = meta ? `CONTINUE · ${meta.label.toUpperCase()}` : 'ROLE ACCESS';
+    if (button) button.textContent = meta ? `CONTINUE · ${meta.label.toUpperCase()}` : 'OPEN PLATFORM';
   }
 
   async function resumeWorkspace() {

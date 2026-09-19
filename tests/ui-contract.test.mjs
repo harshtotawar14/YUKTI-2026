@@ -38,7 +38,7 @@ const links=[...html.matchAll(/<a\b[^>]*>/gi)].map(m=>({tag:m[0],a:attrs(m[0])})
 
 const delegatedButtonAttrs=new Set([
   'data-eval-open-connected','data-open-selector','data-service','data-role','data-action','data-tab','data-demo-action',
-  'data-booking-action','data-workspace-action','data-portal-action','data-close','data-open-role','data-auth-action','data-capacity-action'
+  'data-booking-action','data-workspace-action','data-portal-action','data-close','data-open-role','data-auth-action','data-capacity-action','data-judge-role','data-open-connected','data-platform-access'
 ]);
 
 function idReferenced(id){
@@ -94,7 +94,7 @@ test('navigation does not contain empty or javascript pseudo-links',()=>{
 });
 
 test('visible evaluator-critical controls are present and wired',()=>{
-  const critical=['connectedDemoBtn','getStarted','menuBtn','heroTourCta','runMatchBtn','evalRunRanking','evalResetMatch','evalOpenConnected','evalAdminPrototype','evalCapacityAction','evalFinalPrototype','evalFinalArchitecture'];
+  const critical=['getStarted','menuBtn','heroTourCta','runMatchBtn','evalRunRanking','evalResetMatch','evalOpenConnected','evalAdminPrototype','evalCapacityAction','evalFinalPrototype','evalFinalArchitecture'];
   const missing=critical.filter(id=>!ids.includes(id));
   const unwired=critical.filter(id=>ids.includes(id)&&!idReferenced(id)&&!new RegExp(`id=["']${id}["'][^>]*(?:data-eval-|data-open-)`).test(html));
   assert.deepEqual(missing,[],`Missing critical controls: ${missing.join(', ')}`);
@@ -125,27 +125,23 @@ test('public runtime has no obvious dead placeholder actions',()=>{
 });
 
 
-test('landing mirrors the locked SIH PPT narrative',()=>{
+test('landing preserves the research-backed SanPaid narrative',()=>{
   const required=[
-    'Trusted nearby workers are hard to find',
-    'Similar jobs can receive different quotes',
-    'Digital adoption needs support',
-    'Insurance coverage is uneven',
-    'In-home service needs identity assurance',
-    'Customer Demand',
-    'Trust Gate',
-    'Fair Allocation',
-    'Service-Start Verification',
-    'Delivery + Billing',
-    'Digital Service Passport',
+    'Cooperative-owned local workforce network',
+    'Verified cooperative workers',
+    'Check eligibility',
+    'Rank fairly',
+    'Worker chooses',
+    'Verify service',
+    'Complete &amp; record',
     'Cooperative Capacity Exchange',
     'Demand-to-Workforce Loop',
     'Better access to local work opportunities',
     'Baseline',
     'Measure KPIs',
     'Validate Impact',
-    'SOURCE / FINDING',
-    'SANPAID DECISION'
+    'Finding',
+    'SanPaid decision'
   ];
   const missing=required.filter(phrase=>!html.includes(phrase));
   assert.deepEqual(missing,[],`PPT-aligned website phrases missing: ${missing.join(', ')}`);
@@ -158,9 +154,8 @@ test('first fold exposes both core USPs and field validation immediately',()=>{
     'Cooperative Capacity Exchange',
     'USP 02',
     'Demand-to-Workforce Loop',
-    'Customer Choice + Worker Consent',
     'Stakeholder-informed design · Kolhapur',
-    '5 findings mapped'
+    '5 findings mapped to product controls'
   ];
   const missing=required.filter(phrase=>!html.includes(phrase));
   assert.deepEqual(missing,[],`First-fold differentiation/evidence missing: ${missing.join(', ')}`);
@@ -185,12 +180,12 @@ test('mobile Platform Tour owns drawer cleanup and responsive overflow protectio
 });
 
 
-test('final evaluator navigation is concise and role access is available on mobile',()=>{
-  for(const label of ['Problem','Solution','Workflow','2 USPs','Evidence','Impact']){
+test('final navigation is concise and platform access is available on mobile',()=>{
+  for(const label of ['How it works','Why SanPaid','Field proof','Roles']){
     assert.ok(html.includes(`>${label}</a>`),`Missing concise navigation label: ${label}`);
   }
   assert.match(html,/id="heroTourCta"[^>]*data-open-selector="0"/,'Hero secondary CTA must open the Platform Tour.');
-  assert.match(html,/id="spMobileAccess"/,'Mobile navigation must expose generic Role Access.');
+  assert.match(html,/id="spMobileAccess"/,'Mobile navigation must expose unified platform access.');
 });
 
 test('tablet drawer JavaScript matches the 1020px navigation breakpoint',()=>{

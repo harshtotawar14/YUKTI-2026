@@ -1,6 +1,6 @@
 const CACHE_NAME='sanpaid-runtime-v70';
 const FALLBACK_ASSETS=[
-  './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./master-v2.css',
+  './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./master-v2.css','./dossier-redesign.css',
   './connected-demo.css','./judge-demo.css','./selector-mode.css',
   './app.js','./mobile.js','./evaluator-final.js','./top1-polish.js',
   './connected-demo.js','./connected-service-ui.js','./connected-commerce-ui.js','./connected-runtime-fix.js',
