@@ -41,12 +41,18 @@ async function openMockRoleWorkspace(context,role){
     await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(payload)});
   });
   await rolePage.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});await rolePage.waitForTimeout(450);
-  await rolePage.evaluate(async({role,user})=>{
+  const opened=await rolePage.evaluate(async({role,user})=>{
     window.SanPaidAuth.restoreSession=async()=>user;
     window.SanPaidAuth.getCurrentUser=()=>user;
-    await window.ConnectedSanPaid.open(role==='CUSTOMER'?'CUSTOMER':'WORKER_A');
+    const result=await window.ConnectedSanPaid.open(role==='CUSTOMER'?'CUSTOMER':'WORKER_A');
+    window.dispatchEvent(new CustomEvent('sanpaid:connected-sync',{detail:{source:'browser-role-audit'}}));
+    return result;
   },{role,user});
-  await rolePage.waitForTimeout(1850);
+  assert(opened===true,`${role} connected workspace did not open in the role audit fixture`);
+  await rolePage.locator('#connectedShell:not(.hidden)').waitFor({state:'visible'});
+  await rolePage.waitForTimeout(2300);
+  await rolePage.evaluate(()=>window.dispatchEvent(new CustomEvent('sanpaid:connected-sync',{detail:{source:'browser-role-audit-refresh'}})));
+  await rolePage.waitForTimeout(250);
   return rolePage;
 }
 
