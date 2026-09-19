@@ -30,13 +30,13 @@
   function addAudit(label){demoState.audit.push({time:clock(),label});renderAudit();}
   function renderAudit(){
     const root=$('#evalAudit');if(!root)return;
-    if(!demoState.audit.length){root.innerHTML='<div class="eval-audit-row"><time>—</time><span>Run the demo to build a reason-coded audit trail.</span></div>';return;}
+    if(!demoState.audit.length){root.innerHTML='<div class="eval-audit-row"><time>—</time><span>Run the matching flow to build a reason-coded audit trail.</span></div>';return;}
     root.innerHTML=demoState.audit.slice(-7).map(item=>`<div class="eval-audit-row"><time>${esc(item.time)}</time><span>${esc(item.label)}</span></div>`).join('');
   }
 
   function candidateCard(worker){
     return `<article class="eval-candidate" data-eval-candidate="${esc(worker.id)}">
-      <div><strong>${esc(worker.name)} · ${worker.distance.toFixed(1)} km · ${esc(worker.skill)}</strong><small>${worker.verified?'Verified':'Verification Pending'} · ${worker.available?'Available':'Unavailable'} · Demo-safe identity</small><button class="eval-why" type="button" data-eval-why>WHY?</button></div>
+      <div><strong>${esc(worker.name)} · ${worker.distance.toFixed(1)} km · ${esc(worker.skill)}</strong><small>${worker.verified?'Verified':'Verification Pending'} · ${worker.available?'Available':'Unavailable'} · Controlled identity check</small><button class="eval-why" type="button" data-eval-why>WHY?</button></div>
       <span class="eval-status pending" data-eval-status>PENDING</span>
       <div class="eval-reason" data-eval-reason>Waiting for Eligibility Gate.</div>
     </article>`;
@@ -46,11 +46,11 @@
   function renderRankingPlaceholder(message='Run the Eligibility Gate first.'){const root=$('#evalRankingList');if(root)root.innerHTML=`<div class="eval-candidate"><div><strong>Ranking locked</strong><small>${esc(message)}</small></div><span class="eval-status pending">LOCKED</span></div>`;}
   function renderEmptyState(){
     const root=$('#evalRankingList');if(!root)return;
-    root.innerHTML='<div class="eval-empty-state"><b>NO ELIGIBLE WORKER</b><p>No verified worker currently meets all eligibility requirements for the selected demo radius.</p><button class="btn secondary" type="button" id="evalExpandRadius">Expand Configured Radius</button></div>';
+    root.innerHTML='<div class="eval-empty-state"><b>NO ELIGIBLE WORKER</b><p>No verified worker currently meets all eligibility requirements for the configured radius.</p><button class="btn secondary" type="button" id="evalExpandRadius">Expand Configured Radius</button></div>';
     const offer=$('#evalOfferRoot');if(offer)offer.innerHTML='';
   }
 
-  function setMatchState(text){const el=$('#evalMatchState');if(el)el.textContent=`PROTOTYPE-DEMO · ${text}`;}
+  function setMatchState(text){const el=$('#evalMatchState');if(el)el.textContent=`EXPLAINABLE MATCHING · ${text}`;}
   function setEligibilityBadge(text,kind=''){const el=$('#evalEligibilityBadge');if(el){el.textContent=text;el.className=kind;}}
   function setRankingBadge(text,kind=''){const el=$('#evalRankingBadge');if(el){el.textContent=text;el.className=kind;}}
 
@@ -141,7 +141,7 @@
     const worker=demoState.ranked[index];
     if(!worker){root.innerHTML='<div class="eval-empty-state"><b>NO FURTHER ELIGIBLE WORKER</b><p>Cooperative Admin review is required before changing schedule, service radius or capacity strategy.</p></div>';return;}
     demoState.offerIndex=index;
-    root.innerHTML=`<div class="eval-offer-card"><small>OPPORTUNITY RECEIVED · WORKER CHOICE</small><h4>${esc(worker.name)} · Electrician Service</h4><div class="eval-offer-meta"><span>Distance<br><b>${worker.distance.toFixed(1)} km</b></span><span>Schedule<br><b>Today · 4:00 PM</b></span><span>Expected Earnings<br><b>Demo estimate</b></span></div><div class="eval-offer-actions"><button type="button" class="accept" data-eval-offer-accept>ACCEPT</button><button type="button" data-eval-offer-decline>DECLINE</button></div></div>`;
+    root.innerHTML=`<div class="eval-offer-card"><small>OPPORTUNITY RECEIVED · WORKER CHOICE</small><h4>${esc(worker.name)} · Electrician Service</h4><div class="eval-offer-meta"><span>Distance<br><b>${worker.distance.toFixed(1)} km</b></span><span>Schedule<br><b>Today · 4:00 PM</b></span><span>Expected Earnings<br><b>Illustrative estimate</b></span></div><div class="eval-offer-actions"><button type="button" class="accept" data-eval-offer-accept>ACCEPT</button><button type="button" data-eval-offer-decline>DECLINE</button></div></div>`;
     addAudit(`Opportunity offered to ${worker.name} — worker choice required`);
   }
 
@@ -157,7 +157,7 @@
 
   function acceptOffer(){
     const worker=demoState.ranked[demoState.offerIndex];if(!worker)return;
-    const root=$('#evalOfferRoot');if(root)root.innerHTML=`<div class="eval-offer-card" style="border-color:#9ecfb6;background:#f1faf5"><small style="color:#18794e">OPPORTUNITY ACCEPTED</small><h4 style="color:#285c42">${esc(worker.name)} accepted the service opportunity</h4><p style="margin:0;color:#557667;font-size:9px">Customer can now proceed to arrival and Service-Start Verification in the connected prototype.</p></div>`;
+    const root=$('#evalOfferRoot');if(root)root.innerHTML=`<div class="eval-offer-card" style="border-color:#9ecfb6;background:#f1faf5"><small style="color:#18794e">OPPORTUNITY ACCEPTED</small><h4 style="color:#285c42">${esc(worker.name)} accepted the service opportunity</h4><p style="margin:0;color:#557667;font-size:9px">Customer can now proceed to arrival and Service-Start Verification in the connected platform.</p></div>`;
     const msg=$('#evalWorkerMessage');if(msg){msg.hidden=false;msg.className='eval-worker-message good';msg.textContent='Worker accepted. Customer notification and service lifecycle can continue.';}
     addAudit(`${worker.name} accepted opportunity — customer notified`);addAudit('Audit & Outcome preserved with eligibility and ranking reason codes');
     setMatchState('Worker accepted · auditable outcome recorded');
@@ -169,7 +169,7 @@
     $('#evalResetMatch')?.addEventListener('click',()=>resetMatching());
     $('#evalRadius')?.addEventListener('change',event=>{
       demoState.radius=Number(event.target.value||20);
-      const label=$('.eval-radius-control>span');if(label)label.textContent=`Current demo setting: ${demoState.radius} km`;
+      const label=$('.eval-radius-control>span');if(label)label.textContent=`Current setting: ${demoState.radius} km`;
       resetMatching();
     });
     document.addEventListener('click',event=>{
@@ -180,7 +180,7 @@
       if(event.target.closest?.('[data-eval-offer-start]')){renderOffer(0);return;}
       if(event.target.closest?.('[data-eval-offer-decline]')){declineOffer();return;}
       if(event.target.closest?.('[data-eval-offer-accept]')){acceptOffer();return;}
-      if(event.target.closest?.('#evalExpandRadius')){demoState.radius=20;const radius=$('#evalRadius');if(radius)radius.value='20';resetMatching();setMatchState('Radius expanded to demo policy example: 20 km');}
+      if(event.target.closest?.('#evalExpandRadius')){demoState.radius=20;const radius=$('#evalRadius');if(radius)radius.value='20';resetMatching();setMatchState('Radius expanded to configured policy radius: 20 km');}
     });
   }
 
