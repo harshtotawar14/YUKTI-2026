@@ -343,6 +343,33 @@ test('admin role switching removes stale opposite-role chrome',()=>{
   assert.match(fed,/\$\('#coopProfileChip',actions\)\?\.remove\(\)/,'Federation workspace must remove a stale Cooperative profile chip.');
 });
 
+
+test('customer booking and worker opportunity UI avoid seeded or misleading defaults',()=>{
+  const connected=readFileSync(join(root,'connected-demo.js'),'utf8');
+  const service=readFileSync(join(root,'connected-service-ui.js'),'utf8');
+  const capacity=readFileSync(join(root,'capacity-worker-ui.js'),'utf8');
+  const commerce=readFileSync(join(root,'connected-commerce-ui.js'),'utf8');
+  assert.doesNotMatch(connected,/Karad Zone 1/,'Customer booking must not ship with a hard-coded area.');
+  assert.match(connected,/Select a service/,'Customer must explicitly choose a service when no landing prefill exists.');
+  assert.match(connected,/Enter area or locality/,'Customer area input needs a neutral product placeholder.');
+  assert.doesNotMatch(service,/value="Service labour"/,'Worker estimate must not ship with a fake work item.');
+  assert.match(service,/previousItems/,'Rejected estimate revisions should preserve real prior line items.');
+  assert.match(connected,/Why you received this offer/,'Worker offer must explain why the opportunity was shown.');
+  assert.match(connected,/offer\.matching\?\.reasonCodes/,'Worker offer explanation must use backend-derived matching reasons.');
+  assert.doesNotMatch(connected,/Expected Amount/,'Booking total must not be presented as worker earnings.');
+  assert.match(capacity,/Authorized approval is still required/,'Worker consent must not be presented as final cross-cooperative authorization.');
+  assert.match(commerce,/Payment Method/,'Customer checkout must label the payment method control.');
+});
+
+test('customer and worker dashboards keep action language concise and role-appropriate',()=>{
+  const dashboard=readFileSync(join(root,'customer-worker-dashboard.js'),'utf8');
+  assert.match(dashboard,/Payment & Invoice/,'Customer navigation should expose invoice access clearly.');
+  assert.match(dashboard,/QUICK SCHEDULE UPDATE/,'Worker schedule shortcut needs a clear task label.');
+  assert.match(dashboard,/Review Update/,'Natural-language schedule parsing must ask the worker to review before confirmation.');
+  assert.doesNotMatch(dashboard,/VOICE \/ TEXT SCHEDULE|Rule-assisted shortcut/,'Worker workspace should not expose implementation-centric schedule labels.');
+  assert.doesNotMatch(dashboard,/Review the final amount, complete the sandbox payment and rate the service/,'Next-action guidance should not foreground sandbox implementation language.');
+});
+
 test('public JavaScript does not call forEach on the single-element selector helper',()=>{
   const failures=[];
   for(const file of scripts){
