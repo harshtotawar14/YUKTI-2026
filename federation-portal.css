@@ -29,3 +29,16 @@ html[data-sanpaid-theme="dark"] #sihJudgeShell.federation-govtech .fed-network-t
 .fed-cap-action{display:grid;grid-template-columns:minmax(180px,1fr) auto;align-items:end;gap:8px;padding:10px;border:1px solid #D7E3EA;border-radius:9px;background:#fff}.fed-cap-action.approval{grid-template-columns:1fr 1fr auto}.fed-cap-action label{display:grid;gap:4px}.fed-cap-action label>span{color:#607381;font-size:9.5px;font-weight:850;text-transform:uppercase}.fed-cap-action select,.fed-cap-action input{width:100%;min-height:44px;padding:8px 9px;border:1px solid #CBD7DD;border-radius:7px;background:#fff;color:#10283A;font:inherit;font-size:12px}.fed-cap-action select:focus,.fed-cap-action input:focus{border-color:#316B9A;box-shadow:0 0 0 3px rgba(49,107,154,.12);outline:none}
 .fed-cap-note{margin:8px 0 0;padding:9px 10px;border-left:3px solid #A96813;background:#FFF8EA;color:#72501F;font-size:10.5px;line-height:1.45}.fed-cap-note.ok{border-left-color:#167A5B;background:#EDF8F3;color:#17644E}.fed-cap-message{min-height:16px;margin:7px 0 0;color:#506676;font-size:10.5px}
 @media(max-width:760px){.fed-cap-head{display:grid}.fed-cap-head>strong{justify-self:start}.fed-cap-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.fed-cap-action,.fed-cap-action.approval{grid-template-columns:1fr}.fed-cap-action select,.fed-cap-action input{font-size:16px}.fed-cap-action .btn{width:100%;min-height:48px}}
+
+
+/* Secondary roadmap does not compete with regional operations. */
+.fed-secondary-details{padding-top:0!important}
+.fed-secondary-details>details>summary{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;cursor:pointer;list-style:none}
+.fed-secondary-details>details>summary::-webkit-details-marker{display:none}
+.fed-secondary-details>details>summary>div>span{display:block;color:#316B9A;font-size:10px;font-weight:900;letter-spacing:.065em}
+.fed-secondary-details>details>summary h3{margin:3px 0 0;color:#10283A;font-size:16px}
+.fed-secondary-details>details>summary>small{color:#71838E;font-size:10.5px;text-align:right}
+.fed-secondary-details>details>summary:after{content:"＋";color:#316B9A;font-size:16px;font-weight:900}
+.fed-secondary-details>details[open]>summary:after{content:"−"}
+@media(max-width:560px){.fed-secondary-details>details>summary{align-items:flex-start;flex-direction:column}.fed-secondary-details>details>summary>small{text-align:left}}
+
