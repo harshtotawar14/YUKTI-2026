@@ -491,13 +491,7 @@
 `;
 
   function loadLandingPolish(){
-    if(landingPolishLoaded)return;
     landingPolishLoaded=true;
-    if(document.getElementById('sanpaidK3LandingPolish'))return;
-    const style=document.createElement('style');
-    style.id='sanpaidK3LandingPolish';
-    style.textContent=LANDING_PREMIUM_CSS;
-    document.head.appendChild(style);
   }
 
   function wireLandingDepth(){
