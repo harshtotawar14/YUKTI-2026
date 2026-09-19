@@ -238,6 +238,58 @@ test('literal dynamic buttons declare an explicit type',()=>{
   assert.deepEqual(failures,[],`Dynamic buttons missing type="button":\n${failures.join('\n')}`);
 });
 
+
+test('normal sign-in stays separate from reviewer access',()=>{
+  const auth=readFileSync(join(root,'auth-unified.js'),'utf8');
+  assert.match(auth,/<details class="spu-review-access"><summary>Reviewer access<\/summary>/,'Reviewer credentials must live behind a secondary disclosure.');
+  assert.match(auth,/placeholder="Enter your Access ID"/,'Normal Access ID field must use a neutral placeholder.');
+  assert.doesNotMatch(auth,/id="spuEmail"[^>]*value="\$\{esc\(loginEmail\)\}"/,'Normal sign-in must not prefill reviewer credentials.');
+});
+
+test('customer and worker forms do not ship with seeded example values',()=>{
+  const connected=readFileSync(join(root,'connected-demo.js'),'utf8');
+  const dashboard=readFileSync(join(root,'customer-worker-dashboard.js'),'utf8');
+  assert.match(connected,/id="cdAddress" placeholder="Enter service address or landmark"/,'Customer address must be user-entered.');
+  assert.doesNotMatch(connected,/id="cdAddress"[^>]*value="Service Address/,'Customer address must not be seeded.');
+  assert.match(dashboard,/id="cwScheduleVoice" placeholder="Example:/,'Schedule natural-language example must be a placeholder.');
+  assert.doesNotMatch(dashboard,/id="cwScheduleVoice" value="I am not available/,'Schedule example must not be prefilled data.');
+});
+
+test('authenticated product copy avoids internal QA jargon',()=>{
+  const files=['customer-worker-dashboard.js','credibility-layer.js','judge-demo.js','admin-command-center.js','cooperative-portal.js','federation-portal.js'];
+  const forbidden=[/TOP-1/i,/deploy-pending/i,/manual regression/i,/connected but not tested/i,/system proof/i];
+  const failures=[];
+  for(const file of files){
+    const text=readFileSync(join(root,file),'utf8');
+    for(const pattern of forbidden)if(pattern.test(text))failures.push(`${file}: ${pattern}`);
+  }
+  assert.deepEqual(failures,[],`Internal QA language leaked into authenticated product copy:\n${failures.join('\n')}`);
+});
+
+test('worker earnings UI consumes the backend ledger entries contract',()=>{
+  const dashboard=readFileSync(join(root,'customer-worker-dashboard.js'),'utf8');
+  const backend=readFileSync(join(root,'backend/src/worker/profile-routes.cjs'),'utf8');
+  assert.match(backend,/earnings:\{source:'WORKER_EARNINGS_LEDGER'[\s\S]*entries:/,'Backend must expose earnings.entries.');
+  assert.match(dashboard,/earn\.entries\?\.length/,'Worker UI must render earnings.entries.');
+  assert.doesNotMatch(dashboard,/earn\.payments\?\.length/,'Worker UI must not use the old nonexistent earnings.payments field.');
+});
+
+test('production E2E covers service and governance write flows',()=>{
+  const e2e=readFileSync(join(root,'scripts/production-e2e.mjs'),'utf8');
+  for(const phrase of [
+    'Complaint -> review -> evidence -> resolve: PASS',
+    'Cooperative worker identity review: PASS',
+    'Capacity request -> federation visibility -> no automatic transfer: PASS',
+    'Completion -> sandbox payment -> invoice -> rating: PASS'
+  ])assert.ok(e2e.includes(phrase),`Production E2E missing governance proof: ${phrase}`);
+});
+
+test('browser CI includes authenticated role workspace rendering',()=>{
+  const workflow=readFileSync(join(root,'.github/workflows/browser-ui-audit.yml'),'utf8');
+  assert.ok(existsSync(join(root,'scripts/authenticated-role-ui-audit.mjs')),'Authenticated role UI audit script is missing.');
+  assert.match(workflow,/node scripts\/authenticated-role-ui-audit\.mjs/,'Browser workflow must run the authenticated role audit.');
+});
+
 test('public JavaScript does not call forEach on the single-element selector helper',()=>{
   const failures=[];
   for(const file of scripts){
