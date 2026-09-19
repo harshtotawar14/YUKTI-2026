@@ -325,14 +325,14 @@
     if(!records||$('#fed-admin-readiness'))return;
     const section=document.createElement('section');
     section.id='fed-admin-readiness';
-    section.className='fed-admin-readiness';
+    section.className='fed-admin-readiness fed-secondary-details';
     section.innerHTML=`
-      <div class="fed-section-head"><div><span>ADMINISTRATIVE READINESS</span><h3>Connected now vs authorized next phase</h3></div><small>Truth-labelled capabilities</small></div>
+      <details><summary><div><span>ADMINISTRATIVE INTEGRATION ROADMAP</span><h3>Authorized next-phase capabilities</h3></div><small>Secondary scope · truth-labelled</small></summary>
       <div class="fed-readiness-grid">
         <article><span>GIS Cooperative Capacity View</span><b>Future Authorized Integration</b><p>No precise cooperative coordinates are exposed by the current Federation overview, so no map is fabricated.</p></article>
         <article><span>Report Export</span><b>Integration Ready</b><p>Operational tables are available now; formal export is kept outside the active workflow until a verified export path is connected.</p></article>
         <article><span>Support & Feedback</span><b>Planned Integration</b><p>Support workflow remains outside the current operational scope and is not presented as connected.</p></article>
-      </div>`;
+      </div></details>`;
     records.insertAdjacentElement('afterend',section);
   }
 
@@ -349,8 +349,8 @@
       const anchor=before?$(`[data-fed-target="${before}"]`,nav):null;
       nav.insertBefore(btn,anchor||null);
     };
-    insert('fed-demand-snapshot','Demand & Capacity','MIS planning snapshot','planning');
-    insert('fed-admin-readiness','Administrative Readiness','GIS, export and support truth states','fed-health');
+    // Core navigation is owned by the Federation sidebar. Planning snapshots and
+    // integration roadmap remain contextual sections instead of duplicate nav items.
   }
 
   function trapDrawer(event){
