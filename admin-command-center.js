@@ -100,7 +100,7 @@
     const topSmall=$('.judge-top small',shell);if(topSmall)topSmall.textContent=role==='FEDERATION_ADMIN'?'Federation Operations · Regional Governance Workspace':`${cfg.short} · Governed Operations Workspace`;
     const hero=$('.judge-hero',shell);if(!hero)return;
     const badge=$('.judge-badge',hero),h1=$('h1',hero),p=$('p',hero);
-    if(badge){badge.textContent=role==='FEDERATION_ADMIN'?'FEDERATION OPERATIONS · SIH 2026':'COOPERATIVE OPERATIONS WORKSPACE';badge.classList.add('admin-role-badge');}
+    if(badge){badge.textContent=role==='FEDERATION_ADMIN'?'FEDERATION OPERATIONS':'COOPERATIVE OPERATIONS WORKSPACE';badge.classList.add('admin-role-badge');}
     if(h1)h1.textContent=cfg.title;if(p)p.textContent=cfg.description;
     const presentation=$('#judgePresentation',hero);if(presentation)presentation.textContent=role==='FEDERATION_ADMIN'?'System Proof View':'Presentation View';
     if(role==='FEDERATION_ADMIN'&&!$('#fedGovTruth',hero)){const truth=document.createElement('small');truth.id='fedGovTruth';truth.className='fed-gov-truth';truth.textContent='Regional cooperative operations platform · External administrative integrations are shown only when authorized';p?.insertAdjacentElement('afterend',truth);}
