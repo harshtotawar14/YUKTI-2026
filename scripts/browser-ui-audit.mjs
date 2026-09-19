@@ -43,9 +43,19 @@ try{
   const roleDialog=await visibleDialog(page);assert(await roleDialog.count()>0,'Role Access did not open a visible dialog/workspace');
   const roleText=(await roleDialog.textContent()||'').toLowerCase();
   for(const role of ['customer','worker','cooperative','federation'])assert(roleText.includes(role),`Role Access does not expose ${role} access`);
-  assert(roleText.includes('shared platform access'),'Role Access does not expose shared access guidance');
+  assert(roleText.includes('reviewer access'),'Role Access does not expose secondary reviewer access');
+  assert(!(await page.locator('.spu-review-access').evaluate(node=>node.hasAttribute('open'))),'Reviewer access must stay collapsed by default');
+  assert((await page.locator('#spuEmail').inputValue())==='','Normal sign-in must not be prefilled with reviewer credentials');
   assertProfessionalCopy(roleText,'Role Access');
   await closeTransient(page);
+
+  for(const width of [1440,1024,768,430,412,390,375,360]){
+    await page.setViewportSize({width,height:Math.max(800,Math.round(width*.72))});await page.waitForTimeout(90);
+    await assertNoHorizontalOverflow(page,'html',width+'px landing viewport');
+    const menuVisible=await page.locator('#menuBtn').isVisible();
+    assert(menuVisible===(width<=1020),`Navigation breakpoint mismatch at ${width}px`);
+  }
+  await page.setViewportSize({width:1440,height:1000});await page.waitForTimeout(100);
 
   await page.locator('#heroTourCta').click();await page.waitForTimeout(180);
   const desktopSelector=page.locator('#selectorModeShell');
@@ -147,5 +157,5 @@ try{
   const unexpectedConsole=consoleErrors.filter(text=>!text.includes('/api/')&&!text.includes('404'));
   assert(unexpectedConsole.length===0,`Unexpected console errors: ${unexpectedConsole.join(' | ')}`);
   console.log('SanPaid Chromium UI audit: PASS');
-  console.log('Verified desktop Platform Tour/role access/active navigation, 1000px tablet menu and role access, plus 390/360px mobile Platform Tour, overflow and close-state recovery.');
+  console.log('Verified reviewer-safe role access, 1440/1024/768/430/412/390/375/360 responsive widths, desktop/tablet/mobile Platform Tour, overflow and close-state recovery.');
 } finally {if(browser)await browser.close().catch(()=>{});server.kill('SIGTERM');}
