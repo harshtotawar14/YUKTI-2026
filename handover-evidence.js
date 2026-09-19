@@ -134,11 +134,11 @@
       return;
     }
     root.innerHTML = `
-      <article><span>Booking</span><b>${esc(complaint.bookingCode || `#${complaint.bookingId || '—'}`)}</b></article>
+      <article><span>Booking</span><b>${esc(complaint.referenceCode || complaint.bookingCode || `#${complaint.bookingId || '—'}`)}</b></article>
       <article><span>Status</span><b>${esc(human(complaint.status))}</b></article>
-      <article><span>SLA Level</span><b>L${Number(complaint.escalationLevel || 0)}</b></article>
-      <article><span>SLA</span><b>${complaint.slaBreached ? 'BREACHED' : 'WITHIN / NOT MARKED BREACHED'}</b></article>
-      <article><span>Worker</span><b>${esc(complaint.workerName || '—')}</b></article>
+      <article><span>Severity</span><b>${esc(human(complaint.severity || 'NORMAL'))}</b></article>
+      <article><span>SLA</span><b>${complaint.overdue ? 'OVERDUE / ESCALATED' : 'WITHIN WINDOW'}</b></article>
+      <article><span>Category</span><b>${esc(complaint.category || 'Service Support')}</b></article>
       <article><span>Created</span><b>${esc(fmtDate(complaint.createdAt))}</b></article>`;
   }
 
@@ -193,7 +193,7 @@
     const select = $('#coopEvidenceComplaintSelect', panel || document);
     try {
       const rows = await api('/api/cooperative-admin/complaints');
-      const complaints = Array.isArray(rows) ? rows : [];
+      const complaints = Array.isArray(rows) ? rows : Array.isArray(rows?.complaints) ? rows.complaints : [];
       if (!select) return;
       if (!complaints.length) {
         select.disabled = true;
