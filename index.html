@@ -3,25 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="SanPaid — AI-assisted cooperative workforce operating network for verified local services, eligibility-first matching, worker choice and cooperative governance.">
+<meta name="description" content="SanPaid — AI-assisted cooperative workforce operating network for verified services, customer-controlled approval, cooperative capacity exchange and human-reviewed workforce planning.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="application-name" content="SanPaid">
-<meta name="theme-color" content="#F6F8FA">
+<meta name="theme-color" content="#F7F9FC">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>SanPaid — SIH 2026 Cooperative Workforce Network</title>
+<title>SanPaid — Cooperative Workforce Operating Network | SIH 2026</title>
 <link rel="canonical" href="https://yukti-2026-brown.vercel.app/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="SanPaid">
-<meta property="og:title" content="SanPaid — SIH 2026 Cooperative Workforce Network">
-<meta property="og:description" content="Eligibility-first matching, worker choice and auditable cooperative service operations in one connected prototype.">
+<meta property="og:title" content="SanPaid — Cooperative Workforce Operating Network">
+<meta property="og:description" content="Serve today. Prepare tomorrow. Verified local service delivery, governed cooperative capacity exchange and data-driven workforce planning.">
 <meta property="og:url" content="https://yukti-2026-brown.vercel.app/">
 <meta property="og:image" content="https://yukti-2026-brown.vercel.app/social-preview.svg">
-<meta property="og:image:alt" content="SanPaid cooperative workforce network">
+<meta property="og:image:alt" content="SanPaid cooperative workforce operating network">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="SanPaid — SIH 2026 Cooperative Workforce Network">
-<meta name="twitter:description" content="A connected prototype for trusted local services, fair worker opportunities and accountable governance.">
+<meta name="twitter:title" content="SanPaid — SIH 2026">
+<meta name="twitter:description" content="A cooperative-owned workforce network for trusted local services and stronger future capacity.">
 <meta name="twitter:image" content="https://yukti-2026-brown.vercel.app/social-preview.svg">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="app-icon.svg" type="image/svg+xml">
@@ -34,314 +34,259 @@
 <link rel="stylesheet" href="mobile.css">
 <link rel="stylesheet" href="connected-demo.css">
 <link rel="stylesheet" href="judge-demo.css">
-<link rel="stylesheet" href="sih-final.css">
-<link rel="stylesheet" href="selector-mode.css">
-<link rel="stylesheet" id="sanpaidHeroViewportFix" href="hero-viewport-fix.css">
-<link rel="stylesheet" id="sanpaidCredibilityStyles" href="credibility-layer.css">
-<link rel="stylesheet" id="sanpaidWorkforceIntelligenceStyles" href="workforce-intelligence.css">
-<link rel="stylesheet" id="sanpaidEvaluatorFinalStyles" href="evaluator-final.css">
+<link rel="stylesheet" href="master-v2.css">
 </head>
-<body>
+<body class="sanpaid-v2">
 <a class="skip-link" href="#mainContent">Skip to main content</a>
-<div id="landing">
-  <div class="ribbon">Smart India Hackathon 2026 · PS ID <b>26089</b> · Cooperative Gig Services Platform for Household &amp; Community Services</div>
+<div id="landing" class="master-v2">
+  <div class="ribbon">Smart India Hackathon 2026 · PS 26089 · Cooperative Gig Services Platform for Household &amp; Community Services</div>
 
-  <nav class="nav eval-nav" aria-label="SanPaid navigation">
+  <nav class="nav" aria-label="SanPaid navigation">
     <div class="wrap navin">
       <a class="brand" href="#home" aria-label="SanPaid home">San<span>Paid</span></a>
       <div class="navlinks">
-        <a href="#home">Overview</a>
-        <a href="#problem">Problem</a>
-        <a href="#how">How It Works</a>
-        <a href="#matching">Matching Proof</a>
-        <a href="#operatingModel">Governance</a>
+        <a href="#problem">Why SanPaid</a>
+        <a href="#solutions">8 Solutions</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#innovation">Innovation</a>
+        <a href="#evidence">Evidence</a>
         <a href="#architecture">Architecture</a>
       </div>
       <div class="actions">
-        <span class="eval-sih-chip desktop-only">SIH 2026</span>
         <button class="btn primary desktop-only" id="connectedDemoBtn" type="button">START GOLDEN DEMO</button>
-        <button class="btn ghost desktop-only" id="getStarted" type="button">Role Access</button>
+        <button class="btn ghost desktop-only" id="getStarted" type="button">ROLE ACCESS</button>
         <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileDrawer">☰</button>
       </div>
     </div>
     <div id="mobileDrawer" class="mobile-drawer hidden" aria-hidden="true">
-      <a href="#home">Overview</a>
-      <a href="#problem">Problem</a>
-      <a href="#how">How It Works</a>
-      <a href="#matching">Matching Proof</a>
-      <a href="#operatingModel">Governance</a>
+      <a href="#problem">Why SanPaid</a>
+      <a href="#solutions">8 Solutions</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#innovation">Innovation</a>
+      <a href="#evidence">Evidence</a>
       <a href="#architecture">Architecture</a>
       <button type="button" class="btn primary" data-eval-open-connected>START GOLDEN DEMO</button>
-      <button type="button" class="btn secondary" data-open-selector="0">Guided Demo</button>
+      <button type="button" class="btn secondary" id="evalAdminPrototype">ADMINISTRATION ACCESS</button>
     </div>
   </nav>
 
-  <header class="hero eval-hero" id="home">
-    <div class="wrap hero-grid eval-hero-grid">
-      <div class="eval-hero-copy" data-reveal>
-        <span class="eyebrow eval-badge">SIH 2026 · PS 26089</span>
-        <p class="eval-system-label">AI-Assisted Cooperative Workforce Operating Network</p>
-        <h1>Trusted Local Services.<br><em>Fair Worker Opportunities.</em><br>Stronger Cooperatives.</h1>
-        <p class="lead">SanPaid connects verified cooperative workers with local service demand through an eligibility gate, one explainable ranking policy, worker choice, dual service-start verification and governed cooperative operations.</p>
-
-        <div class="hero-master-flow" aria-label="SanPaid core decision logic">
-          <span>Eligibility Gate</span><i>→</i><span>Fair Ranking</span><i>→</i><span>Worker Choice</span><i>→</i><span>Trusted Service</span><i>→</i><span>Audit</span>
-        </div>
-
+  <header class="hero" id="home">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">SIH 2026 · PS 26089 · FIELD-INFORMED PROTOTYPE</span>
+        <p class="hero-kicker">AI-Assisted Cooperative Workforce Operating Network</p>
+        <h1>Serve Today.<br><em>Prepare Tomorrow.</em></h1>
+        <p class="lead">SanPaid is not another worker-listing app. It connects verified local demand, customer-controlled service approval, transparent billing, cooperative governance, cross-cooperative capacity exchange and a human-reviewed demand-to-workforce learning loop.</p>
         <div class="hero-ctas">
-          <button class="btn primary eval-primary" type="button" data-eval-open-connected>START GOLDEN DEMO</button>
-          <button class="btn secondary eval-secondary" id="heroMatchingCta" type="button">SEE HOW MATCHING WORKS</button>
+          <button class="btn primary" type="button" data-eval-open-connected>START GOLDEN DEMO</button>
+          <a class="btn secondary" href="#workflow">SEE THE OPERATING MODEL</a>
         </div>
-        <div class="eval-hero-principle"><b>Rules First</b><span>•</span><b>AI-Assisted</b><span>•</span><b>Worker Choice</b><span>•</span><b>Auditable</b></div>
-        <div class="selector-home-note"><span class="selector-proof-line">Prototype environment · sandbox payment and identity verification · production government integrations are not claimed.</span></div>
-
-        <details class="quick-booking-details">
-          <summary>Quick service and role access</summary>
-          <div class="searchbox">
-            <select id="heroService" aria-label="Service"></select>
-            <input id="heroArea" aria-label="Area" placeholder="e.g. Karad Zone 1">
-            <button class="btn primary" id="heroSearch" type="button">Find Local Service</button>
-          </div>
-          <div class="catalog-state-row">
-            <p id="catalogStatus" class="catalog-status" role="status" aria-live="polite">Checking connected service catalog…</p>
-            <button class="catalog-retry" id="catalogRetry" type="button" hidden>Retry catalog</button>
-          </div>
-          <div class="hero-secondary-actions">
-            <button class="btn secondary small" id="bookServiceHero" type="button">Book Verified Service</button>
-            <button class="btn ghost small" id="joinWorker" type="button">Worker Access</button>
-            <button class="btn ghost small" id="coopLogin" type="button">Cooperative Access</button>
-          </div>
-        </details>
+        <div class="hero-proof-row" aria-label="SanPaid core principles">
+          <span class="proof-pill">Customer Choice</span>
+          <span class="proof-pill">Worker Consent</span>
+          <span class="proof-pill">Eligibility Before Fairness</span>
+          <span class="proof-pill">Human-Reviewed AI</span>
+          <span class="proof-pill">Auditable Service Trail</span>
+        </div>
+        <p class="hero-truth">Prototype discipline: production KYC, production payments, Maps/Routes and government or insurance integrations are not claimed live unless explicitly verified.</p>
       </div>
 
-      <div class="eval-hero-system" id="evalHeroSystem" aria-label="Animated SanPaid explanatory assignment flow" data-reveal>
-        <div class="eval-system-top"><span class="eval-system-label">ASSIGNMENT FLOW</span><span class="eval-system-demo">STATIC EXPLANATORY SCENARIO</span></div>
-        <div class="eval-mini-request hero-seq" data-hero-seq="request"><small>Customer Request</small><b>Electrician · Example Local Area</b><span>Today · Demo Policy Example: 20 km</span></div>
-        <div class="eval-mini-workers hero-seq" data-hero-seq="workers">
-          <span class="hero-worker bad">R<span>1.8 km</span></span>
-          <span class="hero-worker good">A<span>2.3 km</span></span>
-          <span class="hero-worker bad">S<span>3.1 km</span></span>
-          <span class="hero-worker good">P<span>4.0 km</span></span>
-          <span class="hero-worker bad">S<span>6.2 km</span></span>
+      <aside class="hero-system" aria-label="SanPaid operating chain">
+        <div class="hero-system-head">
+          <div><small>LOCKED SERVICE CHAIN</small><h2>One governed service journey</h2></div>
+          <span class="status-live">SOURCE + PROTOTYPE</span>
         </div>
-        <div class="eval-mini-gate hero-seq" data-hero-seq="gate">
-          <div><small>Eligibility Gate</small><strong>5 Workers</strong></div><i>→</i><div class="bad"><small>Removed</small><strong>3</strong></div><i>→</i><div class="good"><small>Eligible</small><strong>2</strong></div>
+        <div class="service-chain">
+          <div class="service-step"><span class="n">01</span><div><b>Problem / Photo → Eligible Workers</b><span>Local suitable capacity first</span></div><i>→</i></div>
+          <div class="service-step"><span class="n">02</span><div><b>Customer Selects → Worker Accepts</b><span>Choice is preserved on both sides</span></div><i>→</i></div>
+          <div class="service-step"><span class="n">03</span><div><b>Inspection → Estimate → Approval</b><span>No hidden scope or unapproved price change</span></div><i>→</i></div>
+          <div class="service-step"><span class="n">04</span><div><b>Booking QR → Verified Start → Service</b><span>Correct booking + assigned worker + customer confirmation</span></div><i>→</i></div>
+          <div class="service-step"><span class="n">05</span><div><b>Customer Confirms → Bill → Invoice → Rating</b><span>Completion and payment remain traceable</span></div><i>✓</i></div>
         </div>
-        <div class="eval-mini-rank hero-seq" data-hero-seq="rank"><span>#1 <b>Amit</b></span><span>#2 <b>Priya</b></span><small>Distance · Rating · Opportunity Fairness · Zone Suitability</small></div>
-        <div class="eval-mini-offer hero-seq" data-hero-seq="offer"><small>Opportunity Offered</small><b>Amit · Electrician</b><div><span class="accept">ACCEPT</span><span>DECLINE</span></div></div>
-        <div class="eval-mini-audit hero-seq" data-hero-seq="audit"><span>✓</span><div><small>Audit &amp; Outcome</small><b>Reason codes recorded</b></div></div>
-        <div class="eval-system-progress" aria-hidden="true"><i id="evalHeroProgress"></i></div>
-      </div>
+        <div class="hero-loop"><b>Then SanPaid learns:</b> repeated shortages and capacity exchanges become evidence for cooperative training, onboarding or temporary capacity decisions — not automatic AI control.</div>
+      </aside>
     </div>
-    <div class="trust eval-trust" id="trust">
-      <div class="wrap trustin">
-        <span>Cooperative Governance</span>
-        <span>Eligibility Gate</span>
-        <span>Worker Choice</span>
-        <span>Capacity Coordination</span>
+
+    <div class="wrap evidence-strip">
+      <div class="evidence-strip-inner">
+        <div class="evidence-main"><small>FIELD VALIDATION</small><b>Kolhapur stakeholder interaction</b><span>Operational findings were mapped into concrete SanPaid design decisions. This is research evidence, not government endorsement.</span></div>
+        <div class="evidence-stat"><small>Recorded Interaction</small><b>~50 minutes</b></div>
+        <div class="evidence-stat"><small>Documentary Proof</small><b>Signed + MoM</b></div>
+        <div class="evidence-stat"><small>Core Evidence Chain</small><b>E1 → E5</b></div>
+        <div class="evidence-stat"><small>Design Rule</small><b>Proof before claims</b></div>
       </div>
     </div>
   </header>
 
   <main id="mainContent" tabindex="-1">
-    <section class="section eval-gap" id="problem">
+    <section class="section" id="problem">
       <div class="wrap">
-        <div class="head" data-reveal>
-          <span class="tag">01 — Problem</span>
-          <h2>Workers exist. Demand exists. <em>The operating network is missing.</em></h2>
-          <p>Cooperative labour is skilled, but discovery, trust, opportunity allocation and operational visibility remain fragmented.</p>
+        <div class="head">
+          <span class="tag">01 — WHY SANPAID</span>
+          <h2>The problem is bigger than booking a worker.</h2>
+          <p>PS 26089 needs a governed cooperative service network: trusted discovery, fair opportunity, transparent delivery, operational visibility and a way to convert recurring shortages into workforce action.</p>
         </div>
-        <div class="problem-grid final-problem-grid eval-problem-grid">
-          <article class="card problem-card" data-reveal><span class="problem-no">01</span><h3>Discovery Gap</h3><p>Skilled cooperative workers remain difficult for customers to discover digitally.</p></article>
-          <article class="card problem-card" data-reveal><span class="problem-no">02</span><h3>Trust Gap</h3><p>Customers lack consistent verification and service-start assurance before work begins.</p></article>
-          <article class="card problem-card" data-reveal><span class="problem-no">03</span><h3>Allocation Gap</h3><p>Nearest-only matching can ignore eligibility, fairness, availability and worker choice.</p></article>
-          <article class="card problem-card" data-reveal><span class="problem-no">04</span><h3>Management Gap</h3><p>Cooperatives need unified booking, SLA, capacity, payment and workforce visibility.</p></article>
+        <div class="problem-grid">
+          <article class="problem-card"><small>CONNECTIVITY</small><h3>Demand and workforce remain fragmented</h3><p>Customers can struggle to discover suitable cooperative workers while verified local capacity remains underused.</p></article>
+          <article class="problem-card"><small>TRUST + FAIRNESS</small><h3>Registration alone is not enough</h3><p>Skill, availability, trust history, service-start verification and explainable matching must work together.</p></article>
+          <article class="problem-card"><small>DELIVERY + BILLING</small><h3>Job scope can change after arrival</h3><p>Inspection, estimate approval, revised charges, completion confirmation and itemized billing need one traceable chain.</p></article>
+          <article class="problem-card"><small>WORKFORCE PLANNING</small><h3>Shortages disappear as isolated failures</h3><p>Repeated unmet demand should become evidence for training, onboarding and cooperative capacity decisions.</p></article>
         </div>
       </div>
     </section>
 
-    <section class="section white eval-core" id="how">
+    <section class="section alt" id="solutions">
       <div class="wrap">
-        <div class="head" data-reveal>
-          <span class="tag">02 — Core Differentiator</span>
-          <h2>Eligibility first. Explainable ranking second. Worker choice always.</h2>
-          <p>Actual booking and reassignment use the same backend policy engine; the visual below explains that policy without pretending the static scenario is a live assignment.</p>
+        <div class="head">
+          <span class="tag">02 — EIGHT-SOLUTION FRAMEWORK</span>
+          <h2>One system, eight connected responsibilities.</h2>
+          <p>The website now mirrors the unified master specification instead of presenting a generic marketplace feature list.</p>
         </div>
-        <div class="eval-core-grid">
-          <article class="eval-core-card eligibility" data-reveal>
-            <span class="eval-no">01</span><h3>Eligibility Gate</h3>
-            <div class="eval-check-stack"><span>✓ Identity Verified</span><span>✓ Skill Verified</span><span>✓ Available</span><span>✓ Required Documents</span><span>✓ Schedule Compatible</span><span>✓ Demo Radius</span></div>
-            <b>Only eligible workers proceed.</b>
-          </article>
-          <div class="eval-core-arrow" aria-hidden="true">→</div>
-          <article class="eval-core-card ranking" data-reveal>
-            <span class="eval-no">02</span><h3>Fair &amp; Explainable Ranking</h3>
-            <div class="eval-factor-grid"><span>Distance</span><span>Rating</span><span>Opportunity Fairness</span><span>Zone Suitability</span></div>
-            <b>One documented backend formula.</b>
-          </article>
-          <div class="eval-core-arrow" aria-hidden="true">→</div>
-          <article class="eval-core-card choice" data-reveal>
-            <span class="eval-no">03</span><h3>Worker Choice</h3>
-            <div class="eval-choice-preview"><span class="good">ACCEPT</span><span>DECLINE</span></div>
-            <b>Opportunity is offered — not forced.</b>
-          </article>
-        </div>
-        <div class="eval-core-line" data-reveal>Not nearest-first. <span>Not forced assignment.</span> <b>Eligibility first.</b></div>
-        <div class="eval-master-chain" data-reveal>
-          <span>Customer Request</span><i>→</i><span>Eligibility Gate</span><i>→</i><span>Fair Ranking</span><i>→</i><span>Worker Choice</span><i>→</i><span>Service-Start Verification</span><i>→</i><span>Service</span><i>→</i><span>Completion</span><i>→</i><span>Sandbox Payment</span><i>→</i><span>Rating</span><i>→</i><span>Audit Outcome</span>
+        <div class="solutions-grid">
+          <article class="solution-card featured"><span class="solution-no">01</span><h3>Cooperative Workforce Exchange Network</h3><p>Local capacity first; expand across connected cooperatives only when needed, with customer choice, worker consent and auditable authorization.</p><span class="mini-label">CORE DIFFERENTIATOR</span></article>
+          <article class="solution-card featured"><span class="solution-no">02</span><h3>Continuous Trust + Service Safety</h3><p>Verified profile, booking-linked service-start check, service history, complaints, document validity and a future Digital Service Passport.</p><span class="mini-label">TRUST LIFECYCLE</span></article>
+          <article class="solution-card"><span class="solution-no">03</span><h3>Eligibility-First Fair Opportunity Engine</h3><p>Eligibility gate first, practical fit next, fairness factors after that, and reasons available for recommendation.</p></article>
+          <article class="solution-card"><span class="solution-no">04</span><h3>Controlled Billing + Earnings Ledger</h3><p>Diagnosis, estimate approval, revised-charge approval, completion confirmation, itemized bill, payment and invoice trail.</p></article>
+          <article class="solution-card"><span class="solution-no">05</span><h3>Worker Growth, Protection &amp; Opportunity Hub</h3><p>Connect service history with welfare status, training, verified skills and future demand-informed growth support.</p></article>
+          <article class="solution-card"><span class="solution-no">06</span><h3>Cooperative Governance Operating System</h3><p>Verification, bookings, complaints, payments, trust, utilization, capacity and demand visibility in role-scoped administration.</p></article>
+          <article class="solution-card"><span class="solution-no">07</span><h3>Cross-Language + Low-Connectivity Safe Mode</h3><p>Structured text/photo first; supported voice or translation only where implemented, with confirmation for critical uncertain details.</p></article>
+          <article class="solution-card featured"><span class="solution-no">08</span><h3>Confidence-Aware Workforce Planner</h3><p>Demand + confidence + verified capacity + likely gap + recommended human-reviewed action, measured against a baseline.</p><span class="mini-label">SERVE TODAY → PREPARE TOMORROW</span></article>
         </div>
       </div>
     </section>
 
-    <section class="section eval-live-section" id="matching">
+    <section class="section" id="workflow">
       <div class="wrap">
-        <div class="head eval-live-head" data-reveal>
-          <span class="tag">03 — Matching Proof</span>
-          <h2>Understand the matching policy, then verify it in the connected prototype.</h2>
-          <p>The on-page sequence is a static explanatory scenario. Live booking, replacement and admin explanation use the canonical backend assignment policy.</p>
+        <div class="head">
+          <span class="tag">03 — LOCKED SERVICE WORKFLOW</span>
+          <h2>Customer control is built into the service chain.</h2>
+          <p>A booking does not jump from matching straight to payment. The worker can inspect, the customer approves price, service start is booking-linked, and completion is customer-confirmed before the final bill.</p>
         </div>
-        <div class="eval-match" data-reveal>
-          <div class="eval-request-bar">
-            <div class="eval-request-item"><small>Request</small><b>Electrician</b><span>Example scenario</span></div>
-            <div class="eval-request-item"><small>Location</small><b>Example Local Area</b><span>Demo-safe request</span></div>
-            <div class="eval-request-item"><small>Required</small><b>Verified · Skilled · Available</b><span>Plus credentials &amp; schedule</span></div>
-            <div class="eval-request-item eval-radius-control"><small>Current Prototype Radius</small><select id="evalRadius" aria-label="Explanatory demo radius"><option value="2">2 km</option><option value="5">5 km</option><option value="10">10 km</option><option value="20" selected>20 km — demo policy</option><option value="30">30 km</option></select><span>Demo Policy Example: 20 km</span></div>
+        <div class="workflow-shell">
+          <div class="workflow" aria-label="SanPaid locked core service chain">
+            <span>Problem / Photo</span><i>→</i>
+            <span class="key">Eligible Recommended Workers</span><i>→</i>
+            <span>Customer Selects</span><i>→</i>
+            <span>Worker Accepts</span><i>→</i>
+            <span>Call / Inspection</span><i>→</i>
+            <span class="key">Estimate</span><i>→</i>
+            <span class="key">Customer Approval</span><i>→</i>
+            <span class="key">QR-Verified Start</span><i>→</i>
+            <span>Service</span><i>→</i>
+            <span>Worker Marks Complete</span><i>→</i>
+            <span class="key">Customer Confirms</span><i>→</i>
+            <span>Itemized Bill</span><i>→</i>
+            <span>Payment</span><i>→</i>
+            <span>Invoice</span><i>→</i>
+            <span>Rating / Feedback</span>
           </div>
-          <div class="eval-radius-copy">Current prototype uses a configurable environment-level demo radius. The visual selector is explanatory; actual assignment uses the backend-configured policy. Distance shown here is DEMO DISTANCE, not live Maps route distance.</div>
-
-          <div class="eval-proof-body">
-            <div class="eval-proof-panel">
-              <div class="eval-panel-heading"><div><small>STEP 1</small><h3>Eligibility Gate</h3></div><span id="evalEligibilityBadge">WAITING</span></div>
-              <div class="eval-stage-summary" id="evalEligibilitySummary"><span>5 Candidates</span><i>→</i><span>Run Explanation</span></div>
-              <div class="eval-candidate-list" id="evalCandidateList" aria-live="polite"></div>
-            </div>
-            <div class="eval-proof-panel">
-              <div class="eval-panel-heading"><div><small>STEP 2–3</small><h3>Fair Ranking → Worker Choice</h3></div><span id="evalRankingBadge">LOCKED</span></div>
-              <div class="eval-ranking-list" id="evalRankingList" aria-live="polite"></div>
-              <div id="evalOfferRoot" aria-live="polite"></div>
-              <div class="eval-worker-message" id="evalWorkerMessage" hidden></div>
-              <div class="eval-audit-head"><small>Audit &amp; Outcome</small><span>Reason-coded explanatory trail</span></div>
-              <div class="eval-audit" id="evalAudit" aria-live="polite"></div>
-            </div>
-          </div>
-
-          <div class="eval-actions-row">
-            <button class="btn primary" id="runMatchBtn" type="button">RUN ELIGIBILITY EXPLANATION</button>
-            <button class="btn secondary" id="evalRunRanking" type="button" disabled>RUN RANKING EXPLANATION</button>
-            <button class="btn tertiary" id="evalResetMatch" type="button">Reset Scenario</button>
-            <span id="evalMatchState" class="eval-demo-truth">STATIC EXPLANATORY SCENARIO — NOT LIVE ASSIGNMENT</span>
+          <div class="workflow-note">
+            <div><b>No forced worker assignment</b><span>The customer chooses from suitable workers; the selected worker still accepts or rejects.</span></div>
+            <div><b>No silent price increase</b><span>Any new work or cost requires a revised estimate and fresh customer approval.</span></div>
+            <div><b>No unilateral completion</b><span>Worker marks complete, customer confirms, then the final bill is generated.</span></div>
           </div>
         </div>
-        <div class="eval-proof-bridge" data-reveal><div><b>Verify the real flow</b><span>Create a booking and inspect the same assignment policy across customer, worker and administration workspaces.</span></div><button class="btn secondary" id="evalOpenConnected" type="button">OPEN CONNECTED PROTOTYPE</button></div>
-        <div id="matchResults" hidden></div>
       </div>
     </section>
 
-    <section class="section white eval-worker-experience" id="connectedDemoSection">
+    <section class="section alt" id="roles">
       <div class="wrap">
-        <div class="head" data-reveal><span class="tag">04 — Service Lifecycle</span><h2>One service journey from request to auditable outcome.</h2><p>Each transition is role-controlled. Future actions remain unavailable until the current trust or completion condition is satisfied.</p></div>
-        <div class="eval-master-chain" data-reveal>
-          <span>Request</span><i>→</i><span>Worker Accepts</span><i>→</i><span>Travel</span><i>→</i><span>Arrive</span><i>→</i><span>Sandbox Identity</span><i>→</i><span>Customer Confirmation</span><i>→</i><span>Service</span><i>→</i><span>Completion</span><i>→</i><span>Sandbox Payment</span><i>→</i><span>Invoice</span><i>→</i><span>Rating</span>
+        <div class="head">
+          <span class="tag">04 — FOUR CONNECTED ROLES</span>
+          <h2>Clear responsibility at every handoff.</h2>
+          <p>The cooperative creates the trusted operating environment; it does not manually control every normal booking. Federation remains primarily a network-governance and exception layer.</p>
         </div>
-        <div class="eval-worker-principles" data-reveal><span>No forced assignment</span><span>Customer approves additional work</span><span>No service start before both trust checks</span><span>Audit trail preserved</span></div>
-        <div class="eval-inline-actions" data-reveal><button class="btn primary" type="button" data-eval-open-connected>OPEN CUSTOMER FLOW</button><button class="btn secondary" type="button" data-eval-connected-persona="WORKER_A">OPEN WORKER FLOW</button></div>
+        <div class="roles-grid">
+          <article class="role-card"><small>CUSTOMER</small><h3>Choose, approve, verify, confirm</h3><ul><li>Create service request</li><li>Select a suitable worker</li><li>Approve original/revised estimate</li><li>Confirm service start and completion</li><li>Pay, receive invoice and rate</li></ul><button class="btn primary" type="button" data-eval-open-connected>OPEN CUSTOMER FLOW</button></article>
+          <article class="role-card"><small>WORKER</small><h3>Accept, inspect, estimate, deliver</h3><ul><li>Receive suitable opportunities</li><li>Accept or reject without forced assignment</li><li>Inspect and create itemized estimate</li><li>Deliver approved scope</li><li>View feedback and trust history</li></ul><button class="btn secondary" type="button" data-eval-connected-persona="WORKER_A">OPEN WORKER FLOW</button></article>
+          <article class="role-card"><small>COOPERATIVE ADMIN</small><h3>Verify, govern and strengthen capacity</h3><ul><li>Worker verification and membership</li><li>Booking and SLA visibility</li><li>Complaint ownership and audit</li><li>Trust / Green Tick review</li><li>Capacity and skill-gap action</li></ul><button class="btn secondary" type="button" id="evalAdminPrototype">OPEN ADMIN ACCESS</button></article>
+          <article class="role-card"><small>FEDERATION / NETWORK</small><h3>Coordinate by exception</h3><ul><li>Cross-cooperative policy</li><li>Regional capacity intelligence</li><li>Escalated dispute visibility</li><li>Network-level planning</li><li>No approval bottleneck on every job</li></ul><button class="btn secondary" type="button" id="getStarted">ROLE ACCESS</button></article>
+        </div>
       </div>
     </section>
 
-    <section class="section eval-operating-model" id="operatingModel">
+    <section class="section" id="innovation">
       <div class="wrap">
-        <div class="head" data-reveal><span class="tag">05 — Cooperative + Federation Governance</span><h2>Platform coordination without removing cooperative responsibility.</h2><p>Customer, worker, cooperative and federation each retain a clear operational boundary.</p></div>
-        <div class="eval-role-chain" data-reveal>
-          <article><span>01</span><h3>Customer</h3><p>Request · Verify · Complete · Pay</p></article><i>→</i>
-          <article class="active"><span>02</span><h3>SanPaid</h3><p>Eligibility · Ranking · Audit</p></article><i>→</i>
-          <article><span>03</span><h3>Worker</h3><p>Choice · Delivery · Completion</p></article><i>→</i>
-          <article><span>04</span><h3>Cooperative</h3><p>Verification · SLA · Local Capacity</p></article><i>→</i>
-          <article><span>05</span><h3>Federation</h3><p>Network Capacity · Policy · Appeals</p></article>
+        <div class="head">
+          <span class="tag">05 — SYSTEM-LEVEL DIFFERENTIATION</span>
+          <h2>Not just “find a worker.” Strengthen the network behind every service.</h2>
+          <p>The strongest SanPaid differentiation is created by how service delivery, cooperative governance and workforce planning connect.</p>
         </div>
-        <div class="eval-governance-note" data-reveal><b>Role boundary:</b> Cooperative Administration is scoped to one society. Federation Administration receives regional or multi-cooperative governance visibility.</div>
-        <div class="eval-inline-actions" data-reveal><button class="btn primary" id="evalAdminPrototype" type="button">OPEN ADMINISTRATION WORKSPACES</button><button class="btn secondary" type="button" data-open-selector="5">VIEW GOVERNANCE WALKTHROUGH</button></div>
+        <div class="differentiator-grid">
+          <article class="diff-card primary"><small>USP 01</small><h3>Cooperative Capacity Exchange</h3><p>When local capacity is insufficient, SanPaid can expand search across connected cooperatives without silently transferring workers.</p><div class="diff-flow"><span>Local Gap</span><span>External Eligibility</span><span>Customer Choice</span><span>Worker Consent</span><span>Policy Authorization</span><span>Assignment ID</span></div></article>
+          <article class="diff-card"><small>USP 02</small><h3>Demand-to-Workforce Loop</h3><p>Repeated unmet demand becomes planning evidence instead of disappearing as isolated booking failures.</p><div class="diff-flow"><span>Demand Signals</span><span>Capacity Gap</span><span>Confidence</span><span>Human Review</span><span>Train / Onboard / Exchange</span><span>Measure</span></div></article>
+          <article class="diff-card"><small>SUPPORTING CONTROL</small><h3>Continuous Trust + Transparent Ledger</h3><p>Verification, service-start confirmation, approved scope, completion, invoice, complaints and feedback remain connected to the service record.</p><div class="diff-flow"><span>Verify</span><span>Start Check</span><span>Estimate Approval</span><span>Completion</span><span>Invoice</span><span>Trust History</span></div></article>
+        </div>
       </div>
     </section>
 
-    <section class="section white eval-capacity" id="capacity">
+    <section class="section alt" id="evidence">
       <div class="wrap">
-        <div class="head" data-reveal><span class="tag">06 — Capacity Exchange</span><h2>Share capacity without automatically transferring workers.</h2><p>When local eligible capacity is insufficient, another cooperative may offer capacity, but worker consent and authorized responsibility remain required.</p></div>
-        <div class="eval-capacity-stage" data-reveal>
-          <article class="eval-coop-card shortage"><small>REQUESTING COOPERATIVE · EXPLANATORY SCENARIO</small><h3>Eligible Capacity: Low</h3><p>A local demand gap is detected.</p><span>CAPACITY GAP</span></article>
-          <div class="eval-capacity-network">
-            <span class="eval-network-label">SANPAID CAPACITY EXCHANGE</span>
-            <div class="eval-network-line"><i></i></div>
-            <div class="eval-capacity-steps"><span>Gap Detected</span><span>Provider Capacity</span><span>Request</span><span>Worker Consent</span><span>Authorized Approval</span><span>Responsibility Recorded</span></div>
-          </div>
-          <article class="eval-coop-card available"><small>PROVIDING COOPERATIVE · EXPLANATORY SCENARIO</small><h3>Eligible Capacity: Available</h3><p>No worker is transferred automatically.</p><span>CONSENT REQUIRED</span></article>
+        <div class="head">
+          <span class="tag">06 — FIELD RESEARCH → DESIGN DECISION</span>
+          <h2>Evidence is useful only when it changes the product.</h2>
+          <p>SanPaid’s field interaction was used qualitatively: operational findings were mapped to product decisions, while unsupported national or government-approval claims were deliberately avoided.</p>
         </div>
-        <div class="eval-accountability" data-reveal>
-          <div><small>Requesting Cooperative</small><b>Recorded</b></div><div><small>Providing Cooperative</small><b>Recorded</b></div><div><small>Worker Consent</small><b>Required</b></div><div><small>Responsibility</small><b>Traceable</b></div>
+        <div class="research-map">
+          <article class="evidence-card"><div><small>SOURCE / FINDING</small><b>Nearby reliable worker discovery is difficult</b><p>Field discussion around local service discovery and availability.</p></div><div><small>PRODUCT RESPONSE</small><b>Eligibility Gate + local recommended workers</b><p>Configurable local preference rather than a fixed national radius.</p></div><div class="decision"><small>DESIGN DECISION</small><b>Customer sees suitable verified choices; worker still accepts.</b></div></article>
+          <article class="evidence-card"><div><small>SOURCE / FINDING</small><b>Service price varies with job scope</b><p>Different rates and diagnosis needs can create disputes.</p></div><div><small>PRODUCT RESPONSE</small><b>Estimate + approval + revision trail</b><p>Approved charges become the source of the final itemized bill.</p></div><div class="decision"><small>DESIGN DECISION</small><b>No unapproved extra charge enters the final bill.</b></div></article>
+          <article class="evidence-card"><div><small>SOURCE / FINDING</small><b>Unknown in-home worker creates a safety concern</b><p>Identity and verification controls matter in household service delivery.</p></div><div><small>PRODUCT RESPONSE</small><b>Verified profile + booking-specific service-start check</b><p>Customer confirms the assigned worker for the active booking.</p></div><div class="decision"><small>DESIGN DECISION</small><b>Trust is layered, not treated as a one-time badge.</b></div></article>
+          <article class="evidence-card"><div><small>SOURCE / FINDING</small><b>Idle capacity can exist where another area has shortage</b><p>Cross-society sharing is plausible, but governance matters.</p></div><div><small>PRODUCT RESPONSE</small><b>Cooperative Capacity Exchange</b><p>Worker consent + authorization + assignment record.</p></div><div class="decision"><small>DESIGN DECISION</small><b>Capacity is coordinated without dissolving cooperative ownership.</b></div></article>
         </div>
-        <div class="eval-actions-row" data-reveal><button class="btn primary" id="evalCapacityAction" type="button">CHECK CAPACITY EXCHANGE</button><button class="btn secondary" id="evalCapacityConnected" type="button">OPEN CONNECTED PROOF</button><div class="eval-worker-message" id="evalCapacityStatus" hidden></div></div>
+        <div class="evidence-actions">
+          <a class="btn primary" href="https://youtu.be/NMOKz8rl-LQ" target="_blank" rel="noopener noreferrer">WATCH PRIMARY VIDEO EVIDENCE</a>
+          <button class="btn secondary" type="button" data-eval-open-connected>VERIFY THE WORKING FLOW</button>
+        </div>
       </div>
     </section>
 
-    <section class="section eval-impact" id="impact">
+    <section class="section" id="architecture">
       <div class="wrap">
-        <div class="head" data-reveal><span class="tag">07 — Impact &amp; Validation</span><h2>Measure before claiming impact.</h2><p>No unsupported income, speed or satisfaction percentages. Pilot outcomes must be compared with a documented baseline.</p></div>
-        <div class="eval-kpi-grid">
-          <article class="eval-kpi-card" data-reveal><small>SERVICE ACCESS</small><h3>Can valid demand reach eligible capacity?</h3><span>Assignment Time</span><span>Booking Success</span><span>Service Completion</span></article>
-          <article class="eval-kpi-card" data-reveal><small>WORKER OPPORTUNITY</small><h3>Are opportunities distributed responsibly?</h3><span>Utilization</span><span>Opportunity Concentration</span><span>Travel Burden</span></article>
-          <article class="eval-kpi-card" data-reveal><small>TRUST &amp; GOVERNANCE</small><h3>Are services traceable?</h3><span>SLA Compliance</span><span>Complaint Outcomes</span><span>Payment Traceability</span></article>
-          <article class="eval-kpi-card" data-reveal><small>WORKFORCE PLANNING</small><h3>Where are capacity and skill gaps?</h3><span>Observed Demand</span><span>Eligible Capacity</span><span>Capacity Gap</span></article>
+        <div class="head">
+          <span class="tag">07 — ARCHITECTURE &amp; GOVERNANCE</span>
+          <h2>Role-based, auditable and honest about integration boundaries.</h2>
+          <p>The connected prototype keeps customer/worker actions, cooperative governance, shared data and future authorized integrations visibly separated.</p>
         </div>
-        <div class="eval-measure-flow" data-reveal><span>BASELINE</span><i>→</i><span>PILOT</span><i>→</i><span>MEASURE</span><i>→</i><span>VALIDATE</span><i>→</i><span>SCALE</span></div>
+        <div class="architecture">
+          <div class="arch-col"><small>ACTORS</small><h3>Role Workspaces</h3><span>Customer</span><span>Worker</span><span>Cooperative Admin</span><span>Federation / Network Governance</span></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-col primary"><small>CORE OPERATING LAYER</small><h3>SanPaid Domain</h3><span>Booking + Eligibility + Recommendation</span><span>Worker Choice + Assignment State</span><span>Estimate + Approval + Service Start</span><span>Completion + Billing + Invoice + Rating</span><span>Complaints / SLA + Audit</span><span>Capacity Exchange + Workforce Signals</span></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-col"><small>CONNECTED DATA / INTEGRATIONS</small><h3>Data + Boundaries</h3><span>PostgreSQL shared state</span><span>Session / Role Authorization</span><span>Audit &amp; evidence records</span><span>Future Maps / Routes</span><span>Future production payments / KYC / welfare</span></div>
+        </div>
+        <div class="architecture-note"><b>Responsible AI rule:</b> recommendation, forecasting, skill-gap detection and summaries are decision support. Customer choice, worker consent and authorized cooperative human review remain explicit controls.</div>
       </div>
     </section>
 
-    <section class="section white eval-truth" id="status">
+    <section class="section alt" id="status">
       <div class="wrap">
-        <div class="head" data-reveal><span class="tag">08 — Prototype Truth</span><h2>What is implemented today</h2><p>Source-ready connected functions, sandbox capabilities and future authorized integrations remain clearly separated. Live verification is granted only after the deployed two-session flow passes.</p></div>
-        <div class="eval-truth-grid" data-reveal>
-          <article class="eval-truth-col implemented"><small>CONNECTED SOURCE</small><h3>SOURCE READY — LIVE VERIFICATION PENDING</h3><ul><li>Customer Booking</li><li>Canonical Eligibility + Ranking Engine</li><li>Worker Accept / Decline</li><li>Same-Booking Reassignment</li><li>Service State Workflow</li><li>Cooperative Scope</li><li>Complaint / Evidence Records</li></ul></article>
-          <article class="eval-truth-col prototype"><small>CONTROLLED PROTOTYPE</small><h3>SANDBOX / DEMO</h3><ul><li>Identity / Liveness Verification</li><li>Booking-Specific Service Verification</li><li>Sandbox Payment</li><li>Explanatory Matching Animation</li><li>Demo Distance</li></ul></article>
-          <article class="eval-truth-col future"><small>AUTHORIZED NEXT PHASE</small><h3>FUTURE INTEGRATION</h3><ul><li>Production KYC</li><li>Maps / Routes Distance</li><li>Insurance / Welfare Systems</li><li>Production Payment Infrastructure</li><li>Government / Federation Integrations</li></ul></article>
+        <div class="head">
+          <span class="tag">08 — PROTOTYPE TRUTH</span>
+          <h2>Every capability should say what it really is.</h2>
+          <p>The unified master requires four clear states: Implemented, Prototype/Demo, Pilot-Policy and Future/Integration-Ready.</p>
+        </div>
+        <div class="truth-grid">
+          <article class="truth-card implemented"><small>IMPLEMENTED IN SOURCE</small><h3>Connected core</h3><ul><li>Role authentication source</li><li>Customer booking</li><li>Eligibility + ranking policy</li><li>Worker Accept / Reject</li><li>Shared service state</li><li>Invoice / rating records</li><li>Complaint / evidence records</li></ul></article>
+          <article class="truth-card prototype"><small>PROTOTYPE / DEMO</small><h3>Controlled proof</h3><ul><li>Sandbox identity verification</li><li>Booking-specific start token</li><li>Sandbox payment</li><li>Voice-assisted request path</li><li>Capacity / workforce planning views</li></ul></article>
+          <article class="truth-card policy"><small>PILOT-POLICY</small><h3>Measure before locking</h3><ul><li>Configurable local-preference radius</li><li>Green Tick rule</li><li>Cross-cooperative authorization</li><li>SLA and escalation policy</li><li>Forecast thresholds / model choice</li></ul></article>
+          <article class="truth-card future"><small>FUTURE / INTEGRATION-READY</small><h3>Authorized integrations</h3><ul><li>Production KYC / identity provider</li><li>Maps / route distance</li><li>Insurance / welfare systems</li><li>Production payment gateway</li><li>Government / federation APIs where officially supported</li></ul></article>
         </div>
       </div>
     </section>
 
-    <section class="section eval-architecture" id="architecture">
-      <div class="wrap">
-        <div class="head" data-reveal><span class="tag">09 — Architecture &amp; Security</span><h2>Role-based, modular and auditable by design.</h2><p>The connected prototype separates authentication, service workflows, database state, authorization and audit evidence. Future integrations are labelled as future rather than implied as live.</p></div>
-        <div class="eval-architecture-preview" data-reveal>
-          <div class="eval-arch-layer"><small>USERS</small><div><span>Customer</span><span>Worker</span><span>Cooperative Admin</span><span>Federation Admin</span></div></div>
-          <i>↓</i>
-          <div class="eval-arch-layer primary"><small>APPLICATION</small><div><span>Booking</span><span>Assignment Policy</span><span>Worker Choice</span><span>Service Verification</span><span>Complaints / SLA</span><span>Governance</span></div></div>
-          <i>↓</i>
-          <div class="eval-arch-layer"><small>CONNECTED DATA</small><div><span>PostgreSQL</span><span>Session / Role Authorization</span><span>Audit &amp; Evidence Records</span></div></div>
-          <i>↓</i>
-          <div class="eval-arch-layer"><small>FUTURE AUTHORIZED INTEGRATIONS</small><div><span>Maps / Routes</span><span>Production Payments</span><span>Government Identity</span><span>Insurance / Welfare</span></div></div>
-          <aside><small>DECISION SUPPORT</small><span>Demand Baseline</span><span>Capacity Coordination</span><span>Advisory Planning</span></aside>
-        </div>
-        <div class="eval-research-block" id="research" data-reveal>
-          <div><small>RESEARCH FOUNDATION</small><h3>Research → design decision → visible proof</h3><p>OWASP security guidance, PostgreSQL, Maps/Routes documentation, cooperative ecosystem sources and workforce-matching research inform specific product and architecture choices.</p></div>
-          <div class="eval-research-chips"><span>OWASP API Security</span><span>PostgreSQL</span><span>Maps / Routes</span><span>Cooperative Ecosystem</span><span>Workforce Matching</span></div>
-          <button class="btn secondary" id="evalResearch" type="button" data-open-selector="8">VIEW FULL ARCHITECTURE &amp; RESEARCH</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="eval-final-cta" aria-label="Final prototype call to action">
-      <div class="wrap" data-reveal>
-        <span class="tag">Live Prototype</span>
-        <h2>Trusted Services.<br>Fair Opportunities.<br>Accountable Governance.</h2>
-        <p>Eligibility first. Worker choice protected. Cooperative and federation responsibility remain visible.</p>
-        <div class="eval-final-cta-actions"><button class="btn primary" id="evalFinalPrototype" type="button">START GOLDEN DEMO</button><button class="btn secondary" id="evalFinalArchitecture" type="button">VIEW ARCHITECTURE</button></div>
+    <section class="final-cta">
+      <div class="wrap final-cta-grid">
+        <div><h2>Do not just route the next worker.<br>Strengthen the cooperative network.</h2><p>SanPaid connects trusted service delivery today with the evidence cooperatives need to prepare tomorrow’s workforce.</p></div>
+        <div class="hero-ctas"><button class="btn primary" id="evalFinalPrototype" type="button">START GOLDEN DEMO</button><button class="btn secondary" id="evalAdminPrototype" type="button">OPEN ADMINISTRATION</button></div>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <div class="wrap eval-footer-grid">
-      <div><div class="brand">San<span>Paid</span></div><p>AI-Assisted Cooperative Workforce Operating Network</p></div>
-      <div><b>Core Logic</b><p>Customer Request → Eligibility Gate → Fair Ranking → Worker Choice → Service-Start Verification → Service → Completion → Sandbox Payment → Rating → Audit Outcome.</p></div>
-      <div><b>Prototype Truth</b><p>Identity verification, payment and distance remain sandbox/demo scope until authorized production integrations are connected.</p></div>
+    <div class="wrap footer-grid">
+      <div><div class="brand">San<span>Paid</span></div><p>AI-Assisted Cooperative Workforce Operating Network · SIH 2026 · PS 26089</p></div>
+      <div><b>Core promise</b><p>Verified participation · customer-controlled approval · transparent delivery · cooperative governance · capacity exchange · demand-to-workforce learning.</p></div>
+      <div><b>Claim discipline</b><p>Field-informed research, connected source implementation and controlled prototype states are shown separately from future authorized integrations.</p></div>
     </div>
   </footer>
 </div>
@@ -355,7 +300,6 @@
 <script src="connected-runtime-fix.js"></script>
 <script src="capacity-worker-ui.js"></script>
 <script src="judge-demo.js"></script>
-<script src="selector-mode.js"></script>
 <script id="sanpaidCredibilityScript" src="credibility-layer.js"></script>
 <script id="sanpaidWorkforceIntelligenceScript" src="workforce-intelligence.js"></script>
 <script id="sanpaidWorkerTrustPassportScript" src="worker-trust-passport-ui.js"></script>
