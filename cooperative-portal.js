@@ -34,20 +34,16 @@
       ['coop-home','Overview','Local society operations'],
       ['coop-workers','Workers','Directory and availability'],
       ['coop-services','Bookings & Services','Active service operations'],
-      ['coop-payments','Payments & Earnings','Recorded transaction visibility'],
-      ['coop-quality','Service Quality','Ratings and outcomes']
+      ['coop-payments','Payments & Earnings','Recorded transaction visibility']
     ]],
     ['GOVERNANCE',[
-      ['coop-verification','Verification Queue','Identity review and documents'],
-      ['coop-skills','Skills & Documents','Eligibility evidence'],
+      ['coop-verification','Trust & Verification','Identity, skills and documents'],
       ['coop-complaints','Complaints & SLA','Local grievance oversight'],
       ['coop-activity','Audit & Activity','Traceable local operations']
     ]],
     ['INTELLIGENCE',[
-      ['matching','Matching & Allocation','Eligibility-first proof'],
       ['coop-capacity','Local Capacity','Demand and workforce gaps'],
-      ['planning','Demand & Planning','Advisory planning'],
-      ['coop-training','Training & Development','Human-approved recommendations']
+      ['planning','Demand & Planning','Advisory workforce planning']
     ]]
   ];
   function ensureFrame(){
@@ -82,7 +78,7 @@
     const lower=$('.admin-command-lower',summary);summary.insertBefore(root,lower||null);return root;
   }
 
-  function renderAttention(d){const root=$('#adminAttentionGrid');if(!root)return;const m=d.metrics||{};const items=[['Pending Verification',m.pendingVerification,'Workers need authorized identity review.','coop-verification',m.pendingVerification?'warn':'ok'],['Document Issues',m.documentIssues,'Pending or expired required document evidence.','coop-skills',m.documentIssues?'warn':'ok'],['Open Complaints',m.openComplaints,'Local grievances requiring follow-up.','coop-complaints',m.openComplaints?'warn':'ok'],['SLA Breaches',m.slaBreaches,'Breached cases require escalation attention.','coop-complaints',m.slaBreaches?'risk':'ok'],['Unanswered Offers',m.pendingOffers,'Worker opportunities still awaiting response.','coop-services',m.pendingOffers?'info':'ok'],['Capacity Requests',m.capacityRequests,'Local or provider capacity coordination records.','coop-capacity',m.capacityRequests?'info':'ok']];root.innerHTML=items.map(([label,value,detail,target,tone])=>`<button type="button" class="admin-attention-card ${tone}" data-coop-attention="${target}"><span>${esc(label)}</span><strong>${Number(value||0)}</strong><small>${esc(detail)}</small><i>Review →</i></button>`).join('');root.querySelectorAll('[data-coop-attention]').forEach(b=>b.onclick=()=>scrollToId(b.dataset.coopAttention));}
+  function renderAttention(d){const root=$('#adminAttentionGrid');if(!root)return;const m=d.metrics||{},verificationAttention=Number(m.pendingVerification||0)+Number(m.documentIssues||0);const items=[['Verification Attention',verificationAttention,'Identity, skill or document review requiring cooperative action.','coop-verification',verificationAttention?'warn':'ok'],['Open Complaints',m.openComplaints,'Local grievances requiring follow-up.','coop-complaints',m.openComplaints?'warn':'ok'],['SLA Breaches',m.slaBreaches,'Breached cases require escalation attention.','coop-complaints',m.slaBreaches?'risk':'ok'],['Capacity Requests',m.capacityRequests,'Local or provider capacity coordination records.','coop-capacity',m.capacityRequests?'info':'ok']];root.innerHTML=items.map(([label,value,detail,target,tone])=>`<button type="button" class="admin-attention-card ${tone}" data-coop-attention="${target}"><span>${esc(label)}</span><strong>${Number(value||0)}</strong><small>${esc(detail)}</small><i>Review →</i></button>`).join('');root.querySelectorAll('[data-coop-attention]').forEach(b=>b.onclick=()=>scrollToId(b.dataset.coopAttention));}
 
   function renderKpis(d){const m=d.metrics||{},c=d.cooperative||{};$('#coopTitle').textContent=c.name||'Cooperative overview';$('#coopScopeLabel').textContent=[c.city,'Local cooperative scope'].filter(Boolean).join(' · ');const root=$('#coopKpis');root.innerHTML=[['Total Workers',m.totalWorkers,'Registered in this cooperative'],['Verified Workers',m.verifiedWorkers,'Identity verification completed'],['Available Workers',m.availableWorkers,'Verified + currently available'],['Active Services',m.activeBookings,'Current assigned services'],['Open Complaints',m.openComplaints,'Unresolved local grievances'],['Recorded Payments',money(m.recordedPayments),'Recorded ledger visibility']].map(([l,v,d])=>`<article class="coop-kpi"><span>${esc(l)}</span><strong>${esc(v)}</strong><small>${esc(d)}</small></article>`).join('');}
 
