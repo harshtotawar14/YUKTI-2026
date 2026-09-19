@@ -263,7 +263,7 @@
 
   function initNav(){
     const nav=$('.master-v2 .nav');if(!nav)return;
-    const links=$('.navlinks a[href^="#"]',nav);
+    const links=$$('.navlinks a[href^="#"]',nav);
     const sections=links.map(link=>document.querySelector(link.getAttribute('href'))).filter(Boolean);
 
     const syncCompact=()=>nav.classList.toggle('nav-compact',window.scrollY>24);
