@@ -199,7 +199,7 @@
     $('#evalFinalPrototype')?.addEventListener('click',()=>openConnected());
     $('#heroMatchingCta')?.addEventListener('click',()=>document.getElementById('matching')?.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}));
     $('#evalFinalArchitecture')?.addEventListener('click',()=>document.getElementById('architecture')?.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}));
-    $('#evalAdminPrototype')?.addEventListener('click',()=>window.SanPaidDemo?.showRoles?.());
+    $$('[data-eval-open-admin]').forEach(button=>button.addEventListener('click',()=>window.SanPaidDemo?.showRoles?.()));
     $('#evalCapacityConnected')?.addEventListener('click',()=>window.SanPaidSelectorMode?.open?.(6));
     $('#evalResearch')?.addEventListener('click',()=>window.SanPaidSelectorMode?.open?.(8));
     $('#evalResetLocal')?.addEventListener('click',()=>window.SanPaidDemo?.reset?.());
@@ -262,9 +262,30 @@
   }
 
   function initNav(){
-    const nav=$('.eval-nav');if(!nav)return;
-    const sync=()=>nav.classList.toggle('nav-compact',window.scrollY>24);
-    sync();window.addEventListener('scroll',sync,{passive:true});
+    const nav=$('.master-v2 .nav');if(!nav)return;
+    const links=$$('.navlinks a[href^="#"]',nav);
+    const sections=links.map(link=>document.querySelector(link.getAttribute('href'))).filter(Boolean);
+
+    const syncCompact=()=>nav.classList.toggle('nav-compact',window.scrollY>24);
+    const syncActive=()=>{
+      if(!sections.length)return;
+      const marker=(nav.getBoundingClientRect().bottom||90)+72;
+      let active=sections[0];
+      for(const section of sections){
+        if(section.getBoundingClientRect().top<=marker)active=section;
+        else break;
+      }
+      links.forEach(link=>{
+        const current=link.getAttribute('href')===`#${active.id}`;
+        link.classList.toggle('is-active',current);
+        if(current)link.setAttribute('aria-current','location');
+        else link.removeAttribute('aria-current');
+      });
+    };
+    const sync=()=>{syncCompact();syncActive();};
+    sync();
+    window.addEventListener('scroll',sync,{passive:true});
+    window.addEventListener('resize',sync,{passive:true});
   }
 
   function initHeroSequence(){
@@ -298,7 +319,7 @@
 
   function init(){
     renderCandidates();renderRankingPlaceholder();renderAudit();
-    wireMatchingEvents();wirePrimaryActions();wireCapacityDemo();wireDashboardTabs();initScrollReveal();initNav();initHeroSequence();
+    wireMatchingEvents();wirePrimaryActions();wireCapacityDemo();wireDashboardTabs();initScrollReveal();initNav();
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
