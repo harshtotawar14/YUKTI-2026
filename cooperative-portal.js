@@ -45,7 +45,7 @@
     ['welfare','Welfare Readiness','Worker support roadmap'],
     ['coop-activity','Audit & Activity','Traceable local operations'],
     ['coop-health','System Health','Read-only runtime checks'],
-    ['golden','System Proof','System verification and evidence'],
+    ['golden','Technical Verification','Runtime verification and evidence'],
     ['research','Architecture & Research','Technical evidence']
   ];
 
