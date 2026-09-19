@@ -176,3 +176,60 @@
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
+
+
+/* Landing V3 motion layer: progressive enhancement only. */
+(() => {
+  'use strict';
+
+  function revealCards(){
+    const cards=[...document.querySelectorAll('.landing-v3 .reveal-card')];
+    if(!cards.length)return;
+    if(!('IntersectionObserver' in window)){
+      cards.forEach(card=>card.classList.add('is-visible'));
+      return;
+    }
+    const observer=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(!entry.isIntersecting)return;
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    },{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+    cards.forEach((card,index)=>{
+      card.style.transitionDelay=`${Math.min(index%5,4)*55}ms`;
+      observer.observe(card);
+    });
+  }
+
+  function wireHeroDepth(){
+    const stage=document.querySelector('.landing-v3 .phone-stage');
+    const visual=document.querySelector('.landing-v3 .hero-visual');
+    if(!stage||!visual||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    let frame=0;
+    const move=event=>{
+      if(window.innerWidth<=720)return;
+      const rect=visual.getBoundingClientRect();
+      const x=(event.clientX-rect.left)/rect.width-.5;
+      const y=(event.clientY-rect.top)/rect.height-.5;
+      cancelAnimationFrame(frame);
+      frame=requestAnimationFrame(()=>{
+        stage.style.transform=`rotateY(${x*4}deg) rotateX(${-y*4}deg) translate3d(${x*5}px,${y*5}px,0)`;
+      });
+    };
+    const reset=()=>{
+      cancelAnimationFrame(frame);
+      frame=requestAnimationFrame(()=>{stage.style.transform='';});
+    };
+    visual.addEventListener('pointermove',move,{passive:true});
+    visual.addEventListener('pointerleave',reset,{passive:true});
+  }
+
+  function startLandingMotion(){
+    revealCards();
+    wireHeroDepth();
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startLandingMotion,{once:true});
+  else startLandingMotion();
+})();
