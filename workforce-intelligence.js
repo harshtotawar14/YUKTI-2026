@@ -66,8 +66,8 @@
 
   function heatmapHtml(capacity){
     const rows=capacity?.rows||capacity||[];
-    if(!rows.length)return '<div class="wi-error">No demo forecast rows are available yet.</div>';
-    return `<div class="wi-heatmap">${rows.slice(0,6).map(r=>`<article class="wi-heat ${r.status==='HIGH_SHORTAGE'?'high':r.status==='MODERATE_GAP'?'medium':'good'}"><h4>${esc(r.zone)} · ${esc(r.service)}</h4><div class="nums"><span>Demand<b>${Number(r.expectedDemand||0)}</b></span><span>Capacity<b>${Number(r.eligibleCapacity||0)}</b></span><span>Gap<b>${Number(r.gap||0)}</b></span></div><div class="wi-action">${esc(r.status)} → ${esc(r.recommendedAction||'Review capacity')}</div></article>`).join('')}</div><div class="wi-note">AI-assisted demo forecast. Shortage recommendations never transfer workers automatically; cooperative approval and worker choice remain required.</div>`;
+    if(!rows.length)return '<div class="wi-error">No forecast rows are available yet.</div>';
+    return `<div class="wi-heatmap">${rows.slice(0,6).map(r=>`<article class="wi-heat ${r.status==='HIGH_SHORTAGE'?'high':r.status==='MODERATE_GAP'?'medium':'good'}"><h4>${esc(r.zone)} · ${esc(r.service)}</h4><div class="nums"><span>Demand<b>${Number(r.expectedDemand||0)}</b></span><span>Capacity<b>${Number(r.eligibleCapacity||0)}</b></span><span>Gap<b>${Number(r.gap||0)}</b></span></div><div class="wi-action">${esc(r.status)} → ${esc(r.recommendedAction||'Review capacity')}</div></article>`).join('')}</div><div class="wi-note">AI-assisted advisory forecast. Shortage recommendations never transfer workers automatically; cooperative approval and worker choice remain required.</div>`;
   }
 
   function pilotHtml(pilot){
@@ -95,14 +95,14 @@
     if(step===6)appendSelector('auditability',block('Governance stays traceable','AUDITABILITY','<div class="wi-grid"><div class="wi-card"><b>Verification changes</b><small>Recorded admin actions</small></div><div class="wi-card"><b>Service lifecycle</b><small>Traceable booking events</small></div><div class="wi-card"><b>Capacity governance</b><small>Request → approval → worker choice</small></div></div>','CONNECTED PROOF'));
     try{
       const data=await fetchPublic();
-      if(step===3&&!document.querySelector('[data-wi="fairness"]'))appendSelector('fairness',block('Fair Opportunity Proof','BACKEND-DERIVED DEMO DATA',fairnessHtml(data.fairOpportunity),'IMPLEMENTED'));
+      if(step===3&&!document.querySelector('[data-wi="fairness"]'))appendSelector('fairness',block('Fair Opportunity Proof','BACKEND-DERIVED DATA',fairnessHtml(data.fairOpportunity),'IMPLEMENTED'));
       if(step===5&&!document.querySelector('[data-wi="passport"]')){
         const amit=(data.workerTrust?.workers||[]).find(w=>/amit/i.test(w.name))||data.workerTrust?.workers?.[0];
         const normalized=amit?{...amit,credentials:amit.credential?[amit.credential]:[],skills:[{name:'Electrician',verified:true}]}:null;
-        appendSelector('passport',block('Worker Trust Passport','CONTINUOUS TRUST',passportHtml(normalized,true)+lifecycleHtml(),'PROTOTYPE-DEMO'));
+        appendSelector('passport',block('Worker Trust Passport','CONTINUOUS TRUST',passportHtml(normalized,true)+lifecycleHtml(),'CONTROLLED WORKFLOW'));
       }
-      if(step===7&&!document.querySelector('[data-wi="capacity-map"]'))appendSelector('capacity-map',block('Workforce Capacity Map','DEMAND → CAPACITY → ACTION',heatmapHtml(data.capacityMap),data.capacityMap?.forecastLabel||'PROTOTYPE-DEMO'));
-      if(step===8&&!document.querySelector('[data-wi="skill-gap"]'))appendSelector('skill-gap',block('Skill-Gap Action','AI-ASSISTED ADVISORY',heatmapHtml(data.capacityMap),'PROTOTYPE-DEMO'));
+      if(step===7&&!document.querySelector('[data-wi="capacity-map"]'))appendSelector('capacity-map',block('Workforce Capacity Map','DEMAND → CAPACITY → ACTION',heatmapHtml(data.capacityMap),data.capacityMap?.forecastLabel||'CONTROLLED WORKFLOW'));
+      if(step===8&&!document.querySelector('[data-wi="skill-gap"]'))appendSelector('skill-gap',block('Skill-Gap Action','AI-ASSISTED ADVISORY',heatmapHtml(data.capacityMap),'CONTROLLED WORKFLOW'));
       if(step===10&&!document.querySelector('[data-wi="pilot"]'))appendSelector('pilot',block('How Success Will Be Measured','PILOT READINESS',pilotHtml(data.pilot),'PILOT PLAN'));
     }catch{}
   }
@@ -117,15 +117,15 @@
   function riskHtml(data){
     const flags=[];
     (data.passports||[]).forEach(p=>(p.credentials||[]).forEach(c=>{if(c.status==='EXPIRING_SOON')flags.push(`${p.name}: DOCUMENT EXPIRING`);if(c.status==='EXPIRED')flags.push(`${p.name}: REVIEW REQUIRED`);}));
-    if(!flags.length)flags.push('No credential risk flags in the current demo view.');
+    if(!flags.length)flags.push('No credential risk flags in the current view.');
     return `<div class="wi-risk">${flags.map(f=>`<span>${esc(f)}</span>`).join('')}</div><div class="wi-note">These are review flags, not automatic punishment. Human/cooperative review is required.</div>`;
   }
 
-  function onboardingHtml(){return `<div class="wi-lifecycle"><span>Cooperative Registration</span><i>→</i><span>Admin Account</span><i>→</i><span>Service Categories</span><i>→</i><span>Operational Zones</span><i>→</i><span>Worker Import</span><i>→</i><span>Verification Policy</span><i>→</i><span>Capacity Setup</span><i>→</i><span>Ready to Operate</span></div><div class="wi-note"><b>PROTOTYPE-DEMO.</b> This proves the rollout workflow without claiming production onboarding automation.</div>`;}
+  function onboardingHtml(){return `<div class="wi-lifecycle"><span>Cooperative Registration</span><i>→</i><span>Admin Account</span><i>→</i><span>Service Categories</span><i>→</i><span>Operational Zones</span><i>→</i><span>Worker Import</span><i>→</i><span>Verification Policy</span><i>→</i><span>Capacity Setup</span><i>→</i><span>Ready to Operate</span></div><div class="wi-note"><b>CONTROLLED WORKFLOW.</b> This proves the rollout workflow without claiming production onboarding automation.</div>`;}
 
   function welfareHtml(passports=[]){
     const p=passports.find(x=>/amit/i.test(x.name))||passports[0];
-    return `<div class="wi-grid"><div class="wi-card"><b>Verified Work History</b><small>IMPLEMENTED · ${Number(p?.completedJobs||0)} recorded jobs</small></div><div class="wi-card"><b>Training Recommendation</b><small>PROTOTYPE-DEMO · ${Number(p?.trainingRecommendations||0)} recommendations</small></div><div class="wi-card"><b>Certificate Renewal</b><small>PROTOTYPE-DEMO · expiry lifecycle enabled</small></div><div class="wi-card"><b>Insurance Integration</b><small>FUTURE INTEGRATION READY</small></div><div class="wi-card"><b>Government Welfare APIs</b><small>FUTURE INTEGRATION READY</small></div><div class="wi-card"><b>Earnings / Service Record</b><small>Connected demo ledger where available</small></div></div>`;
+    return `<div class="wi-grid"><div class="wi-card"><b>Verified Work History</b><small>IMPLEMENTED · ${Number(p?.completedJobs||0)} recorded jobs</small></div><div class="wi-card"><b>Training Recommendation</b><small>CONTROLLED WORKFLOW · ${Number(p?.trainingRecommendations||0)} recommendations</small></div><div class="wi-card"><b>Certificate Renewal</b><small>CONTROLLED WORKFLOW · expiry lifecycle enabled</small></div><div class="wi-card"><b>Insurance Integration</b><small>FUTURE INTEGRATION READY</small></div><div class="wi-card"><b>Government Welfare APIs</b><small>FUTURE INTEGRATION READY</small></div><div class="wi-card"><b>Earnings / Service Record</b><small>Connected earnings ledger where available</small></div></div>`;
   }
 
   async function enhanceJudge(){
@@ -138,12 +138,12 @@
       const data=await fetchJudge();
       if(id==='trust'){
         const rahul=data.passports?.find(p=>/rahul/i.test(p.name));
-        slot.innerHTML=block('Worker Trust Passport + Continuous Re-verification','TRUST & WORKER LIFECYCLE',`${(data.passports||[]).map(p=>passportHtml(p,true)).join('<div style="height:10px"></div>')}${lifecycleHtml()}${rahul?`<div class="wi-actions">${(rahul.credentials||[]).map(c=>`<button class="wi-btn" data-wi-renew="${c.id}">Approve Demo Renewal · ${esc(rahul.name)}</button><button class="wi-btn" data-wi-reject="${c.id}">Reject Renewal</button>`).join('')}</div><div class="wi-note">Rahul remains identity-unverified, so reviewing this demo credential cannot make him eligible by itself.</div>`:''}`,'CONNECTED PROOF');
-      }else if(id==='planning')slot.innerHTML=block('Fair Opportunity Monitor','FAIRNESS & WORKFORCE INTELLIGENCE',fairnessHtml(data.opportunity),'IMPLEMENTED')+block('Skill-Gap / Capacity Heatmap','AI-ASSISTED DEMO FORECAST',heatmapHtml(data.capacity),'PROTOTYPE-DEMO');
+        slot.innerHTML=block('Worker Trust Passport + Continuous Re-verification','TRUST & WORKER LIFECYCLE',`${(data.passports||[]).map(p=>passportHtml(p,true)).join('<div style="height:10px"></div>')}${lifecycleHtml()}${rahul?`<div class="wi-actions">${(rahul.credentials||[]).map(c=>`<button class="wi-btn" data-wi-renew="${c.id}">Approve Renewal · ${esc(rahul.name)}</button><button class="wi-btn" data-wi-reject="${c.id}">Reject Renewal</button>`).join('')}</div><div class="wi-note">Rahul remains identity-unverified, so reviewing this credential cannot make him eligible by itself.</div>`:''}`,'CONNECTED PROOF');
+      }else if(id==='planning')slot.innerHTML=block('Fair Opportunity Monitor','FAIRNESS & WORKFORCE INTELLIGENCE',fairnessHtml(data.opportunity),'IMPLEMENTED')+block('Skill-Gap / Capacity Heatmap','AI-ASSISTED ADVISORY FORECAST',heatmapHtml(data.capacity),'CONTROLLED WORKFLOW');
       else if(id==='welfare')slot.innerHTML=block('Worker Welfare & Growth','WORKER GROWTH',welfareHtml(data.passports),'MIXED STATUS')+block('Pilot Readiness Center','VALIDATION & PILOT',pilotHtml(data.pilot),'PILOT PLAN');
       else if(id==='security')slot.innerHTML=block('Governance Audit Trail','ACCOUNTABILITY',auditHtml(data.audit),'IMPLEMENTED')+block('Service Quality Watch','HUMAN REVIEW ONLY',riskHtml(data),'REVIEW FLAGS');
-      else if(id==='capacity')slot.innerHTML=block('Federation Regional Workforce View','FEDERATION COORDINATION',heatmapHtml(data.capacity)+`<div class="wi-note"><b>Federation coordinates. Cooperative approves. Worker chooses.</b></div>`,'PROTOTYPE-DEMO');
-      else if(id==='overview')slot.innerHTML=block('Cooperative Onboarding','GOVERNANCE & SCALE',onboardingHtml(),'PROTOTYPE-DEMO');
+      else if(id==='capacity')slot.innerHTML=block('Federation Regional Workforce View','FEDERATION COORDINATION',heatmapHtml(data.capacity)+`<div class="wi-note"><b>Federation coordinates. Cooperative approves. Worker chooses.</b></div>`,'CONTROLLED WORKFLOW');
+      else if(id==='overview')slot.innerHTML=block('Cooperative Onboarding','GOVERNANCE & SCALE',onboardingHtml(),'CONTROLLED WORKFLOW');
     }catch(e){slot.innerHTML=`<div class="wi-block"><div class="wi-error">${esc(e.message||'Workforce intelligence is temporarily unavailable.')}</div></div>`;}
   }
 
