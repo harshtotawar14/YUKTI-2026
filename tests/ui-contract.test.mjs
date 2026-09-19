@@ -251,6 +251,31 @@ test('professional product surfaces do not expose stale validation contradiction
   assert.doesNotMatch(admin,/CODE-CONNECTED · MANUAL REGRESSION REQUIRED|CONNECTED BUT NOT TESTED/,'Admin workspace exposes internal QA wording as product status.');
 });
 
+
+test('cooperative and federation admin workspaces expose governed connected actions',()=>{
+  const coop=readFileSync(join(root,'cooperative-portal.js'),'utf8');
+  const fed=readFileSync(join(root,'federation-portal.js'),'utf8');
+  const evidence=readFileSync(join(root,'handover-evidence.js'),'utf8');
+  const admin=readFileSync(join(root,'admin-command-center.js'),'utf8');
+  assert.match(coop,/\/api\/cooperative-admin\/capacity-requests/,'Cooperative Admin must expose connected capacity request creation.');
+  assert.match(fed,/\/api\/federation\/capacity-requests\//,'Federation Admin must expose governed capacity coordination.');
+  assert.match(fed,/data\.fedProviderOffer|fedProviderOffer/,'Federation provider coordination control is missing.');
+  assert.match(fed,/data\.fedApprove|fedApprove/,'Federation authorization control is missing.');
+  assert.match(evidence,/\/api\/cooperative-admin\/complaints\/.*\/status/,'Cooperative complaint status actions are not connected.');
+  assert.match(evidence,/Array\.isArray\(rows\?\.complaints\)/,'Complaint list response wrapper must be handled.');
+  assert.match(evidence,/Array\.isArray\(data\?\.timeline\)/,'Complaint evidence must consume the backend timeline contract.');
+  assert.doesNotMatch(admin,/Manual test required|Manual regression required/,'Admin surfaces still expose stale internal QA wording.');
+});
+
+test('admin sidebars expose accessible active navigation states',()=>{
+  const coop=readFileSync(join(root,'cooperative-portal.js'),'utf8');
+  const admin=readFileSync(join(root,'admin-command-center.js'),'utf8');
+  assert.match(coop,/aria-current','Cooperative navigation must expose the active location.');
+  assert.match(admin,/aria-current','Federation navigation must expose the active location.');
+  assert.match(coop,/Open cooperative navigation/,'Cooperative mobile menu needs an accessible label.');
+  assert.match(admin,/Open federation navigation/,'Federation mobile menu needs an accessible label.');
+});
+
 test('public JavaScript does not call forEach on the single-element selector helper',()=>{
   const failures=[];
   for(const file of scripts){
