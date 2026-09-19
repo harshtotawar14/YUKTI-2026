@@ -29,21 +29,28 @@
   function setActiveNav(target){$$('#coopSidebar [data-coop-target]').forEach(b=>{const active=b.dataset.coopTarget===target;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});}
   function closeNav(){const c=$('#judgeContent');if(c)c.classList.remove('coop-nav-open');const toggle=$('#coopNavToggle');toggle?.setAttribute('aria-expanded','false');toggle?.setAttribute('aria-label','Open cooperative navigation');}
 
-  const NAV=[
-    ['coop-home','Overview','Local society operations'],
-    ['coop-workers','Workers','Directory and availability'],
-    ['coop-verification','Verification Queue','Identity review and documents'],
-    ['coop-skills','Skills & Documents','Eligibility evidence'],
-    ['coop-services','Bookings & Services','Active service operations'],
-    ['matching','Matching & Allocation','Eligibility-first proof'],
-    ['coop-complaints','Complaints & SLA','Local grievance oversight'],
-    ['coop-capacity','Local Capacity','Demand and workforce gaps'],
-    ['coop-quality','Service Quality','Ratings and outcomes'],
-    ['coop-payments','Payments & Earnings','Recorded transaction visibility'],
-    ['planning','Demand & Planning','Advisory planning'],
-    ['coop-training','Training & Development','Human-approved recommendations'],
-    ['coop-activity','Audit & Activity','Traceable local operations']
+  const NAV_GROUPS=[
+    ['OPERATIONS',[
+      ['coop-home','Overview','Local society operations'],
+      ['coop-workers','Workers','Directory and availability'],
+      ['coop-services','Bookings & Services','Active service operations'],
+      ['coop-payments','Payments & Earnings','Recorded transaction visibility'],
+      ['coop-quality','Service Quality','Ratings and outcomes']
+    ]],
+    ['GOVERNANCE',[
+      ['coop-verification','Verification Queue','Identity review and documents'],
+      ['coop-skills','Skills & Documents','Eligibility evidence'],
+      ['coop-complaints','Complaints & SLA','Local grievance oversight'],
+      ['coop-activity','Audit & Activity','Traceable local operations']
+    ]],
+    ['INTELLIGENCE',[
+      ['matching','Matching & Allocation','Eligibility-first proof'],
+      ['coop-capacity','Local Capacity','Demand and workforce gaps'],
+      ['planning','Demand & Planning','Advisory planning'],
+      ['coop-training','Training & Development','Human-approved recommendations']
+    ]]
   ];
+  const NAV=NAV_GROUPS.flatMap(([,items])=>items);
 
   function ensureFrame(){
     const shell=$('#sihJudgeShell'),content=$('#judgeContent');if(!shell||!content)return;
@@ -52,7 +59,7 @@
     const hero=$('.judge-hero',content);if(hero){const b=$('.judge-badge',hero),h=$('h1',hero),p=$('p',hero);if(b)b.textContent='COOPERATIVE OPERATIONS';if(h)h.textContent='Cooperative Operations Command Center';if(p)p.textContent='Local workforce, service delivery, verification, complaints and capacity management in one governed workspace.';if(!$('#coopGovTruth',hero)){const x=document.createElement('small');x.id='coopGovTruth';x.className='coop-gov-truth';x.textContent='Cooperative workforce operations platform · External administrative integrations are shown only when authorized';p?.insertAdjacentElement('afterend',x);}}
     const heading=$('#adminCommandSummary .admin-command-heading');if(heading){const h2=$('h2',heading),p=$('p',heading),btn=$('#adminHealthRefresh',heading);if(h2)h2.textContent='What needs attention now?';if(p)p.textContent='Local operational priorities are derived from the authenticated cooperative scope. Read refreshes never mutate operational state.';if(btn)btn.textContent='Refresh Local Data';}
     if(!$('#coopSidebar',content)){
-      const aside=document.createElement('aside');aside.id='coopSidebar';aside.className='coop-sidebar';aside.setAttribute('aria-label','Cooperative operations navigation');aside.innerHTML=`<div class="coop-side-brand"><b>SanPaid</b><span>COOPERATIVE OPERATIONS</span><small>Cooperative Workforce Network</small></div><nav><span class="coop-nav-group">Operations</span>${NAV.map(([target,label,desc])=>`<button type="button" data-coop-target="${esc(target)}"><span>${esc(label)}</span><small>${esc(desc)}</small></button>`).join('')}</nav><div class="coop-side-foot"><span>Cooperative Operations</span><small>Local society scope · Role-governed operations</small></div>`;content.insertBefore(aside,content.firstChild);
+      const aside=document.createElement('aside');aside.id='coopSidebar';aside.className='coop-sidebar';aside.setAttribute('aria-label','Cooperative operations navigation');aside.innerHTML=`<div class="coop-side-brand"><b>SanPaid</b><span>COOPERATIVE OPERATIONS</span><small>Cooperative Workforce Network</small></div><nav>${NAV_GROUPS.map(([group,items],groupIndex)=>`<span class="coop-nav-group${groupIndex?' system':''}">${esc(group)}</span>${items.map(([target,label,desc])=>`<button type="button" data-coop-target="${esc(target)}"><span>${esc(label)}</span><small>${esc(desc)}</small></button>`).join('')}`).join('')}</nav><div class="coop-side-foot"><span>Cooperative Operations</span><small>Local society scope · Role-governed operations</small></div>`;content.insertBefore(aside,content.firstChild);
       aside.querySelectorAll('[data-coop-target]').forEach(btn=>btn.addEventListener('click',()=>btn.dataset.coopTarget.startsWith('coop-')?scrollToId(btn.dataset.coopTarget):switchTo(btn.dataset.coopTarget)));
       const toggle=document.createElement('button');toggle.id='coopNavToggle';toggle.className='coop-nav-toggle';toggle.type='button';toggle.setAttribute('aria-controls','coopSidebar');toggle.setAttribute('aria-expanded','false');toggle.textContent='Cooperative Menu';toggle.setAttribute('aria-label','Open cooperative navigation');content.insertBefore(toggle,aside.nextSibling);toggle.addEventListener('click',()=>{const open=content.classList.toggle('coop-nav-open');toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Close cooperative navigation':'Open cooperative navigation');});
     }
@@ -73,8 +80,7 @@
       <section id="coop-quality" class="coop-section"><div class="coop-section-head"><div><span>SERVICE OUTCOMES</span><h3>Service Quality</h3></div><small>Stored outcomes only · No invented NPS</small></div><div id="coopQuality"></div></section>
       <section id="coop-payments" class="coop-section"><div class="coop-section-head"><div><span>FINANCIAL VISIBILITY</span><h3>Payments & Earnings Records</h3></div><small>Read-only admin oversight</small></div><div id="coopPayments"><div class="admin-skeleton">Loading payment records…</div></div></section>
       <section id="coop-training" class="coop-section"><div class="coop-section-head"><div><span>WORKFORCE DEVELOPMENT</span><h3>Training Recommendations</h3></div><small>Advisory · Human approval required</small></div><div id="coopTraining"></div></section>
-      <section id="coop-activity" class="coop-section"><div class="coop-section-head"><div><span>AUDITABILITY</span><h3>Recent Operational Activity</h3></div><small>Connected records only</small></div><div id="coopActivity"></div></section>
-      <details id="coop-readiness" class="coop-section coop-secondary-details"><summary><div><span>ADMINISTRATIVE INTEGRATION ROADMAP</span><h3>Authorized next-phase integrations</h3></div><small>Secondary scope · no live statutory claims</small></summary><div class="coop-readiness-grid"><article><span>Society Profile & Workforce Operations</span><b>Connected</b><p>Current SanPaid cooperative scope, workforce and service operations are database-backed.</p></article><article><span>Statutory Audit / Mandatory Returns</span><b>Future Administrative Integration</b><p>No annual returns, statutory audit certificates or filing status are presented as connected.</p></article><article><span>Election / Inspection Records</span><b>Future Administrative Integration</b><p>Integration requires an authorized administrative workflow and source.</p></article><article><span>Insurance / ESIC / Government Schemes</span><b>Future Authorized Integration</b><p>No live government scheme connection is claimed.</p></article></div></details>`;
+      <section id="coop-activity" class="coop-section"><div class="coop-section-head"><div><span>AUDITABILITY</span><h3>Recent Operational Activity</h3></div><small>Connected records only</small></div><div id="coopActivity"></div></section>`;
     const lower=$('.admin-command-lower',summary);summary.insertBefore(root,lower||null);return root;
   }
 
