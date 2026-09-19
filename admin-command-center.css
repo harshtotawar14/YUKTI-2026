@@ -54,7 +54,7 @@ html[data-sanpaid-theme="dark"] .admin-command-summary,html[data-sanpaid-theme="
 #sihJudgeShell.admin-command-center .judge-tabs{display:none!important}
 .admin-command-lower{display:grid;gap:12px}
 .admin-technical-details{border:1px solid var(--sp-border);border-radius:15px;background:var(--sp-surface-2);overflow:hidden}
-.admin-technical-details>summary{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:52px;padding:13px 15px;cursor:pointer;list-style:none;color:var(--sp-text)}
+.admin-technical-details>summary{position:relative;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:52px;padding:13px 15px;cursor:pointer;list-style:none;color:var(--sp-text)}
 .admin-technical-details>summary::-webkit-details-marker{display:none}
 .admin-technical-details>summary span{font-size:12px;font-weight:850}
 .admin-technical-details>summary small{color:var(--sp-muted);font-size:10.5px;text-align:right}
