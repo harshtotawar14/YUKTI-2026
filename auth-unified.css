@@ -25,3 +25,12 @@ html[data-sanpaid-theme="dark"] .spu-shell{background:#102736}html[data-sanpaid-
 .spu-worker-switch{display:flex;gap:6px;margin-top:9px}.spu-worker-switch button{min-height:34px;padding:5px 10px;border:1px solid var(--sp-border,rgba(129,158,178,.25));border-radius:9px;background:var(--sp-surface,#fff);color:var(--sp-muted,#597083);font-size:9px;font-weight:800;cursor:pointer}.spu-worker-switch button.active{border-color:rgba(15,148,136,.5);background:rgba(15,148,136,.08);color:#0f766e}
 .spu-demo-use:focus-visible,.spu-worker-switch button:focus-visible{outline:3px solid rgba(15,148,136,.25);outline-offset:2px}
 @media(max-width:480px){.spu-demo-access{grid-template-columns:1fr}.spu-demo-use{width:100%}}
+
+/* Reviewer access stays secondary to normal product sign-in. */
+.spu-review-access{margin-top:14px;border:1px solid var(--sp-border,#DCE5E9);border-radius:14px;background:#FAFCFE;overflow:hidden}
+.spu-review-access>summary{cursor:pointer;list-style:none;padding:12px 14px;color:#315E86;font-size:11px;font-weight:850;letter-spacing:.03em}
+.spu-review-access>summary::-webkit-details-marker{display:none}
+.spu-review-access>summary::after{content:'＋';float:right;color:#6B7D89}
+.spu-review-access[open]>summary::after{content:'−'}
+.spu-review-body{padding:0 12px 12px}
+.spu-review-body .spu-status-card,.spu-review-body .spu-demo-access{margin-top:10px}
