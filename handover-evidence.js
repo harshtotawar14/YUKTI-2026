@@ -116,6 +116,16 @@
         <select id="coopEvidenceComplaintSelect" disabled><option>Loading complaints…</option></select>
       </div>
       <div id="coopEvidenceComplaintMeta" class="handover-complaint-meta"></div>
+      <div id="coopComplaintActions" class="handover-case-actions">
+        <label for="coopComplaintActionNote">Administrative note</label>
+        <textarea id="coopComplaintActionNote" rows="2" maxlength="800" placeholder="Record the review or resolution basis"></textarea>
+        <div>
+          <button type="button" class="btn secondary small" data-complaint-action="START_REVIEW">Start Review</button>
+          <button type="button" class="btn primary small" data-complaint-action="RESOLVE">Resolve Case</button>
+          <button type="button" class="btn secondary small" data-complaint-action="REOPEN">Reopen</button>
+        </div>
+        <p id="coopComplaintActionMessage" aria-live="polite"></p>
+      </div>
       <div id="coopEvidenceTimeline" class="handover-timeline"><div class="handover-loading">Loading connected complaint evidence…</div></div>
       <p class="handover-proof-note">Only stored complaint events are shown. Missing events remain visibly missing; they are not reconstructed or fabricated.</p>`;
     section.querySelector('.coop-section-head')?.insertAdjacentElement('afterend', panel);
@@ -123,43 +133,63 @@
       const id = Number(event.target.value || 0);
       if (id > 0) loadComplaintEvidence(id);
     });
+    panel.addEventListener('click', event => {
+      const button = event.target.closest?.('[data-complaint-action]');
+      if (button) updateComplaintStatus(button.dataset.complaintAction, button);
+    });
     return panel;
   }
 
   function renderComplaintMeta(complaint) {
     const root = $('#coopEvidenceComplaintMeta');
+    const actions = $('#coopComplaintActions');
     if (!root) return;
     if (!complaint) {
       root.innerHTML = '';
+      if (actions) actions.hidden = true;
       return;
     }
     root.innerHTML = `
-      <article><span>Booking</span><b>${esc(complaint.referenceCode || complaint.bookingCode || `#${complaint.bookingId || '—'}`)}</b></article>
+      <article><span>Case</span><b>${esc(complaint.referenceCode || `Complaint #${complaint.id || '—'}`)}</b></article>
+      <article><span>Booking</span><b>${esc(complaint.bookingId ? `#${complaint.bookingId}` : 'General support')}</b></article>
       <article><span>Status</span><b>${esc(human(complaint.status))}</b></article>
       <article><span>Severity</span><b>${esc(human(complaint.severity || 'NORMAL'))}</b></article>
       <article><span>SLA</span><b>${complaint.overdue ? 'OVERDUE / ESCALATED' : 'WITHIN WINDOW'}</b></article>
-      <article><span>Category</span><b>${esc(complaint.category || 'Service Support')}</b></article>
-      <article><span>Created</span><b>${esc(fmtDate(complaint.createdAt))}</b></article>`;
+      <article><span>Category</span><b>${esc(complaint.category || 'Service Support')}</b></article>`;
+    if (actions) {
+      actions.hidden = false;
+      const status = String(complaint.status || '').toUpperCase();
+      $('[data-complaint-action]', actions).forEach(button => {
+        const action = button.dataset.complaintAction;
+        button.hidden = status === 'RESOLVED' ? action !== 'REOPEN' : action === 'REOPEN' || (status === 'IN_REVIEW' && action === 'START_REVIEW');
+      });
+    }
   }
 
   function renderTimeline(data) {
     renderComplaintMeta(data?.complaint || null);
     const root = $('#coopEvidenceTimeline');
     if (!root) return;
-    const events = Array.isArray(data?.events) ? data.events : [];
+    const events = Array.isArray(data?.timeline) ? data.timeline : Array.isArray(data?.events) ? data.events : [];
     if (!events.length) {
       root.innerHTML = '<div class="handover-empty"><b>No recorded evidence events</b><span>This complaint currently has no stored complaint-event records. Nothing has been invented to fill the gap.</span></div>';
       return;
     }
-    root.innerHTML = events.map(event => `
+    root.innerHTML = events.map(event => {
+      const eventName = event.event || event.eventType || event.type || 'Recorded event';
+      const note = event.note || event.message || (event.details?.workItem ? `${event.details.workItem} · ${event.details.amount ?? ''}` : 'Stored operational evidence');
+      const actor = event.actor || event.actorRole || 'System';
+      const at = event.at || event.createdAt;
+      return `
       <article class="handover-timeline-event">
         <div class="handover-event-dot"></div>
         <div class="handover-event-body">
-          <div class="handover-event-top"><b>${esc(human(event.eventType))}</b><span>L${Number(event.escalationLevel || 0)}</span>${event.demoSimulation ? '<em>CONTROLLED SIMULATION</em>' : ''}</div>
-          <p>${esc(event.message || 'Recorded complaint event')}</p>
-          <small>${esc(human(event.actorRole || 'SYSTEM'))} · ${esc(fmtDate(event.createdAt))}</small>
+          <div class="handover-event-top"><b>${esc(human(eventName))}</b><span>${esc(human(event.type || 'CASE EVENT'))}</span></div>
+          <p>${esc(note)}</p>
+          <small>${esc(actor)} · ${esc(fmtDate(at))}</small>
         </div>
-      </article>`).join('');
+      </article>`;
+    }).join('');
   }
 
   function complaintUnavailable(message) {
@@ -188,6 +218,35 @@
     }
   }
 
+  async function updateComplaintStatus(action, button) {
+    if (!activeComplaintId || !action) return;
+    const note = String($('#coopComplaintActionNote')?.value || '').trim();
+    const message = $('#coopComplaintActionMessage');
+    if (note.length < 4) {
+      if (message) message.textContent = 'Add a short administrative note before updating the case.';
+      $('#coopComplaintActionNote')?.focus();
+      return;
+    }
+    const original = button.textContent;
+    button.disabled = true;
+    if (message) message.textContent = 'Recording governed complaint action…';
+    try {
+      const result = await api(`/api/cooperative-admin/complaints/${encodeURIComponent(activeComplaintId)}/status`, {
+        method: 'POST',
+        body: JSON.stringify({ action, note })
+      });
+      if (message) message.textContent = `Case updated to ${human(result?.complaint?.status || action)}.`;
+      const noteField = $('#coopComplaintActionNote');
+      if (noteField) noteField.value = '';
+      await loadComplaints();
+    } catch (error) {
+      if (message) message.textContent = error.status === 403 ? 'This case is outside your authorized cooperative scope.' : (error.message || 'Complaint action could not be recorded.');
+    } finally {
+      button.disabled = false;
+      button.textContent = original;
+    }
+  }
+
   async function loadComplaints() {
     const panel = ensureComplaintPanel();
     const select = $('#coopEvidenceComplaintSelect', panel || document);
@@ -204,7 +263,7 @@
         return;
       }
       select.disabled = false;
-      select.innerHTML = complaints.slice(0, 40).map(item => `<option value="${Number(item.id)}">${esc(item.bookingCode || `Complaint #${item.id}`)} · ${esc(human(item.status))}</option>`).join('');
+      select.innerHTML = complaints.slice(0, 40).map(item => `<option value="${Number(item.id)}">${esc(item.referenceCode || `Complaint #${item.id}`)} · ${esc(human(item.status))}</option>`).join('');
       const firstId = Number(complaints[0].id);
       select.value = String(firstId);
       await loadComplaintEvidence(firstId);
