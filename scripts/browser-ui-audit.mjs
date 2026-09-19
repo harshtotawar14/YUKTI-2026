@@ -152,5 +152,5 @@ try{
   const unexpectedConsole=consoleErrors.filter(text=>!text.includes('/api/')&&!text.includes('404'));
   assert(unexpectedConsole.length===0,`Unexpected console errors: ${unexpectedConsole.join(' | ')}`);
   console.log('SanPaid Chromium UI audit: PASS');
-  console.log('Verified desktop Platform Tour/role access/active navigation, 1000px tablet menu and role access, plus 390/360px mobile Platform Tour, overflow and close-state recovery.');
+  console.log('Verified first-fold USPs, desktop Platform Tour/role access/navigation, 1000px tablet access, and 390/360px mobile Platform Tour, overflow and close-state recovery.');
 } finally {if(browser)await browser.close().catch(()=>{});server.kill('SIGTERM');}
