@@ -71,13 +71,13 @@
       let action='';
       if(status==='ACCEPTED')action=`<button class="btn primary" type="button" data-life="travel" data-booking="${id}">Start Travel</button>`;
       else if(status==='ON_THE_WAY')action=`<button class="btn primary" type="button" data-life="arrive" data-booking="${id}">Mark Arrived</button>`;
-      else if(status==='ARRIVED'&&estimate?.status==='APPROVED')action=`<button class="btn primary" type="button" data-life="identity" data-booking="${id}">Verify Identity · Sandbox</button>`;
+      else if(status==='ARRIVED'&&estimate?.status==='APPROVED')action=`<button class="btn primary" type="button" data-life="identity" data-booking="${id}">Verify Identity</button>`;
       else if(status==='IDENTITY_VERIFIED')action=`<div class="connected-demo-note">Identity verified after approved estimate. Share the one-time service verification code with the customer.</div>`;
       else if(status==='CUSTOMER_CONFIRMED')action=`<button class="btn primary" type="button" data-life="start" data-booking="${id}">Start Service</button>`;
       else if(status==='IN_PROGRESS')action=`<button class="btn primary" type="button" data-life="complete-request" data-booking="${id}">Request Completion</button>`;
       else if(status==='AWAITING_CUSTOMER_CONFIRMATION')action=`<div class="connected-demo-note">Waiting for the customer to confirm service completion.</div>`;
       else if(status==='COMPLETED')action=`<div class="connected-success">Service completion confirmed by the customer.</div>`;
-      else if(status==='PAID')action=`<div class="connected-success">Service, sandbox payment and invoice are complete.</div>`;
+      else if(status==='PAID')action=`<div class="connected-success">Service, payment record and invoice are complete.</div>`;
 
       const identityDone=['IDENTITY_VERIFIED','CUSTOMER_CONFIRMED','IN_PROGRESS','AWAITING_CUSTOMER_CONFIRMATION','COMPLETED','PAID'].includes(status);
       const customerDone=['CUSTOMER_CONFIRMED','IN_PROGRESS','AWAITING_CUSTOMER_CONFIRMATION','COMPLETED','PAID'].includes(status);
@@ -120,7 +120,7 @@
       if(action==='identity'){result=await post(`/api/connected/jobs/${id}/identity`);if(result.token)setSession(`sanpaid_service_start_token_${id}`,result.token);}
       if(action==='start')result=await post(`/api/connected/jobs/${id}/start`);
       if(action==='complete-request')result=await post(`/api/connected/jobs/${id}/completion-request`);
-      message(action==='identity'?'Identity verified in sandbox. A one-time service verification code is ready.':'Service status updated across devices.');lastWorkerSignature='';signal(`service-${action}`);
+      message(action==='identity'?'Identity verification recorded for this controlled environment. A one-time service verification code is ready.':'Service status updated across devices.');lastWorkerSignature='';signal(`service-${action}`);
     }catch(e){message(friendly(e),'error');if(button){button.disabled=false;button.textContent=old;}}
     finally{busy=false;setTimeout(refresh,160);}
   }
