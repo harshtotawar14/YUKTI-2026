@@ -3,22 +3,22 @@
 
   const ROLE_META = {
     CUSTOMER: {
-      code: 'C', label: 'Customer', email: 'customer.connected@sanpaid.demo',
+      code: 'C', label: 'Customer', email: 'customer',
       role: 'CUSTOMER', target: 'connected', persona: 'CUSTOMER',
       help: 'Request and track verified local services.'
     },
     WORKER: {
-      code: 'W', label: 'Worker', email: 'worker1.connected@sanpaid.demo',
+      code: 'W', label: 'Worker', email: 'worker-a',
       role: 'WORKER', target: 'connected', persona: 'WORKER_A',
       help: 'Review eligible opportunities and choose Accept or Decline.'
     },
     COOPERATIVE_ADMIN: {
-      code: 'CA', label: 'Cooperative Administration', email: 'admin.connected@sanpaid.demo',
+      code: 'CA', label: 'Cooperative Administration', email: 'cooperative-admin',
       role: 'COOPERATIVE_ADMIN', target: 'judge', persona: null,
       help: 'Manage workforce trust, services, complaints, capacity and local operations.'
     },
     FEDERATION_ADMIN: {
-      code: 'FA', label: 'Federation Oversight', email: 'federation.connected@sanpaid.demo',
+      code: 'FA', label: 'Federation Oversight', email: 'federation-admin',
       role: 'FEDERATION_ADMIN', target: 'judge', persona: null,
       help: 'Review multi-cooperative governance, capacity coordination and regional planning.'
     }
@@ -28,6 +28,11 @@
     CUSTOMER: 'customer.connected@sanpaid.demo',
     WORKER_A: 'worker1.connected@sanpaid.demo',
     WORKER_B: 'worker2.connected@sanpaid.demo'
+  };
+  const PERSONA_ACCESS_IDS = {
+    CUSTOMER: 'customer',
+    WORKER_A: 'worker-a',
+    WORKER_B: 'worker-b'
   };
 
   const CONNECTED_TOKEN_KEY = 'sanpaid_connected_demo_token_v1';
@@ -96,8 +101,8 @@
     return ROLE_META[roleKeyFromUser(user)]?.persona || null;
   }
   function expectedEmail(role, persona) {
-    if (role === 'WORKER' && PERSONA_EMAILS[persona]) return PERSONA_EMAILS[persona];
-    if (role === 'CUSTOMER') return PERSONA_EMAILS.CUSTOMER;
+    if (role === 'WORKER' && PERSONA_ACCESS_IDS[persona]) return PERSONA_ACCESS_IDS[persona];
+    if (role === 'CUSTOMER') return PERSONA_ACCESS_IDS.CUSTOMER;
     return ROLE_META[role]?.email || '';
   }
   function personaMatches(user, persona) {
@@ -334,7 +339,7 @@
         <h2>Secure role access.<br>One governed network.</h2>
         <p>Sign in to the workspace authorized for your role. Valid sessions return to the same workspace after refresh.</p>
         <div class="spu-principles"><span>Role-Based Access</span><span>Session Restore</span><span>Auditability</span></div>
-        <div class="spu-proof">Prototype environment. Administrative access remains authorization-controlled and no production government integration is claimed.</div>
+        <div class="spu-proof">Administrative access is authorization-controlled. Government integrations are shown only when they are actually connected and verified.</div>
       </aside>
       <main class="spu-main">
         <button class="spu-close" type="button" aria-label="Close authentication">✕</button>
@@ -376,7 +381,7 @@
     const persona = personaForUser(state.user) || meta.persona;
     content.innerHTML = `<span class="spu-demo-pill">AUTHORIZED SESSION</span><h2 id="spuTitle">Welcome back</h2><p class="spu-sub">Your valid session is active.</p>
       <div class="spu-current"><div class="spu-current-top"><span class="spu-current-role">${esc(meta.label)}</span><span class="spu-demo-pill">SESSION RESTORED</span></div>
-      <h3>${esc(state.user?.name || state.user?.email || 'SanPaid user')}</h3><p>${esc(state.user?.email || '')}</p>
+      <h3>${esc(state.user?.name || 'SanPaid user')}</h3><p>${esc(meta.label)} workspace</p>
       <div class="spu-current-actions"><button class="spu-primary" id="spuContinue" type="button">Continue to workspace</button><button class="spu-secondary" id="spuSwitch" type="button">Switch Role</button><button class="spu-secondary spu-danger" id="spuLogout" type="button">Logout</button></div></div>`;
     $('#spuContinue').onclick = () => { closeAuth(); openRoleWorkspace(key, persona); };
     $('#spuSwitch').onclick = async () => { await logout({ silent: true, keepModal: true }); state.requestedRole = 'CUSTOMER'; state.requestedPersona = 'CUSTOMER'; render(); };
@@ -385,7 +390,7 @@
 
   function loginError(error) {
     if (error.status === 400 || error.status === 422) return 'Enter both email and password.';
-    if (error.status === 401) return 'Email, password or selected role did not match.';
+    if (error.status === 401) return 'Access ID, password or selected role did not match.';
     if (error.status === 403) return 'This role is not authorized for this account.';
     if (error.status === 429) return 'Too many attempts. Please wait and retry.';
     return 'Authentication is temporarily unavailable. Please retry.';
@@ -396,18 +401,18 @@
     const meta = ROLE_META[state.requestedRole] || ROLE_META.CUSTOMER;
     const content = $('#spuContent', root());
     const demoAccount = demoAccountFor(state.requestedRole, state.requestedPersona);
-    const loginEmail = demoAccount?.email || expectedEmail(state.requestedRole, state.requestedPersona);
+    const loginEmail = demoAccount?.accessId || expectedEmail(state.requestedRole, state.requestedPersona);
     const workerContext = state.requestedRole === 'WORKER'
       ? `<div class="spu-status-card"><small>Selected worker workspace</small><b>${state.requestedPersona === 'WORKER_B' ? 'Replacement worker account' : 'Primary worker account'}</b><div class="spu-worker-switch"><button type="button" data-spu-worker-demo="WORKER_A" class="${state.requestedPersona === 'WORKER_A' ? 'active' : ''}">Worker A</button><button type="button" data-spu-worker-demo="WORKER_B" class="${state.requestedPersona === 'WORKER_B' ? 'active' : ''}">Worker B</button></div></div>`
       : '';
     const demoAccessCard = state.demoAccess?.password
-      ? `<div class="spu-demo-access"><div><small>PUBLIC DEMO LOGIN</small><b>Use these credentials for the selected role</b><p>Prototype accounts only. Anyone evaluating SanPaid can sign in.</p></div><div class="spu-demo-credentials"><span>ID</span><code>${esc(loginEmail)}</code><span>Password</span><code>${esc(state.demoAccess.password)}</code></div><button type="button" class="spu-demo-use" id="spuUseDemo">USE DEMO CREDENTIALS</button></div>`
-      : `<div class="spu-demo-access loading"><div><small>PUBLIC DEMO LOGIN</small><b>Loading demo credentials…</b><p>The connected backend must be available before sign-in.</p></div></div>`;
+      ? `<div class="spu-demo-access"><div><small>SHARED PLATFORM ACCESS</small><b>Use these access credentials for the selected role</b><p>Shared review accounts provide access to the platform without exposing production-user credentials.</p></div><div class="spu-demo-credentials"><span>ID</span><code>${esc(loginEmail)}</code><span>Password</span><code>${esc(state.demoAccess.password)}</code></div><button type="button" class="spu-demo-use" id="spuUseDemo">USE ACCESS CREDENTIALS</button></div>`
+      : `<div class="spu-demo-access loading"><div><small>SHARED PLATFORM ACCESS</small><b>Loading access credentials…</b><p>The connected backend must be available before sign-in.</p></div></div>`;
 
-    content.innerHTML = `<span class="spu-demo-pill">PROTOTYPE ENVIRONMENT</span><h2 id="spuTitle">Access SanPaid</h2><p class="spu-sub">Select your authorized role and sign in.</p>
+    content.innerHTML = `<span class="spu-demo-pill">SANPAID SECURE ACCESS</span><h2 id="spuTitle">Access SanPaid</h2><p class="spu-sub">Select your authorized role and sign in.</p>
       ${roleGrid()}${workerContext}${demoAccessCard}
       <form id="spuLoginForm" class="spu-form" novalidate>
-        <div class="spu-field"><label for="spuEmail">Email</label><input id="spuEmail" name="email" type="email" inputmode="email" autocomplete="username" value="${esc(loginEmail)}" required></div>
+        <div class="spu-field"><label for="spuEmail">Access ID</label><input id="spuEmail" name="email" type="text" inputmode="text" autocomplete="username" value="${esc(loginEmail)}" required></div>
         <div class="spu-field spu-password"><label for="spuPassword">Password</label><input id="spuPassword" name="password" type="password" autocomplete="current-password" placeholder="Enter password" aria-describedby="spuLoginMessage" required><button class="spu-show" id="spuShowPassword" type="button" aria-controls="spuPassword" aria-pressed="false">Show</button></div>
         <label class="spu-remember"><input id="spuRemember" name="remember" type="checkbox"><span>Remember this device</span></label>
         <div id="spuLoginMessage" role="status" aria-live="polite"></div>
@@ -430,7 +435,7 @@
         $('#spuEmail').value = loginEmail;
         password.value = state.demoAccess.password;
         password.focus();
-        toast('Public demo credentials filled.');
+        toast('Access credentials filled.');
       };
     }
     $('#spuShowPassword').onclick = () => {
