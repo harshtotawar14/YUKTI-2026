@@ -202,7 +202,7 @@ Demo CTA contract.
 
 P1–P5 core connected implementation is now present in source/database. Next priorities are:
 
-1. Provision PostgreSQL and configure the three Production environment variables.
+1. Provision PostgreSQL and configure `DATABASE_URL`; optionally set the private owner/event demo-password override.
 2. Verify `/api/connected/health` and `/api/public/services` on the production Vercel domain.
 3. Run the real two-browser/two-phone Golden Demo and fix any runtime/network/cookie issue.
 4. Deepen Cooperative Command Center with DB-derived KPIs and verification actions.
