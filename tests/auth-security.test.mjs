@@ -77,8 +77,8 @@ test('login UI obtains public demo credentials from backend instead of embedding
   assert.doesNotMatch(ui,/SanPaid@26089/);
 });
 
-test('worker demo selector uses a collection before forEach',()=>{
+test('worker demo selector uses an explicit DOM collection before forEach',()=>{
   const ui=readFileSync(join(root,'auth-unified.js'),'utf8');
-  assert.match(ui,/\$\$\('\[data-spu-worker-demo\]'/);
+  assert.match(ui,/querySelectorAll\('\[data-spu-worker-demo\]'\)/);
   assert.doesNotMatch(ui,/\$\('\[data-spu-worker-demo\]'[^\n]*\.forEach/);
 });
