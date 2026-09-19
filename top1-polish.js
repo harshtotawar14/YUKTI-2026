@@ -4,6 +4,9 @@
   const loaded=new Set();
   let administrationLoaded=false;
   let customerWorkerLoaded=false;
+  let roleShellLoaded=false;
+  let enhancementsLoaded=false;
+  let authLoaded=false;
 
   function stylesheet(id,href){
     if(document.getElementById(id)||loaded.has(href))return;
@@ -21,18 +24,37 @@
     document.body.appendChild(node);
   }
 
-  function loadBase(){
+  function loadEnhancements(){
+    if(enhancementsLoaded)return;
+    enhancementsLoaded=true;
+    stylesheet('sanpaidCredibilityStyles','credibility-layer.css');
+    stylesheet('sanpaidWorkforceIntelligenceStyles','workforce-intelligence.css');
+    script('sanpaidCredibilityScript','credibility-layer.js');
+    script('sanpaidWorkforceIntelligenceScript','workforce-intelligence.js');
+  }
+
+  function loadAuth(){
+    if(authLoaded)return;
+    authLoaded=true;
+    stylesheet('sanpaidAuthStyles','auth-unified.css');
+    script('sanpaidAuthRuntime','auth-unified.js');
+  }
+
+  function loadRoleShell(){
+    if(roleShellLoaded)return;
+    roleShellLoaded=true;
+    loadAuth();
     stylesheet('sanpaidDesignTokens','design-tokens.css');
     stylesheet('sanpaidSelectionStyles','selection-ready-v3.css');
     stylesheet('sanpaidWorkspaceStyles','workspace-ui.css');
     stylesheet('sanpaidColorSystem','color-system-v5.css');
-    stylesheet('sanpaidAuthStyles','auth-unified.css');
-    script('sanpaidAuthRuntime','auth-unified.js');
+    loadEnhancements();
   }
 
   function loadCustomerWorker(){
     if(customerWorkerLoaded)return;
     customerWorkerLoaded=true;
+    loadRoleShell();
     stylesheet('sanpaidCustomerWorkerStyles','customer-worker-dashboard.css');
     script('sanpaidCustomerWorkerRuntime','customer-worker-dashboard.js');
   }
@@ -40,6 +62,7 @@
   function loadAdministration(){
     if(administrationLoaded)return;
     administrationLoaded=true;
+    loadRoleShell();
     stylesheet('sanpaidAdminCommandStyles','admin-command-center.css');
     stylesheet('sanpaidFederationGovtechStyles','federation-govtech.css');
     stylesheet('sanpaidFederationPortalStyles','federation-portal.css');
@@ -102,7 +125,7 @@
   }
 
   function start(){
-    loadBase();
+    loadAuth();
     wireIntentLoading();
     wireAccessibility();
     exposeRuntimeStatus();

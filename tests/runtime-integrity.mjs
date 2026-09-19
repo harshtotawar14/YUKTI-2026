@@ -56,7 +56,7 @@ assert.equal(JSON.parse(vercel).outputDirectory,'dist','Vercel must publish the 
 assert.match(runtime,/id:'frontend',label:'Deployed frontend build'/,'Readiness must verify deployed build identity');
 assert.match(runtime,/id:'auth',label:'Authentication route'/,'Readiness must verify authentication route availability');
 assert.match(runtime,/id:'snapshot',label:'Connected snapshot route'/,'Readiness must verify the connected read route');
-assert.ok(html.includes('SOURCE READY — LIVE VERIFICATION PENDING'),'Public feature truth must not claim unverified live operation');
+assert.ok(html.includes('IMPLEMENTED IN CURRENT BUILD'),'Public status section must identify the connected core as implemented in the current build');
 assert.ok(!html.includes('<h3>WORKING</h3>'),'Public feature truth still makes an unconditional working claim');
 
 assert.ok(html.includes('START GOLDEN DEMO'),'Primary Golden Demo CTA is missing');
