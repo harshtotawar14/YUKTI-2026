@@ -96,7 +96,7 @@
     {
       id:'frontend',label:'Deployed frontend build',
       run:()=>get('/build-info.json',{bearer:false,timeoutMs:8000,retry:false}),
-      validate:data=>data?.product==='SanPaid'&&data?.runtime==='v69'&&Boolean(data?.commitSha),
+      validate:data=>data?.product==='SanPaid'&&data?.runtime==='v70'&&Boolean(data?.commitSha),
       detail:data=>`${String(data.commitSha).slice(0,7)} · ${data.runtime}`
     },
     {id:'backend',label:'Connected backend',run:()=>get('/api/connected/health',{bearer:false,timeoutMs:12000}),validate:data=>data?.ok===true},
