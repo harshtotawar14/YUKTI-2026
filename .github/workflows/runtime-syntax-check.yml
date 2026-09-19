@@ -52,6 +52,7 @@ jobs:
           node --check api/_lib/db.cjs
           node --check api/_lib/policy.cjs
           node --check api/_lib/security.cjs
+          node --check api/_lib/demo-access.cjs
           find backend/src -type f -name '*.cjs' -print0 | xargs -0 -n1 node --check
 
       - name: Run repository test suite
