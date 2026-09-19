@@ -10,7 +10,7 @@
 
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fmtDate=v=>{if(!v)return 'Not set';try{return new Date(v).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}catch{return String(v)}};
-  const statusClass=s=>/ELIGIBLE|VALID|VERIFIED|CURRENT|BALANCED|IMPLEMENTED/i.test(String(s))?'good':/EXPIRED|NOT_ELIGIBLE|REJECTED|HIGH_SHORTAGE/i.test(String(s))?'bad':/FUTURE/i.test(String(s))?'future':'warn';
+  const statusClass=s=>{const value=String(s||'').toUpperCase();if(/EXPIRED|NOT_ELIGIBLE|NOT VERIFIED|UNVERIFIED|REJECTED|HIGH_SHORTAGE|SUSPENDED/.test(value))return'bad';if(/ELIGIBLE|VALID|VERIFIED|CURRENT|BALANCED|IMPLEMENTED/.test(value))return'good';if(/FUTURE/.test(value))return'future';return'warn';};
 
   async function fetchPublic(force=false){
     if(publicCache&&!force)return publicCache;
