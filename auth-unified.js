@@ -416,7 +416,7 @@
       <div class="spu-helper"><b>${esc(meta.label)}:</b> ${esc(meta.help)}</div>`;
 
     wireRoleGrid();
-    $('[data-spu-worker-demo]', root()).forEach(button => {
+    Array.from(root().querySelectorAll('[data-spu-worker-demo]')).forEach(button => {
       button.onclick = () => {
         state.requestedRole = 'WORKER';
         state.requestedPersona = button.dataset.spuWorkerDemo;
