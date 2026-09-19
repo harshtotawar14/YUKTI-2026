@@ -12,7 +12,7 @@ const root=new URL('..',import.meta.url).pathname;
 test('default billing policy makes no unsupported worker deduction',()=>{
   assert.equal(DEFAULT_POLICY.cooperativeChargePercent,0);
   assert.equal(DEFAULT_POLICY.platformChargePercent,0);
-  assert.equal(DEFAULT_POLICY.source,'PROTOTYPE_ZERO_DEDUCTION_DEFAULT');
+  assert.equal(DEFAULT_POLICY.source,'ZERO_DEDUCTION_DEFAULT_POLICY');
 });
 
 test('money normalization is deterministic to paise precision',()=>{
