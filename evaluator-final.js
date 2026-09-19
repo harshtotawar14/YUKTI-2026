@@ -199,7 +199,7 @@
     $('#evalFinalPrototype')?.addEventListener('click',()=>openConnected());
     $('#heroMatchingCta')?.addEventListener('click',()=>document.getElementById('matching')?.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}));
     $('#evalFinalArchitecture')?.addEventListener('click',()=>document.getElementById('architecture')?.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}));
-    $('#evalAdminPrototype')?.addEventListener('click',()=>window.SanPaidDemo?.showRoles?.());
+    $('[data-eval-open-admin]').forEach(button=>button.addEventListener('click',()=>window.SanPaidDemo?.showRoles?.()));
     $('#evalCapacityConnected')?.addEventListener('click',()=>window.SanPaidSelectorMode?.open?.(6));
     $('#evalResearch')?.addEventListener('click',()=>window.SanPaidSelectorMode?.open?.(8));
     $('#evalResetLocal')?.addEventListener('click',()=>window.SanPaidDemo?.reset?.());
