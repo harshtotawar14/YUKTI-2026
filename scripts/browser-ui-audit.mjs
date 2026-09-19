@@ -12,6 +12,7 @@ const executablePath=candidates.find(existsSync);
 if(!executablePath)throw new Error('Chrome/Chromium executable not found.');
 async function waitServer(){for(let i=0;i<30;i++){try{const r=await fetch(`http://127.0.0.1:${port}/`);if(r.ok)return;}catch{}await sleep(200);}throw new Error('Local SanPaid build server did not start.');}
 function assert(condition,message){if(!condition)throw new Error(message);}
+function assertProfessionalCopy(text,where){assert(!/\b(?:prototype|demo)\b/i.test(String(text||'')),`${where} still exposes prototype/demo wording`);}
 async function visibleDialog(page){return page.locator('[role="dialog"]:visible, dialog:visible, .modal:visible, .auth-modal:visible, .selector-modal:visible').first();}
 async function closeTransient(page){await page.keyboard.press('Escape').catch(()=>{});await page.waitForTimeout(120);const close=page.locator('button[aria-label*="Close" i]:visible, button[data-close]:visible, .close:visible').first();if(await close.count())await close.click({timeout:500}).catch(()=>{});await page.waitForTimeout(120);}
 
@@ -25,6 +26,7 @@ try{
   page.on('pageerror',error=>pageErrors.push(error.message));
   page.on('console',msg=>{if(msg.type()==='error')consoleErrors.push(msg.text());});
   await page.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});await page.waitForTimeout(1000);
+  assertProfessionalCopy(await page.locator('body').innerText(),'Landing page');
 
   for(const id of ['connectedDemoBtn','getStarted','heroMatchingCta']){
     const node=page.locator(`#${id}`);assert(await node.count()===1,`#${id} missing`);assert(await node.isVisible(),`#${id} is not visible on desktop`);
@@ -37,6 +39,7 @@ try{
   const roleText=(await roleDialog.textContent()||'').toLowerCase();
   for(const role of ['customer','worker','cooperative','federation'])assert(roleText.includes(role),`Role Access does not expose ${role} access`);
   assert(roleText.includes('shared platform access'),'Role Access does not expose shared access guidance');
+  assertProfessionalCopy(roleText,'Role Access');
   await closeTransient(page);
 
   const matchingBefore=await page.locator('#matching').boundingBox();
@@ -49,6 +52,7 @@ try{
   await page.locator('#connectedDemoBtn').click();await page.waitForTimeout(350);
   const demoFeedback=page.locator('[role="dialog"]:visible, .toast:visible, [role="status"]:visible, .modal:visible').first();
   assert(await demoFeedback.count()>0,'OPEN PLATFORM produced no visible feedback when local API readiness is unavailable');
+  assertProfessionalCopy(await demoFeedback.innerText(),'Platform readiness');
   await closeTransient(page);
 
   await page.setViewportSize({width:390,height:844});await page.waitForTimeout(180);
@@ -58,6 +62,7 @@ try{
   assert(await page.locator('#mobileDrawer').getAttribute('aria-hidden')==='false','Mobile drawer remained hidden');
   const mobileText=(await page.locator('#mobileDrawer').textContent()||'').toLowerCase();
   assert(mobileText.includes('open platform')&&mobileText.includes('platform tour'),'Mobile drawer is missing platform entry points');
+  assertProfessionalCopy(mobileText,'Mobile navigation');
   await page.keyboard.press('Escape');await page.waitForTimeout(120);
   assert(await page.locator('#menuBtn').getAttribute('aria-expanded')==='false','Escape did not close mobile menu');
 
