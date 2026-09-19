@@ -73,10 +73,10 @@ try{
   assert(await page.locator('#mobileDrawer').getAttribute('aria-hidden')==='false','Tablet navigation drawer remained hidden');
   assert(await page.locator('#spMobileAccess').isVisible(),'Tablet/mobile drawer is missing generic Role Access');
   await page.locator('#spMobileAccess').click();await page.waitForTimeout(180);
-  const tabletRoleDialog=await visibleDialog(page);
-  assert(await tabletRoleDialog.count()>0,'Tablet Role Access did not open');
+  const tabletRoleDialog=page.locator('#sanpaidUnifiedAuthRoot:not([hidden]) .spu-shell');
+  await tabletRoleDialog.waitFor({state:'visible'});
   assertProfessionalCopy(await tabletRoleDialog.innerText(),'Tablet Role Access');
-  await assertNoHorizontalOverflow(page,'html','Tablet Role Access viewport');
+  await assertNoHorizontalOverflow(page,'#sanpaidUnifiedAuthRoot .spu-shell','Tablet Role Access');
   await closeTransient(page);
 
   await page.setViewportSize({width:390,height:844});await page.waitForTimeout(180);
@@ -120,11 +120,11 @@ try{
 
   await page.locator('#menuBtn').click();await page.waitForTimeout(100);
   await page.locator('#spMobileAccess').click();await page.waitForTimeout(180);
-  const mobileRoleDialog=await visibleDialog(page);
-  assert(await mobileRoleDialog.count()>0,'Mobile Role Access did not open');
+  const mobileRoleDialog=page.locator('#sanpaidUnifiedAuthRoot:not([hidden]) .spu-shell');
+  await mobileRoleDialog.waitFor({state:'visible'});
   const mobileRoleText=(await mobileRoleDialog.innerText()).toLowerCase();
   for(const role of ['customer','worker','cooperative','federation'])assert(mobileRoleText.includes(role),`Mobile Role Access is missing ${role}`);
-  await assertNoHorizontalOverflow(page,'html','Mobile Role Access viewport');
+  await assertNoHorizontalOverflow(page,'#sanpaidUnifiedAuthRoot .spu-shell','Mobile Role Access');
   await closeTransient(page);
 
   await page.setViewportSize({width:360,height:800});await page.waitForTimeout(120);
