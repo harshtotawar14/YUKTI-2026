@@ -197,7 +197,6 @@
     $$('[data-eval-connected-persona]').forEach(button=>button.addEventListener('click',()=>openConnected(button.dataset.evalConnectedPersona)));
     $('#evalOpenConnected')?.addEventListener('click',()=>openConnected());
     $('#evalFinalPrototype')?.addEventListener('click',()=>openConnected());
-    $('#heroMatchingCta')?.addEventListener('click',()=>document.getElementById('matching')?.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}));
     $('#evalFinalArchitecture')?.addEventListener('click',()=>document.getElementById('architecture')?.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}));
     $$('[data-eval-open-admin]').forEach(button=>button.addEventListener('click',()=>window.SanPaidDemo?.showRoles?.()));
     $('#evalCapacityConnected')?.addEventListener('click',()=>window.SanPaidSelectorMode?.open?.(6));
