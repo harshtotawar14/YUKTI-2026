@@ -276,6 +276,32 @@ test('admin sidebars expose accessible active navigation states',()=>{
   assert.match(admin,/Open federation navigation/,'Federation mobile menu needs an accessible label.');
 });
 
+
+test('admin workspaces keep primary navigation operations-only',()=>{
+  const cooperative=readFileSync(join(root,'cooperative-portal.js'),'utf8');
+  const admin=readFileSync(join(root,'admin-command-center.js'),'utf8');
+  const css=readFileSync(join(root,'admin-command-center.css'),'utf8');
+  const coopNav=(cooperative.match(/const NAV=\[([\s\S]*?)\];/)||[])[1]||'';
+  const fedNav=(admin.match(/const FED_NAV=\[([\s\S]*?)\];/)||[])[1]||'';
+  for(const label of ['System Health','System Verification','Architecture & Research','Welfare Readiness']){
+    assert.ok(!coopNav.includes(label),`Cooperative primary nav still exposes secondary item: ${label}`);
+  }
+  for(const label of ['Feature Verification','System Verification','Architecture & Research','Welfare Readiness']){
+    assert.ok(!fedNav.includes(label),`Federation primary nav still exposes secondary item: ${label}`);
+  }
+  assert.match(css,/#sihJudgeShell\.admin-command-center \.judge-tabs\{display:none!important\}/,'Duplicate horizontal admin tabs must stay hidden.');
+  assert.match(admin,/class="admin-technical-details"/,'Technical verification must remain available as collapsed secondary content.');
+});
+
+test('admin roadmaps stay secondary and federation navigation has no duplicate injected links',()=>{
+  const cooperative=readFileSync(join(root,'cooperative-portal.js'),'utf8');
+  const federation=readFileSync(join(root,'federation-portal.js'),'utf8');
+  assert.match(cooperative,/<details id="coop-readiness"/,'Cooperative integration roadmap must be collapsed by default.');
+  assert.match(federation,/<details><summary><div><span>ADMINISTRATIVE INTEGRATION ROADMAP/,'Federation integration roadmap must be collapsed by default.');
+  assert.doesNotMatch(federation,/insert\('fed-demand-snapshot'/,'Federation sidebar must not duplicate the planning module.');
+  assert.doesNotMatch(federation,/insert\('fed-admin-readiness'/,'Federation sidebar must not promote the secondary roadmap.');
+});
+
 test('public JavaScript does not call forEach on the single-element selector helper',()=>{
   const failures=[];
   for(const file of scripts){

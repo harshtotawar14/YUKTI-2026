@@ -91,3 +91,17 @@ html[data-sanpaid-theme="dark"] #sihJudgeShell.cooperative-govtech{background:va
 .coop-capacity-request>p{grid-column:1/-1;min-height:16px;margin:0;color:#506676;font-size:10.5px}
 @media(max-width:1160px){.coop-capacity-request{grid-template-columns:1fr 1fr}.coop-capacity-request>div{grid-column:1/-1}.coop-capacity-request .btn{min-height:44px}}
 @media(max-width:620px){.coop-capacity-request{grid-template-columns:1fr}.coop-capacity-request>div,.coop-capacity-request>p{grid-column:auto}.coop-capacity-request input,.coop-capacity-request select{font-size:16px}.coop-capacity-request .btn{width:100%;min-height:48px}}
+
+
+/* Secondary roadmap stays available without competing with daily operations. */
+.coop-secondary-details{padding:0!important;border-top:1px solid #E5EBEE!important}
+.coop-secondary-details>summary{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 2px;cursor:pointer;list-style:none}
+.coop-secondary-details>summary::-webkit-details-marker{display:none}
+.coop-secondary-details>summary>div>span{display:block;color:#316B9A;font-size:10px;font-weight:900;letter-spacing:.065em}
+.coop-secondary-details>summary h3{margin:3px 0 0!important;color:#10283A;font-size:16px!important}
+.coop-secondary-details>summary>small{color:#71838E;font-size:10.5px;text-align:right}
+.coop-secondary-details>summary:after{content:"＋";color:#316B9A;font-size:16px;font-weight:900}
+.coop-secondary-details[open]>summary:after{content:"−"}
+.coop-secondary-details .coop-readiness-grid{padding:0 0 4px}
+@media(max-width:560px){.coop-secondary-details>summary{align-items:flex-start;flex-direction:column}.coop-secondary-details>summary>small{text-align:left}}
+
