@@ -114,7 +114,7 @@
       </div>
       <div class="selector-trust-flow"><span>Worker Arrives</span><i>→</i><span>Booking Validation</span><i>→</i><span>Sandbox Identity Check</span><i>→</i><span>One-Time Verification</span><i>→</i><span>Customer Confirms</span><i>→</i><span class="enabled">SERVICE START</span></div>
       <div class="selector-lock-rule"><b>IDENTITY VERIFIED</b><strong>+</strong><b>CUSTOMER CONFIRMED</b><strong>=</strong><b>SERVICE START</b></div>
-      <div class="selector-truth-note"><span class="selector-status demo">PROTOTYPE-DEMO</span><p>Without both checks, service cannot start. Current identity/liveness proof is sandboxed; production biometric KYC is not claimed.</p></div>`;
+      <div class="selector-truth-note"><span class="selector-status demo">CONTROLLED WORKFLOW</span><p>Without both checks, service cannot start. Current identity/liveness proof is sandboxed; production biometric KYC is not claimed.</p></div>`;
   }
 
   function stepGovernance() {
@@ -188,7 +188,7 @@
         <details class="selector-details"><summary>View Architecture</summary><div class="selector-architecture"><div><span>Customer · Worker · Cooperative · Federation</span><i>↓</i><span>Auth · Booking · Matching · Trust · Capacity · Planning</span><i>↓</i><span>PostgreSQL · Audit History</span><i>↓</i><span>Maps · Payments · OTP · Welfare</span></div></div></details>
         <details class="selector-details"><summary>View Security Principles</summary><div class="selector-chip-row security"><span>Role-Based Access</span><span>Server Authorization</span><span>Session Protection</span><span>Password Hashing</span><span>Transaction Protection</span><span>Audit Logs</span><span>One-Time Tokens</span><span>Token Expiry</span><span>Privacy-by-Design</span></div><p class="selector-roadmap">Production roadmap includes WAF, DDoS protection, caching, replicas, backup/DR and monitoring where not already deployed.</p></details>
       </div>
-      <div class="selector-callout"><b>Research → architecture decision → visible prototype proof.</b></div>`;
+      <div class="selector-callout"><b>Research → architecture decision → visible platform evidence.</b></div>`;
   }
 
   function stepImpact() {
@@ -204,21 +204,21 @@
         <article class="selector-card"><b>Cooperative</b><p>→ Digital Operations</p></article>
         <article class="selector-card"><b>Federation</b><p>→ Regional Coordination</p></article>
       </div>
-      <details class="selector-details selector-truth-details"><summary>Prototype Truth — what is implemented vs sandbox/future</summary>
+      <details class="selector-details selector-truth-details"><summary>Implementation Status — implemented, controlled and future capabilities</summary>
         <div class="selector-truth-matrix">
           <div><b>Connected Customer → Worker</b><span class="selector-status good">IMPLEMENTED</span></div>
           <div><b>Fair Matching</b><span class="selector-status good">IMPLEMENTED</span></div>
           <div><b>Worker Accept / Decline</b><span class="selector-status good">IMPLEMENTED</span></div>
-          <div><b>Dual Verification</b><span class="selector-status demo">PROTOTYPE-DEMO</span></div>
+          <div><b>Dual Verification</b><span class="selector-status demo">CONTROLLED WORKFLOW</span></div>
           <div><b>Payment</b><span class="selector-status demo">SANDBOX</span></div>
-          <div><b>SLA Time Advancement</b><span class="selector-status demo">DEMO SIMULATION</span></div>
+          <div><b>SLA Time Advancement</b><span class="selector-status demo">CONTROLLED SIMULATION</span></div>
           <div><b>Insurance / ESIC</b><span class="selector-status future">FUTURE READY</span></div>
           <div><b>Production Biometric KYC</b><span class="selector-status future">FUTURE</span></div>
         </div>
       </details>
       <div class="selector-final-message"><b>Why this solution matters for PS 26089</b><p>SanPaid strengthens cooperative verification, worker opportunity, service trust, complaint governance, capacity coordination and workforce planning instead of replacing cooperatives.</p></div>
       <div class="selector-final-actions">
-        <button class="btn primary" type="button" data-selector-action="connected">▶ Open Working Prototype</button>
+        <button class="btn primary" type="button" data-selector-action="connected">▶ Open Platform</button>
         <button class="btn secondary" type="button" data-selector-action="judge">🏆 Explore Technical & Research Proof</button>
         <button class="btn ghost" type="button" data-selector-action="home">Return to Home</button>
       </div>`;
@@ -255,11 +255,11 @@
     shell = document.createElement('section');
     shell.id = 'selectorModeShell';
     shell.className = 'selector-mode hidden';
-    shell.setAttribute('aria-label','SanPaid SIH selector guided demo');
+    shell.setAttribute('aria-label','SanPaid SIH platform walkthrough');
     shell.innerHTML = `
       <header class="selector-top">
-        <div><div class="brand">San<span>Paid</span></div><small>3-Minute SIH Guided Demo · PS 26089</small></div>
-        <div class="selector-top-actions"><span class="selector-readonly">READ-ONLY WALKTHROUGH</span><button class="selector-icon-btn" id="selectorClose" aria-label="Close guided demo">✕</button></div>
+        <div><div class="brand">San<span>Paid</span></div><small>3-Minute SIH Platform Walkthrough · PS 26089</small></div>
+        <div class="selector-top-actions"><span class="selector-readonly">READ-ONLY WALKTHROUGH</span><button class="selector-icon-btn" id="selectorClose" aria-label="Close walkthrough">✕</button></div>
       </header>
       <div class="selector-progress-wrap"><div class="selector-mobile-progress" id="selectorMobileProgress"></div><div class="selector-progress" id="selectorProgress"></div></div>
       <main class="selector-main" id="selectorContent" tabindex="-1" aria-live="polite" aria-atomic="true"></main>
@@ -523,7 +523,7 @@
 
     const lowerConnected = document.querySelector('#guidedDemo #connectedDemoBtn');
     if (lowerConnected) {
-      lowerConnected.textContent = 'Open Working Prototype';
+      lowerConnected.textContent = 'Open Platform';
       lowerConnected.onclick = openConnected;
     }
   }
