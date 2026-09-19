@@ -118,6 +118,36 @@ await request('/api/connected/judge/planning',{token:federation,expected:200});
 await request('/api/connected/judge/workforce-intelligence',{token:federation,expected:200});
 console.log('Cooperative Admin + Federation/Judge views: PASS');
 
+const complaint=(await request('/api/connected/customer/support',{method:'POST',token:customer,body:{bookingId,category:'Service Support',severity:'NORMAL',description:'E2E complaint lifecycle verification for the completed service.'},expected:201})).payload;
+const complaintId=Number(complaint.request?.id);
+assert(complaintId>0&&complaint.request?.status==='OPEN','Complaint creation contract invalid.');
+const adminComplaints=(await request('/api/cooperative-admin/complaints',{token:admin,expected:200})).payload;
+assert(adminComplaints.complaints?.some(x=>Number(x.id)===complaintId),'Cooperative Admin cannot see the E2E complaint.');
+await request(`/api/cooperative-admin/complaints/${complaintId}/status`,{method:'POST',token:admin,body:{action:'START_REVIEW',note:'E2E governance review started.'},expected:200});
+const complaintEvidence=(await request(`/api/cooperative-admin/complaints/${complaintId}/evidence`,{token:admin,expected:200})).payload;
+assert(complaintEvidence.ok===true&&complaintEvidence.timeline?.some(x=>x.event==='COMPLAINT_CREATED'),'Complaint evidence timeline is incomplete.');
+const resolved=(await request(`/api/cooperative-admin/complaints/${complaintId}/status`,{method:'POST',token:admin,body:{action:'RESOLVE',note:'E2E governance case resolved after evidence review.'},expected:200})).payload;
+assert(resolved.complaint?.status==='RESOLVED','Complaint resolution did not persist.');
+console.log('Complaint -> review -> evidence -> resolve: PASS');
+
+const worker2Dashboard=(await request('/api/connected/worker/dashboard',{token:worker2,expected:200})).payload;
+const worker2Id=Number(worker2Dashboard.profile?.id);
+assert(worker2Id>0,'Worker B profile id unavailable for verification E2E.');
+const pendingVerification=(await request(`/api/cooperative-admin/workers/${worker2Id}/verification`,{method:'POST',token:admin,body:{status:'PENDING',reason:'E2E identity review transition check.'},expected:200})).payload;
+assert(pendingVerification.worker?.identityStatus==='PENDING','Worker identity review did not enter PENDING.');
+const restoredVerification=(await request(`/api/cooperative-admin/workers/${worker2Id}/verification`,{method:'POST',token:admin,body:{status:'VERIFIED',reason:'E2E identity review completed successfully.'},expected:200})).payload;
+assert(restoredVerification.worker?.identityStatus==='VERIFIED','Worker identity verification was not restored.');
+console.log('Cooperative worker identity review: PASS');
+
+const capacity=(await request('/api/cooperative-admin/capacity-requests',{method:'POST',token:admin,body:{service:'Plumber',zone:'E2E Capacity Zone',workersRequired:1},expected:201})).payload;
+const capacityId=Number(capacity.request?.id);
+assert(capacityId>0&&capacity.request?.status==='REQUESTED'&&capacity.request?.automaticTransfer===false,'Capacity request governance contract invalid.');
+const fedCapacity=(await request('/api/federation/capacity-requests',{token:federation,expected:200})).payload;
+assert(fedCapacity.requests?.some(x=>Number(x.id)===capacityId),'Federation cannot see the E2E capacity request.');
+const assignments=(await request(`/api/federation/capacity-requests/${capacityId}/assignments`,{token:federation,expected:200})).payload;
+assert(Array.isArray(assignments.assignments)&&assignments.assignments.length===0,'Capacity request created an assignment without worker consent and authorization.');
+console.log('Capacity request -> federation visibility -> no automatic transfer: PASS');
+
 for(const token of [customer,worker1,worker2,admin,federation])await request('/api/auth/logout',{method:'POST',token,body:{},expected:200});
 console.log('Logout/session cleanup: PASS');
 console.log('FULL SANPAID PRODUCTION E2E: PASS');
