@@ -32,8 +32,7 @@
     ['capacity','Capacity Exchange','Cross-cooperative requests'],
     ['complaint','Escalations & SLA','L1 → L2 → L3 visibility'],
     ['planning','Demand, Capacity & Skills','Planning and skill-gap advisory'],
-    ['trust','Trust Governance','Verification oversight'],
-    ['matching','Matching Policy','Eligibility-first transparency']
+    ['trust','Trust Governance','Verification oversight']
   ];
 
   const FEATURE_CATALOG=[
@@ -125,7 +124,7 @@
   function runtimeStatusFor(feature,runtime){
     if(feature.mode==='FUTURE')return ['FUTURE AUTHORIZED INTEGRATION','neutral'];
     if(feature.mode==='SANDBOX')return ['SANDBOX · CONTROLLED','info'];
-    if(feature.mode==='WRITE')return ['CONNECTED BUT NOT LIVE-TESTED','warn'];
+    if(feature.mode==='WRITE')return ['CONNECTED · AUTHORIZED ACTION','info'];
     if(feature.mode==='CONNECTED_FLOW')return ['CONNECTED WORKFLOW','info'];
     const map={'Federation authentication':runtime.auth,'Regional Command Center':runtime.overview,'System readiness':runtime.readiness,'Fair matching explanation':runtime.matching,'Demand & skill planning':runtime.planning};const ok=map[feature.name];
     if(ok===true)return ['CONNECTED + READ VERIFIED','ok'];if(ok===false)return ['ATTENTION / READ FAILED','risk'];return ['AVAILABLE · VERIFICATION PENDING','warn'];
