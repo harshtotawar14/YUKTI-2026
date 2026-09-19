@@ -277,29 +277,29 @@ test('admin sidebars expose accessible active navigation states',()=>{
 });
 
 
-test('admin workspaces keep primary navigation operations-only',()=>{
+test('admin workspaces keep primary navigation grouped and operations-first',()=>{
   const cooperative=readFileSync(join(root,'cooperative-portal.js'),'utf8');
+  const federation=readFileSync(join(root,'federation-portal.js'),'utf8');
   const admin=readFileSync(join(root,'admin-command-center.js'),'utf8');
   const css=readFileSync(join(root,'admin-command-center.css'),'utf8');
-  const coopNav=(cooperative.match(/const NAV=\[([\s\S]*?)\];/)||[])[1]||'';
-  const fedNav=(admin.match(/const FED_NAV=\[([\s\S]*?)\];/)||[])[1]||'';
-  for(const label of ['System Health','System Verification','Architecture & Research','Welfare Readiness']){
-    assert.ok(!coopNav.includes(label),`Cooperative primary nav still exposes secondary item: ${label}`);
-  }
-  for(const label of ['Feature Verification','System Verification','Architecture & Research','Welfare Readiness']){
-    assert.ok(!fedNav.includes(label),`Federation primary nav still exposes secondary item: ${label}`);
-  }
+  const coopNav=(cooperative.match(/const NAV_GROUPS=\[([\s\S]*?)\n  \];/)||[])[1]||'';
+  const fedNav=(admin.match(/const FED_NAV=\[([\s\S]*?)\n  \];/)||[])[1]||'';
+  for(const group of ['OPERATIONS','GOVERNANCE','INTELLIGENCE'])assert.ok(coopNav.includes(group),`Cooperative navigation group missing: ${group}`);
+  for(const group of ['Regional Operations','Coordination','Intelligence & Policy'])assert.ok(federation.includes(group),`Federation navigation group missing: ${group}`);
+  for(const label of ['System Health','System Verification','Architecture & Research','Welfare Readiness'])assert.ok(!coopNav.includes(label),`Cooperative primary nav still exposes secondary item: ${label}`);
+  for(const label of ['Feature Verification','System Verification','Architecture & Research','Welfare Readiness'])assert.ok(!fedNav.includes(label),`Federation primary nav still exposes secondary item: ${label}`);
   assert.match(css,/#sihJudgeShell\.admin-command-center \.judge-tabs\{display:none!important\}/,'Duplicate horizontal admin tabs must stay hidden.');
   assert.match(admin,/class="admin-technical-details"/,'Technical verification must remain available as collapsed secondary content.');
 });
 
-test('admin roadmaps stay secondary and federation navigation has no duplicate injected links',()=>{
+test('admin workspaces remove duplicate roadmap clutter and keep technical truth secondary',()=>{
   const cooperative=readFileSync(join(root,'cooperative-portal.js'),'utf8');
   const federation=readFileSync(join(root,'federation-portal.js'),'utf8');
-  assert.match(cooperative,/<details id="coop-readiness"/,'Cooperative integration roadmap must be collapsed by default.');
-  assert.match(federation,/<details><summary><div><span>ADMINISTRATIVE INTEGRATION ROADMAP/,'Federation integration roadmap must be collapsed by default.');
-  assert.doesNotMatch(federation,/insert\('fed-demand-snapshot'/,'Federation sidebar must not duplicate the planning module.');
-  assert.doesNotMatch(federation,/insert\('fed-admin-readiness'/,'Federation sidebar must not promote the secondary roadmap.');
+  const admin=readFileSync(join(root,'admin-command-center.js'),'utf8');
+  assert.doesNotMatch(cooperative,/coop-readiness|ADMINISTRATIVE INTEGRATION ROADMAP/,'Cooperative workspace still duplicates the future-integration roadmap.');
+  assert.doesNotMatch(federation,/fed-admin-readiness|ADMINISTRATIVE INTEGRATION ROADMAP|ensureAdministrativeReadiness/,'Federation workspace still duplicates the future-integration roadmap.');
+  for(const label of ['Service-Start Trust','Payment Sandbox','System Reset'])assert.ok(!admin.includes(label),`Admin technical verification still exposes out-of-scope row: ${label}`);
+  assert.match(admin,/class="admin-technical-details"/,'Implementation truth must remain available in collapsed technical verification.');
 });
 
 
