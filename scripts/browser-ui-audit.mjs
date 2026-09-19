@@ -36,7 +36,7 @@ try{
   const roleDialog=await visibleDialog(page);assert(await roleDialog.count()>0,'Role Access did not open a visible dialog/workspace');
   const roleText=(await roleDialog.textContent()||'').toLowerCase();
   for(const role of ['customer','worker','cooperative','federation'])assert(roleText.includes(role),`Role Access does not expose ${role} access`);
-  assert(roleText.includes('public demo login'),'Role Access does not expose public demo login guidance');
+  assert(roleText.includes('shared platform access'),'Role Access does not expose shared access guidance');
   await closeTransient(page);
 
   const matchingBefore=await page.locator('#matching').boundingBox();
@@ -48,7 +48,7 @@ try{
   await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(200);
   await page.locator('#connectedDemoBtn').click();await page.waitForTimeout(350);
   const demoFeedback=page.locator('[role="dialog"]:visible, .toast:visible, [role="status"]:visible, .modal:visible').first();
-  assert(await demoFeedback.count()>0,'START GOLDEN DEMO produced no visible feedback when local API readiness is unavailable');
+  assert(await demoFeedback.count()>0,'OPEN PLATFORM produced no visible feedback when local API readiness is unavailable');
   await closeTransient(page);
 
   await page.setViewportSize({width:390,height:844});await page.waitForTimeout(180);
@@ -57,7 +57,7 @@ try{
   assert(await page.locator('#menuBtn').getAttribute('aria-expanded')==='true','Mobile menu did not expand');
   assert(await page.locator('#mobileDrawer').getAttribute('aria-hidden')==='false','Mobile drawer remained hidden');
   const mobileText=(await page.locator('#mobileDrawer').textContent()||'').toLowerCase();
-  assert(mobileText.includes('golden demo')&&mobileText.includes('guided demo'),'Mobile drawer is missing demo entry points');
+  assert(mobileText.includes('open platform')&&mobileText.includes('platform tour'),'Mobile drawer is missing platform entry points');
   await page.keyboard.press('Escape');await page.waitForTimeout(120);
   assert(await page.locator('#menuBtn').getAttribute('aria-expanded')==='false','Escape did not close mobile menu');
 
@@ -65,5 +65,5 @@ try{
   const unexpectedConsole=consoleErrors.filter(text=>!text.includes('/api/')&&!text.includes('404'));
   assert(unexpectedConsole.length===0,`Unexpected console errors: ${unexpectedConsole.join(' | ')}`);
   console.log('SanPaid Chromium UI audit: PASS');
-  console.log('Verified visible desktop CTAs, all role choices, matching navigation, Golden Demo feedback, mobile drawer and Escape accessibility.');
+  console.log('Verified visible desktop CTAs, all role choices, matching navigation, platform readiness feedback, mobile drawer and Escape accessibility.');
 } finally {if(browser)await browser.close().catch(()=>{});server.kill('SIGTERM');}
