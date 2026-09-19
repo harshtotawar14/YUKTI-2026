@@ -48,7 +48,7 @@ test('normal browser session cookie remains HttpOnly Secure SameSite Lax',()=>{
 
 test('public SIH demo credential is limited to the five isolated demo accounts',()=>{
   assert.equal(demo.DEMO_ACCOUNTS.length,5);
-  for(const account of demo.DEMO_ACCOUNTS)assert.equal(demo.isPublicDemoCredential(account.email,demo.PUBLIC_DEMO_PASSWORD),true);
+  for(const account of demo.DEMO_ACCOUNTS)assert.equal(demo.isPublicDemoCredential(account.accessId,demo.PUBLIC_DEMO_PASSWORD),true);
   assert.equal(demo.isPublicDemoCredential('someone@example.com',demo.PUBLIC_DEMO_PASSWORD),false);
   assert.equal(demo.isPublicDemoCredential('admin.connected@sanpaid.demo','wrong-password'),false);
 });
@@ -81,4 +81,14 @@ test('worker demo selector uses an explicit DOM collection before forEach',()=>{
   const ui=readFileSync(join(root,'auth-unified.js'),'utf8');
   assert.match(ui,/querySelectorAll\('\[data-spu-worker-demo\]'\)/);
   assert.doesNotMatch(ui,/\$\('\[data-spu-worker-demo\]'[^\n]*\.forEach/);
+});
+
+test('public access payload exposes role access IDs without internal demo emails',()=>{
+  const payload=demo.publicDemoPayload();
+  assert.equal(payload.mode,'SHARED_PLATFORM_ACCESS');
+  assert.equal(payload.accounts.length,5);
+  for(const account of payload.accounts){
+    assert.ok(account.accessId);
+    assert.equal('email' in account,false);
+  }
 });
