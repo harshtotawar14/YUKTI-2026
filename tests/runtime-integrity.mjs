@@ -45,7 +45,7 @@ assert.match(read('evaluator-final.js'),/SanPaidReadiness\?\.require/,'Evaluator
 assert.match(read('selector-mode.js'),/SanPaidReadiness\?\.require/,'Guided connected entry bypasses readiness');
 
 const serviceWorker=read('service-worker.js');
-assert.match(serviceWorker,/sanpaid-runtime-v70/,'Expected service-worker runtime v70');
+assert.match(serviceWorker,/sanpaid-runtime-v71/,'Expected service-worker runtime v70');
 assert.match(serviceWorker,/Promise\.allSettled/,'Service-worker precache must tolerate individual asset failure');
 assert.match(serviceWorker,/pathname\.startsWith\('\/api\/'\)/,'Service worker must not cache API requests');
 assert.match(serviceWorker,/build-info\.json/,'Service worker must not cache deployment identity');
@@ -56,7 +56,7 @@ assert.equal(JSON.parse(vercel).outputDirectory,'dist','Vercel must publish the 
 assert.match(runtime,/id:'frontend',label:'Deployed frontend build'/,'Readiness must verify deployed build identity');
 assert.match(runtime,/id:'auth',label:'Authentication route'/,'Readiness must verify authentication route availability');
 assert.match(runtime,/id:'snapshot',label:'Connected snapshot route'/,'Readiness must verify the connected read route');
-assert.ok(html.includes('SOURCE READY — LIVE VERIFICATION PENDING'),'Public feature truth must not claim unverified live operation');
+assert.ok(html.includes('IMPLEMENTED IN CURRENT BUILD'),'Public status section must identify the connected core as implemented in the current build');
 assert.ok(!html.includes('<h3>WORKING</h3>'),'Public feature truth still makes an unconditional working claim');
 
 assert.ok(html.includes('START GOLDEN DEMO'),'Primary Golden Demo CTA is missing');

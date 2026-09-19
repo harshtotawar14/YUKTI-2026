@@ -1,11 +1,12 @@
-const CACHE_NAME='sanpaid-runtime-v70';
+const CACHE_NAME='sanpaid-runtime-v71';
 const FALLBACK_ASSETS=[
-  './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./color-system-v5.css',
-  './app.js','./mobile.js','./evaluator-final.css','./evaluator-final.js','./top1-polish.js',
-  './connected-demo.css','./connected-demo.js','./auth-unified.css','./auth-unified.js',
-  './customer-worker-dashboard.css','./customer-worker-dashboard.js','./handover-evidence.css','./handover-evidence.js',
+  './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./master-v2.css',
+  './connected-demo.css','./judge-demo.css','./selector-mode.css',
+  './app.js','./mobile.js','./evaluator-final.js','./top1-polish.js',
+  './connected-demo.js','./connected-service-ui.js','./connected-commerce-ui.js','./connected-runtime-fix.js',
+  './capacity-worker-ui.js','./judge-demo.js','./selector-mode.js',
   './manifest.webmanifest','./app-icon.svg','./social-preview.svg','./robots.txt','./sitemap.xml'
-];
+]
 
 self.addEventListener('install',event=>{
   event.waitUntil((async()=>{

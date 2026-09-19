@@ -101,9 +101,16 @@ test('visible evaluator-critical controls are present and wired',()=>{
   assert.deepEqual(unwired,[],`Unwired critical controls: ${unwired.join(', ')}`);
 });
 
-test('deploy build explicitly strips the permanently hidden legacy quick-access block',()=>{
+test('deploy build uses an explicit public-asset allowlist',()=>{
   const build=readFileSync(join(root,'scripts/build.mjs'),'utf8');
-  assert.match(build,/quick-booking-details/,'Build must remove the permanently hidden duplicate quick-access block from dist.');
+  assert.match(build,/const publicFiles=\[/,'Build must publish only an explicit runtime allowlist.');
+  assert.doesNotMatch(build,/readdirSync\(root/,'Build must not copy every top-level JS/CSS file.');
+});
+
+test('legacy duplicate presentation layers are removed',()=>{
+  const removed=['evaluator-final.css','hero-viewport-fix.css','mobile-fix.css','sih-final.css','worker-trust-passport-ui.js'];
+  const leftovers=removed.filter(file=>existsSync(join(root,file)));
+  assert.deepEqual(leftovers,[],`Legacy duplicate runtime files remain: ${leftovers.join(', ')}`);
 });
 
 test('public runtime has no obvious dead placeholder actions',()=>{

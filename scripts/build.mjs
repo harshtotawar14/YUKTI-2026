@@ -1,12 +1,24 @@
-import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { extname, resolve } from 'node:path';
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const root=resolve(fileURLToPath(new URL('..',import.meta.url)));
 const output=resolve(root,'dist');
-const publicExtensions=new Set(['.css','.html','.js','.svg','.webmanifest','.xml','.txt']);
 const packageMetadata=JSON.parse(readFileSync(resolve(root,'package.json'),'utf8'));
+
+const publicFiles=[
+  'index.html',
+  'app-icon.svg','manifest.webmanifest','robots.txt','sitemap.xml','social-preview.svg',
+  'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','master-v2.css',
+  'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','customer-worker-dashboard.css',
+  'admin-command-center.css','federation-govtech.css','federation-portal.css','cooperative-portal.css','handover-evidence.css',
+  'credibility-layer.css','workforce-intelligence.css',
+  'app.js','mobile.js','connected-demo.js','connected-service-ui.js','connected-commerce-ui.js','connected-runtime-fix.js',
+  'capacity-worker-ui.js','judge-demo.js','selector-mode.js','top1-polish.js','evaluator-final.js','auth-unified.js',
+  'customer-worker-dashboard.js','admin-command-center.js','federation-portal.js','cooperative-portal.js',
+  'cooperative-deploy-guard.js','handover-evidence.js','credibility-layer.js','workforce-intelligence.js','service-worker.js'
+];
 
 function resolveCommit(){
   const fromEnvironment=process.env.VERCEL_GIT_COMMIT_SHA||process.env.GITHUB_SHA||'';
@@ -15,29 +27,19 @@ function resolveCommit(){
   catch{return 'LOCAL_BUILD';}
 }
 
-function cleanLandingHtml(html){
-  // This block is permanently hidden by the evaluator landing CSS and duplicates
-  // the canonical Role Access / Golden Demo entry points. Keep it out of the
-  // deployable artifact while the physical frontend-source migration is pending.
-  return html
-    .replace(/\s*<details class="quick-booking-details">[\s\S]*?<\/details>/,'')
-    .replace('SOURCE READY — LIVE VERIFICATION PENDING','IMPLEMENTED IN SOURCE — DEPLOY VERIFICATION REQUIRED');
-}
-
 rmSync(output,{recursive:true,force:true});
 mkdirSync(output,{recursive:true});
 
-for(const entry of readdirSync(root,{withFileTypes:true})){
-  if(!entry.isFile()||!publicExtensions.has(extname(entry.name)))continue;
-  const source=resolve(root,entry.name),destination=resolve(output,entry.name);
-  if(entry.name==='index.html')writeFileSync(destination,cleanLandingHtml(readFileSync(source,'utf8')));
-  else cpSync(source,destination);
+for(const file of publicFiles){
+  const source=resolve(root,file);
+  if(!existsSync(source))throw new Error(`Required public asset is missing: ${file}`);
+  cpSync(source,resolve(output,file));
 }
 
 const buildInfo={
   product:'SanPaid',
   version:packageMetadata.version,
-  runtime:'v70',
+  runtime:'v71',
   commitSha:resolveCommit(),
   builtAt:new Date().toISOString(),
   source:'harshtotawar14/YUKTI-2026',
@@ -45,4 +47,4 @@ const buildInfo={
 };
 
 writeFileSync(resolve(output,'build-info.json'),`${JSON.stringify(buildInfo,null,2)}\n`);
-console.log(`Built SanPaid ${buildInfo.version} (${buildInfo.commitSha}) into dist/.`);
+console.log(`Built SanPaid ${buildInfo.version} (${buildInfo.commitSha}) into dist/ with ${publicFiles.length} allowlisted public assets.`);
