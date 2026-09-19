@@ -21,18 +21,67 @@ function observedPlanningRow(row){
 
 async function overview(req,res,user){
   method(req,'GET');
-  const [counts,regions]=await Promise.all([
-    query(`SELECT (SELECT count(*) FROM cooperatives)::int AS cooperatives,
+  const [counts,regions,cooperatives,capacityRequests,complaints]=await Promise.all([
+    query(`SELECT
+      (SELECT count(*) FROM cooperatives)::int AS cooperatives,
       (SELECT count(*) FROM workers)::int AS workers,
+      (SELECT count(*) FROM workers WHERE identity_status='VERIFIED')::int AS verified_workers,
+      (SELECT count(*) FROM workers WHERE identity_status='VERIFIED' AND availability_status='AVAILABLE')::int AS available_workers,
+      (SELECT count(*) FROM workers WHERE identity_status<>'VERIFIED')::int AS pending_verification,
       (SELECT count(*) FROM bookings)::int AS bookings,
-      (SELECT count(*) FROM support_requests WHERE status='OPEN')::int AS open_complaints,
+      (SELECT count(*) FROM support_requests WHERE status=ANY(ARRAY['OPEN','IN_REVIEW','ESCALATED']))::int AS open_complaints,
+      (SELECT count(*) FROM support_requests WHERE status=ANY(ARRAY['OPEN','IN_REVIEW','ESCALATED']) AND sla_due_at IS NOT NULL AND sla_due_at<now())::int AS sla_breached,
       (SELECT coalesce(sum(amount),0) FROM payments)::numeric AS payments`),
     query(`SELECT c.region,count(DISTINCT c.id)::int AS cooperatives,count(DISTINCT w.id)::int AS workers,count(DISTINCT b.id)::int AS bookings
       FROM cooperatives c LEFT JOIN workers w ON w.cooperative_id=c.id LEFT JOIN bookings b ON b.cooperative_id=c.id
-      GROUP BY c.region ORDER BY c.region`)
+      GROUP BY c.region ORDER BY c.region`),
+    query(`SELECT c.id,c.name,c.region,
+      count(DISTINCT w.id)::int AS workers,
+      count(DISTINCT w.id) FILTER(WHERE w.identity_status='VERIFIED')::int AS verified,
+      count(DISTINCT w.id) FILTER(WHERE w.identity_status='VERIFIED' AND w.availability_status='AVAILABLE')::int AS available,
+      count(DISTINCT b.id)::int AS bookings
+      FROM cooperatives c
+      LEFT JOIN workers w ON w.cooperative_id=c.id
+      LEFT JOIN bookings b ON b.cooperative_id=c.id
+      GROUP BY c.id,c.name,c.region ORDER BY c.name`),
+    query(`SELECT r.id,r.request_code,r.zone,r.workers_required,r.status,r.created_at,
+      s.name AS service,rc.name AS requesting_cooperative,pc.name AS providing_cooperative,
+      count(DISTINCT o.id) FILTER(WHERE o.status='ACCEPTED')::int AS accepted_workers,
+      count(DISTINCT a.id)::int AS approved_workers
+      FROM capacity_requests r
+      JOIN services s ON s.id=r.service_id
+      JOIN cooperatives rc ON rc.id=r.requesting_cooperative_id
+      LEFT JOIN cooperatives pc ON pc.id=r.providing_cooperative_id
+      LEFT JOIN capacity_worker_offers o ON o.capacity_request_id=r.id
+      LEFT JOIN cross_cooperative_assignments a ON a.capacity_request_id=r.id
+      GROUP BY r.id,s.name,rc.name,pc.name
+      ORDER BY r.created_at DESC LIMIT 20`),
+    query(`SELECT id,reference_code,category,severity,status,sla_due_at,escalated_at,created_at
+      FROM support_requests
+      WHERE status=ANY(ARRAY['OPEN','IN_REVIEW','ESCALATED'])
+      ORDER BY CASE status WHEN 'ESCALATED' THEN 0 WHEN 'IN_REVIEW' THEN 1 ELSE 2 END,created_at DESC LIMIT 20`)
   ]);
   const row=counts.rows[0];
-  return send(res,200,{ok:true,source:'DATABASE_AGGREGATION',metrics:{cooperatives:row.cooperatives,workers:row.workers,bookings:row.bookings,openComplaints:row.open_complaints,sandboxPaymentValue:Number(row.payments)},regions:regions.rows.map(x=>({name:x.region,cooperatives:Number(x.cooperatives),workers:Number(x.workers),bookings:Number(x.bookings)}))});
+  return send(res,200,{
+    ok:true,
+    source:'DATABASE_AGGREGATION',
+    metrics:{
+      cooperatives:Number(row.cooperatives||0),
+      workers:Number(row.workers||0),
+      verifiedWorkers:Number(row.verified_workers||0),
+      availableWorkers:Number(row.available_workers||0),
+      pendingVerification:Number(row.pending_verification||0),
+      bookings:Number(row.bookings||0),
+      openComplaints:Number(row.open_complaints||0),
+      slaBreached:Number(row.sla_breached||0),
+      sandboxPaymentValue:Number(row.payments||0)
+    },
+    regions:regions.rows.map(x=>({name:x.region,cooperatives:Number(x.cooperatives),workers:Number(x.workers),bookings:Number(x.bookings)})),
+    cooperatives:cooperatives.rows.map(x=>({id:Number(x.id),name:x.name,city:x.region,region:x.region,workers:Number(x.workers),verified:Number(x.verified),available:Number(x.available),bookings:Number(x.bookings)})),
+    capacityRequests:capacityRequests.rows.map(x=>({id:Number(x.id),requestCode:x.request_code,service:x.service,zone:x.zone,requestedWorkers:Number(x.workers_required),acceptedWorkers:Number(x.accepted_workers),approvedWorkers:Number(x.approved_workers),status:x.status,requestingCooperative:x.requesting_cooperative,providingCooperative:x.providing_cooperative,requestedAt:x.created_at})),
+    complaints:complaints.rows.map(x=>({id:Number(x.id),ticketNumber:x.reference_code,category:x.category,severity:x.severity,status:x.status,escalationLevel:x.status==='ESCALATED'?3:x.status==='IN_REVIEW'?2:1,slaDueAt:x.sla_due_at,escalatedAt:x.escalated_at,createdAt:x.created_at})),
+    forecasts:[]
+  });
 }
 
 async function planning(req,res,user){
