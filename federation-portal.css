@@ -15,3 +15,9 @@ html[data-sanpaid-theme="dark"] #sihJudgeShell.federation-govtech .fed-network-t
 @media(max-width:480px){.fed-network-toolbar{grid-template-columns:1fr;padding:9px}.fed-network-toolbar .btn{width:100%}.fed-filter-count{grid-column:auto}.fed-demand-metrics{grid-template-columns:1fr}.fed-demand-bars>div{grid-template-columns:62px minmax(0,1fr) 32px}.fed-profile-chip{display:none!important}.fed-detail-panel{width:100vw;max-width:none;border-left:0}.fed-detail-panel>header{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}.fed-detail-body{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}.fed-detail-status{align-items:flex-start;flex-direction:column}.fed-demand-bars{padding:12px}.fed-demand-bars p{font-size:11px!important}}
 @media(max-width:340px){.fed-demand-bars>div{grid-template-columns:54px minmax(0,1fr) 28px;gap:6px}.fed-network-toolbar{padding:8px}}
 @media(prefers-reduced-motion:reduce){.fed-detail-backdrop{backdrop-filter:none}.fed-detail-panel{scroll-behavior:auto}}
+
+/* Final SanPaid brand alignment */
+#sihJudgeShell.federation-govtech .fed-section-head span,.fed-nav-group{color:#316B9A}
+#sihJudgeShell.federation-govtech .fed-table-action{color:#245D8D;border-color:#C8D9E8;background:#F4F8FC}
+#sihJudgeShell.federation-govtech .fed-network-toolbar input:focus,#sihJudgeShell.federation-govtech .fed-network-toolbar select:focus{border-color:#316B9A;box-shadow:0 0 0 3px rgba(49,107,154,.12)}
+#sihJudgeShell.federation-govtech :is(button,input,select,a):focus-visible,.fed-detail-root :is(button,a):focus-visible{outline-color:#316B9A!important}
