@@ -4,7 +4,7 @@ const {query,transaction}=require('../../../api/_lib/db.cjs');
 const {authenticate,allow,send,httpError}=require('../shared/auth-context.cjs');
 const {transition}=require('../../../api/_lib/policy.cjs');
 
-const DEFAULT_POLICY=Object.freeze({routineExtraLimit:1000,cooperativeChargePercent:0,platformChargePercent:0,source:'PROTOTYPE_ZERO_DEDUCTION_DEFAULT'});
+const DEFAULT_POLICY=Object.freeze({routineExtraLimit:1000,cooperativeChargePercent:0,platformChargePercent:0,source:'ZERO_DEDUCTION_DEFAULT_POLICY'});
 
 function method(req,expected){if(req.method!==expected)throw httpError(405,`Use ${expected} for this endpoint.`,'METHOD_NOT_ALLOWED');}
 function body(req){if(req.body&&typeof req.body==='object')return req.body;if(!req.body)return{};try{return JSON.parse(req.body);}catch{throw httpError(400,'Request body must be valid JSON.','INVALID_JSON');}}
@@ -43,7 +43,7 @@ async function submitEstimate(req,res,user,bookingId){
   const items=rawItems.slice(0,10).map((item,index)=>({description:clean(item?.description,180),amount:money(numeric(item?.amount,`Estimate item ${index+1} amount`))})).filter(item=>item.description&&item.amount>0);
   if(!items.length)throw httpError(422,'Add at least one estimate item with a valid amount.','ESTIMATE_ITEMS');
   if(items.length!==rawItems.filter(item=>clean(item?.description,180)||String(item?.amount??'').trim()).slice(0,10).length)throw httpError(422,'Every estimate item needs a description and positive amount.','ESTIMATE_ITEMS');
-  const total=money(items.reduce((sum,item)=>sum+item.amount,0));if(total<=0||total>200000)throw httpError(422,'Estimate total is outside the supported prototype range.','ESTIMATE_TOTAL');
+  const total=money(items.reduce((sum,item)=>sum+item.amount,0));if(total<=0||total>200000)throw httpError(422,'Estimate total is outside the supported service range.','ESTIMATE_TOTAL');
   const note=clean(data.note,600);
   const result=await transaction(async client=>{
     const booking=await bookingFor(client,bookingId,user,{worker:true,lock:true});

@@ -155,7 +155,7 @@
       <article class="handover-timeline-event">
         <div class="handover-event-dot"></div>
         <div class="handover-event-body">
-          <div class="handover-event-top"><b>${esc(human(event.eventType))}</b><span>L${Number(event.escalationLevel || 0)}</span>${event.demoSimulation ? '<em>DEMO SIMULATION</em>' : ''}</div>
+          <div class="handover-event-top"><b>${esc(human(event.eventType))}</b><span>L${Number(event.escalationLevel || 0)}</span>${event.demoSimulation ? '<em>CONTROLLED SIMULATION</em>' : ''}</div>
           <p>${esc(event.message || 'Recorded complaint event')}</p>
           <small>${esc(human(event.actorRole || 'SYSTEM'))} · ${esc(fmtDate(event.createdAt))}</small>
         </div>
@@ -222,9 +222,9 @@
     for (const node of targets) {
       const text = String(node.textContent || '');
       const next = text
-        .replace(/SIH\s*2026/gi, 'Prototype Environment')
+        .replace(/SIH\s*2026/gi, 'SanPaid Platform')
         .replace(/Golden\s*Demo/gi, 'System Verification')
-        .replace(/Demo\s*Control/gi, 'Controlled Test')
+        .replace(/Demo\s*Control/gi, 'System Control')
         .replace(/Judge\s*Mode/gi, 'Administration Workspace');
       if (next !== text) node.textContent = next;
     }

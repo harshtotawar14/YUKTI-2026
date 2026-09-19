@@ -9,7 +9,7 @@
   const post=(path,body)=>request(path,{method:'POST',body:JSON.stringify(body||{})});
   function workerScreen(){const content=document.getElementById('connectedContent');return content?.dataset.connectedRole==='WORKER'?content:null;}
   function shellOpen(){const shell=document.getElementById('connectedShell');return !!(shell&&!shell.classList.contains('hidden'));}
-  function friendly(e){if(e?.status===401)return 'Your demo session expired. Please log in again.';if(e?.status>=500)return 'Capacity offers are temporarily unavailable. Please retry.';return e?.message||'Capacity offer could not be loaded.';}
+  function friendly(e){if(e?.status===401)return 'Your session expired. Please log in again.';if(e?.status>=500)return 'Capacity offers are temporarily unavailable. Please retry.';return e?.message||'Capacity offer could not be loaded.';}
 
   async function render(force=false){
     if(busy||document.hidden||!shellOpen())return;const content=workerScreen();if(!content)return;

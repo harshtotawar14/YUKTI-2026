@@ -80,7 +80,7 @@ async function matchProof(req,res,user,bookingId){
   const offers=(await query(`SELECT o.rank,o.status,o.matching_score,o.factor_scores,o.reason_codes,w.id AS worker_id,u.name,w.identity_status,w.availability_status,w.rating,w.demo_distance_km
       FROM booking_offers o JOIN workers w ON w.id=o.worker_id JOIN users u ON u.id=w.user_id
       WHERE o.booking_id=$1 ORDER BY o.rank,o.id`,[bookingId])).rows;
-  return send(res,200,{ok:true,source:'PERSISTED_MATCHING_EVIDENCE',booking:{id:Number(booking.id),bookingCode:booking.booking_code,status:booking.status,service:booking.service},policy:'ELIGIBILITY_FIRST_CONFIGURABLE_PROTOTYPE_RANKING',candidates:offers.map(x=>({rank:Number(x.rank),workerId:Number(x.worker_id),name:x.name,offerStatus:x.status,matchingScore:x.matching_score==null?null:Number(x.matching_score),factorScores:x.factor_scores||{},reasonCodes:Array.isArray(x.reason_codes)?x.reason_codes:[],identity:x.identity_status,availability:x.availability_status,rating:Number(x.rating),demoDistanceKm:Number(x.demo_distance_km)}))});
+  return send(res,200,{ok:true,source:'PERSISTED_MATCHING_EVIDENCE',booking:{id:Number(booking.id),bookingCode:booking.booking_code,status:booking.status,service:booking.service},policy:'ELIGIBILITY_FIRST_CONFIGURABLE_RANKING',candidates:offers.map(x=>({rank:Number(x.rank),workerId:Number(x.worker_id),name:x.name,offerStatus:x.status,matchingScore:x.matching_score==null?null:Number(x.matching_score),factorScores:x.factor_scores||{},reasonCodes:Array.isArray(x.reason_codes)?x.reason_codes:[],identity:x.identity_status,availability:x.availability_status,rating:Number(x.rating),demoDistanceKm:Number(x.demo_distance_km)}))});
 }
 
 async function handle(req,res,path){

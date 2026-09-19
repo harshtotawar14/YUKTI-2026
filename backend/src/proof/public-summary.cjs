@@ -55,7 +55,7 @@ async function handle(req,res,path){
     declinedOffers:Number(row.declined_offers),
     cooperative:row.cooperative_name,
     region:row.cooperative_region,
-    credential:{id:`identity-${row.id}`,name:'Event Identity Check',status:row.identity_status,scope:'SANPAID_DEMO'}
+    credential:{id:`identity-${row.id}`,name:'Event Identity Check',status:row.identity_status,scope:'SANPAID_PLATFORM'}
   }));
 
   const rows=capacity.rows.map(row=>{
