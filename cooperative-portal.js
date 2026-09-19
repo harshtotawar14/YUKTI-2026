@@ -26,7 +26,7 @@
   function badge(value,tone){const text=human(value),t=tone||(/VERIFIED|BALANCED|PAID|COMPLETED|AVAILABLE|CONNECTED|READY/.test(String(value))?'ok':/BREACH|EXPIRED|SUSPENDED|INACTIVE|LOW/.test(String(value))?'risk':/PENDING|MONITOR|REQUESTED|RECOMMENDED|WAITING/.test(String(value))?'warn':'neutral');return `<span class="coop-status ${t}">${esc(text)}</span>`;}
   function switchTo(id){window.SanPaidJudgeMode?.switchTab?.(id);setActiveNav(id);setTimeout(()=>$('#sihJudgeShell .judge-section.active')?.scrollIntoView({behavior:'smooth',block:'start'}),50);closeNav();}
   function scrollToId(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});setActiveNav(id);closeNav();}
-  function setActiveNav(target){$('#coopSidebar [data-coop-target]').forEach(b=>{const active=b.dataset.coopTarget===target;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});}
+  function setActiveNav(target){$$('#coopSidebar [data-coop-target]').forEach(b=>{const active=b.dataset.coopTarget===target;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});}
   function closeNav(){const c=$('#judgeContent');if(c)c.classList.remove('coop-nav-open');const toggle=$('#coopNavToggle');toggle?.setAttribute('aria-expanded','false');toggle?.setAttribute('aria-label','Open cooperative navigation');}
 
   const NAV=[
