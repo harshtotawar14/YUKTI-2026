@@ -93,7 +93,7 @@
   function exposeRuntimeStatus(){
     window.SanPaidBootstrap=Object.freeze({
       version:'handover-bootstrap-v1',
-      story:'Customer Request → Eligibility Gate → Fair Ranking → Worker Choice → Service-Start Verification → Service → Completion → Sandbox Payment → Rating → Audit Outcome',
+      story:'Problem/Photo → Eligible Recommended Workers → Customer Selects → Worker Accepts → Call/Inspection → Estimate → Customer Approval → QR-Verified Start → Service → Worker Marks Complete → Customer Confirms → Itemized Bill → Payment → Invoice → Rating/Feedback',
       refreshEvidence:()=>window.SanPaidHandoverEvidence?.refresh?.(),
       loadCustomerWorker,
       loadAdministration,
