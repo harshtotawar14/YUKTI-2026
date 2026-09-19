@@ -96,6 +96,7 @@
     {
       id:'frontend',label:'Deployed frontend build',
       run:()=>get('/build-info.json',{bearer:false,timeoutMs:8000,retry:false}),
+      // Must stay aligned with scripts/build.mjs and service-worker.js.
       validate:data=>data?.product==='SanPaid'&&data?.runtime==='v70'&&Boolean(data?.commitSha),
       detail:data=>`${String(data.commitSha).slice(0,7)} · ${data.runtime}`
     },
