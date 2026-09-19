@@ -33,11 +33,12 @@
         <h1>Skilled workers exist. Trusted coordination is missing.</h1>
         <p>Customers need trust, workers need fair access to demand, and cooperatives need one connected operational view.</p>
       </div>
-      <div class="selector-card-grid four">
-        <article class="selector-card"><b>Trust Gap</b><p>Worker identity, skill and current verification are hard to confirm before service.</p></article>
-        <article class="selector-card"><b>Discovery Gap</b><p>Verified cooperative workers have limited digital visibility while local demand stays fragmented.</p></article>
-        <article class="selector-card"><b>Allocation Gap</b><p>Nearest-only matching can ignore eligibility, fairness, availability and worker choice.</p></article>
-        <article class="selector-card"><b>Management Gap</b><p>Bookings, complaints, capacity, payments and workforce planning are often handled separately.</p></article>
+      <div class="selector-card-grid five">
+        <article class="selector-card"><b>Local Discovery</b><p>Trusted nearby skilled workers are hard to discover.</p></article>
+        <article class="selector-card"><b>Pricing Transparency</b><p>Similar service jobs can receive different quotes.</p></article>
+        <article class="selector-card"><b>Training & Awareness</b><p>Digital adoption needs guided support and skill readiness.</p></article>
+        <article class="selector-card"><b>Worker Welfare</b><p>Insurance and welfare visibility remain uneven.</p></article>
+        <article class="selector-card"><b>Trust & Safety</b><p>In-home service needs identity assurance at service start.</p></article>
       </div>
       <div class="selector-callout"><b>Skilled workers already exist. The missing layer is trusted digital coordination.</b></div>`;
   }
@@ -199,11 +200,12 @@
         <p>SanPaid connects customer demand, verified cooperative workers, fair opportunity, trusted service delivery and workforce planning.</p>
       </div>
       <div class="selector-card-grid four impact">
-        <article class="selector-card"><b>Customer</b><p>→ Trusted Services</p></article>
-        <article class="selector-card"><b>Worker</b><p>→ Fair Opportunities</p></article>
-        <article class="selector-card"><b>Cooperative</b><p>→ Digital Operations</p></article>
-        <article class="selector-card"><b>Federation</b><p>→ Regional Coordination</p></article>
+        <article class="selector-card"><b>Customer</b><p>→ Verified local access + transparent billing</p></article>
+        <article class="selector-card"><b>Worker</b><p>→ Better access to local work opportunities</p></article>
+        <article class="selector-card"><b>Cooperative</b><p>→ Traceable operations + visible skill gaps</p></article>
+        <article class="selector-card"><b>Federation</b><p>→ Capacity coordination + workforce planning</p></article>
       </div>
+      <div class="selector-planning-flow"><span>Baseline</span><i>→</i><span>Pilot</span><i>→</i><span>Measure KPIs</span><i>→</i><span>Validate Impact</span><i>→</i><span>Scale</span></div>
       <details class="selector-details selector-truth-details"><summary>Implementation Status — implemented, controlled and future capabilities</summary>
         <div class="selector-truth-matrix">
           <div><b>Connected Customer → Worker</b><span class="selector-status good">IMPLEMENTED</span></div>
@@ -359,7 +361,15 @@
     current = Math.max(0, Math.min(STEP_META.length - 1, Number(index) || 0));
     shell.classList.remove('hidden');
     document.body.classList.add('selector-open');
-    document.getElementById('mobileDrawer')?.classList.add('hidden');
+    if (window.SanPaidLanding?.closeMobileDrawer) window.SanPaidLanding.closeMobileDrawer(false);
+    else {
+      const drawer=document.getElementById('mobileDrawer');
+      drawer?.classList.add('hidden');
+      drawer?.setAttribute('aria-hidden','true');
+      document.getElementById('menuBtn')?.setAttribute('aria-expanded','false');
+      document.body.classList.remove('mobile-drawer-open');
+      document.getElementById('mobileDrawerScrim')?.classList.add('hidden');
+    }
     document.body.style.overflow = 'hidden';
 
     if (!alreadyOpen && !options.fromRoute) {

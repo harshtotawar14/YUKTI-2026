@@ -80,7 +80,7 @@ body.sanpaid-v2 button,body.sanpaid-v2 input,body.sanpaid-v2 select{font:inherit
 .master-v2 .hero-loop{margin-top:13px;background:linear-gradient(135deg,#f0f6fc,#fbfdff);border:1px solid #d8e6f4;border-radius:14px;padding:13px;font-size:11px;color:#455b74;line-height:1.55}
 .master-v2 .hero-loop b{color:var(--v2-blue)}
 .master-v2 .evidence-strip{margin-top:42px}
-.master-v2 .evidence-strip-inner{display:grid;grid-template-columns:1.15fr repeat(4,.65fr);background:#fff;border:1px solid var(--v2-line);border-radius:18px;box-shadow:0 10px 35px rgba(25,47,75,.05);overflow:hidden}
+.master-v2 .evidence-strip-inner{display:grid;grid-template-columns:1.15fr repeat(3,.65fr);background:#fff;border:1px solid var(--v2-line);border-radius:18px;box-shadow:0 10px 35px rgba(25,47,75,.05);overflow:hidden}
 .master-v2 .evidence-main,.master-v2 .evidence-stat{padding:17px 18px}
 .master-v2 .evidence-stat{border-left:1px solid var(--v2-line)}
 .master-v2 .evidence-main small,.master-v2 .evidence-stat small{display:block;font-size:9px;color:#7a8798;font-weight:850;letter-spacing:.07em;text-transform:uppercase}
@@ -92,7 +92,7 @@ body.sanpaid-v2 button,body.sanpaid-v2 input,body.sanpaid-v2 select{font:inherit
 .master-v2 .tag{color:var(--v2-blue);font-size:10px;font-weight:850;letter-spacing:.09em;text-transform:uppercase}
 .master-v2 .head h2{font-size:clamp(32px,3.7vw,50px);letter-spacing:-.045em;line-height:1.08;margin:10px 0 14px}
 .master-v2 .head p{margin:0;color:#607086;font-size:15px;line-height:1.7}
-.master-v2 .problem-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.master-v2 .problem-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
 .master-v2 .problem-card,.master-v2 .solution-card,.master-v2 .role-card,.master-v2 .diff-card,.master-v2 .evidence-card,.master-v2 .truth-card{background:#fff;border:1px solid var(--v2-line);border-radius:var(--v2-radius-sm);padding:20px}
 .master-v2 .problem-card small,.master-v2 .solution-card small,.master-v2 .role-card small,.master-v2 .diff-card small,.master-v2 .truth-card small{font-size:9px;font-weight:850;color:#7b8899;letter-spacing:.07em;text-transform:uppercase}
 .master-v2 .problem-card h3,.master-v2 .solution-card h3,.master-v2 .role-card h3,.master-v2 .diff-card h3,.master-v2 .truth-card h3{margin:8px 0 8px;font-size:16px;letter-spacing:-.02em}
@@ -138,6 +138,17 @@ body.sanpaid-v2 button,body.sanpaid-v2 input,body.sanpaid-v2 select{font:inherit
 .master-v2 .arch-col span{display:block;border-top:1px solid #e7edf3;padding:9px 0;font-size:10.5px;color:#53637a;font-weight:700}
 .master-v2 .arch-arrow{display:grid;place-items:center;color:#9aa8b9;font-size:18px}
 .master-v2 .architecture-note{margin-top:14px;border:1px dashed #c8d8e7;border-radius:14px;padding:14px 16px;color:#627289;font-size:11px;line-height:1.55}
+.master-v2 .impact-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.master-v2 .impact-card{background:#fff;border:1px solid var(--v2-line);border-radius:var(--v2-radius-sm);padding:20px;min-width:0}
+.master-v2 .impact-card small{font-size:9px;font-weight:850;color:#7b8899;letter-spacing:.07em;text-transform:uppercase}
+.master-v2 .impact-card h3{margin:8px 0;font-size:16px;letter-spacing:-.02em}
+.master-v2 .impact-card p{margin:0;color:#68778a;font-size:12px;line-height:1.6}
+.master-v2 .pilot-loop{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:24px 0 14px;padding:16px;border:1px solid #dbe5ef;border-radius:16px;background:#fff}
+.master-v2 .pilot-loop span{padding:8px 10px;border-radius:10px;background:var(--v2-blue-3);color:var(--v2-blue);font-size:10px;font-weight:850}
+.master-v2 .pilot-loop i{font-style:normal;color:#96a4b5}
+.master-v2 .pilot-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.master-v2 .pilot-kpis span{display:block;padding:12px 13px;border:1px solid #e0e7ef;border-radius:12px;background:#f9fbfd;color:#65758a;font-size:10px;line-height:1.5}
+.master-v2 .pilot-kpis b{display:block;color:#213c59;font-size:10.5px;margin-bottom:3px}
 .master-v2 .truth-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .master-v2 .truth-card{border-top:4px solid #c6d3e0}
 .master-v2 .truth-card.implemented{border-top-color:var(--v2-green)}
@@ -163,8 +174,9 @@ body.sanpaid-v2>.skip-link:focus{left:16px;top:16px;z-index:100;background:#fff;
 @media (max-width:1020px){
   .master-v2 .hero-grid{grid-template-columns:1fr;gap:32px}
   .master-v2 .hero-system{max-width:760px}
-  .master-v2 .solutions-grid,.master-v2 .problem-grid,.master-v2 .roles-grid,.master-v2 .truth-grid{grid-template-columns:repeat(2,1fr)}
+  .master-v2 .solutions-grid,.master-v2 .problem-grid,.master-v2 .roles-grid,.master-v2 .truth-grid,.master-v2 .impact-grid{grid-template-columns:repeat(2,1fr)}
   .master-v2 .differentiator-grid{grid-template-columns:1fr}
+  .master-v2 .pilot-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
   .master-v2 .architecture{grid-template-columns:1fr}
   .master-v2 .arch-arrow{transform:rotate(90deg);min-height:26px}
   .master-v2 .evidence-strip-inner{grid-template-columns:1.2fr repeat(2,1fr)}
@@ -190,7 +202,7 @@ body.sanpaid-v2>.skip-link:focus{left:16px;top:16px;z-index:100;background:#fff;
   .master-v2 .section{padding:62px 0}
   .master-v2 .head{margin-bottom:26px}
   .master-v2 .head h2{font-size:34px}
-  .master-v2 .problem-grid,.master-v2 .solutions-grid,.master-v2 .roles-grid,.master-v2 .truth-grid{grid-template-columns:1fr}
+  .master-v2 .problem-grid,.master-v2 .solutions-grid,.master-v2 .roles-grid,.master-v2 .truth-grid,.master-v2 .impact-grid{grid-template-columns:1fr}
   .master-v2 .solution-card{min-height:0}
   .master-v2 .workflow{align-items:stretch}
   .master-v2 .workflow span{flex:1 1 42%}
@@ -198,6 +210,8 @@ body.sanpaid-v2>.skip-link:focus{left:16px;top:16px;z-index:100;background:#fff;
   .master-v2 .workflow-note{grid-template-columns:1fr}
   .master-v2 .evidence-card{grid-template-columns:1fr}
   .master-v2 .evidence-card .decision{border-left:0;border-top:3px solid #bdd4ea;padding-left:0;padding-top:10px}
+  .master-v2 .pilot-kpis{grid-template-columns:1fr}
+  .master-v2 .pilot-loop{justify-content:flex-start}
   .master-v2 .final-cta-grid{grid-template-columns:1fr}
   .master-v2 .footer-grid{grid-template-columns:1fr}
   .master-v2 .hero-ctas .btn{flex:1 1 180px}
