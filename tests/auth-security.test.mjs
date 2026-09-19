@@ -69,3 +69,10 @@ test('stable auth is the only login implementation',()=>{
   assert.match(stable,/auth\/demo-access/);
   assert.match(stable,/isPublicDemoCredential/);
 });
+
+test('login UI obtains public demo credentials from backend instead of embedding them',()=>{
+  const ui=readFileSync(join(root,'auth-unified.js'),'utf8');
+  assert.match(ui,/\/api\/auth\/demo-access/);
+  assert.match(ui,/spuUseDemo/);
+  assert.doesNotMatch(ui,/SanPaid@26089/);
+});
