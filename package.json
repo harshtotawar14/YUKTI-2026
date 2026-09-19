@@ -2,7 +2,7 @@
   "name": "sanpaid-yukti-2026",
   "version": "0.70.0",
   "private": true,
-  "description": "SanPaid SIH 2026 connected cooperative services prototype",
+  "description": "SanPaid SIH 2026 cooperative workforce operating network",
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node tests/runtime-integrity.mjs && node --test tests/backend-policy.test.mjs tests/matching-policy.test.mjs tests/public-proof-truth.test.mjs tests/judge-truth.test.mjs tests/worker-truth.test.mjs tests/complaints-sla.test.mjs tests/billing-policy.test.mjs tests/auth-security.test.mjs tests/capacity-governance.test.mjs tests/ui-contract.test.mjs",

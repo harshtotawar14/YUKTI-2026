@@ -3,7 +3,6 @@
 
   const BUILD={release:'connected-backend-rebuild',runtime:'v70',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
   window.__SANPAID_BUILD__=Object.freeze(BUILD);
-  console.info('[SanPaid build]',BUILD);
 
   const FALLBACK_SERVICES=[
     {name:'Electrician',icon:'EL'},{name:'Plumber',icon:'PL'},{name:'Carpenter',icon:'CP'},{name:'Painter',icon:'PT'},
@@ -145,16 +144,16 @@
     const drawer=$('#mobileDrawer'),button=$('#menuBtn'),scrim=ensureDrawerScrim();if(!drawer||!button)return;
     drawer.classList.toggle('hidden',!open);drawer.setAttribute('aria-hidden',open?'false':'true');button.setAttribute('aria-expanded',open?'true':'false');button.setAttribute('aria-label',open?'Close menu':'Open menu');scrim.classList.toggle('hidden',!open);scrim.setAttribute('aria-hidden',open?'false':'true');document.body.classList.toggle('mobile-drawer-open',open);
   }
-  function openMobileDrawer(){const drawer=ensureDrawerStructure(),button=$('#menuBtn');if(!drawer||!button||window.innerWidth>768)return;mobileDrawerReturnFocus=document.activeElement;setDrawerOpenState(true);requestAnimationFrame(()=>drawer.querySelector('.drawer-close')?.focus());}
+  function openMobileDrawer(){const drawer=ensureDrawerStructure(),button=$('#menuBtn');if(!drawer||!button||window.innerWidth>1020)return;mobileDrawerReturnFocus=document.activeElement;setDrawerOpenState(true);requestAnimationFrame(()=>drawer.querySelector('.drawer-close')?.focus());}
   function closeMobileDrawer(restoreFocus=true){const drawer=$('#mobileDrawer');if(!drawer)return;setDrawerOpenState(false);const target=mobileDrawerReturnFocus;mobileDrawerReturnFocus=null;if(restoreFocus&&target?.isConnected)requestAnimationFrame(()=>target.focus());}
-  function recoverDrawerState(){const drawer=$('#mobileDrawer');if(!drawer)return;const closed=drawer.classList.contains('hidden')||drawer.getAttribute('aria-hidden')==='true'||window.innerWidth>768;if(closed)setDrawerOpenState(false);}
+  function recoverDrawerState(){const drawer=$('#mobileDrawer');if(!drawer)return;const closed=drawer.classList.contains('hidden')||drawer.getAttribute('aria-hidden')==='true'||window.innerWidth>1020;if(closed)setDrawerOpenState(false);}
   function toggleMobileDrawer(){const drawer=ensureDrawerStructure();if(drawer)drawer.classList.contains('hidden')?openMobileDrawer():closeMobileDrawer(true);}
 
   function wireMobileNavigation(){
     const drawer=ensureDrawerStructure(),button=$('#menuBtn');if(!drawer||!button)return;ensureDrawerScrim();button.addEventListener('click',toggleMobileDrawer);
     drawer.addEventListener('click',event=>{const action=event.target.closest('a[href^="#"],button');if(action&&!action.classList.contains('drawer-close'))queueMicrotask(()=>closeMobileDrawer(false));});
     document.addEventListener('keydown',event=>{if(drawer.classList.contains('hidden'))return;if(event.key==='Escape'){event.preventDefault();closeMobileDrawer(true);return;}if(event.key!=='Tab')return;const nodes=drawerFocusable(drawer);if(!nodes.length)return;const first=nodes[0],last=nodes[nodes.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}});
-    window.addEventListener('resize',()=>{if(window.innerWidth>768)closeMobileDrawer(false);},{passive:true});window.addEventListener('pageshow',recoverDrawerState,{passive:true});window.addEventListener('orientationchange',()=>setTimeout(recoverDrawerState,120),{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)recoverDrawerState();});
+    window.addEventListener('resize',()=>{if(window.innerWidth>1020)closeMobileDrawer(false);},{passive:true});window.addEventListener('pageshow',recoverDrawerState,{passive:true});window.addEventListener('orientationchange',()=>setTimeout(recoverDrawerState,120),{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)recoverDrawerState();});
   }
 
   function wireLandingUtilities(){

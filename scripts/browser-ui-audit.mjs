@@ -29,7 +29,7 @@ try{
   await page.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});await page.waitForTimeout(1000);
   assertProfessionalCopy(await page.locator('body').innerText(),'Landing page');
 
-  for(const id of ['connectedDemoBtn','getStarted','heroMatchingCta']){
+  for(const id of ['connectedDemoBtn','getStarted','heroTourCta']){
     const node=page.locator(`#${id}`);assert(await node.count()===1,`#${id} missing`);assert(await node.isVisible(),`#${id} is not visible on desktop`);
   }
   assert(await page.locator('#menuBtn').count()===1,'#menuBtn missing');
@@ -43,17 +43,40 @@ try{
   assertProfessionalCopy(roleText,'Role Access');
   await closeTransient(page);
 
+  await page.locator('#heroTourCta').click();await page.waitForTimeout(180);
+  const desktopSelector=page.locator('#selectorModeShell');
+  assert(await desktopSelector.isVisible(),'Hero Platform Tour CTA did not open the walkthrough');
+  assertProfessionalCopy(await desktopSelector.innerText(),'Desktop Platform Tour');
+  await assertNoHorizontalOverflow(page,'#selectorModeShell','Desktop Platform Tour');
+  await page.keyboard.press('Escape');await page.waitForTimeout(120);
+  assert(!(await desktopSelector.isVisible()),'Escape did not close desktop Platform Tour');
+
   const matchingBefore=await page.locator('#matching').boundingBox();
-  await page.locator('#heroMatchingCta').click();await page.waitForTimeout(350);
+  await page.locator('.navlinks a[href="#matching"]').click();await page.waitForTimeout(450);
   const matchingAfter=await page.locator('#matching').boundingBox();
   assert(Boolean(matchingBefore&&matchingAfter),'Matching section missing');
-  assert(await page.evaluate(()=>window.scrollY)>100,'SEE HOW MATCHING WORKS did not navigate toward matching proof');
+  assert(await page.evaluate(()=>window.scrollY)>100,'Workflow navigation did not navigate toward matching proof');
 
   await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(200);
   await page.locator('#connectedDemoBtn').click();await page.waitForTimeout(350);
   const demoFeedback=page.locator('[role="dialog"]:visible, .toast:visible, [role="status"]:visible, .modal:visible').first();
   assert(await demoFeedback.count()>0,'OPEN PLATFORM produced no visible feedback when local API readiness is unavailable');
   assertProfessionalCopy(await demoFeedback.innerText(),'Platform readiness');
+  await closeTransient(page);
+
+  await page.setViewportSize({width:1000,height:900});await page.waitForTimeout(180);
+  assert(await page.locator('#menuBtn').isVisible(),'Tablet menu button must be visible at 1000px');
+  assert(!(await page.locator('.navlinks').isVisible()),'Desktop navigation links should collapse at 1000px');
+  await assertNoHorizontalOverflow(page,'html','1000px landing page');
+  await page.locator('#menuBtn').click();await page.waitForTimeout(120);
+  assert(await page.locator('#menuBtn').getAttribute('aria-expanded')==='true','Tablet menu did not expand');
+  assert(await page.locator('#mobileDrawer').getAttribute('aria-hidden')==='false','Tablet navigation drawer remained hidden');
+  assert(await page.locator('#spMobileAccess').isVisible(),'Tablet/mobile drawer is missing generic Role Access');
+  await page.locator('#spMobileAccess').click();await page.waitForTimeout(180);
+  const tabletRoleDialog=page.locator('#sanpaidUnifiedAuthRoot:not([hidden]) .spu-shell');
+  await tabletRoleDialog.waitFor({state:'visible'});
+  assertProfessionalCopy(await tabletRoleDialog.innerText(),'Tablet Role Access');
+  await assertNoHorizontalOverflow(page,'#sanpaidUnifiedAuthRoot .spu-shell','Tablet Role Access');
   await closeTransient(page);
 
   await page.setViewportSize({width:390,height:844});await page.waitForTimeout(180);
@@ -93,6 +116,16 @@ try{
   await page.keyboard.press('Escape');await page.waitForTimeout(140);
   assert(!(await selector.isVisible()),'Escape did not close Platform Tour');
   assert(!(await page.locator('body').evaluate(body=>body.classList.contains('selector-open')||body.classList.contains('mobile-drawer-open'))),'Mobile scroll-lock state remained after closing Platform Tour');
+  await assertNoHorizontalOverflow(page,'html','390px landing page');
+
+  await page.locator('#menuBtn').click();await page.waitForTimeout(100);
+  await page.locator('#spMobileAccess').click();await page.waitForTimeout(180);
+  const mobileRoleDialog=page.locator('#sanpaidUnifiedAuthRoot:not([hidden]) .spu-shell');
+  await mobileRoleDialog.waitFor({state:'visible'});
+  const mobileRoleText=(await mobileRoleDialog.innerText()).toLowerCase();
+  for(const role of ['customer','worker','cooperative','federation'])assert(mobileRoleText.includes(role),`Mobile Role Access is missing ${role}`);
+  await assertNoHorizontalOverflow(page,'#sanpaidUnifiedAuthRoot .spu-shell','Mobile Role Access');
+  await closeTransient(page);
 
   await page.setViewportSize({width:360,height:800});await page.waitForTimeout(120);
   await page.evaluate(()=>window.SanPaidSelectorMode.open(4));await page.waitForTimeout(120);
@@ -106,5 +139,5 @@ try{
   const unexpectedConsole=consoleErrors.filter(text=>!text.includes('/api/')&&!text.includes('404'));
   assert(unexpectedConsole.length===0,`Unexpected console errors: ${unexpectedConsole.join(' | ')}`);
   console.log('SanPaid Chromium UI audit: PASS');
-  console.log('Verified desktop CTAs, role access, matching navigation, platform readiness, mobile drawer, 390/360px Platform Tour layout, navigation, overflow and close-state recovery.');
+  console.log('Verified desktop Platform Tour/role access/active navigation, 1000px tablet menu and role access, plus 390/360px mobile Platform Tour, overflow and close-state recovery.');
 } finally {if(browser)await browser.close().catch(()=>{});server.kill('SIGTERM');}
