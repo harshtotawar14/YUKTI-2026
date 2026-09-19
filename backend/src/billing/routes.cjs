@@ -26,6 +26,59 @@ async function bookingFor(client,id,user,{worker=false,lock=false}={}){
   return row;
 }
 
+function estimateJson(row){
+  if(!row)return null;
+  return {id:Number(row.id),bookingId:Number(row.booking_id),workerId:Number(row.worker_id),items:Array.isArray(row.items)?row.items:[],note:row.note||'',total:Number(row.total),status:row.status,submittedAt:row.submitted_at,decidedAt:row.decided_at};
+}
+
+async function getEstimate(req,res,user,bookingId){
+  method(req,'GET');allow(user,['CUSTOMER','WORKER']);
+  await transaction(async client=>bookingFor(client,bookingId,user,{worker:String(user.role)==='WORKER'}));
+  const row=(await query('SELECT * FROM service_estimates WHERE booking_id=$1',[bookingId])).rows[0]||null;
+  return send(res,200,{ok:true,estimate:estimateJson(row)});
+}
+
+async function submitEstimate(req,res,user,bookingId){
+  method(req,'POST');allow(user,['WORKER']);const data=body(req),rawItems=Array.isArray(data.items)?data.items:[];
+  const items=rawItems.slice(0,10).map((item,index)=>({description:clean(item?.description,180),amount:money(numeric(item?.amount,`Estimate item ${index+1} amount`))})).filter(item=>item.description&&item.amount>0);
+  if(!items.length)throw httpError(422,'Add at least one estimate item with a valid amount.','ESTIMATE_ITEMS');
+  if(items.length!==rawItems.filter(item=>clean(item?.description,180)||String(item?.amount??'').trim()).slice(0,10).length)throw httpError(422,'Every estimate item needs a description and positive amount.','ESTIMATE_ITEMS');
+  const total=money(items.reduce((sum,item)=>sum+item.amount,0));if(total<=0||total>200000)throw httpError(422,'Estimate total is outside the supported prototype range.','ESTIMATE_TOTAL');
+  const note=clean(data.note,600);
+  const result=await transaction(async client=>{
+    const booking=await bookingFor(client,bookingId,user,{worker:true,lock:true});
+    if(booking.status!=='ARRIVED')throw httpError(409,'Submit the estimate after arrival and before service-start verification.','ESTIMATE_STATE');
+    const existing=(await client.query('SELECT * FROM service_estimates WHERE booking_id=$1 FOR UPDATE',[bookingId])).rows[0];
+    if(existing?.status==='APPROVED')throw httpError(409,'The customer already approved this estimate.','ESTIMATE_APPROVED');
+    if(existing?.status==='PENDING')throw httpError(409,'This estimate is already waiting for customer approval.','ESTIMATE_PENDING');
+    const row=existing
+      ?(await client.query(`UPDATE service_estimates SET worker_id=$2,items=$3,note=$4,total=$5,status='PENDING',submitted_at=now(),decided_by=NULL,decided_at=NULL,updated_at=now() WHERE booking_id=$1 RETURNING *`,[bookingId,user.worker_id,JSON.stringify(items),note,total])).rows[0]
+      :(await client.query(`INSERT INTO service_estimates(booking_id,worker_id,items,note,total,status) VALUES($1,$2,$3,$4,$5,'PENDING') RETURNING *`,[bookingId,user.worker_id,JSON.stringify(items),note,total])).rows[0];
+    await client.query(`INSERT INTO audit_events(actor_user_id,booking_id,event_type,details) VALUES($1,$2,'SERVICE_ESTIMATE_SUBMITTED',$3)`,[user.id,bookingId,JSON.stringify({estimateId:Number(row.id),total,itemCount:items.length})]);
+    await client.query('INSERT INTO booking_history(booking_id,status,note,actor_user_id) VALUES($1,$2,$3,$4)',[bookingId,booking.status,`Itemized estimate submitted for customer approval: ₹${total.toFixed(2)}.`,user.id]);
+    return row;
+  });
+  return send(res,201,{ok:true,estimate:estimateJson(result),customerApprovalRequired:true});
+}
+
+async function decideEstimate(req,res,user,bookingId){
+  method(req,'POST');allow(user,['CUSTOMER']);const decision=clean(body(req).decision,20).toUpperCase();
+  if(!['APPROVE','REJECT'].includes(decision))throw httpError(422,'Decision must be APPROVE or REJECT.','ESTIMATE_DECISION');
+  const result=await transaction(async client=>{
+    const booking=await bookingFor(client,bookingId,user,{lock:true});
+    if(booking.status!=='ARRIVED')throw httpError(409,'Estimate decisions are allowed after worker arrival and before service start.','ESTIMATE_STATE');
+    const estimate=(await client.query('SELECT * FROM service_estimates WHERE booking_id=$1 FOR UPDATE',[bookingId])).rows[0];
+    if(!estimate||estimate.status!=='PENDING')throw httpError(409,'No pending estimate is waiting for your decision.','ESTIMATE_NOT_PENDING');
+    const status=decision==='APPROVE'?'APPROVED':'REJECTED';
+    const updated=(await client.query('UPDATE service_estimates SET status=$2,decided_by=$3,decided_at=now(),updated_at=now() WHERE booking_id=$1 RETURNING *',[bookingId,status,user.id])).rows[0];
+    if(status==='APPROVED')await client.query('UPDATE bookings SET base_amount=$2,updated_at=now() WHERE id=$1',[bookingId,estimate.total]);
+    await client.query(`INSERT INTO audit_events(actor_user_id,booking_id,event_type,details) VALUES($1,$2,$3,$4)`,[user.id,bookingId,`SERVICE_ESTIMATE_${status}`,JSON.stringify({estimateId:Number(estimate.id),total:Number(estimate.total)})]);
+    await client.query('INSERT INTO booking_history(booking_id,status,note,actor_user_id) VALUES($1,$2,$3,$4)',[bookingId,booking.status,status==='APPROVED'?'Customer approved the itemized estimate.':'Customer rejected the estimate; worker revision required.',user.id]);
+    return updated;
+  });
+  return send(res,200,{ok:true,estimate:estimateJson(result),identityVerificationUnlocked:decision==='APPROVE'});
+}
+
 async function createCharge(req,res,user,bookingId){
   method(req,'POST');allow(user,['WORKER']);const data=body(req),amount=money(numeric(data.amount,'Amount')),workItem=clean(data.workItem,200),reason=clean(data.reason,500);
   if(!workItem||reason.length<4||amount<=0||amount>100000)throw httpError(422,'Work item, reason and a valid positive amount are required.','CHARGE_INPUT');
@@ -123,10 +176,14 @@ async function workerLedger(req,res,user){
 }
 
 async function handle(req,res,path){
+  const estimateGet=path.match(/^connected\/bookings\/(\d+)\/estimate$/),estimateSubmit=path.match(/^connected\/worker\/jobs\/(\d+)\/estimate$/),estimateDecision=path.match(/^connected\/customer\/bookings\/(\d+)\/estimate\/decision$/);
   const workerCharge=path.match(/^connected\/worker\/jobs\/(\d+)\/extra-charge$/),customerCharges=path.match(/^connected\/customer\/bookings\/(\d+)\/charges$/),customerDecisionMatch=path.match(/^connected\/customer\/charges\/(\d+)\/decision$/),adminDecisionMatch=path.match(/^cooperative-admin\/charges\/(\d+)\/decision$/),checkoutMatch=path.match(/^connected\/customer\/bookings\/(\d+)\/checkout$/),payMatch=path.match(/^connected\/customer\/bookings\/(\d+)\/pay$/);
   const policy=path==='cooperative-admin/billing-policy',ledger=path==='connected/worker/earnings-ledger';
-  if(!workerCharge&&!customerCharges&&!customerDecisionMatch&&!adminDecisionMatch&&!checkoutMatch&&!payMatch&&!policy&&!ledger)return false;
+  if(!estimateGet&&!estimateSubmit&&!estimateDecision&&!workerCharge&&!customerCharges&&!customerDecisionMatch&&!adminDecisionMatch&&!checkoutMatch&&!payMatch&&!policy&&!ledger)return false;
   const user=await authenticate(req);
+  if(estimateGet){await getEstimate(req,res,user,Number(estimateGet[1]));return true;}
+  if(estimateSubmit){await submitEstimate(req,res,user,Number(estimateSubmit[1]));return true;}
+  if(estimateDecision){await decideEstimate(req,res,user,Number(estimateDecision[1]));return true;}
   if(workerCharge){await createCharge(req,res,user,Number(workerCharge[1]));return true;}
   if(customerCharges){await listCharges(req,res,user,Number(customerCharges[1]));return true;}
   if(customerDecisionMatch){await customerDecision(req,res,user,Number(customerDecisionMatch[1]));return true;}
