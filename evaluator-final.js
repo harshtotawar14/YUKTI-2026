@@ -197,7 +197,7 @@
     $$('[data-eval-connected-persona]').forEach(button=>button.addEventListener('click',()=>openConnected(button.dataset.evalConnectedPersona)));
     $('#evalOpenConnected')?.addEventListener('click',()=>openConnected());
     $('#evalFinalPrototype')?.addEventListener('click',()=>openConnected());
-    $('#evalFinalArchitecture')?.addEventListener('click',()=>document.getElementById('architecture')?.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}));
+    $('#evalFinalArchitecture')?.addEventListener('click',()=>{const section=document.getElementById('architecture');const details=section?.querySelector('.technical-details');if(details)details.open=true;section?.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});});
     $$('[data-eval-open-admin]').forEach(button=>button.addEventListener('click',()=>window.SanPaidDemo?.showRoles?.()));
     $('#evalCapacityConnected')?.addEventListener('click',()=>window.SanPaidSelectorMode?.open?.(6));
     $('#evalResearch')?.addEventListener('click',()=>window.SanPaidSelectorMode?.open?.(8));
