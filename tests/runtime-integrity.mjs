@@ -47,6 +47,7 @@ assert.match(read('selector-mode.js'),/SanPaidReadiness\?\.require/,'Guided conn
 
 const serviceWorker=read('service-worker.js');
 assert.match(serviceWorker,/sanpaid-runtime-v70/,'Expected service-worker runtime v70');
+assert.match(runtime,/data\?\.runtime==='v70'/,'Readiness frontend runtime must match build/service-worker v70.');
 assert.match(serviceWorker,/Promise\.allSettled/,'Service-worker precache must tolerate individual asset failure');
 assert.match(serviceWorker,/pathname\.startsWith\('\/api\/'\)/,'Service worker must not cache API requests');
 assert.match(serviceWorker,/build-info\.json/,'Service worker must not cache deployment identity');
