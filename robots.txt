@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://yukti-2026-brown.vercel.app/sitemap.xml
