@@ -41,19 +41,20 @@
     if(!nav)return;
     const toggle=$('#fedNavToggle');
     if(toggle)toggle.textContent='Federation Menu';
-    if(!$('.fed-nav-group.operations',nav)){
+    const groups=[
+      ['regional','Regional Operations','fed-home'],
+      ['coordination','Coordination','capacity'],
+      ['intelligence','Intelligence & Policy','planning']
+    ];
+    groups.forEach(([key,labelText,target],index)=>{
+      if($('.fed-nav-group.'+key,nav))return;
+      const anchor=$(`[data-fed-target="${target}"]`,nav);
+      if(!anchor)return;
       const label=document.createElement('span');
-      label.className='fed-nav-group operations';
-      label.textContent='Operations';
-      nav.insertBefore(label,nav.firstChild);
-    }
-    const systemAnchor=$('[data-fed-target="fed-health"]',nav);
-    if(systemAnchor&&!$('.fed-nav-group.system',nav)){
-      const label=document.createElement('span');
-      label.className='fed-nav-group system';
-      label.textContent='System';
-      nav.insertBefore(label,systemAnchor);
-    }
+      label.className=`fed-nav-group ${key}${index?' system':''}`;
+      label.textContent=labelText;
+      nav.insertBefore(label,anchor);
+    });
   }
 
   function statusFromRow(row){return String(row.cells?.[4]?.innerText||'').trim().toUpperCase()||'UNKNOWN';}
@@ -320,22 +321,6 @@
     finally{button.disabled=false;button.textContent=original;}
   }
 
-  function ensureAdministrativeReadiness(){
-    const records=$('#fed-records');
-    if(!records||$('#fed-admin-readiness'))return;
-    const section=document.createElement('section');
-    section.id='fed-admin-readiness';
-    section.className='fed-admin-readiness fed-secondary-details';
-    section.innerHTML=`
-      <details><summary><div><span>ADMINISTRATIVE INTEGRATION ROADMAP</span><h3>Authorized next-phase capabilities</h3></div><small>Secondary scope · truth-labelled</small></summary>
-      <div class="fed-readiness-grid">
-        <article><span>GIS Cooperative Capacity View</span><b>Future Authorized Integration</b><p>No precise cooperative coordinates are exposed by the current Federation overview, so no map is fabricated.</p></article>
-        <article><span>Report Export</span><b>Integration Ready</b><p>Operational tables are available now; formal export is kept outside the active workflow until a verified export path is connected.</p></article>
-        <article><span>Support & Feedback</span><b>Planned Integration</b><p>Support workflow remains outside the current operational scope and is not presented as connected.</p></article>
-      </div></details>`;
-    records.insertAdjacentElement('afterend',section);
-  }
-
   function ensurePortalNavLinks(){
     const nav=$('#fedSidebar nav');
     if(!nav)return;
@@ -350,7 +335,7 @@
       nav.insertBefore(btn,anchor||null);
     };
     // Core navigation is owned by the Federation sidebar. Planning snapshots and
-    // integration roadmap remain contextual sections instead of duplicate nav items.
+    // technical verification remains secondary instead of becoming duplicate navigation.
   }
 
   function trapDrawer(event){
@@ -373,7 +358,6 @@
     ensureNetworkToolbar();
     ensureDemandSnapshot();
     ensureCapacityGovernance();
-    ensureAdministrativeReadiness();
     ensurePortalNavLinks();
   }
 
