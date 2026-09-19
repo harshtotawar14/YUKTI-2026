@@ -270,8 +270,8 @@ test('cooperative and federation admin workspaces expose governed connected acti
 test('admin sidebars expose accessible active navigation states',()=>{
   const coop=readFileSync(join(root,'cooperative-portal.js'),'utf8');
   const admin=readFileSync(join(root,'admin-command-center.js'),'utf8');
-  assert.match(coop,/aria-current','Cooperative navigation must expose the active location.');
-  assert.match(admin,/aria-current','Federation navigation must expose the active location.');
+  assert.match(coop,/aria-current/,'Cooperative navigation must expose the active location.');
+  assert.match(admin,/aria-current/,'Federation navigation must expose the active location.');
   assert.match(coop,/Open cooperative navigation/,'Cooperative mobile menu needs an accessible label.');
   assert.match(admin,/Open federation navigation/,'Federation mobile menu needs an accessible label.');
 });
