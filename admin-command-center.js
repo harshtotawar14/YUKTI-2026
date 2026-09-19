@@ -14,7 +14,7 @@
       description:'Manage worker verification, service delivery, complaints, local capacity and fair opportunity allocation from one governed workspace.',
       scope:['Workers','Verification','Bookings','Complaints','Local Capacity'],
       order:['overview','trust','matching','complaint','capacity','planning','golden','research','security','welfare','control'],
-      labels:{overview:'Command Center',trust:'Worker Trust',matching:'Fair Matching',complaint:'Complaints & SLA',capacity:'Capacity Exchange',planning:'Workforce Planning',golden:'System Proof',research:'Architecture & Research',security:'Security & Scale',welfare:'Welfare & Growth',control:'System Control'}
+      labels:{overview:'Command Center',trust:'Worker Trust',matching:'Fair Matching',complaint:'Complaints & SLA',capacity:'Capacity Exchange',planning:'Workforce Planning',golden:'System Verification',research:'Architecture & Research',security:'Security & Scale',welfare:'Welfare & Growth',control:'System Control'}
     },
     FEDERATION_ADMIN:{
       short:'Federation Admin',
@@ -43,12 +43,12 @@
   const FEATURE_CATALOG=[
     {name:'Federation authentication',front:'SanPaidAuth + Federation role',back:'/api/auth/login · /api/auth/me · session bridge',db:'users · sessions',auth:'FEDERATION_ADMIN',mode:'READ'},
     {name:'Regional Command Center',front:'Federation Overview',back:'GET /api/connected/judge/overview',db:'workers · cooperatives · bookings · complaints · payment_ledger',auth:'ADMIN / FEDERATION',mode:'READ'},
-    {name:'System readiness',front:'System Proof / Module Health',back:'GET /api/connected/judge/readiness',db:'users · workers · booking_assignment_offers',auth:'ADMIN / FEDERATION',mode:'READ'},
+    {name:'System readiness',front:'System Verification / Module Health',back:'GET /api/connected/judge/readiness',db:'users · workers · booking_assignment_offers',auth:'ADMIN / FEDERATION',mode:'READ'},
     {name:'Fair matching explanation',front:'Matching Policy',back:'GET /api/connected/judge/match/:bookingId',db:'bookings · workers · worker_skills · worker_documents',auth:'ADMIN / FEDERATION',mode:'READ'},
     {name:'Demand & skill planning',front:'Planning & Intelligence',back:'GET /api/connected/judge/planning',db:'bookings · workers · worker_skills · demand_forecasts',auth:'ADMIN / FEDERATION',mode:'READ'},
-    {name:'Capacity request',front:'Capacity Exchange',back:'POST /api/connected/judge/capacity/request',db:'capacity_requests',auth:'ADMIN / FEDERATION',mode:'WRITE'},
-    {name:'Capacity approval / offers',front:'Capacity Exchange',back:'POST /api/connected/judge/capacity/:id/approve',db:'capacity_requests · capacity_request_workers',auth:'ADMIN / FEDERATION',mode:'WRITE'},
-    {name:'Complaint / SLA escalation',front:'Escalations & SLA',back:'POST complaint / controlled breach simulation',db:'complaints · complaint_events',auth:'ADMIN / FEDERATION',mode:'WRITE'},
+    {name:'Capacity request',front:'Capacity Exchange',back:'POST /api/cooperative-admin/capacity-requests',db:'capacity_requests',auth:'COOPERATIVE_ADMIN',mode:'WRITE'},
+    {name:'Capacity consent + authorization',front:'Capacity Exchange',back:'Provider offer · worker consent · federation approval',db:'capacity_requests · capacity_worker_offers · cross_cooperative_assignments',auth:'WORKER / FEDERATION_ADMIN',mode:'WRITE'},
+    {name:'Complaint / SLA governance',front:'Complaints & SLA',back:'POST /api/cooperative-admin/complaints/:id/status',db:'support_requests · complaint_events',auth:'COOPERATIVE_ADMIN',mode:'WRITE'},
     {name:'Training recommendation',front:'Planning & Intelligence',back:'POST /api/connected/judge/training/recommend-default',db:'training_recommendations',auth:'ADMIN / FEDERATION',mode:'WRITE'},
     {name:'Worker decline & same-booking reassignment',front:'Connected Worker opportunity',back:'POST /api/connected/worker/offers/:id/respond',db:'booking_assignment_offers · bookings · booking_status_history · notifications',auth:'WORKER',mode:'CONNECTED_FLOW'},
     {name:'Service-start verification',front:'Connected service workflow',back:'Arrival · identity · token confirm · start routes',db:'bookings · job_verifications · service_start_tokens · booking_status_history',auth:'CUSTOMER / WORKER',mode:'CONNECTED_FLOW'},
@@ -102,7 +102,7 @@
     const badge=$('.judge-badge',hero),h1=$('h1',hero),p=$('p',hero);
     if(badge){badge.textContent=role==='FEDERATION_ADMIN'?'FEDERATION OPERATIONS':'COOPERATIVE OPERATIONS WORKSPACE';badge.classList.add('admin-role-badge');}
     if(h1)h1.textContent=cfg.title;if(p)p.textContent=cfg.description;
-    const presentation=$('#judgePresentation',hero);if(presentation)presentation.textContent=role==='FEDERATION_ADMIN'?'System Proof View':'Presentation View';
+    const presentation=$('#judgePresentation',hero);if(presentation)presentation.textContent=role==='FEDERATION_ADMIN'?'System Verification':'Presentation View';
     if(role==='FEDERATION_ADMIN'&&!$('#fedGovTruth',hero)){const truth=document.createElement('small');truth.id='fedGovTruth';truth.className='fed-gov-truth';truth.textContent='Regional cooperative operations platform · External administrative integrations are shown only when authorized';p?.insertAdjacentElement('afterend',truth);}
   }
 
