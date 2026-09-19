@@ -26,7 +26,7 @@ The public product has one operational mode: the **Connected Two-Device Demo** b
 
 Connected Golden Demo source flow now reaches:
 
-`Customer Device → backend login → Voice/Text Request → PostgreSQL Booking → Eligibility Gate → Worker A Offer → Listen → Accept/Reject → Worker B fallback when rejected → Customer shared update → Travel → Arrive → SANDBOX Identity Check → One-Time Booking Token → Customer Confirms Booked Worker → backend-enforced Start Service → optional Additional Work Approval → Completion Request → Customer Completion Confirmation → SANDBOX Payment → Persisted Invoice → Rating`
+`Customer Device → backend login → Voice/Text Request → PostgreSQL Booking → Eligibility Gate → Worker A Offer → Listen → Accept/Reject → Worker B fallback when rejected → Customer shared update → Travel → Arrive → Itemized Estimate → Customer Approval → SANDBOX Identity Check → One-Time Booking Token → Customer Confirms Booked Worker → backend-enforced Start Service → optional Additional Work Approval → Completion Request → Customer Completion Confirmation → SANDBOX Payment → Persisted Invoice → Rating`
 
 The deleted Render service is no longer part of the runtime. Backend source now lives in this repository and deploys with the same Vercel project. PostgreSQL remains external durable state through `DATABASE_URL`.
 
@@ -63,13 +63,21 @@ Connected commerce:
 
 ## Connected demo accounts
 
-The connected flow uses isolated SIH-only Customer, Worker A, Worker B,
-Cooperative Admin and Federation Admin identities. Passwords are deliberately
-not stored in this public repository. Obtain the current event-scoped demo
-credentials from the project owner immediately before a rehearsal or judging
-session.
+SanPaid exposes **public SIH prototype credentials** so an evaluator can open every role without asking the team for a private password. These identities are isolated `.demo` accounts and must never be reused for production users.
 
-Worker A and Worker B are seeded as VERIFIED + AVAILABLE workers in the YUKTI cooperative.
+| Role | Login ID |
+|---|---|
+| Customer | `customer.connected@sanpaid.demo` |
+| Worker A | `worker1.connected@sanpaid.demo` |
+| Worker B | `worker2.connected@sanpaid.demo` |
+| Cooperative Admin | `admin.connected@sanpaid.demo` |
+| Federation Admin | `federation.connected@sanpaid.demo` |
+
+**Public demo password:** `SanPaid@26089`
+
+The login modal shows the selected role ID/password and provides **Use Demo Credentials**. The public password is accepted only for the five allowlisted demo identities. A private `SANPAID_DEMO_PASSWORD` may still be configured as an event/owner override.
+
+Worker A and Worker B are seeded as VERIFIED + AVAILABLE workers in the YUKTI cooperative. Demo seeding is scoped only to these two worker identities; it never upgrades arbitrary WORKER accounts or marks arbitrary workers as verified.
 
 Database ranking smoke check confirms:
 
@@ -126,7 +134,7 @@ Indexes were verified for worker-offer lookup and `(booking_id, worker_id)` uniq
 Set these Vercel Production environment variables before connected verification:
 
 - `DATABASE_URL` — PostgreSQL connection string with SSL enabled.
-- `SANPAID_DEMO_PASSWORD` — event-scoped password of at least 8 characters used to seed the five isolated demo accounts.
+- `SANPAID_DEMO_PASSWORD` — optional private owner/event override. If omitted, the isolated demo accounts are seeded with the documented public SIH demo password.
 
 The first API request applies `database/schema.sql` and idempotently seeds cooperatives, 12 services, Customer, Worker A, Worker B, Cooperative Admin and Federation Admin. Session and service-start tokens are high-entropy random values stored only as SHA-256 hashes. Run `npm run migrate` when a controlled migration step is preferred.
 
