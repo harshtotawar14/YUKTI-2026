@@ -3,7 +3,6 @@
 
   const BUILD={release:'connected-backend-rebuild',runtime:'v70',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
   window.__SANPAID_BUILD__=Object.freeze(BUILD);
-  console.info('[SanPaid build]',BUILD);
 
   const FALLBACK_SERVICES=[
     {name:'Electrician',icon:'EL'},{name:'Plumber',icon:'PL'},{name:'Carpenter',icon:'CP'},{name:'Painter',icon:'PT'},
@@ -157,6 +156,30 @@
     window.addEventListener('resize',()=>{if(window.innerWidth>768)closeMobileDrawer(false);},{passive:true});window.addEventListener('pageshow',recoverDrawerState,{passive:true});window.addEventListener('orientationchange',()=>setTimeout(recoverDrawerState,120),{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)recoverDrawerState();});
   }
 
+  function wireSectionNavigation(){
+    const links=[...document.querySelectorAll('.navlinks a[href^="#"]')];
+    if(!links.length||!('IntersectionObserver' in window))return;
+    const targets=new Map();
+    for(const link of links){
+      const id=link.getAttribute('href')?.slice(1);
+      const section=id?document.getElementById(id):null;
+      if(section)targets.set(section,link);
+    }
+    const setActive=active=>{
+      for(const link of links){
+        const selected=link===active;
+        link.classList.toggle('active',selected);
+        if(selected)link.setAttribute('aria-current','location');
+        else link.removeAttribute('aria-current');
+      }
+    };
+    const observer=new IntersectionObserver(entries=>{
+      const visible=entries.filter(entry=>entry.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio);
+      if(visible[0])setActive(targets.get(visible[0].target)||null);
+    },{rootMargin:'-24% 0px -62% 0px',threshold:[0,.05,.2,.5]});
+    for(const section of targets.keys())observer.observe(section);
+  }
+
   function wireLandingUtilities(){
     $('#bookServiceHero')?.addEventListener('click',()=>startBooking($('#heroService')?.value));
     $('#joinWorker')?.addEventListener('click',()=>openRoleAccess('WORKER'));
@@ -166,7 +189,7 @@
   }
 
   function start(){
-    renderServices();wireMobileNavigation();wireLandingUtilities();recoverDrawerState();loadServiceCatalog();
+    renderServices();wireMobileNavigation();wireSectionNavigation();wireLandingUtilities();recoverDrawerState();loadServiceCatalog();
   }
 
   window.SanPaidLanding={
