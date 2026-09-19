@@ -136,7 +136,7 @@
 
   function renderWorker(){
     setHeaderSubtitle('Worker Dashboard');const content=shell().querySelector('#connectedContent');content.dataset.connectedRole='WORKER';lastWorkerSignature='';
-    content.innerHTML=appHeader('Worker Dashboard','Review suitable opportunities, choose work and follow one trusted service workflow.')+`<div class="connected-card"><div class="connected-heading-row"><div><span class="connected-step-label">JOB REQUESTS</span><h3>Available Work</h3><p>Opportunities appear only after eligibility checks. Accept or Decline remains your choice.</p></div><button type="button" class="btn secondary small" id="connectedRefreshOffers">Refresh</button></div><div id="connectedWorkerMessage"></div><div id="connectedWorkerOffers" class="connected-list"><div class="connected-empty">Loading job offers…</div></div></div>`;
+    content.innerHTML=appHeader()+`<div class="connected-card"><div class="connected-heading-row"><div><span class="connected-step-label">JOB REQUESTS</span><h3>Available Work</h3><p>Opportunities appear only after eligibility checks. Accept or Decline remains your choice.</p></div><button type="button" class="btn secondary small" id="connectedRefreshOffers">Refresh</button></div><div id="connectedWorkerMessage"></div><div id="connectedWorkerOffers" class="connected-list"><div class="connected-empty">Loading job offers…</div></div></div>`;
     wireHeader();document.getElementById('connectedRefreshOffers').onclick=()=>loadWorkerOffers(true);loadWorkerOffers(true);
   }
   async function loadWorkerOffers(force=false){
