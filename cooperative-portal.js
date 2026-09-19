@@ -101,7 +101,35 @@
 
   function renderComplaints(d){const rows=d.complaints||[],root=$('#coopComplaints');if(!rows.length){root.innerHTML='<div class="coop-empty">No open or historical complaints are available for this cooperative scope.</div>';return;}root.innerHTML=`<div class="judge-table-wrap"><table class="judge-table coop-table"><thead><tr><th>Complaint</th><th>Booking</th><th>Service</th><th>Status</th><th>Level</th><th>SLA Due</th><th>SLA</th></tr></thead><tbody>${rows.map(x=>`<tr><td><b>#${Number(x.id)}</b></td><td>${esc(x.bookingCode||`#${x.bookingId}`)}</td><td>${esc(x.service||'—')}</td><td>${badge(x.status)}</td><td>L${Number(x.escalationLevel||0)}</td><td>${fmtDate(x.slaDueAt)}</td><td>${x.slaBreached?badge('Breached','risk'):badge('Within SLA','ok')}</td></tr>`).join('')}</tbody></table></div><div class="coop-flow"><b>SLA governance:</b><span>L1 Support</span><i>→</i><span>L2 Cooperative</span><i>→</i><span>L3 Federation</span><small>Any simulated time advancement remains labelled CONTROLLED SIMULATION in the connected proof workflow.</small></div>`;}
 
-  function renderCapacity(d){const rows=d.skills||[],req=d.capacityRequests||[],root=$('#coopCapacity');const cards=rows.map(x=>{const demand=Number(x.demand30d||0),avail=Number(x.availableWorkers||0),gap=demand-avail,status=gap>0?'CAPACITY LOW':avail===0?'MONITOR':'BALANCED';return `<article class="coop-cap-card"><span>${esc(x.service)}</span><div><b>Observed demand</b><strong>${demand}</strong></div><div><b>Available workers</b><strong>${avail}</strong></div><div><b>Gap</b><strong>${gap}</strong></div>${badge(status)}</article>`;}).join('');const requests=req.length?`<div class="coop-subhead"><b>Capacity coordination records</b><small>No automatic worker transfer · Worker consent required</small></div><div class="judge-table-wrap"><table class="judge-table coop-table"><thead><tr><th>Request</th><th>Role</th><th>Zone</th><th>Requested</th><th>Approved</th><th>Status</th></tr></thead><tbody>${req.map(x=>`<tr><td>${esc(x.requestCode||`#${x.id}`)}</td><td>${esc(x.role)}</td><td>${esc(x.zone||'—')}</td><td>${Number(x.requestedWorkers||0)}</td><td>${Number(x.approvedWorkers||0)}</td><td>${badge(x.status)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="coop-empty small">No connected capacity request records currently involve this cooperative.</div>';root.innerHTML=`<div class="coop-cap-grid">${cards||'<div class="coop-empty">No local capacity data is available.</div>'}</div>${requests}`;}
+  function renderCapacity(d){
+    const rows=d.skills||[],req=d.capacityRequests||[],root=$('#coopCapacity');
+    const cards=rows.map(x=>{const demand=Number(x.demand30d||0),avail=Number(x.availableWorkers||0),gap=demand-avail,status=gap>0?'CAPACITY LOW':avail===0?'MONITOR':'BALANCED';return `<article class="coop-cap-card"><span>${esc(x.service)}</span><div><b>Observed demand</b><strong>${demand}</strong></div><div><b>Available workers</b><strong>${avail}</strong></div><div><b>Gap</b><strong>${gap}</strong></div>${badge(status)}</article>`;}).join('');
+    const services=[...new Set(rows.map(x=>x.service).filter(Boolean))];
+    const requestForm=`<form id="coopCapacityRequestForm" class="coop-capacity-request">
+      <div><span>REQUEST CROSS-COOPERATIVE CAPACITY</span><b>Create a governed capacity request</b><small>Federation coordination, worker consent and authorized approval remain required. No worker is transferred automatically.</small></div>
+      <label><span>Service</span><select id="coopCapacityService" required><option value="">Select service</option>${services.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')}</select></label>
+      <label><span>Zone</span><input id="coopCapacityZone" required maxlength="160" placeholder="Service zone / locality"></label>
+      <label><span>Workers Needed</span><input id="coopCapacityWorkers" type="number" min="1" max="100" value="1" required></label>
+      <button type="submit" class="btn primary small" ${services.length?'':'disabled'}>Create Capacity Request</button>
+      <p id="coopCapacityRequestMessage" aria-live="polite"></p>
+    </form>`;
+    const requests=req.length?`<div class="coop-subhead"><b>Capacity coordination records</b><small>No automatic worker transfer · Worker consent required</small></div><div class="judge-table-wrap"><table class="judge-table coop-table"><thead><tr><th>Request</th><th>Role</th><th>Zone</th><th>Requested</th><th>Approved</th><th>Status</th></tr></thead><tbody>${req.map(x=>`<tr><td>${esc(x.requestCode||`#${x.id}`)}</td><td>${esc(x.role)}</td><td>${esc(x.zone||'—')}</td><td>${Number(x.requestedWorkers||0)}</td><td>${Number(x.approvedWorkers||0)}</td><td>${badge(x.status)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="coop-empty small">No connected capacity request records currently involve this cooperative.</div>';
+    root.innerHTML=`${requestForm}<div class="coop-cap-grid">${cards||'<div class="coop-empty">No local capacity data is available.</div>'}</div>${requests}`;
+    $('#coopCapacityRequestForm',root)?.addEventListener('submit',async event=>{
+      event.preventDefault();
+      const form=event.currentTarget,button=$('button[type="submit"]',form),message=$('#coopCapacityRequestMessage',form);
+      const service=$('#coopCapacityService',form)?.value||'',zone=String($('#coopCapacityZone',form)?.value||'').trim(),workersRequired=Number($('#coopCapacityWorkers',form)?.value||0);
+      if(!service||!zone||!Number.isInteger(workersRequired)||workersRequired<1){message.textContent='Select a service, enter a zone and choose at least one worker.';return;}
+      const original=button.textContent;button.disabled=true;button.textContent='Creating Request…';message.textContent='';
+      try{
+        const result=await post('/api/cooperative-admin/capacity-requests',{service,zone,workersRequired});
+        message.textContent=`Capacity request ${result.request?.requestCode||''} recorded. Federation coordination is now required.`;
+        form.reset();$('#coopCapacityWorkers',form).value='1';
+        await loadWorkspace(true);
+      }catch(error){message.textContent=error.message||'Capacity request could not be created.';}
+      finally{button.disabled=false;button.textContent=original;}
+    });
+  }
 
   function renderQuality(d){const m=d.metrics||{},root=$('#coopQuality');root.innerHTML=`<div class="coop-quality-grid"><article><span>Completed Services</span><strong>${Number(m.completedServices||0)}</strong><small>Completed / paid local bookings</small></article><article><span>Average Rating</span><strong>${Number(m.averageRating||0).toFixed(2)}</strong><small>Stored ratings only</small></article><article><span>Open Complaints</span><strong>${Number(m.openComplaints||0)}</strong><small>Current grievance load</small></article><article><span>SLA Breaches</span><strong>${Number(m.slaBreaches||0)}</strong><small>Requires operational attention</small></article></div>`;}
 
