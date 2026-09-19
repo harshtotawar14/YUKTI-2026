@@ -10,7 +10,7 @@ const packageMetadata=JSON.parse(readFileSync(resolve(root,'package.json'),'utf8
 const publicFiles=[
   'index.html',
   'app-icon.svg','manifest.webmanifest','robots.txt','sitemap.xml','social-preview.svg',
-  'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','master-v2.css',
+  'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','master-v2.css','landing-pro.css',
   'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','customer-worker-dashboard.css',
   'admin-command-center.css','federation-govtech.css','federation-portal.css','cooperative-portal.css','handover-evidence.css',
   'credibility-layer.css','workforce-intelligence.css',
