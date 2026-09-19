@@ -58,6 +58,83 @@ async function openMockRoleWorkspace(context,role){
   return rolePage;
 }
 
+
+async function openMockAdminWorkspace(context,role){
+  const rolePage=await context.newPage();rolePage.setDefaultTimeout(6000);
+  const cooperative=role==='COOPERATIVE_ADMIN';
+  const user=cooperative
+    ?{id:301,role:'COOPERATIVE_ADMIN',fullName:'Review Cooperative Admin',name:'Review Cooperative Admin',cooperative_id:1}
+    :{id:401,role:'FEDERATION_ADMIN',fullName:'Review Federation Admin',name:'Review Federation Admin'};
+
+  const overview={
+    ok:true,
+    metrics:{registeredWorkers:5,verifiedWorkers:4,availableWorkers:3,pendingVerification:1,openComplaints:1,slaBreached:0,activeBookings:1,totalPayments:998},
+    cooperatives:[
+      {id:1,name:'Kolhapur Labour Cooperative',city:'Kolhapur',workers:3,available:2},
+      {id:2,name:'Panhala Service Cooperative',city:'Panhala',workers:2,available:1}
+    ],
+    capacityRequests:[{id:71,requestCode:'CAP-REVIEW-71',status:'REQUESTED',service:'Electrician',zone:'Panhala',requestingCooperative:'Kolhapur Labour Cooperative',workersRequired:1,requestedAt:'2026-09-19T10:00:00Z'}],
+    complaints:[{id:81,status:'OPEN',escalationLevel:1,slaDueAt:'2026-09-20T10:00:00Z'}],
+    forecasts:[{service:'Electrician',expectedDemand:8,availableWorkers:5,createdAt:'2026-09-19T10:00:00Z'}]
+  };
+  const planning={ok:true,service:'Electrician',historicalDemand30d:7,expectedDemand:8,eligibleCapacity:5,capacityGap:3,confidence:'MEDIUM',forecastMethod:'Observed-demand baseline',recommendedActions:['Review cross-cooperative capacity']};
+  const workspace={
+    ok:true,
+    cooperative:{id:1,name:'Kolhapur Labour Cooperative',city:'Kolhapur'},
+    metrics:{totalWorkers:2,verifiedWorkers:1,availableWorkers:1,activeBookings:1,openComplaints:1,recordedPayments:499,pendingVerification:1,documentIssues:0,slaBreaches:0,capacityRequests:1,pendingOffers:0,completedServices:4,averageRating:4.75},
+    workers:[
+      {id:11,name:'Amit Worker',verificationStatus:'VERIFIED',availability:'AVAILABLE',jobsCompleted:5,rating:4.8,pendingDocuments:0,expiredDocuments:0,currentJobs:1,complaintCount:0,zone:'Kolhapur',skills:[{service:'Electrician',verified:true}]},
+      {id:12,name:'Rahul Worker',verificationStatus:'PENDING',availability:'OFF_DUTY',jobsCompleted:1,rating:4.2,pendingDocuments:1,expiredDocuments:0,currentJobs:0,complaintCount:0,zone:'Panhala',skills:[{service:'Electrician',verified:false}]}
+    ],
+    skills:[{service:'Electrician',verifiedWorkers:1,availableWorkers:1,demand30d:4}],
+    services:[{id:61,bookingCode:'SP-REVIEW-61',service:'Electrician',worker:'Amit Worker',scheduledAt:'2026-09-19T12:00:00Z',zone:'Kolhapur',status:'IN_PROGRESS'}],
+    complaints:[{id:81,bookingId:61,bookingCode:'SP-REVIEW-61',service:'Electrician',status:'OPEN',escalationLevel:1,slaDueAt:'2026-09-20T10:00:00Z',slaBreached:false}],
+    capacityRequests:[{id:71,requestCode:'CAP-REVIEW-71',role:'REQUESTER',zone:'Panhala',requestedWorkers:1,approvedWorkers:0,status:'REQUESTED'}],
+    payments:[{bookingId:60,bookingCode:'SP-REVIEW-60',service:'Electrician',amount:499,status:'PAID',createdAt:'2026-09-18T14:00:00Z'}],
+    trainingRecommendations:[]
+  };
+  const federationCapacity={ok:true,requests:[{id:71,requestCode:'CAP-REVIEW-71',service:'Electrician',zone:'Panhala',workersRequired:1,status:'REQUESTED',requestingCooperative:'Kolhapur Labour Cooperative',providingCooperative:null,offeredWorkers:0,acceptedWorkers:0,approvedAssignments:0}]};
+
+  await rolePage.route('**/api/**',async route=>{
+    const u=new URL(route.request().url()),path=u.pathname;
+    let payload={ok:true};
+    if(path==='/api/auth/demo-access')payload={ok:true,accounts:[]};
+    else if(path==='/api/auth/me'||path==='/api/connected/auth/me')payload={ok:true,user};
+    else if(path==='/api/connected/health')payload={ok:true};
+    else if(path==='/api/connected/judge/overview')payload=overview;
+    else if(path==='/api/connected/judge/readiness')payload={ok:true,ready:true};
+    else if(path==='/api/connected/judge/planning')payload=planning;
+    else if(path==='/api/connected/judge/latest-demo-booking')payload={ok:true,booking:null};
+    else if(path.startsWith('/api/connected/judge/match/'))payload={ok:true,eligible:[]};
+    else if(path==='/api/cooperative-admin/workspace')payload=workspace;
+    else if(path==='/api/cooperative-admin/complaints')payload={ok:true,complaints:workspace.complaints};
+    else if(path==='/api/cooperative-admin/trust-lifecycle')payload={ok:true,workers:workspace.workers};
+    else if(path==='/api/cooperative-admin/capacity-requests')payload={ok:true,requests:workspace.capacityRequests};
+    else if(path==='/api/federation/capacity-requests')payload=federationCapacity;
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(payload)});
+  });
+
+  await rolePage.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});
+  await rolePage.waitForTimeout(350);
+  await rolePage.evaluate(()=>window.SanPaidBootstrap?.loadAdministration?.());
+  await rolePage.waitForTimeout(650);
+  const opened=await rolePage.evaluate(async({role,user})=>{
+    window.SanPaidAuth.restoreSession=async()=>user;
+    window.SanPaidAuth.getCurrentUser=()=>user;
+    window.SanPaidAuth.getRole=()=>role;
+    const result=await window.SanPaidJudgeMode.open();
+    window.dispatchEvent(new CustomEvent('sanpaid:admin-shell-ready',{detail:{role}}));
+    return result;
+  },{role,user});
+  assert(opened===true,`${role} administration workspace did not open in the role audit fixture`);
+  await rolePage.locator('#sihJudgeShell:not(.judge-hidden)').waitFor({state:'visible'});
+  await rolePage.locator('#adminCommandSummary').waitFor({state:'visible'});
+  await rolePage.waitForTimeout(1500);
+  if(cooperative)await rolePage.locator('#coopPortal').waitFor({state:'visible'});
+  else await rolePage.locator('#fedSidebar').waitFor({state:'attached'});
+  return rolePage;
+}
+
 let browser;
 try{
   await waitServer();
@@ -222,9 +299,40 @@ try{
   await assertNoHorizontalOverflow(workerPage,'#connectedShell','390px Worker workspace');
   await workerPage.close();
 
+  const cooperativePage=await openMockAdminWorkspace(context,'COOPERATIVE_ADMIN');
+  await cooperativePage.setViewportSize({width:390,height:844});await cooperativePage.waitForTimeout(140);
+  assert(await cooperativePage.locator('#sihJudgeShell').evaluate(node=>node.classList.contains('cooperative-govtech')),'Cooperative Admin shell is missing cooperative role class');
+  assert(await cooperativePage.locator('#coopSidebar').count()===1,'Cooperative Admin sidebar missing');
+  assert(await cooperativePage.locator('#fedSidebar').count()===0,'Federation sidebar leaked into Cooperative Admin');
+  const cooperativeText=(await cooperativePage.locator('#adminCommandSummary').innerText()).toLowerCase();
+  for(const phrase of ['verification attention','open complaints','capacity requests','worker directory','complaints & sla','demand & workforce capacity'])assert(cooperativeText.includes(phrase),`Cooperative Admin workspace missing: ${phrase}`);
+  assertProfessionalCopy(cooperativeText,'Cooperative Admin workspace');
+  await assertNoHorizontalOverflow(cooperativePage,'#sihJudgeShell','390px Cooperative Admin workspace');
+  await cooperativePage.locator('#coopNavToggle').click();await cooperativePage.waitForTimeout(80);
+  assert(await cooperativePage.locator('#coopNavToggle').getAttribute('aria-expanded')==='true','Cooperative mobile navigation did not open');
+  await cooperativePage.keyboard.press('Escape');await cooperativePage.waitForTimeout(80);
+  assert(await cooperativePage.locator('#coopNavToggle').getAttribute('aria-expanded')==='false','Cooperative mobile navigation did not close with Escape');
+  await cooperativePage.close();
+
+  const federationPage=await openMockAdminWorkspace(context,'FEDERATION_ADMIN');
+  await federationPage.setViewportSize({width:390,height:844});await federationPage.waitForTimeout(140);
+  assert(await federationPage.locator('#sihJudgeShell').evaluate(node=>node.classList.contains('federation-govtech')),'Federation Admin shell is missing federation role class');
+  assert(await federationPage.locator('#fedSidebar').count()===1,'Federation Admin sidebar missing');
+  assert(await federationPage.locator('#coopSidebar').count()===0,'Cooperative sidebar leaked into Federation Admin');
+  const federationText=(await federationPage.locator('#adminCommandSummary').innerText()).toLowerCase();
+  for(const phrase of ['cross-cooperative requests','sla escalations','regional capacity gap','planning confidence','active cooperatives','verified workers'])assert(federationText.includes(phrase),`Federation Admin workspace missing: ${phrase}`);
+  assertProfessionalCopy(federationText,'Federation Admin workspace');
+  await assertNoHorizontalOverflow(federationPage,'#sihJudgeShell','390px Federation Admin workspace');
+  const capacityNav=federationPage.locator('[data-fed-target="capacity"]').first();
+  assert(await capacityNav.count()===1,'Federation capacity navigation missing');
+  await capacityNav.click();await federationPage.waitForTimeout(120);
+  const capacityText=(await federationPage.locator('#judge-capacity').innerText()).toLowerCase();
+  for(const phrase of ['capacity governance','worker consent','authorized approval'])assert(capacityText.includes(phrase),`Federation capacity workspace missing: ${phrase}`);
+  await federationPage.close();
+
   assert(pageErrors.length===0,`Page errors: ${pageErrors.join(' | ')}`);
   const unexpectedConsole=consoleErrors.filter(text=>!text.includes('/api/')&&!text.includes('404'));
   assert(unexpectedConsole.length===0,`Unexpected console errors: ${unexpectedConsole.join(' | ')}`);
   console.log('SanPaid Chromium UI audit: PASS');
-  console.log('Verified landing/Platform Tour release widths plus authenticated Customer and Worker workspaces at 390px, including role navigation, schedule UX, overflow and close-state recovery.');
+  console.log('Verified landing/Platform Tour release widths plus authenticated Customer, Worker, Cooperative Admin and Federation Admin workspaces at 390px, including role isolation, admin governance navigation, capacity controls, schedule UX, overflow and close-state recovery.');
 } finally {if(browser)await browser.close().catch(()=>{});server.kill('SIGTERM');}
