@@ -42,11 +42,7 @@
     ['coop-payments','Payments & Earnings','Recorded transaction visibility'],
     ['planning','Demand & Planning','Advisory planning'],
     ['coop-training','Training & Development','Human-approved recommendations'],
-    ['welfare','Welfare Readiness','Worker support roadmap'],
-    ['coop-activity','Audit & Activity','Traceable local operations'],
-    ['coop-health','System Health','Read-only runtime checks'],
-    ['golden','System Verification','Runtime verification and evidence'],
-    ['research','Architecture & Research','Technical evidence']
+    ['coop-activity','Audit & Activity','Traceable local operations']
   ];
 
   function ensureFrame(){
@@ -56,7 +52,7 @@
     const hero=$('.judge-hero',content);if(hero){const b=$('.judge-badge',hero),h=$('h1',hero),p=$('p',hero);if(b)b.textContent='COOPERATIVE OPERATIONS';if(h)h.textContent='Cooperative Operations Command Center';if(p)p.textContent='Local workforce, service delivery, verification, complaints and capacity management in one governed workspace.';if(!$('#coopGovTruth',hero)){const x=document.createElement('small');x.id='coopGovTruth';x.className='coop-gov-truth';x.textContent='Cooperative workforce operations platform · External administrative integrations are shown only when authorized';p?.insertAdjacentElement('afterend',x);}}
     const heading=$('#adminCommandSummary .admin-command-heading');if(heading){const h2=$('h2',heading),p=$('p',heading),btn=$('#adminHealthRefresh',heading);if(h2)h2.textContent='What needs attention now?';if(p)p.textContent='Local operational priorities are derived from the authenticated cooperative scope. Read refreshes never mutate operational state.';if(btn)btn.textContent='Refresh Local Data';}
     if(!$('#coopSidebar',content)){
-      const aside=document.createElement('aside');aside.id='coopSidebar';aside.className='coop-sidebar';aside.setAttribute('aria-label','Cooperative operations navigation');aside.innerHTML=`<div class="coop-side-brand"><b>SanPaid</b><span>COOPERATIVE OPERATIONS</span><small>Cooperative Workforce Network</small></div><nav><span class="coop-nav-group">Operations</span>${NAV.map(([target,label,desc],i)=>`${i===14?'<span class="coop-nav-group system">System</span>':''}<button type="button" data-coop-target="${esc(target)}"><span>${esc(label)}</span><small>${esc(desc)}</small></button>`).join('')}</nav><div class="coop-side-foot"><span>Cooperative Operations</span><small>Local society scope · Role-governed operations</small></div>`;content.insertBefore(aside,content.firstChild);
+      const aside=document.createElement('aside');aside.id='coopSidebar';aside.className='coop-sidebar';aside.setAttribute('aria-label','Cooperative operations navigation');aside.innerHTML=`<div class="coop-side-brand"><b>SanPaid</b><span>COOPERATIVE OPERATIONS</span><small>Cooperative Workforce Network</small></div><nav><span class="coop-nav-group">Operations</span>${NAV.map(([target,label,desc])=>`<button type="button" data-coop-target="${esc(target)}"><span>${esc(label)}</span><small>${esc(desc)}</small></button>`).join('')}</nav><div class="coop-side-foot"><span>Cooperative Operations</span><small>Local society scope · Role-governed operations</small></div>`;content.insertBefore(aside,content.firstChild);
       aside.querySelectorAll('[data-coop-target]').forEach(btn=>btn.addEventListener('click',()=>btn.dataset.coopTarget.startsWith('coop-')?scrollToId(btn.dataset.coopTarget):switchTo(btn.dataset.coopTarget)));
       const toggle=document.createElement('button');toggle.id='coopNavToggle';toggle.className='coop-nav-toggle';toggle.type='button';toggle.setAttribute('aria-controls','coopSidebar');toggle.setAttribute('aria-expanded','false');toggle.textContent='Cooperative Menu';toggle.setAttribute('aria-label','Open cooperative navigation');content.insertBefore(toggle,aside.nextSibling);toggle.addEventListener('click',()=>{const open=content.classList.toggle('coop-nav-open');toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Close cooperative navigation':'Open cooperative navigation');});
     }
