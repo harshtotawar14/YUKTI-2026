@@ -19,7 +19,7 @@ async function resolvePolicy(client,cooperativeId,category,severity){
     WHERE active=true AND severity=$2 AND (cooperative_id=$1 OR cooperative_id IS NULL) AND (lower(category)=lower($3) OR category='*')
     ORDER BY (cooperative_id=$1) DESC,(lower(category)=lower($3)) DESC,updated_at DESC LIMIT 1`,[cooperativeId,severity,category])).rows[0];
   if(row)return {hours:Number(row.response_hours),source:'CONFIGURED_POLICY',category:row.category,severity:row.severity};
-  return {hours:FALLBACK_HOURS[severity],source:'PROTOTYPE_FALLBACK_POLICY',category:'*',severity};
+  return {hours:FALLBACK_HOURS[severity],source:'CONFIGURED_FALLBACK_POLICY',category:'*',severity};
 }
 
 async function refreshOverdue(cooperativeId=null){
