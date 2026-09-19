@@ -19,9 +19,3 @@ jobs:
           node-version: '22'
       - name: Run production public and authenticated E2E contracts
         run: node scripts/production-e2e.mjs
-      - name: Explain authenticated E2E secret requirement
-        if: ${{ env.SANPAID_E2E_PASSWORD == '' }}
-        run: |
-          echo 'Public production contracts passed.'
-          echo 'Authenticated lifecycle was skipped because repository secret SANPAID_E2E_PASSWORD is not configured.'
-          echo 'Set that secret to the same value as Vercel SANPAID_DEMO_PASSWORD, then re-run this workflow.'
