@@ -403,21 +403,22 @@
     const demoAccount = demoAccountFor(state.requestedRole, state.requestedPersona);
     const loginEmail = demoAccount?.accessId || expectedEmail(state.requestedRole, state.requestedPersona);
     const workerContext = state.requestedRole === 'WORKER'
-      ? `<div class="spu-status-card"><small>Selected worker workspace</small><b>${state.requestedPersona === 'WORKER_B' ? 'Replacement worker account' : 'Primary worker account'}</b><div class="spu-worker-switch"><button type="button" data-spu-worker-demo="WORKER_A" class="${state.requestedPersona === 'WORKER_A' ? 'active' : ''}">Worker A</button><button type="button" data-spu-worker-demo="WORKER_B" class="${state.requestedPersona === 'WORKER_B' ? 'active' : ''}">Worker B</button></div></div>`
+      ? `<div class="spu-status-card"><small>Reviewer worker account</small><b>${state.requestedPersona === 'WORKER_B' ? 'Worker B · fallback path' : 'Worker A · primary path'}</b><div class="spu-worker-switch"><button type="button" data-spu-worker-demo="WORKER_A" class="${state.requestedPersona === 'WORKER_A' ? 'active' : ''}">Worker A</button><button type="button" data-spu-worker-demo="WORKER_B" class="${state.requestedPersona === 'WORKER_B' ? 'active' : ''}">Worker B</button></div></div>`
       : '';
     const demoAccessCard = state.demoAccess?.password
-      ? `<div class="spu-demo-access"><div><small>SHARED PLATFORM ACCESS</small><b>Use these access credentials for the selected role</b><p>Shared review accounts provide access to the platform without exposing production-user credentials.</p></div><div class="spu-demo-credentials"><span>ID</span><code>${esc(loginEmail)}</code><span>Password</span><code>${esc(state.demoAccess.password)}</code></div><button type="button" class="spu-demo-use" id="spuUseDemo">USE ACCESS CREDENTIALS</button></div>`
-      : `<div class="spu-demo-access loading"><div><small>SHARED PLATFORM ACCESS</small><b>Loading access credentials…</b><p>The connected backend must be available before sign-in.</p></div></div>`;
+      ? `<div class="spu-demo-access"><div><small>REVIEWER ACCESS</small><b>Use isolated review credentials for the selected role</b><p>Review accounts are isolated from normal user credentials and are intended only for guided evaluation.</p></div><div class="spu-demo-credentials"><span>ID</span><code>${esc(loginEmail)}</code><span>Password</span><code>${esc(state.demoAccess.password)}</code></div><button type="button" class="spu-demo-use" id="spuUseDemo">USE ACCESS CREDENTIALS</button></div>`
+      : `<div class="spu-demo-access loading"><div><small>REVIEWER ACCESS</small><b>Loading reviewer credentials…</b><p>The connected backend must be available before sign-in.</p></div></div>`;
 
     content.innerHTML = `<span class="spu-demo-pill">SANPAID SECURE ACCESS</span><h2 id="spuTitle">Access SanPaid</h2><p class="spu-sub">Select your authorized role and sign in.</p>
-      ${roleGrid()}${workerContext}${demoAccessCard}
+      ${roleGrid()}
       <form id="spuLoginForm" class="spu-form" novalidate>
-        <div class="spu-field"><label for="spuEmail">Access ID</label><input id="spuEmail" name="email" type="text" inputmode="text" autocomplete="username" value="${esc(loginEmail)}" required></div>
+        <div class="spu-field"><label for="spuEmail">Access ID</label><input id="spuEmail" name="email" type="text" inputmode="text" autocomplete="username" placeholder="Enter your Access ID" required></div>
         <div class="spu-field spu-password"><label for="spuPassword">Password</label><input id="spuPassword" name="password" type="password" autocomplete="current-password" placeholder="Enter password" aria-describedby="spuLoginMessage" required><button class="spu-show" id="spuShowPassword" type="button" aria-controls="spuPassword" aria-pressed="false">Show</button></div>
         <label class="spu-remember"><input id="spuRemember" name="remember" type="checkbox"><span>Remember this device</span></label>
         <div id="spuLoginMessage" role="status" aria-live="polite"></div>
         <button class="spu-primary" id="spuLoginSubmit" type="submit">SIGN IN</button>
       </form>
+      <details class="spu-review-access"><summary>Reviewer access</summary><div class="spu-review-body">${workerContext}${demoAccessCard}</div></details>
       <div class="spu-helper"><b>${esc(meta.label)}:</b> ${esc(meta.help)}</div>`;
 
     wireRoleGrid();
