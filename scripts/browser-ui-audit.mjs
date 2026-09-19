@@ -143,9 +143,23 @@ try{
   await page.locator('#selectorClose').click();await page.waitForTimeout(140);
   assert(!(await selector.isVisible()),'Close button did not dismiss Platform Tour at 360px');
 
+  // Release viewport sweep: cover the widths used in the evaluator/device QA checklist.
+  for(const [width,height] of [[375,812],[412,915],[430,932],[768,1024],[1024,900],[1440,1000]]){
+    await page.setViewportSize({width,height});await page.waitForTimeout(80);
+    await assertNoHorizontalOverflow(page,'html',`${width}px release viewport`);
+    const menuShouldShow=width<=1000;
+    assert((await page.locator('#menuBtn').isVisible())===menuShouldShow,`${width}px navigation breakpoint is incorrect`);
+    if(menuShouldShow){
+      await page.evaluate(()=>window.SanPaidSelectorMode.open(1));await page.waitForTimeout(70);
+      await assertNoHorizontalOverflow(page,'#selectorModeShell',`${width}px Platform Tour`);
+      assert(await page.locator('#selectorClose').isVisible(),`Platform Tour close control is missing at ${width}px`);
+      await page.locator('#selectorClose').click();await page.waitForTimeout(60);
+    }
+  }
+
   assert(pageErrors.length===0,`Page errors: ${pageErrors.join(' | ')}`);
   const unexpectedConsole=consoleErrors.filter(text=>!text.includes('/api/')&&!text.includes('404'));
   assert(unexpectedConsole.length===0,`Unexpected console errors: ${unexpectedConsole.join(' | ')}`);
   console.log('SanPaid Chromium UI audit: PASS');
-  console.log('Verified desktop Platform Tour/role access/active navigation, 1000px tablet menu and role access, plus 390/360px mobile Platform Tour, overflow and close-state recovery.');
+  console.log('Verified desktop/tablet/mobile navigation and Platform Tour across 360, 375, 390, 412, 430, 768, 1000, 1024 and 1440px release widths, including overflow and close-state recovery.');
 } finally {if(browser)await browser.close().catch(()=>{});server.kill('SIGTERM');}
