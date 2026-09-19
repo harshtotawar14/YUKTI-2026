@@ -240,8 +240,8 @@
       <div class="fed-section-head"><div><span>ADMINISTRATIVE READINESS</span><h3>Connected now vs authorized next phase</h3></div><small>Truth-labelled capabilities</small></div>
       <div class="fed-readiness-grid">
         <article><span>GIS Cooperative Capacity View</span><b>Future Authorized Integration</b><p>No precise cooperative coordinates are exposed by the current Federation overview, so no map is fabricated.</p></article>
-        <article><span>Report Export</span><b>Future Integration</b><p>Operational tables are visible now. PDF/Excel export is not presented as working until an actual export path is implemented and tested.</p><button type="button" disabled>Export Reports</button></article>
-        <article><span>Support & Feedback</span><b>Future Integration</b><p>No fake support ticket workflow is shown. A connected support module can be added when the backend exists.</p></article>
+        <article><span>Report Export</span><b>Integration Ready</b><p>Operational tables are available now; formal export is kept outside the active workflow until a verified export path is connected.</p></article>
+        <article><span>Support & Feedback</span><b>Planned Integration</b><p>Support workflow remains outside the current operational scope and is not presented as connected.</p></article>
       </div>`;
     records.insertAdjacentElement('afterend',section);
   }
