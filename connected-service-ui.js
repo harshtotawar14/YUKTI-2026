@@ -39,6 +39,7 @@
   }
 
   function workerEstimateBlock(id,estimate){
+    const previousItems=Array.isArray(estimate?.items)?estimate.items:[],primary=previousItems[0]||{},secondary=previousItems[1]||{};
     if(estimate?.status==='PENDING')return `<div class="connected-demo-note"><b>ESTIMATE SENT · CUSTOMER APPROVAL PENDING</b><br>${estimateItems(estimate)}<div class="connected-heading-row" style="margin-top:8px"><span>Total</span><b>${money(estimate.total)}</b></div></div>`;
     if(estimate?.status==='APPROVED')return `<div class="connected-success"><b>ESTIMATE APPROVED ✓</b><br>Customer approved ${money(estimate.total)}. Identity / QR service-start verification is now unlocked.</div>`;
     const revision=estimate?.status==='REJECTED'?'<div class="connected-demo-note"><b>Customer rejected the previous estimate.</b> Revise the scope or amount and send a new estimate.</div>':'';
@@ -47,12 +48,12 @@
       <h3>${estimate?.status==='REJECTED'?'Revise Estimate':'Create Estimate Before Service Start'}</h3>
       <p>After inspection, list the work and price. Service-start verification remains locked until the customer approves.</p>
       <div class="connected-form-row">
-        <div class="field"><label>Work Item</label><input id="estimateItem1" value="Service labour" maxlength="180" required></div>
-        <div class="field"><label>Amount</label><input id="estimateAmount1" type="number" min="1" max="200000" step="0.01" value="${Number(estimate?.total||0)||''}" required></div>
+        <div class="field"><label>Work Item</label><input id="estimateItem1" value="${esc(primary.description||'')}" maxlength="180" placeholder="e.g. Electrical service labour" required></div>
+        <div class="field"><label>Amount</label><input id="estimateAmount1" type="number" inputmode="decimal" min="1" max="200000" step="0.01" value="${primary.amount!=null?esc(primary.amount):''}" placeholder="Enter amount" required></div>
       </div>
       <div class="connected-form-row">
-        <div class="field"><label>Optional Item</label><input id="estimateItem2" maxlength="180" placeholder="e.g. Replacement switch"></div>
-        <div class="field"><label>Optional Amount</label><input id="estimateAmount2" type="number" min="1" max="200000" step="0.01" placeholder="0"></div>
+        <div class="field"><label>Optional Item</label><input id="estimateItem2" value="${esc(secondary.description||'')}" maxlength="180" placeholder="e.g. Replacement switch"></div>
+        <div class="field"><label>Optional Amount</label><input id="estimateAmount2" type="number" inputmode="decimal" min="1" max="200000" step="0.01" value="${secondary.amount!=null?esc(secondary.amount):''}" placeholder="Enter amount"></div>
       </div>
       <div class="field"><label>Inspection Note</label><textarea id="estimateNote" maxlength="600" placeholder="What was inspected and what work is proposed?">${esc(estimate?.note||'')}</textarea></div>
       <button class="btn primary" type="submit" id="connectedEstimateSubmit">${estimate?.status==='REJECTED'?'SEND REVISED ESTIMATE':'SEND ESTIMATE FOR APPROVAL'}</button>
@@ -151,7 +152,7 @@
     const completion=status==='AWAITING_CUSTOMER_CONFIRMATION'?`<button class="btn primary" type="button" id="connectedConfirmCompletion">Confirm Service Completed</button>`:'';
     const tokenKey=`sanpaid_customer_start_token_${bookingId}`,saved=getSession(tokenKey),signature=JSON.stringify([bookingId,status,saved,estimate?.status,estimate?.total,estimate?.items]);
     const estimateBlock=customerEstimateBlock(bookingId,status,estimate);
-    const verificationControls=estimateApproved?`<div class="field"><label>One-Time Service Verification Code</label><input id="connectedStartToken" autocomplete="off" placeholder="Paste code from Worker device" value="${esc(saved)}"></div><div class="connected-actions"><button class="btn secondary" type="button" id="connectedVerifyToken">Check Worker</button><button class="btn primary" type="button" id="connectedConfirmWorker" disabled>Confirm Booked Worker</button>${completion}</div><div id="connectedWorkerIdentityPreview"></div>`:`${completion}<div class="connected-demo-note">Worker identity / QR verification is locked until the estimate is approved.</div>`;
+    const verificationControls=estimateApproved?`<div class="field"><label>One-Time Service Verification Code</label><input id="connectedStartToken" autocomplete="off" placeholder="Paste code from Worker device" value="${esc(saved)}"></div><div class="connected-actions"><button class="btn secondary" type="button" id="connectedVerifyToken">Verify Code</button><button class="btn primary" type="button" id="connectedConfirmWorker" disabled>Confirm Booked Worker</button>${completion}</div><div id="connectedWorkerIdentityPreview"></div>`:`${completion}<div class="connected-demo-note">Worker identity / QR verification is locked until the estimate is approved.</div>`;
     const html=`<div class="connected-card"><span class="connected-step-label">APPROVAL + TRUST CHECK</span><h3>Approve Scope, Then Confirm Your Booked Worker</h3><p>Price approval happens before service start. After approval, use the one-time verification code from the assigned worker.</p><div class="connected-status"><span class="badge b-green">${esc(human(status))}</span><b>${esc(booking.bookingCode||'')}</b></div>${estimateBlock}<div class="connected-form">${verificationControls}<div id="connectedCustomerVerificationMessage"></div></div></div>`;
     if(setMarkup(host,signature,html,'customer')){
       host.querySelectorAll('[data-estimate-decision]').forEach(b=>b.addEventListener('click',()=>decideEstimate(bookingId,b.dataset.estimateDecision,b)));
