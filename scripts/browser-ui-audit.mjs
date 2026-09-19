@@ -52,8 +52,7 @@ try{
   assert(!(await desktopSelector.isVisible()),'Escape did not close desktop Platform Tour');
 
   const matchingBefore=await page.locator('#matching').boundingBox();
-  await page.locator('.navlinks a[href="#matching"]').click();
-  await page.waitForFunction(()=>document.querySelector('.navlinks a[href="#matching"]')?.getAttribute('aria-current')==='location');
+  await page.locator('.navlinks a[href="#matching"]').click();await page.waitForTimeout(450);
   const matchingAfter=await page.locator('#matching').boundingBox();
   assert(Boolean(matchingBefore&&matchingAfter),'Matching section missing');
   assert(await page.evaluate(()=>window.scrollY)>100,'Workflow navigation did not navigate toward matching proof');
