@@ -34,6 +34,13 @@ body.sanpaid-v2 button,body.sanpaid-v2 input,body.sanpaid-v2 select{font:inherit
 .master-v2 .navlinks{display:flex;align-items:center;gap:20px;margin-left:auto}
 .master-v2 .navlinks a{color:#43536a;text-decoration:none;font-size:13px;font-weight:700}
 .master-v2 .navlinks a:hover{color:var(--v2-blue)}
+.master-v2 .nav{transition:box-shadow .2s ease,background-color .2s ease,border-color .2s ease}
+.master-v2 .nav.nav-compact{background:rgba(255,255,255,.97);box-shadow:0 10px 28px rgba(27,47,72,.08);border-bottom-color:#e3eaf2}
+.master-v2 .nav.nav-compact .navin{min-height:66px}
+.master-v2 .navlinks a{position:relative}
+.master-v2 .navlinks a.is-active{color:var(--v2-blue)}
+.master-v2 .navlinks a.is-active:after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:2px;border-radius:999px;background:var(--v2-blue)}
+
 .master-v2 .actions{display:flex;gap:10px;align-items:center}
 .master-v2 .btn{border:0;border-radius:12px;min-height:44px;padding:0 18px;font-weight:800;font-size:12px;letter-spacing:.015em;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;transition:.2s ease}
 .master-v2 .btn:hover{transform:translateY(-1px)}
