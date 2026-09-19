@@ -238,6 +238,19 @@ test('literal dynamic buttons declare an explicit type',()=>{
   assert.deepEqual(failures,[],`Dynamic buttons missing type="button":\n${failures.join('\n')}`);
 });
 
+
+test('professional product surfaces do not expose stale validation contradictions',()=>{
+  const credibility=readFileSync(join(root,'credibility-layer.js'),'utf8');
+  const customer=readFileSync(join(root,'connected-demo.js'),'utf8');
+  const worker=readFileSync(join(root,'customer-worker-dashboard.js'),'utf8');
+  const admin=readFileSync(join(root,'admin-command-center.js'),'utf8');
+  assert.doesNotMatch(credibility,/no interview counts|verified field evidence has not been entered/i,'Credibility center contradicts the field-validation dossier.');
+  assert.match(credibility,/FIELD-INFORMED/,'Credibility center must preserve the field-informed evidence boundary.');
+  assert.doesNotMatch(customer,/value="Service Address,/,'Customer address must not look pre-seeded.');
+  assert.doesNotMatch(worker,/id="cwScheduleVoice" value=/,'Worker schedule example must be a placeholder, not fake user data.');
+  assert.doesNotMatch(admin,/CODE-CONNECTED · MANUAL REGRESSION REQUIRED|CONNECTED BUT NOT TESTED/,'Admin workspace exposes internal QA wording as product status.');
+});
+
 test('public JavaScript does not call forEach on the single-element selector helper',()=>{
   const failures=[];
   for(const file of scripts){
