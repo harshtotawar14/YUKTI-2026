@@ -69,9 +69,14 @@ async function auditRole(browser,role,{width=1280,height=900}={}){
   await page.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>Boolean(window.SanPaidAuth?.login&&window.SanPaidAuth?.openRoleWorkspace));
   const identifier={CUSTOMER:'customer',WORKER:'worker-a',COOPERATIVE_ADMIN:'cooperative-admin',FEDERATION_ADMIN:'federation-admin'}[role];
+  console.log('Auditing authenticated role:',role,'at',width+'px');
   await page.evaluate(async({role,identifier})=>{
-    await window.SanPaidAuth.login({identifier,password:'Reviewer@123',role});
-    await window.SanPaidAuth.openRoleWorkspace(role,role==='WORKER'?'WORKER_A':null);
+    const flow=(async()=>{
+      await window.SanPaidAuth.login({identifier,password:'Reviewer@123',role});
+      await window.SanPaidAuth.openRoleWorkspace(role,role==='WORKER'?'WORKER_A':null);
+    })();
+    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('Authenticated role open timed out: '+role)),12000));
+    await Promise.race([flow,timeout]);
   },{role,identifier});
   await page.waitForTimeout(900);
 
