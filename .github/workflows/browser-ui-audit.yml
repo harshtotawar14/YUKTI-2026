@@ -26,3 +26,7 @@ jobs:
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: node scripts/browser-ui-audit.mjs
+      - name: Run authenticated role workspace audit
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: node scripts/authenticated-role-ui-audit.mjs
