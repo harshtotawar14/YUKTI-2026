@@ -26,7 +26,7 @@
   }
 
 
-  const LANDING_PREMIUM_CSS = String.raw\`
+  const LANDING_PREMIUM_CSS = String.raw`
 /* SanPaid landing premium polish — additive, dependency-free, mobile-first. */
 #landing.landing-v3{
   --lp-ink:#10243b;
@@ -488,7 +488,7 @@
   #landing.landing-v3 .flow-line:before{animation:none}
   #landing.landing-v3 .phone-stage{translate:0 0!important;transition:none}
 }
-\`;
+`;
 
   function loadLandingPolish(){
     if(landingPolishLoaded)return;
