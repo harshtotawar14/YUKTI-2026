@@ -94,7 +94,7 @@ test('navigation does not contain empty or javascript pseudo-links',()=>{
 });
 
 test('visible evaluator-critical controls are present and wired',()=>{
-  const critical=['connectedDemoBtn','getStarted','menuBtn','heroMatchingCta','runMatchBtn','evalRunRanking','evalResetMatch','evalOpenConnected','evalAdminPrototype','evalCapacityAction','evalFinalPrototype','evalFinalArchitecture'];
+  const critical=['connectedDemoBtn','getStarted','menuBtn','heroTourCta','runMatchBtn','evalRunRanking','evalResetMatch','evalOpenConnected','evalAdminPrototype','evalCapacityAction','evalFinalPrototype','evalFinalArchitecture'];
   const missing=critical.filter(id=>!ids.includes(id));
   const unwired=critical.filter(id=>ids.includes(id)&&!idReferenced(id)&&!new RegExp(`id=["']${id}["'][^>]*(?:data-eval-|data-open-)`).test(html));
   assert.deepEqual(missing,[],`Missing critical controls: ${missing.join(', ')}`);
@@ -159,6 +159,23 @@ test('mobile Platform Tour owns drawer cleanup and responsive overflow protectio
   assert.match(selectorCss,/\.selector-mode\{[^}]*overflow-x:hidden/,'Platform Tour shell must block horizontal overflow.');
   assert.match(selectorCss,/#selectorAuto\{grid-column:1\/-1;grid-row:2\}/,'Mobile walkthrough controls need an explicit two-row layout.');
   assert.doesNotMatch(mobileCss,/\.eval-nav\s+\.mobile-drawer/,'Deleted evaluator navigation overrides must not remain in mobile CSS.');
+});
+
+
+test('final evaluator navigation is concise and role access is available on mobile',()=>{
+  for(const label of ['Problem','Solution','Workflow','2 USPs','Evidence','Impact']){
+    assert.ok(html.includes(`>${label}</a>`),`Missing concise navigation label: ${label}`);
+  }
+  assert.match(html,/id="heroTourCta"[^>]*data-open-selector="0"/,'Hero secondary CTA must open the Platform Tour.');
+  assert.match(html,/id="spMobileAccess"/,'Mobile navigation must expose generic Role Access.');
+});
+
+test('tablet drawer JavaScript matches the 1020px navigation breakpoint',()=>{
+  const app=readFileSync(join(root,'app.js'),'utf8');
+  const css=readFileSync(join(root,'master-v2.css'),'utf8');
+  assert.match(css,/@media \(max-width:1020px\)[\s\S]*?\.master-v2 \.navlinks\{display:none\}/,'Tablet nav must switch to the menu at 1020px.');
+  assert.match(app,/window\.innerWidth>1020/,'Drawer behavior must remain enabled through the tablet navigation breakpoint.');
+  assert.doesNotMatch(app,/window\.innerWidth>768/,'Drawer behavior must not use the old 768px-only breakpoint.');
 });
 
 test('public JavaScript does not call forEach on the single-element selector helper',()=>{
