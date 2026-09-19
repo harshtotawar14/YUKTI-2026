@@ -188,6 +188,35 @@
             <div><b>No unilateral completion</b><span>Worker marks complete, customer confirms, then the final bill is generated.</span></div>
           </div>
         </div>
+
+        <div class="policy-proof" aria-label="Explainable matching policy demo">
+          <div class="policy-proof-head">
+            <div><span class="tag">EXPLAINABILITY SANDBOX</span><h3>See why a worker is eligible before ranking begins.</h3><p>This is an explanatory scenario only. The connected Golden Demo verifies the actual backend path.</p></div>
+            <div class="policy-radius"><label for="evalRadius">Demo policy radius</label><select id="evalRadius" aria-label="Explanatory demo radius"><option value="2">2 km</option><option value="5">5 km</option><option value="10">10 km</option><option value="20" selected>20 km</option><option value="30">30 km</option></select></div>
+          </div>
+          <div class="policy-proof-grid">
+            <div class="policy-panel">
+              <div class="policy-panel-title"><div><small>STEP 1</small><b>Eligibility Gate</b></div><span id="evalEligibilityBadge">WAITING</span></div>
+              <div id="evalEligibilitySummary" class="policy-summary"><span>5 Candidates</span><i>→</i><span>Run Eligibility</span></div>
+              <div id="evalCandidateList" class="policy-list" aria-live="polite"></div>
+            </div>
+            <div class="policy-panel">
+              <div class="policy-panel-title"><div><small>STEP 2–3</small><b>Fair Ranking → Worker Choice</b></div><span id="evalRankingBadge">LOCKED</span></div>
+              <div id="evalRankingList" class="policy-list" aria-live="polite"></div>
+              <div id="evalOfferRoot" class="policy-offer" aria-live="polite"></div>
+              <div id="evalWorkerMessage" class="eval-worker-message" hidden></div>
+              <div class="policy-audit-title"><small>AUDIT &amp; REASON TRAIL</small></div>
+              <div id="evalAudit" class="policy-audit" aria-live="polite"></div>
+            </div>
+          </div>
+          <div class="policy-actions">
+            <button class="btn primary" id="runMatchBtn" type="button">RUN ELIGIBILITY EXPLANATION</button>
+            <button class="btn secondary" id="evalRunRanking" type="button" disabled>RUN RANKING EXPLANATION</button>
+            <button class="btn ghost" id="evalResetMatch" type="button">RESET</button>
+            <button class="btn secondary" id="evalOpenConnected" type="button">VERIFY CONNECTED FLOW</button>
+          </div>
+          <p id="evalMatchState" class="policy-truth">STATIC EXPLANATORY SCENARIO — NOT LIVE ASSIGNMENT</p>
+        </div>
       </div>
     </section>
 
@@ -201,7 +230,7 @@
         <div class="roles-grid">
           <article class="role-card"><small>CUSTOMER</small><h3>Choose, approve, verify, confirm</h3><ul><li>Create service request</li><li>Select a suitable worker</li><li>Approve original/revised estimate</li><li>Confirm service start and completion</li><li>Pay, receive invoice and rate</li></ul><button class="btn primary" type="button" data-eval-open-connected>OPEN CUSTOMER FLOW</button></article>
           <article class="role-card"><small>WORKER</small><h3>Accept, inspect, estimate, deliver</h3><ul><li>Receive suitable opportunities</li><li>Accept or reject without forced assignment</li><li>Inspect and create itemized estimate</li><li>Deliver approved scope</li><li>View feedback and trust history</li></ul><button class="btn secondary" type="button" data-eval-connected-persona="WORKER_A">OPEN WORKER FLOW</button></article>
-          <article class="role-card"><small>COOPERATIVE ADMIN</small><h3>Verify, govern and strengthen capacity</h3><ul><li>Worker verification and membership</li><li>Booking and SLA visibility</li><li>Complaint ownership and audit</li><li>Trust / Green Tick review</li><li>Capacity and skill-gap action</li></ul><button class="btn secondary" type="button" data-eval-open-admin>OPEN ADMIN ACCESS</button></article>
+          <article class="role-card"><small>COOPERATIVE ADMIN</small><h3>Verify, govern and strengthen capacity</h3><ul><li>Worker verification and membership</li><li>Booking and SLA visibility</li><li>Complaint ownership and audit</li><li>Trust / Green Tick review</li><li>Capacity and skill-gap action</li></ul><button class="btn secondary" type="button" id="evalAdminPrototype" data-eval-open-admin>OPEN ADMIN ACCESS</button></article>
           <article class="role-card"><small>FEDERATION / NETWORK</small><h3>Coordinate by exception</h3><ul><li>Cross-cooperative policy</li><li>Regional capacity intelligence</li><li>Escalated dispute visibility</li><li>Network-level planning</li><li>No approval bottleneck on every job</li></ul><button class="btn secondary" type="button" data-eval-open-admin>ROLE ACCESS</button></article>
         </div>
       </div>
@@ -215,7 +244,7 @@
           <p>The strongest SanPaid differentiation is created by how service delivery, cooperative governance and workforce planning connect.</p>
         </div>
         <div class="differentiator-grid">
-          <article class="diff-card primary"><small>USP 01</small><h3>Cooperative Capacity Exchange</h3><p>When local capacity is insufficient, SanPaid can expand search across connected cooperatives without silently transferring workers.</p><div class="diff-flow"><span>Local Gap</span><span>External Eligibility</span><span>Customer Choice</span><span>Worker Consent</span><span>Policy Authorization</span><span>Assignment ID</span></div></article>
+          <article class="diff-card primary"><small>USP 01</small><h3>Cooperative Capacity Exchange</h3><p>When local capacity is insufficient, SanPaid can expand search across connected cooperatives without silently transferring workers.</p><div class="diff-flow"><span>Local Gap</span><span>External Eligibility</span><span>Customer Choice</span><span>Worker Consent</span><span>Policy Authorization</span><span>Assignment ID</span></div><div class="diff-actions"><button class="btn secondary" id="evalCapacityAction" type="button">CHECK CAPACITY EXCHANGE</button><div id="evalCapacityStatus" class="eval-worker-message" hidden></div></div></article>
           <article class="diff-card"><small>USP 02</small><h3>Demand-to-Workforce Loop</h3><p>Repeated unmet demand becomes planning evidence instead of disappearing as isolated booking failures.</p><div class="diff-flow"><span>Demand Signals</span><span>Capacity Gap</span><span>Confidence</span><span>Human Review</span><span>Train / Onboard / Exchange</span><span>Measure</span></div></article>
           <article class="diff-card"><small>SUPPORTING CONTROL</small><h3>Continuous Trust + Transparent Ledger</h3><p>Verification, service-start confirmation, approved scope, completion, invoice, complaints and feedback remain connected to the service record.</p><div class="diff-flow"><span>Verify</span><span>Start Check</span><span>Estimate Approval</span><span>Completion</span><span>Invoice</span><span>Trust History</span></div></article>
         </div>
@@ -279,7 +308,7 @@
     <section class="final-cta">
       <div class="wrap final-cta-grid">
         <div><h2>Do not just route the next worker.<br>Strengthen the cooperative network.</h2><p>SanPaid connects trusted service delivery today with the evidence cooperatives need to prepare tomorrow’s workforce.</p></div>
-        <div class="hero-ctas"><button class="btn primary" id="evalFinalPrototype" type="button">START GOLDEN DEMO</button><button class="btn secondary" data-eval-open-admin type="button">OPEN ADMINISTRATION</button></div>
+        <div class="hero-ctas"><button class="btn primary" id="evalFinalPrototype" type="button">START GOLDEN DEMO</button><button class="btn secondary" id="evalFinalArchitecture" type="button">VIEW ARCHITECTURE</button><button class="btn secondary" data-eval-open-admin type="button">OPEN ADMINISTRATION</button></div>
       </div>
     </section>
   </main>
