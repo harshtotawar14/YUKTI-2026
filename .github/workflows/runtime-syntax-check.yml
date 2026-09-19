@@ -59,8 +59,8 @@ jobs:
 
       - name: Enforce source-of-truth runtime constraints
         run: |
-          if grep -R -n --include='*.js' -F 'Demo@2026' . --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=dist; then
-            echo 'Frontend/runtime source must not embed a demo password.'
+          if grep -R -n --include='*.js' -F 'SanPaid@26089' . --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=dist; then
+            echo 'Public demo password must be served by the backend demo-access policy, not embedded in frontend JavaScript.'
             exit 1
           fi
           if grep -nE 'window\.fetch\s*=|window\.EventSource\s*=' connected-runtime-fix.js connected-demo.js; then
