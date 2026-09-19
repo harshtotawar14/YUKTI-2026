@@ -321,23 +321,6 @@
     finally{button.disabled=false;button.textContent=original;}
   }
 
-  function ensurePortalNavLinks(){
-    const nav=$('#fedSidebar nav');
-    if(!nav)return;
-    const insert=(target,label,desc,before)=>{
-      if($(`[data-fed-portal-target="${target}"]`,nav))return;
-      const btn=document.createElement('button');
-      btn.type='button';
-      btn.dataset.fedPortalTarget=target;
-      btn.innerHTML=`<span>${esc(label)}</span><small>${esc(desc)}</small>`;
-      btn.addEventListener('click',()=>{document.getElementById(target)?.scrollIntoView({behavior:'smooth',block:'start'});document.getElementById('judgeContent')?.classList.remove('fed-nav-open');});
-      const anchor=before?$(`[data-fed-target="${before}"]`,nav):null;
-      nav.insertBefore(btn,anchor||null);
-    };
-    // Core navigation is owned by the Federation sidebar. Planning snapshots and
-    // technical verification remains secondary instead of becoming duplicate navigation.
-  }
-
   function trapDrawer(event){
     const root=$('#fedDetailRoot');
     if((!root||root.hidden)&&event.key==='Escape'&&$('#judgeContent')?.classList.contains('fed-nav-open')){event.preventDefault();window.SanPaidAdminCommand?.closeFederationNav?.();document.getElementById('judgeContent')?.classList.remove('fed-nav-open');document.getElementById('fedNavToggle')?.setAttribute('aria-expanded','false');return;}
@@ -358,7 +341,6 @@
     ensureNetworkToolbar();
     ensureDemandSnapshot();
     ensureCapacityGovernance();
-    ensurePortalNavLinks();
   }
 
   function schedule(){clearTimeout(timer);timer=setTimeout(enhance,90);}
