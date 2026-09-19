@@ -66,14 +66,14 @@
     document.addEventListener('pointerdown',event=>{
       const target=event.target.closest?.('[data-eval-open-connected],[data-eval-connected-persona],#connectedDemoBtn,#getStarted,#evalOpenConnected,#evalFinalPrototype');
       if(target)loadCustomerWorker();
-      const admin=event.target.closest?.('#evalAdminPrototype,[data-open-role="COOPERATIVE_ADMIN"],[data-open-role="FEDERATION_ADMIN"]');
+      const admin=event.target.closest?.('[data-eval-open-admin],[data-open-role="COOPERATIVE_ADMIN"],[data-open-role="FEDERATION_ADMIN"]');
       if(admin)loadAdministration();
     },{capture:true,passive:true});
 
     document.addEventListener('focusin',event=>{
       const target=event.target.closest?.('[data-eval-open-connected],[data-eval-connected-persona],#connectedDemoBtn,#getStarted,#evalOpenConnected,#evalFinalPrototype');
       if(target)loadCustomerWorker();
-      const admin=event.target.closest?.('#evalAdminPrototype,[data-open-role="COOPERATIVE_ADMIN"],[data-open-role="FEDERATION_ADMIN"]');
+      const admin=event.target.closest?.('[data-eval-open-admin],[data-open-role="COOPERATIVE_ADMIN"],[data-open-role="FEDERATION_ADMIN"]');
       if(admin)loadAdministration();
     });
   }
