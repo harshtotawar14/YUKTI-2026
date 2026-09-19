@@ -151,6 +151,29 @@ test('landing mirrors the locked SIH PPT narrative',()=>{
   assert.deepEqual(missing,[],`PPT-aligned website phrases missing: ${missing.join(', ')}`);
 });
 
+test('first fold exposes both core USPs and field validation immediately',()=>{
+  const required=[
+    'Not another worker-listing app.',
+    'USP 01',
+    'Cooperative Capacity Exchange',
+    'USP 02',
+    'Demand-to-Workforce Loop',
+    'Customer Choice + Worker Consent',
+    'Stakeholder-informed design · Kolhapur',
+    '5 findings mapped'
+  ];
+  const missing=required.filter(phrase=>!html.includes(phrase));
+  assert.deepEqual(missing,[],`First-fold differentiation/evidence missing: ${missing.join(', ')}`);
+  assert.equal((html.match(/class="hero-usp"/g)||[]).length,2,'Hero must show exactly two core USP cards.');
+});
+
+test('Platform Tour step two mirrors the two locked SanPaid USPs',()=>{
+  const selector=readFileSync(join(root,'selector-mode.js'),'utf8');
+  for(const phrase of ['STEP 2 · TWO CORE USPs','Cooperative Capacity Exchange','Demand-to-Workforce Loop','Serve today. Prepare tomorrow.']){
+    assert.ok(selector.includes(phrase),`Platform Tour USP story missing: ${phrase}`);
+  }
+});
+
 test('mobile Platform Tour owns drawer cleanup and responsive overflow protection',()=>{
   const selectorJs=readFileSync(join(root,'selector-mode.js'),'utf8');
   const selectorCss=readFileSync(join(root,'selector-mode.css'),'utf8');

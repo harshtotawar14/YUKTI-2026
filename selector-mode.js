@@ -46,22 +46,25 @@
   function stepDifference() {
     return `
       <div class="selector-step-head">
-        <span class="selector-kicker">STEP 2 · WHY SANPAID IS DIFFERENT</span>
-        <h1>Not another service marketplace.</h1>
-        <p>SanPaid extends beyond Customer → Provider → Service by adding cooperative and federation governance around the workforce lifecycle.</p>
+        <span class="selector-kicker">STEP 2 · TWO CORE USPs</span>
+        <h1>Serve today. Prepare tomorrow.</h1>
+        <p>SanPaid is not another worker-listing app. Two connected mechanisms strengthen the cooperative network behind every service.</p>
       </div>
       <div class="selector-compare">
-        <article class="selector-card muted-card">
-          <span class="selector-mini-label">TYPICAL MARKETPLACE</span>
-          <div class="selector-chain compact"><span>Customer</span><i>→</i><span>Provider</span><i>→</i><span>Service</span></div>
+        <article class="selector-card strong-card">
+          <span class="selector-mini-label">USP 01 · SERVE TODAY</span>
+          <h2>Cooperative Capacity Exchange</h2>
+          <div class="selector-chain compact"><span>Local Gap</span><i>→</i><span>Nearby Cooperative</span><i>→</i><span>Worker Consent</span><i>→</i><span>Authorized Service</span></div>
+          <p>Use nearby cooperative capacity when local supply is insufficient—without automatic worker transfer.</p>
         </article>
         <article class="selector-card strong-card">
-          <span class="selector-mini-label">SANPAID NETWORK</span>
-          <div class="selector-network-stack"><span>Customer</span><i>↕</i><span>Worker</span><i>↕</i><span>Cooperative</span><i>↕</i><span>Federation</span></div>
-          <div class="selector-chip-row"><span>Verified Eligibility</span><span>Fair Opportunity</span><span>Worker Choice</span><span>Cooperative Governance</span><span>Workforce Planning</span></div>
+          <span class="selector-mini-label">USP 02 · PREPARE TOMORROW</span>
+          <h2>Demand-to-Workforce Loop</h2>
+          <div class="selector-chain compact"><span>Demand Signals</span><i>→</i><span>Capacity / Skill Gap</span><i>→</i><span>Human Review</span><i>→</i><span>Train / Onboard / Exchange</span></div>
+          <p>Repeated shortages become evidence for workforce readiness instead of disappearing as isolated failures.</p>
         </article>
       </div>
-      <div class="selector-callout"><b>SanPaid does not replace cooperatives — it digitizes and strengthens how they verify, allocate, govern and plan.</b></div>`;
+      <div class="selector-callout"><b>Cooperative-owned coordination + human-controlled workforce planning — not forced allocation.</b></div>`;
   }
 
   function stepMatching() {

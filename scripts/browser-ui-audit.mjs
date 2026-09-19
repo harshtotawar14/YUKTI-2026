@@ -28,6 +28,10 @@ try{
   page.on('console',msg=>{if(msg.type()==='error')consoleErrors.push(msg.text());});
   await page.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});await page.waitForTimeout(1000);
   assertProfessionalCopy(await page.locator('body').innerText(),'Landing page');
+  const heroText=(await page.locator('.hero').innerText()).toLowerCase();
+  for(const phrase of ['cooperative capacity exchange','demand-to-workforce loop','stakeholder-informed design','5 findings mapped'])assert(heroText.includes(phrase),`Hero is missing evaluator-critical phrase: ${phrase}`);
+  assert(await page.locator('.hero-usp').count()===2,'Hero must expose exactly two core USP cards');
+  await assertNoHorizontalOverflow(page,'.hero','Desktop hero');
 
   for(const id of ['connectedDemoBtn','getStarted','heroTourCta']){
     const node=page.locator(`#${id}`);assert(await node.count()===1,`#${id} missing`);assert(await node.isVisible(),`#${id} is not visible on desktop`);
@@ -48,6 +52,10 @@ try{
   assert(await desktopSelector.isVisible(),'Hero Platform Tour CTA did not open the walkthrough');
   assertProfessionalCopy(await desktopSelector.innerText(),'Desktop Platform Tour');
   await assertNoHorizontalOverflow(page,'#selectorModeShell','Desktop Platform Tour');
+  await page.locator('#selectorNext').click();await page.waitForTimeout(90);
+  const desktopUspText=(await page.locator('#selectorContent').innerText()).toLowerCase();
+  for(const phrase of ['cooperative capacity exchange','demand-to-workforce loop'])assert(desktopUspText.includes(phrase),`Platform Tour step two is missing: ${phrase}`);
+  await page.evaluate(()=>window.SanPaidSelectorMode.go(0));await page.waitForTimeout(60);
   await page.keyboard.press('Escape');await page.waitForTimeout(120);
   assert(!(await desktopSelector.isVisible()),'Escape did not close desktop Platform Tour');
 
