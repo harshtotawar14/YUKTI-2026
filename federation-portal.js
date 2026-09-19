@@ -28,11 +28,10 @@
     if(!actions||$('#fedProfileChip',actions))return;
     const user=window.SanPaidAuth?.getCurrentUser?.()||{};
     const name=String(user.full_name||user.fullName||user.name||'Federation Admin');
-    const email=String(user.email||'');
     const chip=document.createElement('div');
     chip.id='fedProfileChip';
     chip.className='fed-profile-chip';
-    chip.innerHTML=`<span>${esc(name)}</span><small>${email?esc(email):'FEDERATION_ADMIN'}</small>`;
+    chip.innerHTML=`<span>${esc(name)}</span><small>Federation Admin · Regional Scope</small>`;
     const close=$('#judgeClose',actions);
     actions.insertBefore(chip,close||null);
   }
@@ -356,6 +355,7 @@
 
   function trapDrawer(event){
     const root=$('#fedDetailRoot');
+    if((!root||root.hidden)&&event.key==='Escape'&&$('#judgeContent')?.classList.contains('fed-nav-open')){event.preventDefault();window.SanPaidAdminCommand?.closeFederationNav?.();document.getElementById('judgeContent')?.classList.remove('fed-nav-open');document.getElementById('fedNavToggle')?.setAttribute('aria-expanded','false');return;}
     if(!root||root.hidden)return;
     if(event.key==='Escape'){event.preventDefault();closeDrawer();return;}
     if(event.key!=='Tab')return;
@@ -383,6 +383,7 @@
     const observer=new MutationObserver(schedule);
     observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
     document.addEventListener('click',e=>{
+      const content=$('#judgeContent');if(content?.classList.contains('fed-nav-open')&&!e.target.closest?.('#fedSidebar,#fedNavToggle')){content.classList.remove('fed-nav-open');$('#fedNavToggle')?.setAttribute('aria-expanded','false');$('#fedNavToggle')?.setAttribute('aria-label','Open federation navigation');}
       const provider=e.target.closest?.('[data-fed-provider-offer]');
       if(provider){offerProvider(Number(provider.dataset.fedProviderOffer),provider);return;}
       const approval=e.target.closest?.('[data-fed-approve]');
