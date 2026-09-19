@@ -3,7 +3,7 @@
 
   const TOKEN_KEY='sanpaid_judge_demo_token_v1';
   const TABS=[
-    ['golden','System Status'],
+    ['golden','System Verification'],
     ['matching','Assignment Policy'],
     ['trust','Trust & Verification'],
     ['overview','Operations Overview'],

@@ -28,11 +28,10 @@
     if(!actions||$('#fedProfileChip',actions))return;
     const user=window.SanPaidAuth?.getCurrentUser?.()||{};
     const name=String(user.full_name||user.fullName||user.name||'Federation Admin');
-    const email=String(user.email||'');
     const chip=document.createElement('div');
     chip.id='fedProfileChip';
     chip.className='fed-profile-chip';
-    chip.innerHTML=`<span>${esc(name)}</span><small>${email?esc(email):'FEDERATION_ADMIN'}</small>`;
+    chip.innerHTML=`<span>${esc(name)}</span><small>Federation Admin · Regional Scope</small>`;
     const close=$('#judgeClose',actions);
     actions.insertBefore(chip,close||null);
   }
@@ -230,6 +229,97 @@
     }
   }
 
+
+  async function renderCapacityGovernance(){
+    const root=$('#fedCapacityGovernance');
+    if(!root)return;
+    root.innerHTML='<div class="admin-skeleton">Loading governed capacity requests…</div>';
+    try{
+      const results=await Promise.all([api('/api/federation/capacity-requests'),api('/api/connected/judge/overview')]);
+      const response=results[0]||{},overview=results[1]||{};
+      const requests=Array.isArray(response.requests)?response.requests:[];
+      const cooperatives=Array.isArray(overview.cooperatives)?overview.cooperatives:[];
+      root.innerHTML='';
+      if(!requests.length){root.innerHTML='<div class="fed-empty">No cross-cooperative capacity requests are currently recorded.</div>';return;}
+      requests.slice(0,20).forEach(item=>{
+        const article=document.createElement('article');article.className='fed-cap-governance-card';
+        const head=document.createElement('div');head.className='fed-cap-head';
+        const info=document.createElement('div');
+        const code=document.createElement('span');code.textContent=item.requestCode||('Request #'+item.id);
+        const title=document.createElement('b');title.textContent=(item.service||'Service')+' · '+(item.zone||'—');
+        const route=document.createElement('small');route.textContent=(item.requestingCooperative||'Requesting cooperative')+' → '+(item.providingCooperative||'Provider not selected');
+        info.append(code,title,route);
+        const status=document.createElement('strong');status.textContent=human(item.status);
+        head.append(info,status);article.appendChild(head);
+
+        const metrics=document.createElement('div');metrics.className='fed-cap-metrics';
+        [['Required',item.workersRequired],['Offers',item.offeredWorkers],['Consented',item.acceptedWorkers],['Approved',item.approvedAssignments]].forEach(pair=>{
+          const span=document.createElement('span');span.textContent=pair[0]+' ';
+          const b=document.createElement('b');b.textContent=String(Number(pair[1]||0));span.appendChild(b);metrics.appendChild(span);
+        });
+        article.appendChild(metrics);
+
+        const state=String(item.status||'').toUpperCase();
+        if(state==='REQUESTED'){
+          const action=document.createElement('div');action.className='fed-cap-action';
+          const label=document.createElement('label');const labelText=document.createElement('span');labelText.textContent='Providing Cooperative';
+          const select=document.createElement('select');select.dataset.fedProviderSelect=String(item.id);
+          const empty=document.createElement('option');empty.value='';empty.textContent='Select provider';select.appendChild(empty);
+          cooperatives.filter(x=>String(x.name)!==String(item.requestingCooperative)).forEach(coop=>{const option=document.createElement('option');option.value=String(coop.id);option.textContent=coop.name;select.appendChild(option);});
+          label.append(labelText,select);
+          const button=document.createElement('button');button.type='button';button.className='btn primary small';button.dataset.fedProviderOffer=String(item.id);button.textContent='Offer Provider Capacity';
+          action.append(label,button);article.appendChild(action);
+        }else if(state==='CONSENT_READY'){
+          const action=document.createElement('div');action.className='fed-cap-action approval';
+          [['Home Responsibility %','fedHomeShare'],['Serving Responsibility %','fedServingShare']].forEach(pair=>{
+            const label=document.createElement('label');const span=document.createElement('span');span.textContent=pair[0];const input=document.createElement('input');input.type='number';input.min='0';input.max='100';input.inputMode='numeric';input.placeholder='0–100';input.dataset[pair[1]]=String(item.id);label.append(span,input);action.appendChild(label);
+          });
+          const button=document.createElement('button');button.type='button';button.className='btn primary small';button.dataset.fedApprove=String(item.id);button.textContent='Authorize Assignment';action.appendChild(button);article.appendChild(action);
+        }else if(state==='AWAITING_WORKER_CONSENT'||state==='CONSENT_PARTIAL'){
+          const note=document.createElement('p');note.className='fed-cap-note';note.textContent='Waiting for voluntary worker consent. Authorization remains locked until required consent is complete.';article.appendChild(note);
+        }else if(state==='APPROVED'){
+          const note=document.createElement('p');note.className='fed-cap-note ok';note.textContent='Authorized assignment recorded after worker consent.';article.appendChild(note);
+        }
+
+        const message=document.createElement('p');message.className='fed-cap-message';message.dataset.fedCapMessage=String(item.id);message.setAttribute('aria-live','polite');article.appendChild(message);
+        root.appendChild(article);
+      });
+    }catch(error){root.innerHTML='<div class="admin-health-error">Capacity governance data could not be loaded. Retry from Capacity Exchange.</div>';}
+  }
+
+  function ensureCapacityGovernance(){
+    const section=$('#judge-capacity');
+    if(!section||$('#fedCapacityGovernanceBlock',section))return;
+    const block=document.createElement('div');block.id='fedCapacityGovernanceBlock';block.className='judge-card fed-cap-governance';
+    block.innerHTML='<div class="fed-section-head"><div><span>CAPACITY GOVERNANCE</span><h3>Coordinate supply without automatic worker transfer</h3></div><small>Provider coordination → worker consent → authorized approval</small></div><div id="fedCapacityGovernance"></div>';
+    section.appendChild(block);renderCapacityGovernance();
+  }
+
+  async function offerProvider(requestId,button){
+    const select=$('[data-fed-provider-select="'+requestId+'"]'),message=$('[data-fed-cap-message="'+requestId+'"]');
+    const providerId=Number(select?.value||0);
+    if(!providerId){if(message)message.textContent='Select a providing cooperative first.';select?.focus();return;}
+    const original=button.textContent;button.disabled=true;button.textContent='Creating Offers…';if(message)message.textContent='';
+    try{
+      const result=await api('/api/federation/capacity-requests/'+requestId+'/offer-provider',{method:'POST',body:JSON.stringify({providingCooperativeId:providerId}),headers:{'Content-Type':'application/json'}});
+      if(message)message.textContent=String(result.workerOffersCreated||0)+' eligible worker offer(s) created. Worker consent is now required.';
+      await renderCapacityGovernance();
+    }catch(error){if(message)message.textContent=error.message||'Provider coordination could not be recorded.';}
+    finally{button.disabled=false;button.textContent=original;}
+  }
+
+  async function approveCapacity(requestId,button){
+    const home=Number($('[data-fed-home-share="'+requestId+'"]')?.value),serving=Number($('[data-fed-serving-share="'+requestId+'"]')?.value),message=$('[data-fed-cap-message="'+requestId+'"]');
+    if(!Number.isInteger(home)||!Number.isInteger(serving)||home<0||serving<0||home>100||serving>100||home+serving!==100){if(message)message.textContent='Enter whole-number responsibility shares that total 100%.';return;}
+    const original=button.textContent;button.disabled=true;button.textContent='Authorizing…';if(message)message.textContent='';
+    try{
+      const result=await api('/api/federation/capacity-requests/'+requestId+'/approve',{method:'POST',body:JSON.stringify({homeCooperativeSharePercent:home,servingCooperativeSharePercent:serving}),headers:{'Content-Type':'application/json'}});
+      if(message)message.textContent=String(result.approvedWorkers||0)+' consented worker assignment(s) authorized.';
+      await renderCapacityGovernance();
+    }catch(error){if(message)message.textContent=error.message||'Capacity assignment could not be authorized.';}
+    finally{button.disabled=false;button.textContent=original;}
+  }
+
   function ensureAdministrativeReadiness(){
     const records=$('#fed-records');
     if(!records||$('#fed-admin-readiness'))return;
@@ -265,6 +355,7 @@
 
   function trapDrawer(event){
     const root=$('#fedDetailRoot');
+    if((!root||root.hidden)&&event.key==='Escape'&&$('#judgeContent')?.classList.contains('fed-nav-open')){event.preventDefault();window.SanPaidAdminCommand?.closeFederationNav?.();document.getElementById('judgeContent')?.classList.remove('fed-nav-open');document.getElementById('fedNavToggle')?.setAttribute('aria-expanded','false');return;}
     if(!root||root.hidden)return;
     if(event.key==='Escape'){event.preventDefault();closeDrawer();return;}
     if(event.key!=='Tab')return;
@@ -281,6 +372,7 @@
     ensureNavGroups();
     ensureNetworkToolbar();
     ensureDemandSnapshot();
+    ensureCapacityGovernance();
     ensureAdministrativeReadiness();
     ensurePortalNavLinks();
   }
@@ -291,6 +383,11 @@
     const observer=new MutationObserver(schedule);
     observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
     document.addEventListener('click',e=>{
+      const content=$('#judgeContent');if(content?.classList.contains('fed-nav-open')&&!e.target.closest?.('#fedSidebar,#fedNavToggle')){content.classList.remove('fed-nav-open');$('#fedNavToggle')?.setAttribute('aria-expanded','false');$('#fedNavToggle')?.setAttribute('aria-label','Open federation navigation');}
+      const provider=e.target.closest?.('[data-fed-provider-offer]');
+      if(provider){offerProvider(Number(provider.dataset.fedProviderOffer),provider);return;}
+      const approval=e.target.closest?.('[data-fed-approve]');
+      if(approval){approveCapacity(Number(approval.dataset.fedApprove),approval);return;}
       const refresh=e.target.closest?.('#adminHealthRefresh');
       if(refresh){planningCache=null;planningPromise=null;$('#fed-demand-snapshot')?.remove();setTimeout(schedule,180);return;}
       if(e.target.closest?.('[data-judge-role],#getStarted'))setTimeout(schedule,180);

@@ -82,3 +82,12 @@ html[data-sanpaid-theme="dark"] #sihJudgeShell.cooperative-govtech{background:va
 #sihJudgeShell.cooperative-govtech .coop-kpi{border-radius:12px!important}
 #sihJudgeShell.cooperative-govtech .coop-table-action{color:#245D8D;border-color:#C8D9E8;background:#F4F8FC}
 #sihJudgeShell.cooperative-govtech :is(button,input,select,textarea,a):focus-visible{outline-color:#316B9A!important}
+
+/* Governed capacity request action */
+.coop-capacity-request{display:grid;grid-template-columns:minmax(240px,1.4fr) minmax(150px,.75fr) minmax(170px,.9fr) 130px auto;gap:9px;align-items:end;margin:0 0 14px;padding:13px;border:1px solid #D8E1E5;border-radius:12px;background:#F8FAFC}
+.coop-capacity-request>div{align-self:center}.coop-capacity-request>div>span{display:block;color:#316B9A;font-size:9.5px;font-weight:900;letter-spacing:.07em}.coop-capacity-request>div>b{display:block;margin:4px 0;color:#10283A;font-size:13px}.coop-capacity-request>div>small{display:block;color:#607381;font-size:10px;line-height:1.45}
+.coop-capacity-request label{display:grid;gap:4px}.coop-capacity-request label>span{color:#607381;font-size:9.5px;font-weight:850;text-transform:uppercase;letter-spacing:.04em}.coop-capacity-request input,.coop-capacity-request select{width:100%;min-height:44px;padding:8px 9px;border:1px solid #CBD7DD;border-radius:7px;background:#fff;color:#10283A;font:inherit;font-size:12px}
+.coop-capacity-request input:focus,.coop-capacity-request select:focus{border-color:#316B9A;box-shadow:0 0 0 3px rgba(49,107,154,.12);outline:none}
+.coop-capacity-request>p{grid-column:1/-1;min-height:16px;margin:0;color:#506676;font-size:10.5px}
+@media(max-width:1160px){.coop-capacity-request{grid-template-columns:1fr 1fr}.coop-capacity-request>div{grid-column:1/-1}.coop-capacity-request .btn{min-height:44px}}
+@media(max-width:620px){.coop-capacity-request{grid-template-columns:1fr}.coop-capacity-request>div,.coop-capacity-request>p{grid-column:auto}.coop-capacity-request input,.coop-capacity-request select{font-size:16px}.coop-capacity-request .btn{width:100%;min-height:48px}}

@@ -41,3 +41,12 @@ test('worker-facing initial opportunity remains address-private',()=>{
   assert.ok(match,'offerJson must exist');
   assert.doesNotMatch(match[1],/address/,'Initial worker offer must not expose exact customer address.');
 });
+
+test('federation overview contract includes privacy-safe network operations data',()=>{
+  const source=readFileSync(join(root,'backend/src/judge/truth-routes.cjs'),'utf8');
+  for(const field of ['verifiedWorkers','availableWorkers','pendingVerification','slaBreached','cooperatives:','capacityRequests:','complaints:']){
+    assert.ok(source.includes(field),`Federation overview contract is missing ${field}`);
+  }
+  assert.match(source,/cross_cooperative_assignments/,'Federation capacity summary must include approved cross-cooperative assignments.');
+  assert.doesNotMatch(source,/u\.email|customer.*email|worker.*email/i,'Federation overview must not expose individual user email data.');
+});
