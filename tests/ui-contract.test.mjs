@@ -370,6 +370,22 @@ test('customer and worker dashboards keep action language concise and role-appro
   assert.doesNotMatch(dashboard,/Review the final amount, complete the sandbox payment and rate the service/,'Next-action guidance should not foreground sandbox implementation language.');
 });
 
+
+test('admin primary navigation stays focused and non-redundant',()=>{
+  const coop=readFileSync(join(root,'cooperative-portal.js'),'utf8');
+  const admin=readFileSync(join(root,'admin-command-center.js'),'utf8');
+  for(const label of ['Overview','Workers','Bookings & Services','Payments & Earnings','Trust & Verification','Complaints & SLA','Audit & Activity','Local Capacity','Demand & Planning']){
+    assert.ok(coop.includes("'" + label + "'"),'Cooperative primary navigation missing: '+label);
+  }
+  for(const removed of ['Service Quality','Skills & Documents','Matching & Allocation','Training & Development']){
+    assert.ok(!coop.includes(",'" + removed + "',"),'Redundant cooperative primary navigation returned: '+removed);
+  }
+  for(const label of ['Overview','Cooperative Network','Capacity Exchange','Escalations & SLA','Demand, Capacity & Skills','Trust Governance']){
+    assert.ok(admin.includes("'" + label + "'"),'Federation primary navigation missing: '+label);
+  }
+  assert.ok(!admin.includes("['matching','Matching Policy'"),'Matching Policy must stay outside the Federation primary navigation.');
+});
+
 test('public JavaScript does not call forEach on the single-element selector helper',()=>{
   const failures=[];
   for(const file of scripts){
