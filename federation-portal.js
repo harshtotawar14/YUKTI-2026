@@ -349,8 +349,8 @@
       const anchor=before?$(`[data-fed-target="${before}"]`,nav):null;
       nav.insertBefore(btn,anchor||null);
     };
-    insert('fed-demand-snapshot','Demand & Capacity','MIS planning snapshot','planning');
-    insert('fed-admin-readiness','Administrative Readiness','GIS, export and support truth states','fed-health');
+    // Core navigation is owned by the Federation sidebar. Planning snapshots and
+    // integration roadmap remain contextual sections instead of duplicate nav items.
   }
 
   function trapDrawer(event){
