@@ -225,7 +225,7 @@
   }
 
   async function login({ identifier, password, role, remember = false }) {
-    if (!identifier || !password) throw Object.assign(new Error('Email and password are required.'), { status: 400 });
+    if (!identifier || !password) throw Object.assign(new Error('Access ID and password are required.'), { status: 400 });
     if (state.user && (roleKeyFromUser(state.user) !== role || !personaMatches(state.user, state.requestedPersona))) {
       await logout({ silent: true, keepModal: true });
     }
@@ -389,7 +389,7 @@
   }
 
   function loginError(error) {
-    if (error.status === 400 || error.status === 422) return 'Enter both email and password.';
+    if (error.status === 400 || error.status === 422) return 'Enter both Access ID and password.';
     if (error.status === 401) return 'Access ID, password or selected role did not match.';
     if (error.status === 403) return 'This role is not authorized for this account.';
     if (error.status === 429) return 'Too many attempts. Please wait and retry.';

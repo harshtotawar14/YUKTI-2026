@@ -201,6 +201,43 @@ test('tablet drawer JavaScript matches the 1020px navigation breakpoint',()=>{
   assert.doesNotMatch(app,/window\.innerWidth>768/,'Drawer behavior must not use the old 768px-only breakpoint.');
 });
 
+
+test('authenticated workspaces keep professional product branding',()=>{
+  const roleFiles=['auth-unified.js','connected-demo.js','connected-service-ui.js','connected-commerce-ui.js','customer-worker-dashboard.js','judge-demo.js','admin-command-center.js','cooperative-portal.js','federation-portal.js'];
+  const eventLeaks=[];
+  for(const file of roleFiles){
+    const text=readFileSync(join(root,file),'utf8');
+    if(/SIH\s*2026/i.test(text))eventLeaks.push(file);
+  }
+  assert.deepEqual(eventLeaks,[],`Authenticated workspace still exposes event-specific branding: ${eventLeaks.join(', ')}`);
+});
+
+test('role workspaces use the shared SanPaid brand hierarchy',()=>{
+  const connected=readFileSync(join(root,'connected-demo.css'),'utf8');
+  const dashboard=readFileSync(join(root,'customer-worker-dashboard.css'),'utf8');
+  const auth=readFileSync(join(root,'auth-unified.css'),'utf8');
+  const judge=readFileSync(join(root,'judge-demo.css'),'utf8');
+  assert.match(connected,/--sp-blue|var\(--sp-blue/,'Connected workspace must use the canonical blue brand accent.');
+  assert.match(dashboard,/var\(--sp-blue/,'Customer/worker dashboard must use the canonical blue brand accent.');
+  assert.match(auth,/49,107,154|#316B9A/,'Role Access must use the shared blue brand accent.');
+  assert.match(judge,/49,107,154|#123D73/,'Administration shell must use the shared blue brand accent.');
+});
+
+test('literal dynamic buttons declare an explicit type',()=>{
+  const failures=[];
+  for(const file of scripts){
+    const rel=relative(root,file);
+    if(rel.startsWith('tests/')||rel.startsWith('scripts/'))continue;
+    const text=readFileSync(file,'utf8');
+    for(const match of text.matchAll(/<button\b(?![^>]*\btype\s*=)[^>]*>/gi)){
+      failures.push(`${rel}: ${match[0].slice(0,120)}`);
+      if(failures.length>=20)break;
+    }
+    if(failures.length>=20)break;
+  }
+  assert.deepEqual(failures,[],`Dynamic buttons missing type="button":\n${failures.join('\n')}`);
+});
+
 test('public JavaScript does not call forEach on the single-element selector helper',()=>{
   const failures=[];
   for(const file of scripts){

@@ -100,10 +100,10 @@
     const topSmall=$('.judge-top small',shell);if(topSmall)topSmall.textContent=role==='FEDERATION_ADMIN'?'Federation Operations · Regional Governance Workspace':`${cfg.short} · Governed Operations Workspace`;
     const hero=$('.judge-hero',shell);if(!hero)return;
     const badge=$('.judge-badge',hero),h1=$('h1',hero),p=$('p',hero);
-    if(badge){badge.textContent=role==='FEDERATION_ADMIN'?'FEDERATION OPERATIONS · SIH 2026':'COOPERATIVE OPERATIONS WORKSPACE';badge.classList.add('admin-role-badge');}
+    if(badge){badge.textContent=role==='FEDERATION_ADMIN'?'FEDERATION OPERATIONS':'COOPERATIVE OPERATIONS WORKSPACE';badge.classList.add('admin-role-badge');}
     if(h1)h1.textContent=cfg.title;if(p)p.textContent=cfg.description;
     const presentation=$('#judgePresentation',hero);if(presentation)presentation.textContent=role==='FEDERATION_ADMIN'?'System Proof View':'Presentation View';
-    if(role==='FEDERATION_ADMIN'&&!$('#fedGovTruth',hero)){const truth=document.createElement('small');truth.id='fedGovTruth';truth.className='fed-gov-truth';truth.textContent='GovTech-inspired operations platform · Not an official government portal';p?.insertAdjacentElement('afterend',truth);}
+    if(role==='FEDERATION_ADMIN'&&!$('#fedGovTruth',hero)){const truth=document.createElement('small');truth.id='fedGovTruth';truth.className='fed-gov-truth';truth.textContent='Regional cooperative operations platform · External administrative integrations are shown only when authorized';p?.insertAdjacentElement('afterend',truth);}
   }
 
   function summaryShell(role){
@@ -155,7 +155,7 @@
 
   function ensureFederationFrame(){
     const content=$('#judgeContent');if(!content||$('#fedSidebar',content))return;
-    const aside=document.createElement('aside');aside.id='fedSidebar';aside.className='fed-sidebar';aside.setAttribute('aria-label','Federation navigation');aside.innerHTML=`<div class="fed-side-brand"><b>SanPaid</b><span>FEDERATION OPERATIONS</span><small>Cooperative Workforce Network</small></div><nav>${FED_NAV.map(([target,label,desc])=>`<button type="button" data-fed-target="${target}"><span>${esc(label)}</span><small>${esc(desc)}</small></button>`).join('')}</nav><div class="fed-side-foot"><span class="fed-proto-label">Federation Operations · SIH 2026</span><small>GovTech-inspired · Not an official government portal</small></div>`;content.insertBefore(aside,content.firstChild);
+    const aside=document.createElement('aside');aside.id='fedSidebar';aside.className='fed-sidebar';aside.setAttribute('aria-label','Federation navigation');aside.innerHTML=`<div class="fed-side-brand"><b>SanPaid</b><span>FEDERATION OPERATIONS</span><small>Cooperative Workforce Network</small></div><nav>${FED_NAV.map(([target,label,desc])=>`<button type="button" data-fed-target="${target}"><span>${esc(label)}</span><small>${esc(desc)}</small></button>`).join('')}</nav><div class="fed-side-foot"><span class="fed-proto-label">Federation Operations</span><small>Regional scope · Role-governed oversight</small></div>`;content.insertBefore(aside,content.firstChild);
     const toggle=document.createElement('button');toggle.id='fedNavToggle';toggle.type='button';toggle.className='fed-nav-toggle';toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-controls','fedSidebar');toggle.textContent='☰ Federation Menu';content.insertBefore(toggle,aside.nextSibling);toggle.onclick=()=>{const open=content.classList.toggle('fed-nav-open');toggle.setAttribute('aria-expanded',String(open));};
     $$('[data-fed-target]',aside).forEach(btn=>btn.onclick=()=>{const target=btn.dataset.fedTarget;if(target.startsWith('fed-'))scrollFed(target);else switchTo(target);});setFedActive('fed-home');
     const topActions=$('.judge-top-actions');if(topActions&&!$('#fedLastSync',topActions)){const sync=document.createElement('span');sync.id='fedLastSync';sync.className='fed-last-sync';sync.textContent='Last sync —';topActions.insertBefore(sync,topActions.firstChild);}

@@ -264,16 +264,16 @@
     shell.innerHTML = `
       <header class="selector-top">
         <div><div class="brand">San<span>Paid</span></div><small>3-Minute SIH Platform Walkthrough · PS 26089</small></div>
-        <div class="selector-top-actions"><span class="selector-readonly">READ-ONLY WALKTHROUGH</span><button class="selector-icon-btn" id="selectorClose" aria-label="Close walkthrough">✕</button></div>
+        <div class="selector-top-actions"><span class="selector-readonly">READ-ONLY WALKTHROUGH</span><button type="button" class="selector-icon-btn" id="selectorClose" aria-label="Close walkthrough">✕</button></div>
       </header>
       <div class="selector-progress-wrap"><div class="selector-mobile-progress" id="selectorMobileProgress"></div><div class="selector-progress" id="selectorProgress"></div></div>
       <main class="selector-main" id="selectorContent" tabindex="-1" aria-live="polite" aria-atomic="true"></main>
       <div id="selectorNotice" class="selector-notice hidden" role="status" aria-live="polite"></div>
       <footer class="selector-controls">
-        <button class="btn secondary" id="selectorPrev">← Previous</button>
-        <button class="btn ghost" id="selectorAuto" aria-pressed="false">▶ Auto Walkthrough</button>
+        <button type="button" class="btn secondary" id="selectorPrev">← Previous</button>
+        <button type="button" class="btn ghost" id="selectorAuto" aria-pressed="false">▶ Auto Walkthrough</button>
         <div class="selector-control-spacer"></div>
-        <button class="btn primary" id="selectorNext">Next →</button>
+        <button type="button" class="btn primary" id="selectorNext">Next →</button>
       </footer>`;
     document.body.appendChild(shell);
 
