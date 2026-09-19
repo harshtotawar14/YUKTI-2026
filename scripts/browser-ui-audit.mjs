@@ -41,6 +41,8 @@ async function openMockRoleWorkspace(context,role){
     await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(payload)});
   });
   await rolePage.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});await rolePage.waitForTimeout(450);
+  await rolePage.evaluate(()=>window.SanPaidBootstrap?.loadCustomerWorker?.());
+  await rolePage.waitForTimeout(350);
   const opened=await rolePage.evaluate(async({role,user})=>{
     window.SanPaidAuth.restoreSession=async()=>user;
     window.SanPaidAuth.getCurrentUser=()=>user;
