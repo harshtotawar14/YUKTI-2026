@@ -122,7 +122,7 @@
     let root=document.getElementById('sanpaidReadiness');
     if(root)return root;
     root=document.createElement('div');root.id='sanpaidReadiness';root.className='readiness-backdrop';root.hidden=true;
-    root.innerHTML='<section class="readiness-dialog" role="dialog" aria-modal="true" aria-labelledby="readinessTitle"><span class="connected-step-label">GOLDEN DEMO PREFLIGHT</span><h2 id="readinessTitle">Checking connected services</h2><p id="readinessSummary">The live workflow opens only after its critical dependencies respond.</p><div id="readinessChecks" class="readiness-checks" aria-live="polite"></div><div class="readiness-actions"><button type="button" class="btn secondary" data-readiness-close>Close</button><button type="button" class="btn secondary" data-readiness-retry hidden>Retry checks</button><button type="button" class="btn primary" data-readiness-continue hidden>Continue to role access</button></div></section>';
+    root.innerHTML='<section class="readiness-dialog" role="dialog" aria-modal="true" aria-labelledby="readinessTitle"><span class="connected-step-label">PLATFORM READINESS</span><h2 id="readinessTitle">Checking connected services</h2><p id="readinessSummary">The live workflow opens only after its critical dependencies respond.</p><div id="readinessChecks" class="readiness-checks" aria-live="polite"></div><div class="readiness-actions"><button type="button" class="btn secondary" data-readiness-close>Close</button><button type="button" class="btn secondary" data-readiness-retry hidden>Retry checks</button><button type="button" class="btn primary" data-readiness-continue hidden>Continue to role access</button></div></section>';
     document.body.appendChild(root);return root;
   }
   function renderReadiness(results=[]){
@@ -153,14 +153,14 @@
       const root=readinessRoot(),summary=root.querySelector('#readinessSummary'),retry=root.querySelector('[data-readiness-retry]'),proceed=root.querySelector('[data-readiness-continue]'),close=root.querySelector('[data-readiness-close]'),lastFocus=document.activeElement;
       root.hidden=false;document.body.classList.add('readiness-open');renderReadiness();retry.hidden=true;proceed.hidden=true;summary.textContent='The live workflow opens only after its critical dependencies respond.';
       const result=await runReadiness();renderReadiness(result.results);
-      summary.textContent=result.ok?'Connected services are ready. Continue to secure role access.':'Connected demo is unavailable. No write action or fake success will be shown.';
+      summary.textContent=result.ok?'Connected services are ready. Continue to secure role access.':'Connected services are unavailable. No write action or false success will be shown.';
       retry.hidden=result.ok;proceed.hidden=!result.ok;
       return new Promise(resolve=>{
         let settled=false;
         const finish=value=>{if(settled)return;settled=true;root.hidden=true;document.body.classList.remove('readiness-open');if(!value&&lastFocus?.isConnected)lastFocus.focus();resolve(value);};
         close.onclick=()=>finish(false);
         proceed.onclick=()=>finish(true);
-        retry.onclick=async()=>{retry.disabled=true;const next=await runReadiness();renderReadiness(next.results);summary.textContent=next.ok?'Connected services are ready. Continue to secure role access.':'Connected demo is still unavailable. Retry after the backend is ready.';retry.hidden=next.ok;proceed.hidden=!next.ok;retry.disabled=false;(next.ok?proceed:retry).focus();};
+        retry.onclick=async()=>{retry.disabled=true;const next=await runReadiness();renderReadiness(next.results);summary.textContent=next.ok?'Connected services are ready. Continue to secure role access.':'Connected services are still unavailable. Retry after the backend is ready.';retry.hidden=next.ok;proceed.hidden=!next.ok;retry.disabled=false;(next.ok?proceed:retry).focus();};
         root.onkeydown=event=>{if(event.key==='Escape'){event.preventDefault();finish(false);return;}if(event.key!=='Tab')return;const buttons=[close,retry,proceed].filter(button=>!button.hidden&&!button.disabled);if(!buttons.length)return;const first=buttons[0],last=buttons[buttons.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}};
         (result.ok?proceed:retry).focus();
       });
