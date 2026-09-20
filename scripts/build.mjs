@@ -39,7 +39,7 @@ for(const file of publicFiles){
 const buildInfo={
   product:'SanPaid',
   version:packageMetadata.version,
-  runtime:'v70',
+  runtime:'v71',
   commitSha:resolveCommit(),
   builtAt:new Date().toISOString(),
   source:'harshtotawar14/YUKTI-2026',
