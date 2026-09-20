@@ -46,7 +46,7 @@ assert.match(read('evaluator-final.js'),/SanPaidReadiness\?\.require/,'Evaluator
 assert.match(read('selector-mode.js'),/SanPaidReadiness\?\.require/,'Guided connected entry bypasses readiness');
 
 const serviceWorker=read('service-worker.js');
-assert.match(serviceWorker,/sanpaid-runtime-v72/,'Expected service-worker runtime v72');
+assert.match(serviceWorker,/sanpaid-runtime-v71/,'Expected service-worker runtime v71');
 assert.match(serviceWorker,/Promise\.allSettled/,'Service-worker precache must tolerate individual asset failure');
 assert.match(serviceWorker,/pathname\.startsWith\('\/api\/'\)/,'Service worker must not cache API requests');
 assert.match(serviceWorker,/build-info\.json/,'Service worker must not cache deployment identity');
@@ -57,10 +57,10 @@ assert.equal(JSON.parse(vercel).outputDirectory,'dist','Vercel must publish the 
 assert.match(runtime,/id:'frontend',label:'Deployed frontend build'/,'Readiness must verify deployed build identity');
 assert.match(runtime,/id:'auth',label:'Authentication route'/,'Readiness must verify authentication route availability');
 assert.match(runtime,/id:'snapshot',label:'Connected snapshot route'/,'Readiness must verify the connected read route');
-assert.ok(html.includes('this build implements the connected workflow in a controlled sandbox'),'Public footer must identify the connected workflow as implemented in the current build');
+assert.ok(html.includes('IMPLEMENTED IN CURRENT BUILD'),'Public status section must identify the connected core as implemented in the current build');
 assert.ok(!html.includes('<h3>WORKING</h3>'),'Public feature truth still makes an unconditional working claim');
 
-assert.ok(html.includes('>Open platform</button>'),'Primary platform CTA is missing');
+assert.ok(html.includes('OPEN PLATFORM'),'Primary platform CTA is missing');
 assert.ok(!html.includes('TRY CONNECTED DEMO'),'Legacy competing CTA remains');
 const e2e=read('scripts/production-e2e.mjs');
 assert.ok(e2e.indexOf('/estimate`')<e2e.indexOf('/identity`'),'Production E2E must approve the estimate before identity/service start.');
