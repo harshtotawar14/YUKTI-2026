@@ -366,6 +366,16 @@ test('customer mic sends actual audio and worker can securely play it',()=>{
   assert.match(connected,/URL\.createObjectURL\(blob\)/,'Worker playback must use a browser-safe blob URL.');
 });
 
+test('customer problem photo reaches the worker request securely',()=>{
+  const connected=readFileSync(join(root,'connected-demo.js'),'utf8');
+  assert.match(connected,/id="cdProblemPhoto" type="file" accept="image\/\*"/,'Customer booking needs a mobile-compatible problem photo input.');
+  assert.match(connected,/prepareProblemPhoto/,'Large mobile photos must be prepared before upload.');
+  assert.match(connected,/problemPhoto:problemPhotoMeta/,'Prepared photo must be attached to the booking request.');
+  assert.match(connected,/data-load-photo/,'Worker request must expose the customer problem photo.');
+  assert.match(connected,/loadWorkerPhoto/,'Worker problem photo must load through the authenticated request flow.');
+  assert.match(connected,/CUSTOMER PROBLEM PHOTO/,'Worker must receive a clearly labelled problem photo.');
+});
+
 test('customer and worker dashboards keep action language concise and role-appropriate',()=>{
   const dashboard=readFileSync(join(root,'customer-worker-dashboard.js'),'utf8');
   assert.match(dashboard,/Payment & Invoice/,'Customer navigation should expose invoice access clearly.');
