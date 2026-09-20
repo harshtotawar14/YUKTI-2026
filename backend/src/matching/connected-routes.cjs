@@ -12,6 +12,20 @@ function allow(user,roles){if(!roles.includes(normalizeRole(user.role)))throw ht
 function method(req,expected){if(req.method!==expected)throw httpError(405,`Use ${expected} for this endpoint.`,'METHOD_NOT_ALLOWED');}
 function body(req){if(req.body&&typeof req.body==='object')return req.body;if(!req.body)return{};try{return JSON.parse(req.body);}catch{throw httpError(400,'Request body must be valid JSON.','INVALID_JSON');}}
 
+const VOICE_MIME_TYPES=new Set(['audio/mp4','audio/webm','audio/ogg','audio/mpeg','audio/aac']);
+const MAX_VOICE_BYTES=1572864;
+const MAX_VOICE_DURATION_MS=60000;
+function voiceMessage(value){
+  if(!value)return null;
+  const mimeType=clean(value.mimeType,80).toLowerCase().split(';')[0],durationMs=Math.round(Number(value.durationMs)),declaredSize=Math.round(Number(value.size));
+  if(!VOICE_MIME_TYPES.has(mimeType))throw httpError(422,'This voice-message format is not supported.','VOICE_FORMAT');
+  if(!Number.isFinite(durationMs)||durationMs<250||durationMs>MAX_VOICE_DURATION_MS)throw httpError(422,'Voice message must be between 1 and 60 seconds.','VOICE_DURATION');
+  if(!/^[A-Za-z0-9+/]+={0,2}$/.test(String(value.data||'')))throw httpError(422,'Voice message data is invalid.','VOICE_DATA');
+  const audio=Buffer.from(String(value.data),'base64');
+  if(!audio.length||audio.length>MAX_VOICE_BYTES||declaredSize!==audio.length)throw httpError(422,'Voice message is too large or incomplete. Record a message under 60 seconds.','VOICE_SIZE');
+  return {audio,mimeType,durationMs,size:audio.length};
+}
+
 async function authenticate(req){
   const token=bearerToken(req);
   if(!token)throw httpError(401,'Please log in to continue.','AUTH_REQUIRED');
@@ -43,8 +57,8 @@ async function insertRankedOffers(client,bookingId,candidates){
 
 async function createBooking(req,res,user){
   method(req,'POST');allow(user,['CUSTOMER']);
-  const data=body(req),serviceName=clean(data.service,120),zone=clean(data.zone,160),address=clean(data.address,300),problem=clean(data.problem,1200),scheduledAt=new Date(data.scheduledAt);
-  if(!serviceName||!zone||!address||problem.length<3||Number.isNaN(scheduledAt.getTime()))throw httpError(422,'Service, location, problem and schedule are required.','BOOKING_INPUT');
+  const data=body(req),serviceName=clean(data.service,120),zone=clean(data.zone,160),address=clean(data.address,300),recording=voiceMessage(data.voiceMessage),problem=clean(data.problem,1200)||(recording?'Customer attached a voice message.':''),scheduledAt=new Date(data.scheduledAt);
+  if(!serviceName||!zone||!address||problem.length<3||Number.isNaN(scheduledAt.getTime()))throw httpError(422,'Service, location, problem or voice message, and schedule are required.','BOOKING_INPUT');
   if(scheduledAt.getTime()<Date.now()-60000)throw httpError(422,'Choose a current or future service time.','PAST_SCHEDULE');
   const preferredRadiusKm=Math.max(2,Math.min(50,Number(data.preferredRadiusKm)||20));
   const id=await transaction(async client=>{
@@ -52,8 +66,8 @@ async function createBooking(req,res,user){
     if(!service)throw httpError(422,'The selected service is unavailable.','SERVICE_UNAVAILABLE');
     const fallback=(await client.query('SELECT id FROM cooperatives ORDER BY id LIMIT 1')).rows[0];
     const coopId=user.cooperative_id||fallback?.id;if(!coopId)throw httpError(503,'No cooperative is configured.','COOPERATIVE_NOT_CONFIGURED');
-    const inserted=(await client.query(`INSERT INTO bookings(customer_id,service_id,cooperative_id,status,zone,address,problem,request_source,request_language,voice_transcript,scheduled_at,emergency,base_amount)
-      VALUES($1,$2,$3,'OFFERING',$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *`,[user.id,service.id,coopId,zone,address,problem,clean(data.requestSource||'TEXT',20),clean(data.requestLanguage,40)||null,clean(data.voiceTranscript,1200)||null,scheduledAt.toISOString(),Boolean(data.emergency),service.base_price])).rows[0];
+    const inserted=(await client.query(`INSERT INTO bookings(customer_id,service_id,cooperative_id,status,zone,address,problem,request_source,request_language,voice_transcript,voice_audio,voice_audio_mime,voice_audio_duration_ms,voice_audio_size,scheduled_at,emergency,base_amount)
+      VALUES($1,$2,$3,'OFFERING',$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING *`,[user.id,service.id,coopId,zone,address,problem,recording?'VOICE':clean(data.requestSource||'TEXT',20),clean(data.requestLanguage,40)||null,clean(data.voiceTranscript,1200)||null,recording?.audio||null,recording?.mimeType||null,recording?.durationMs||null,recording?.size||null,scheduledAt.toISOString(),Boolean(data.emergency),service.base_price])).rows[0];
     const code=`SP-${new Date().getUTCFullYear()}-${String(inserted.id).padStart(6,'0')}`;await client.query('UPDATE bookings SET booking_code=$2 WHERE id=$1',[inserted.id,code]);
     const candidates=await rankedCandidates(client,{serviceId:service.id,cooperativeId:coopId,preferredRadiusKm});
     if(candidates.length)await insertRankedOffers(client,inserted.id,candidates);else await client.query("UPDATE bookings SET status='NO_WORKER_AVAILABLE' WHERE id=$1",[inserted.id]);
@@ -63,17 +77,28 @@ async function createBooking(req,res,user){
     return inserted.id;
   });
   const row=(await query(`SELECT b.*,s.name AS service,s.icon AS service_icon,c.name AS cooperative FROM bookings b JOIN services s ON s.id=b.service_id JOIN cooperatives c ON c.id=b.cooperative_id WHERE b.id=$1`,[id])).rows[0];
-  return send(res,201,{id:Number(row.id),bookingCode:row.booking_code,customerId:Number(row.customer_id),service:row.service,serviceIcon:row.service_icon,status:row.status,zone:row.zone,address:row.address,problem:row.problem,requestSource:row.request_source,requestLanguage:row.request_language,voiceTranscript:row.voice_transcript,scheduledAt:row.scheduled_at,emergency:row.emergency,total:Number(row.base_amount),workerId:null,workerName:null,workerVerification:null,distance:null,cooperative:row.cooperative,createdAt:row.created_at,updatedAt:row.updated_at,matchingPolicy:'EXPLAINABLE_MATCHING_V1'});
+  return send(res,201,{id:Number(row.id),bookingCode:row.booking_code,customerId:Number(row.customer_id),service:row.service,serviceIcon:row.service_icon,status:row.status,zone:row.zone,address:row.address,problem:row.problem,requestSource:row.request_source,requestLanguage:row.request_language,voiceTranscript:row.voice_transcript,voiceMessage:row.voice_audio?{available:true,durationMs:Number(row.voice_audio_duration_ms),mimeType:row.voice_audio_mime,size:Number(row.voice_audio_size)}:null,scheduledAt:row.scheduled_at,emergency:row.emergency,total:Number(row.base_amount),workerId:null,workerName:null,workerVerification:null,distance:null,cooperative:row.cooperative,createdAt:row.created_at,updatedAt:row.updated_at,matchingPolicy:'EXPLAINABLE_MATCHING_V1'});
 }
 
-function offerJson(row){return {offerId:Number(row.offer_id),offerStatus:row.offer_status,bookingId:Number(row.booking_id),bookingCode:row.booking_code,status:row.booking_status,service:row.service,zone:row.zone,problem:row.problem,voiceTranscript:row.voice_transcript,scheduledAt:row.scheduled_at,emergency:row.emergency,total:Number(row.base_amount),distance:Number(row.distance),cooperative:row.cooperative,rank:Number(row.rank),matching:{policy:'EXPLAINABLE_MATCHING_V1',score:Number(row.matching_score),factors:row.factor_scores||{},reasonCodes:row.reason_codes||[]}};}
+function offerJson(row){return {offerId:Number(row.offer_id),offerStatus:row.offer_status,bookingId:Number(row.booking_id),bookingCode:row.booking_code,status:row.booking_status,service:row.service,zone:row.zone,problem:row.problem,voiceTranscript:row.voice_transcript,voiceMessage:row.has_voice_message?{available:true,durationMs:Number(row.voice_audio_duration_ms),mimeType:row.voice_audio_mime,size:Number(row.voice_audio_size),url:`/api/connected/worker/bookings/${Number(row.booking_id)}/voice-message`}:null,scheduledAt:row.scheduled_at,emergency:row.emergency,total:Number(row.base_amount),distance:Number(row.distance),cooperative:row.cooperative,rank:Number(row.rank),matching:{policy:'EXPLAINABLE_MATCHING_V1',score:Number(row.matching_score),factors:row.factor_scores||{},reasonCodes:row.reason_codes||[]}};}
 
 async function workerOffers(req,res,user){
   method(req,'GET');allow(user,['WORKER']);
-  const rows=(await query(`SELECT o.id AS offer_id,o.status AS offer_status,o.rank,o.matching_score,o.factor_scores,o.reason_codes,b.id AS booking_id,b.booking_code,b.status AS booking_status,b.zone,b.problem,b.voice_transcript,b.scheduled_at,b.emergency,b.base_amount,s.name AS service,w.demo_distance_km AS distance,c.name AS cooperative
+  const rows=(await query(`SELECT o.id AS offer_id,o.status AS offer_status,o.rank,o.matching_score,o.factor_scores,o.reason_codes,b.id AS booking_id,b.booking_code,b.status AS booking_status,b.zone,b.problem,b.voice_transcript,(b.voice_audio IS NOT NULL) AS has_voice_message,b.voice_audio_mime,b.voice_audio_duration_ms,b.voice_audio_size,b.scheduled_at,b.emergency,b.base_amount,s.name AS service,w.demo_distance_km AS distance,c.name AS cooperative
     FROM booking_offers o JOIN bookings b ON b.id=o.booking_id JOIN services s ON s.id=b.service_id JOIN workers w ON w.id=o.worker_id JOIN cooperatives c ON c.id=b.cooperative_id
     WHERE o.worker_id=$1 AND o.status IN ('PENDING','ACCEPTED') ORDER BY CASE o.status WHEN 'ACCEPTED' THEN 0 ELSE 1 END,o.created_at DESC`,[user.worker_id])).rows;
   return send(res,200,rows.map(offerJson));
+}
+
+async function workerVoiceMessage(req,res,user,bookingId){
+  method(req,'GET');allow(user,['WORKER']);
+  const row=(await query(`SELECT b.voice_audio,b.voice_audio_mime,b.voice_audio_size FROM bookings b
+    JOIN booking_offers o ON o.booking_id=b.id
+    WHERE b.id=$1 AND o.worker_id=$2 AND o.status IN ('PENDING','ACCEPTED')`,[bookingId,user.worker_id])).rows[0];
+  if(!row)throw httpError(404,'Voice message is not available for this job.','VOICE_NOT_FOUND');
+  if(!row.voice_audio)throw httpError(404,'This booking has no voice message.','VOICE_NOT_FOUND');
+  const audio=Buffer.from(row.voice_audio);
+  res.statusCode=200;res.setHeader('Content-Type',row.voice_audio_mime||'application/octet-stream');res.setHeader('Content-Length',String(audio.length));res.setHeader('Content-Disposition','inline');res.setHeader('Cache-Control','private, no-store');res.setHeader('X-Content-Type-Options','nosniff');res.end(audio);
 }
 
 async function respondOffer(req,res,user,offerId){
@@ -103,6 +128,8 @@ async function handle(req,res,path){
   const normalized=String(path||'').replace(/^\/+|\/+$/g,'');
   if(normalized==='connected/bookings'){const user=await authenticate(req);await createBooking(req,res,user);return true;}
   if(normalized==='connected/worker/offers'){const user=await authenticate(req);await workerOffers(req,res,user);return true;}
+  const voiceMatch=normalized.match(/^connected\/worker\/bookings\/(\d+)\/voice-message$/);
+  if(voiceMatch){const user=await authenticate(req);await workerVoiceMessage(req,res,user,Number(voiceMatch[1]));return true;}
   const offerMatch=normalized.match(/^connected\/worker\/offers\/(\d+)\/respond$/);
   if(offerMatch){const user=await authenticate(req);await respondOffer(req,res,user,Number(offerMatch[1]));return true;}
   return false;
