@@ -43,3 +43,14 @@ test('booking voice messages are bounded, persisted, and worker-offer scoped',()
   assert.match(routes,/Cache-Control/,'Voice audio responses must define private caching behavior.');
   for(const column of ['voice_audio BYTEA','voice_audio_mime TEXT','voice_audio_duration_ms INTEGER','voice_audio_size INTEGER'])assert.ok(migration.includes(column),`Voice migration missing ${column}`);
 });
+
+test('problem photos are validated, persisted, and limited to the offered worker',()=>{
+  const routes=readFileSync(new URL('../backend/src/matching/connected-routes.cjs',import.meta.url),'utf8');
+  const migration=readFileSync(new URL('../database/migrations/007_booking_problem_photos.sql',import.meta.url),'utf8');
+  assert.match(routes,/MAX_PROBLEM_PHOTO_BYTES=1258291/,'Problem photos need a strict request-size limit.');
+  assert.match(routes,/PHOTO_MIME_TYPES/,'Problem photo types must be allowlisted.');
+  assert.match(routes,/validImageSignature/,'Problem photo bytes must match the declared image type.');
+  assert.match(routes,/workerProblemPhoto/,'Worker problem-photo route is missing.');
+  assert.match(routes,/o\.worker_id=\$2 AND o\.status IN \('PENDING','ACCEPTED'\)/,'Problem photo access must stay scoped to the offered worker.');
+  for(const column of ['problem_photo BYTEA','problem_photo_mime TEXT','problem_photo_size INTEGER','problem_photo_width INTEGER','problem_photo_height INTEGER'])assert.ok(migration.includes(column),`Problem photo migration missing ${column}`);
+});
