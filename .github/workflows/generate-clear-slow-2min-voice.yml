@@ -1,0 +1,58 @@
+name: Generate Clear Slow 2min Voice
+
+on:
+  push:
+    branches:
+      - recording-90sec-20260920
+
+jobs:
+  voice:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install TTS
+        run: pip install edge-tts
+      - name: Generate clear narration
+        shell: bash
+        run: |
+          set -e
+          mkdir -p clearvoice
+          VOICE="en-IN-PrabhatNeural"
+          if edge-tts --list-voices | grep -q "en-IN-ArjunNeural"; then VOICE="en-IN-ArjunNeural"; fi
+          RATE="-8%"
+          tts(){ local txt="$1"; local out="$2"; for i in 1 2 3; do edge-tts --voice "$VOICE" --rate="$RATE" --text "$txt" --write-media "$out" && return 0; sleep 3; done; return 1; }
+
+          tts "SanPaid is a cooperative-owned local workforce network. It connects customers, verified workers, cooperatives and federation teams in one trusted system." clearvoice/01-intro.mp3
+
+          tts "First, the customer selects a service, date and location, then explains the problem using text, photo or voice. SanPaid checks verified and eligible workers." clearvoice/02-customer.mp3
+
+          tts "The worker receives only suitable job requests. They can see the service, location, customer problem and matching reason, then accept or decline freely." clearvoice/03-worker.mp3
+
+          tts "Before work starts, the assigned worker is verified and the customer confirms the same worker. Without both checks, the service cannot begin." clearvoice/04-trust.mp3
+
+          tts "The Cooperative Admin manages verified workers, active services, complaints, SLA, payments and local capacity. This keeps service delivery accountable at the cooperative level." clearvoice/05-coop.mp3
+
+          tts "The Federation Admin sees the wider network: cooperative capacity, escalations, demand patterns and regional coordination." clearvoice/06-fed.mp3
+
+          tts "When local capacity is low, a nearby cooperative can help. Worker consent and authorized approval are required, and the cross-cooperative assignment stays traceable." clearvoice/07-capacity.mp3
+
+          tts "Repeated demand and shortage data reveal skill gaps for human-reviewed training and onboarding. AI advises. The cooperative decides." clearvoice/08-planning.mp3
+
+          tts "The design is backed by field research with cooperative stakeholders, including a recorded discussion and signed evidence." clearvoice/09-evidence.mp3
+
+          tts "SanPaid. Serve today. Prepare tomorrow." clearvoice/10-end.mp3
+
+          for f in clearvoice/*.mp3; do
+            echo "$(basename "$f") $(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$f" 2>/dev/null || true)"
+          done
+
+      - name: Upload voice
+        uses: actions/upload-artifact@v4
+        with:
+          name: sanpaid-clear-slow-2min-voice
+          path: clearvoice/*.mp3
+          retention-days: 7
