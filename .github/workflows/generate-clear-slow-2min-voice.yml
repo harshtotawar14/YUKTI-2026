@@ -26,23 +26,23 @@ jobs:
           RATE="-8%"
           tts(){ local txt="$1"; local out="$2"; for i in 1 2 3; do edge-tts --voice "$VOICE" --rate="$RATE" --text "$txt" --write-media "$out" && return 0; sleep 3; done; return 1; }
 
-          tts "SanPaid is a cooperative-owned local workforce network. It connects customers, verified workers, cooperatives and federation teams in one trusted system." clearvoice/01-intro.mp3
+          tts "SanPaid is a cooperative-owned local workforce network connecting customers, verified workers and cooperatives in one trusted system." clearvoice/01-intro.mp3
 
-          tts "First, the customer selects a service, date and location, then explains the problem using text, photo or voice. SanPaid checks verified and eligible workers." clearvoice/02-customer.mp3
+          tts "The customer selects a service and location, then explains the problem using text, photo or voice. SanPaid checks verified eligible workers." clearvoice/02-customer.mp3
 
-          tts "The worker receives only suitable job requests. They can see the service, location, customer problem and matching reason, then accept or decline freely." clearvoice/03-worker.mp3
+          tts "Workers receive only suitable job requests. They can review the customer problem and matching reason, then accept or decline freely." clearvoice/03-worker.mp3
 
-          tts "Before work starts, the assigned worker is verified and the customer confirms the same worker. Without both checks, the service cannot begin." clearvoice/04-trust.mp3
+          tts "Service starts only after two checks: worker verification and customer confirmation. Without both, work cannot begin." clearvoice/04-trust.mp3
 
-          tts "The Cooperative Admin manages verified workers, active services, complaints, SLA, payments and local capacity. This keeps service delivery accountable at the cooperative level." clearvoice/05-coop.mp3
+          tts "The Cooperative Admin manages workers, services, complaints, SLA, payments and local capacity from one dashboard." clearvoice/05-coop.mp3
 
-          tts "The Federation Admin sees the wider network: cooperative capacity, escalations, demand patterns and regional coordination." clearvoice/06-fed.mp3
+          tts "The Federation Admin monitors regional capacity, escalations, demand patterns and cooperative coordination." clearvoice/06-fed.mp3
 
-          tts "When local capacity is low, a nearby cooperative can help. Worker consent and authorized approval are required, and the cross-cooperative assignment stays traceable." clearvoice/07-capacity.mp3
+          tts "If local capacity is low, a nearby cooperative can help. Worker consent and authorized approval are required." clearvoice/07-capacity.mp3
 
-          tts "Repeated demand and shortage data reveal skill gaps for human-reviewed training and onboarding. AI advises. The cooperative decides." clearvoice/08-planning.mp3
+          tts "Demand and shortage data reveal skill gaps for human-reviewed training and onboarding. AI advises; the cooperative decides." clearvoice/08-planning.mp3
 
-          tts "The design is backed by field research with cooperative stakeholders, including a recorded discussion and signed evidence." clearvoice/09-evidence.mp3
+          tts "The design is backed by field research, a recorded stakeholder discussion and signed evidence." clearvoice/09-evidence.mp3
 
           tts "SanPaid. Serve today. Prepare tomorrow." clearvoice/10-end.mp3
 
