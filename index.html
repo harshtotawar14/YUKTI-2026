@@ -28,7 +28,7 @@
 <link rel="apple-touch-icon" href="app-icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" id="sanpaidDesignTokens" href="design-tokens.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="mobile.css">
@@ -68,8 +68,8 @@
     <div class="wrap eval-hero-grid">
       <div class="eval-hero-copy" data-reveal>
         <span class="eyebrow eval-badge">Cooperative-owned local workforce network</span>
-        <h1>Cooperative services.<br><em>Connected locally.</em><br>Managed intelligently.</h1>
-        <p class="lead"><b>Not another worker-listing app.</b> SanPaid connects customers with verified cooperative workers and gives cooperatives one accountable system to manage service capacity.</p>
+        <h1>Cooperative work,<br><em>connected locally.</em></h1>
+        <p class="lead"><b>Not another worker-listing app.</b> Customers, verified workers and cooperatives share one accountable service record—from request to payment.</p>
         <div class="hero-ctas">
           <button class="btn primary eval-primary" type="button" data-platform-access>OPEN PLATFORM</button>
           <button class="btn secondary eval-secondary" id="heroTourCta" type="button" data-open-selector="0">SEE PLATFORM TOUR</button>
@@ -83,16 +83,26 @@
         </div>
       </div>
 
-      <aside class="network-visual" id="evalHeroSystem" aria-label="Customer to cooperative network to verified worker" data-reveal>
-        <div class="network-visual-head"><span>Local service network</span><b>Accountable by design</b></div>
-        <div class="network-route" aria-hidden="true">
-          <article class="network-node customer-node"><small>01</small><span>Customer</span><b>Requests service</b></article>
-          <i><span></span></i>
-          <article class="network-node network-node-core"><small>02</small><span>Cooperative network</span><b>Verifies + matches</b></article>
-          <i><span></span></i>
-          <article class="network-node worker-node"><small>03</small><span>Verified worker</span><b>Accepts + delivers</b></article>
+      <aside class="network-visual" id="evalHeroSystem" aria-label="Animated cooperative service network" data-reveal>
+        <div class="network-orbit" aria-hidden="true">
+          <svg viewBox="0 0 520 520" role="presentation">
+            <g class="orbit-ring orbit-ring-one"><ellipse cx="260" cy="260" rx="188" ry="82"/></g>
+            <g class="orbit-ring orbit-ring-two"><ellipse cx="260" cy="260" rx="188" ry="82" transform="rotate(60 260 260)"/></g>
+            <g class="orbit-ring orbit-ring-three"><ellipse cx="260" cy="260" rx="188" ry="82" transform="rotate(120 260 260)"/></g>
+            <g class="network-lines">
+              <path d="M104 236 174 128 260 260 392 164 416 316 298 410 156 378 104 236Z"/>
+              <path d="M174 128 392 164M104 236 416 316M156 378 298 410M260 260 156 378M260 260 416 316"/>
+            </g>
+            <g class="network-points">
+              <circle cx="104" cy="236" r="8"/><circle cx="174" cy="128" r="7"/><circle cx="260" cy="260" r="16" class="network-core"/>
+              <circle cx="392" cy="164" r="8"/><circle cx="416" cy="316" r="7"/><circle cx="298" cy="410" r="8"/><circle cx="156" cy="378" r="7"/>
+            </g>
+          </svg>
+          <div class="orbit-label orbit-customer"><small>01</small><b>Customer</b><span>Requests</span></div>
+          <div class="orbit-label orbit-coop"><small>02</small><b>Cooperative</b><span>Verifies + matches</span></div>
+          <div class="orbit-label orbit-worker"><small>03</small><b>Worker</b><span>Chooses + delivers</span></div>
         </div>
-        <div class="network-signal"><span class="signal-dot"></span><p><b>Every outcome returns as a demand signal.</b><br>Service records help cooperatives prepare future capacity.</p></div>
+        <div class="network-signal"><span class="signal-dot"></span><p><b>Service today → stronger capacity tomorrow.</b><br>Every outcome becomes a human-reviewed demand signal.</p></div>
       </aside>
     </div>
     <div class="hero-proof-strip" aria-label="Validation summary">
@@ -105,6 +115,32 @@
       </div>
     </div>
   </header>
+
+  <section class="doorstep-scene" aria-label="Verified service start">
+    <div class="wrap doorstep-grid">
+      <div class="doorstep-copy">
+        <span class="scene-kicker">Trust at the doorstep</span>
+        <h2>Know who arrived<br>before work begins.</h2>
+        <p>Customer confirms the booked worker with a service-linked OTP or QR. Identity, estimate and service history stay connected.</p>
+      </div>
+      <svg class="doorstep-visual" viewBox="0 0 680 280" role="img" aria-label="Customer verifies a cooperative worker at the doorstep">
+        <line x1="24" y1="245" x2="656" y2="245" class="scene-ground"/>
+        <rect x="472" y="42" width="146" height="203" rx="3" class="scene-door"/>
+        <circle cx="581" cy="148" r="5" class="scene-accent-fill"/>
+        <circle cx="176" cy="91" r="31" class="scene-person"/>
+        <path d="M122 230v-54c0-37 24-60 54-60s54 23 54 60v54M143 230v-54M209 230v-54" class="scene-person"/>
+        <rect x="229" y="104" width="90" height="126" rx="10" class="scene-phone"/>
+        <rect x="241" y="119" width="66" height="81" rx="4" class="scene-screen"/>
+        <path d="M251 134h17v17h-17zM280 134h17v17h-17zM251 163h17v17h-17zM282 163h7v7h-7zM293 174h7v7h-7z" class="scene-qr"/>
+        <circle cx="403" cy="91" r="31" class="scene-person"/>
+        <path d="M349 230v-54c0-37 24-60 54-60s54 23 54 60v54M370 230v-54M436 230v-54" class="scene-person"/>
+        <rect x="360" y="142" width="86" height="50" rx="4" class="scene-id"/>
+        <circle cx="377" cy="160" r="8"/><path d="M392 154h42M392 166h30M371 181h63"/>
+        <circle cx="336" cy="79" r="22" class="scene-verified"/><path d="m326 79 7 7 14-16" class="scene-check"/>
+        <path d="M319 78h-28M358 78h20" class="scene-link"/>
+      </svg>
+    </div>
+  </section>
 
   <main id="mainContent" tabindex="-1">
     <section class="section flow-section" id="how">
