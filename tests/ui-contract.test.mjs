@@ -312,6 +312,15 @@ test('customer and worker dashboards stay compact and action-led',()=>{
   assert.match(connected,/AUTHORIZED WORKSPACE/,'Connected workspace should retain a compact session identity bar.');
 });
 
+test('worker dashboard stays contained and touch-friendly on mobile',()=>{
+  const dashboardCss=readFileSync(join(root,'customer-worker-dashboard.css'),'utf8');
+  const loader=readFileSync(join(root,'top1-polish.js'),'utf8');
+  assert.match(dashboardCss,/@media\(max-width:900px\)\{\.cw-dashboard\.worker\{[^}]*overflow-x:hidden/,'Worker workspace must not push the mobile viewport sideways.');
+  assert.match(dashboardCss,/\.cw-dashboard\.worker \.cw-module-slot>\.connected-card[^}]*max-width:100%/,'Worker request cards must stay inside the mobile dashboard.');
+  assert.match(dashboardCss,/@media\(max-width:520px\)[\s\S]*\.cw-dashboard\.worker \.connected-offer-actions\{display:grid/,'Worker request actions must stack into touch-friendly mobile rows.');
+  assert.match(loader,/customer-worker-dashboard\.css\?v=worker-mobile-1/,'Worker mobile CSS must use a cache-busting asset URL.');
+});
+
 
 test('four role dashboards protect status semantics and active navigation',()=>{
   const dashboard=readFileSync(join(root,'customer-worker-dashboard.js'),'utf8');
