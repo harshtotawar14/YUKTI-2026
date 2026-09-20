@@ -1,0 +1,171 @@
+name: Record SanPaid 90s Demo
+
+on:
+  push:
+    branches:
+      - recording-90sec-20260920
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Record 90-second website walkthrough
+        env:
+          TARGET_URL: https://yukti-2026-brown.vercel.app/
+        run: |
+          mkdir -p recordings
+          cat > /tmp/record-demo.mjs <<'NODE'
+          import { chromium } from 'playwright';
+          import fs from 'fs';
+
+          const url = process.env.TARGET_URL;
+          const browser = await chromium.launch({ headless: true });
+          const context = await browser.newContext({
+            viewport: { width: 1920, height: 1080 },
+            deviceScaleFactor: 1,
+            colorScheme: 'light',
+            recordVideo: {
+              dir: 'recordings/raw',
+              size: { width: 1920, height: 1080 }
+            }
+          });
+
+          const page = await context.newPage();
+          const video = page.video();
+          page.setDefaultTimeout(15000);
+
+          await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 });
+          await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+          await page.waitForTimeout(3000);
+
+          // Add a visible on-page cursor and click ripple because browser video does not record the OS cursor.
+          await page.addStyleTag({ content: `
+            #demoCursor {
+              position: fixed; width: 24px; height: 24px; border-radius: 50%;
+              border: 3px solid #0f2d5c; background: rgba(255,255,255,.92);
+              box-shadow: 0 4px 16px rgba(0,0,0,.22);
+              z-index: 2147483647; pointer-events: none;
+              left: 50%; top: 50%; transform: translate(-50%,-50%);
+              transition: left .45s cubic-bezier(.2,.8,.2,1), top .45s cubic-bezier(.2,.8,.2,1),
+                          transform .15s ease, opacity .2s ease;
+            }
+            #demoCursor.clicking { transform: translate(-50%,-50%) scale(.72); }
+            .demo-ripple {
+              position: fixed; width: 18px; height: 18px; border: 2px solid #0f2d5c;
+              border-radius: 50%; z-index: 2147483646; pointer-events: none;
+              animation: demoRipple .55s ease-out forwards;
+            }
+            @keyframes demoRipple {
+              from { transform: translate(-50%,-50%) scale(.7); opacity: .9; }
+              to { transform: translate(-50%,-50%) scale(3.2); opacity: 0; }
+            }
+          `});
+
+          await page.evaluate(() => {
+            const c = document.createElement('div');
+            c.id = 'demoCursor';
+            document.body.appendChild(c);
+            window.__demoMoveCursor = (x, y) => {
+              c.style.left = x + 'px';
+              c.style.top = y + 'px';
+            };
+            window.__demoClick = (x, y) => {
+              c.classList.add('clicking');
+              const r = document.createElement('div');
+              r.className = 'demo-ripple';
+              r.style.left = x + 'px';
+              r.style.top = y + 'px';
+              document.body.appendChild(r);
+              setTimeout(() => c.classList.remove('clicking'), 170);
+              setTimeout(() => r.remove(), 600);
+            };
+          });
+
+          async function moveTo(locator) {
+            const el = locator.first();
+            await el.scrollIntoViewIfNeeded().catch(() => {});
+            const box = await el.boundingBox();
+            if (!box) return null;
+            const x = box.x + box.width / 2;
+            const y = box.y + box.height / 2;
+            await page.evaluate(([x,y]) => window.__demoMoveCursor?.(x,y), [x,y]);
+            await page.mouse.move(x, y, { steps: 18 });
+            await page.waitForTimeout(550);
+            return { x, y };
+          }
+
+          async function demoClick(locator) {
+            const pt = await moveTo(locator);
+            if (pt) await page.evaluate(([x,y]) => window.__demoClick?.(x,y), [pt.x, pt.y]);
+            await locator.first().click();
+            await page.waitForTimeout(650);
+          }
+
+          // 0:00–0:07 — Hero / project identity
+          await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'auto' }));
+          await page.waitForTimeout(7000);
+
+          // Open the built-in SIH walkthrough.
+          const tour = page.locator('#heroTourCta').or(page.getByRole('button', { name: /platform tour/i }));
+          await demoClick(tour);
+          await page.waitForSelector('#selectorModeShell:not(.hidden)');
+          await page.waitForTimeout(7000); // Step 1: Problem
+
+          const next = () => page.locator('#selectorNext');
+
+          await demoClick(next()); await page.waitForTimeout(9000); // Step 2: Difference / USPs
+          await demoClick(next()); await page.waitForTimeout(9000); // Step 3: Fair Match
+          await demoClick(next()); await page.waitForTimeout(8000); // Step 4: Worker Choice
+          await demoClick(next()); await page.waitForTimeout(8000); // Step 5: Trust
+          await demoClick(next()); await page.waitForTimeout(8000); // Step 6: Governance
+          await demoClick(next()); await page.waitForTimeout(8000); // Step 7: Capacity
+          await demoClick(next()); await page.waitForTimeout(8000); // Step 8: Planning
+          await demoClick(next()); await page.waitForTimeout(6000); // Step 9: Research
+          await demoClick(next()); await page.waitForTimeout(5000); // Step 10: Impact
+
+          // Return home, then finish on role access / platform entry.
+          await demoClick(next());
+          await page.waitForTimeout(1700);
+
+          const openPlatform = page.locator('[data-platform-access]').first();
+          if (await openPlatform.count()) {
+            await demoClick(openPlatform).catch(() => {});
+            await page.waitForTimeout(6500);
+          } else {
+            await page.waitForTimeout(6500);
+          }
+
+          await page.close();
+          await context.close();
+          await browser.close();
+
+          const raw = await video.path();
+          fs.copyFileSync(raw, 'recordings/sanpaid-raw.webm');
+          NODE
+
+          node /tmp/record-demo.mjs
+
+          # Convert and trim to exactly 90 seconds, with broad editor compatibility.
+          ffmpeg -y -i recordings/sanpaid-raw.webm -t 90             -c:v libx264 -preset medium -crf 19 -pix_fmt yuv420p -movflags +faststart             recordings/SanPaid-Website-Walkthrough-90s.mp4
+
+          ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 recordings/SanPaid-Website-Walkthrough-90s.mp4
+
+      - name: Upload video
+        uses: actions/upload-artifact@v4
+        with:
+          name: sanpaid-website-walkthrough-90s
+          path: recordings/SanPaid-Website-Walkthrough-90s.mp4
+          if-no-files-found: error
+          retention-days: 7
