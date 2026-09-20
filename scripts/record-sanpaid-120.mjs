@@ -137,7 +137,7 @@ await page.evaluate(()=>{
 });
 await exists('#selectorModeShell:not(.hidden)');
 mark('capacity');
-await hold(7500);
+await hold(11000);
 await page.evaluate(()=>window.SanPaidSelectorMode?.close?.({noHistory:true,restoreScroll:false}));
 
 // Demand-to-Workforce — dedicated visual proof
