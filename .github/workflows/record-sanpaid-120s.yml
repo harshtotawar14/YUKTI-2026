@@ -56,9 +56,33 @@ jobs:
           tts "These design decisions are grounded in field research with cooperative stakeholders, including a recorded discussion and signed evidence. SanPaid connects service delivery, trust, governance and workforce planning in one system." output/voice/09.mp3
           tts "SanPaid. Serve today. Prepare tomorrow." output/voice/10.mp3
 
-      - name: Mix narration with video
+      - name: Mix narration with exact recorded scene timestamps
         run: |
-          ffmpeg -y             -i output/SanPaid-120s-silent.mp4             -i output/voice/01.mp3 -i output/voice/02.mp3 -i output/voice/03.mp3 -i output/voice/04.mp3             -i output/voice/05.mp3 -i output/voice/06.mp3 -i output/voice/07.mp3 -i output/voice/08.mp3             -i output/voice/09.mp3 -i output/voice/10.mp3             -filter_complex "[1:a]adelay=500|500,volume=1.35[a1];[2:a]adelay=13000|13000,volume=1.35[a2];[3:a]adelay=31000|31000,volume=1.35[a3];[4:a]adelay=47000|47000,volume=1.35[a4];[5:a]adelay=58000|58000,volume=1.35[a5];[6:a]adelay=72000|72000,volume=1.35[a6];[7:a]adelay=84000|84000,volume=1.35[a7];[8:a]adelay=98000|98000,volume=1.35[a8];[9:a]adelay=110500|110500,volume=1.35[a9];[10:a]adelay=116500|116500,volume=1.35[a10];[a1][a2][a3][a4][a5][a6][a7][a8][a9][a10]amix=inputs=10:duration=longest:dropout_transition=0,alimiter=limit=0.95[a]"             -map 0:v -map "[a]" -t 120             -c:v copy -c:a aac -b:a 192k -ar 44100 -ac 2 -movflags +faststart             output/SanPaid-Final-2-Minute-SIH-Walkthrough.mp4
+          python - <<'PY'
+          import json
+          marks=json.load(open('output/timings.json'))
+          names=['intro','customer','worker','trust','cooperative','federation','capacity','planning','evidence','end']
+          parts=[]
+          labels=[]
+          for i,name in enumerate(names, start=1):
+              delay=max(0,int(float(marks[name])*1000))
+              parts.append(f'[{i}:a]adelay={delay}|{delay},volume=1.35[a{i}]')
+              labels.append(f'[a{i}]')
+          parts.append(''.join(labels)+'amix=inputs=10:duration=longest:dropout_transition=0,alimiter=limit=0.95[a]')
+          open('output/audio-filter.txt','w').write(';'.join(parts))
+          print('Scene marks:', marks)
+          print(open('output/audio-filter.txt').read())
+          PY
+
+          ffmpeg -y \
+            -i output/SanPaid-120s-silent.mp4 \
+            -i output/voice/01.mp3 -i output/voice/02.mp3 -i output/voice/03.mp3 -i output/voice/04.mp3 \
+            -i output/voice/05.mp3 -i output/voice/06.mp3 -i output/voice/07.mp3 -i output/voice/08.mp3 \
+            -i output/voice/09.mp3 -i output/voice/10.mp3 \
+            -filter_complex_script output/audio-filter.txt \
+            -map 0:v -map "[a]" -t 120 \
+            -c:v copy -c:a aac -b:a 192k -ar 44100 -ac 2 -movflags +faststart \
+            output/SanPaid-Final-2-Minute-SIH-Walkthrough.mp4
 
           ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 output/SanPaid-Final-2-Minute-SIH-Walkthrough.mp4
 
