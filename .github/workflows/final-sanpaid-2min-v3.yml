@@ -1,0 +1,96 @@
+name: FINAL SanPaid 2 Minute Build v3
+
+on:
+  push:
+    branches:
+      - recording-90sec-20260920
+
+jobs:
+  final-video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          pip install edge-tts
+
+      - name: Record full two-minute walkthrough
+        env:
+          TARGET_URL: https://yukti-2026-brown.vercel.app/
+        run: |
+          mkdir -p output/raw output/voice
+          node scripts/record-sanpaid-120.mjs
+          ffmpeg -y -i output/SanPaid-120s-raw.webm -t 120 \
+            -c:v libx264 -preset medium -crf 19 -pix_fmt yuv420p -movflags +faststart \
+            output/SanPaid-120s-silent.mp4
+
+      - name: Generate natural English narration
+        shell: bash
+        run: |
+          set -e
+          VOICE="en-IN-PrabhatNeural"
+          if edge-tts --list-voices | grep -q "en-IN-ArjunNeural"; then VOICE="en-IN-ArjunNeural"; fi
+          RATE="+5%"
+          tts(){ local txt="$1"; local out="$2"; for i in 1 2 3; do edge-tts --voice "$VOICE" --rate="$RATE" --text "$txt" --write-media "$out" && return 0; sleep 3; done; return 1; }
+
+          tts "SanPaid is a cooperative-owned local workforce network. It connects customers, verified workers and cooperatives through one accountable service system." output/voice/01.mp3
+          tts "A customer selects the required service, date and location, and describes the problem using text, photo or voice. SanPaid then checks eligible verified workers instead of showing an uncontrolled worker list." output/voice/02.mp3
+          tts "On the worker side, only eligible opportunities appear. The worker can see why the job was offered, review the customer request, and freely accept or decline. If one worker declines, the same booking continues to the next eligible worker." output/voice/03.mp3
+          tts "Before work begins, SanPaid uses dual confirmation. The booked worker is verified, and the customer confirms the worker through the service-linked verification flow. Service starts only after both checks." output/voice/04.mp3
+          tts "The Cooperative Administration workspace manages local operations: verified workers, active services, complaints and SLA, capacity gaps, billing records and audit visibility. This gives the cooperative clear ownership of service delivery." output/voice/05.mp3
+          tts "At federation level, the platform provides regional visibility across cooperatives. Federation admins can review network capacity, escalations and demand patterns without taking away the authority of the local cooperative." output/voice/06.mp3
+          tts "SanPaid's first key differentiator is Cooperative Capacity Exchange. When local capacity is insufficient, a nearby cooperative can offer support. Worker consent, authorized approval, assignment identity and complaint ownership remain recorded." output/voice/07.mp3
+          tts "The second differentiator is the Demand-to-Workforce Loop. Service demand and shortage data become human-reviewed signals for skill gaps, training, onboarding and future capacity planning. AI advises; the cooperative decides." output/voice/08.mp3
+          tts "These design decisions are grounded in field research with cooperative stakeholders, including a recorded discussion and signed evidence. SanPaid connects service delivery, trust, governance and workforce planning in one system." output/voice/09.mp3
+          tts "SanPaid. Serve today. Prepare tomorrow." output/voice/10.mp3
+
+      - name: Sync narration to recorded scenes
+        run: |
+          python - <<'PY'
+          import json
+          marks=json.load(open('output/timings.json'))
+          names=['intro','customer','worker','trust','cooperative','federation','capacity','planning','evidence','end']
+          parts=[]
+          labels=[]
+          for i,name in enumerate(names, start=1):
+              delay=max(0,int(float(marks[name])*1000))
+              parts.append(f'[{i}:a]adelay={delay}|{delay},volume=1.35[a{i}]')
+              labels.append(f'[a{i}]')
+          parts.append(''.join(labels)+'amix=inputs=10:duration=longest:dropout_transition=0,alimiter=limit=0.95[a]')
+          open('output/audio-filter.txt','w').write(';'.join(parts))
+          print('Scene marks:',marks)
+          PY
+
+          ffmpeg -y \
+            -i output/SanPaid-120s-silent.mp4 \
+            -i output/voice/01.mp3 -i output/voice/02.mp3 -i output/voice/03.mp3 -i output/voice/04.mp3 \
+            -i output/voice/05.mp3 -i output/voice/06.mp3 -i output/voice/07.mp3 -i output/voice/08.mp3 \
+            -i output/voice/09.mp3 -i output/voice/10.mp3 \
+            -filter_complex_script output/audio-filter.txt \
+            -map 0:v -map "[a]" -t 120 \
+            -c:v copy -c:a aac -b:a 192k -ar 44100 -ac 2 -movflags +faststart \
+            output/SanPaid-Final-Proper-2-Minute.mp4
+
+          ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 output/SanPaid-Final-Proper-2-Minute.mp4
+
+      - name: Upload final video
+        uses: actions/upload-artifact@v4
+        with:
+          name: sanpaid-final-proper-2-minute
+          path: output/SanPaid-Final-Proper-2-Minute.mp4
+          if-no-files-found: error
+          retention-days: 7
