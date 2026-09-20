@@ -3,335 +3,317 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="SanPaid is a cooperative-owned local workforce network for verified services, fair worker opportunity and accountable service delivery.">
-<meta name="theme-color" content="#F3F4EF">
+<meta name="description" content="SanPaid is a cooperative-owned local workforce network for verified services, fair worker opportunity and data-driven cooperative planning.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="application-name" content="SanPaid">
+<meta name="theme-color" content="#F5F8FC">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>SanPaid — Cooperative Workforce Network</title>
 <link rel="canonical" href="https://sahkriya.vercel.app/">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="SanPaid">
 <meta property="og:title" content="SanPaid — Cooperative Workforce Network">
-<meta property="og:description" content="Cooperative work, connected locally.">
+<meta property="og:description" content="Verified local services, fair worker opportunity and accountable cooperative operations in one connected platform.">
+<meta property="og:url" content="https://sahkriya.vercel.app/">
 <meta property="og:image" content="https://sahkriya.vercel.app/social-preview.svg">
+<meta property="og:image:alt" content="SanPaid cooperative workforce network">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SanPaid — Cooperative Workforce Network">
+<meta name="twitter:description" content="A connected platform for trusted local services, fair work allocation and cooperative capacity planning.">
+<meta name="twitter:image" content="https://sahkriya.vercel.app/social-preview.svg">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="app-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="app-icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" id="sanpaidDesignTokens" href="design-tokens.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="mobile.css">
 <link rel="stylesheet" href="connected-demo.css">
 <link rel="stylesheet" href="judge-demo.css">
 <link rel="stylesheet" href="selector-mode.css">
-<link rel="stylesheet" href="auth-unified.css">
-<link rel="stylesheet" href="customer-worker-dashboard.css">
-<link rel="stylesheet" href="admin-command-center.css">
-<link rel="stylesheet" href="cooperative-portal.css">
-<link rel="stylesheet" href="federation-portal.css">
-<link rel="stylesheet" href="homepage-v2.css">
+<link rel="stylesheet" id="sanpaidDossierRedesignStyles" href="dossier-redesign.css">
 </head>
 <body>
 <a class="skip-link" href="#mainContent">Skip to main content</a>
 <div id="landing">
-<!-- ICON SPRITE -->
-<svg class="icon-sprite" width="0" height="0" style="position:absolute">
-<defs>
-  <g id="i-shield" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 2 4 5v6c0 5 3.4 8.6 8 9 4.6-.4 8-4 8-9V5l-8-3z"/><path d="M8.5 12l2.3 2.3L15.5 9.5"/>
-  </g>
-  <g id="i-scale" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 3v18M7 21h10M5 7l7-4 7 4M3 7h4l-2 5a2 2 0 0 1-4 0zM17 7h4l-2 5a2 2 0 0 1-4 0z"/>
-  </g>
-  <g id="i-receipt" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M6 2h12v20l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6M9 15h4"/>
-  </g>
-  <g id="i-request" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/>
-  </g>
-  <g id="i-check" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/>
-  </g>
-  <g id="i-rank" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M5 21V10M12 21V4M19 21v-7"/>
-  </g>
-  <g id="i-hand" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M7 11V6a2 2 0 1 1 4 0v4M11 10V4a2 2 0 1 1 4 0v6M15 10.5V6a2 2 0 1 1 4 0v8c0 4-2.5 7-7 7s-6-2-7.5-5L3 12.8a1.7 1.7 0 0 1 2.7-2L7 12"/>
-  </g>
-  <g id="i-qr" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
-    <path d="M14 14h3v3h-3zM19 14h2v2M14 19h2v2M19 19h2v2"/>
-  </g>
-  <g id="i-record" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/><path d="M9 13.5l2 2 4-4"/>
-  </g>
-  <g id="i-network" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="5" cy="6" r="2.2"/><circle cx="19" cy="6" r="2.2"/><circle cx="12" cy="18" r="2.2"/><circle cx="12" cy="9.5" r="1.6"/>
-    <path d="M6.7 7.3l3.8 1.6M17.3 7.3l-3.8 1.6M12 11v4.8M9.5 16.5l1.5-1M14.5 16.5l-1.5-1M6.5 7l4.2 9M17.5 7l-4.2 9"/>
-  </g>
-  <g id="i-gap" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M3 17l6-6 4 4 8-8"/><path d="M21 3h-5M21 3v5"/>
-  </g>
-  <g id="i-consent" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M2 13l4-4 3 2 4-4 3 2 4-4"/><path d="M9 11l3 3 3-3"/>
-  </g>
-  <g id="i-support" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>
-  </g>
-  <g id="i-signal" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M3 20V9M9 20V4M15 20v-7M21 20v-3"/>
-  </g>
-  <g id="i-flag" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M5 3v18"/><path d="M5 4h13l-3 4 3 4H5"/>
-  </g>
-  <g id="i-audit" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/>
-  </g>
-  <g id="i-customer" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="8" r="3.4"/><path d="M5 21c0-4 3-6.5 7-6.5S19 17 19 21"/>
-  </g>
-  <g id="i-worker" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="7.5" r="3" /><path d="M5.5 21c0-4 2.9-6.5 6.5-6.5S18.5 17 18.5 21" /><path d="M9 14.8l2.2 2.2L15.5 12.5" />
-  </g>
-  <g id="i-admin" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="3" y="8" width="18" height="12" rx="1.5"/><path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-  </g>
-  <g id="i-federation" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.6 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.6-3.8-9S9.5 5.5 12 3z"/>
-  </g>
-  <g id="i-arrow" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M5 12h13M13 6l6 6-6 6"/>
-  </g>
-  <g id="i-star">
-    <path d="M12 2.6l2.7 5.6 6.1.7-4.5 4.2 1.2 6.1-5.5-3-5.5 3 1.2-6.1-4.5-4.2 6.1-.7z" stroke-linejoin="round"/>
-  </g>
-</defs>
-</svg>
-
-<header class="nav">
-  <div class="wrap nav-inner">
-    <a class="wordmark" href="#home" aria-label="SanPaid home"><svg class="mark" viewBox="0 0 24 24"><use href="#i-network"/></svg>SanPaid</a>
-    <nav class="nav-links">
-      <a href="#how">How it works</a><a href="#why">Why SanPaid</a><a href="#proof">Field proof</a><a href="#roles">Roles</a>
-    </nav>
-    <button id="getStarted" type="button" class="btn btn-primary" data-platform-access>Open platform</button>
-  </div>
-</header>
-
-<main id="mainContent" tabindex="-1"><section class="hero" id="home">
-  <div class="hero-inner">
-    <div class="hero-copy">
-      <h1>Cooperative work,<br><em>connected locally.</em></h1>
-      <p>Customers, verified workers and cooperatives share one accountable service record — from request to payment.</p>
-      <div class="hero-cta">
-        <button type="button" class="btn btn-primary" data-platform-access>Open platform</button>
-        <button id="heroTourCta" type="button" class="btn btn-ghost" data-open-selector="0">Platform tour</button>
+  <nav class="nav eval-nav" aria-label="SanPaid navigation">
+    <div class="wrap navin">
+      <a class="brand" href="#home" aria-label="SanPaid home">San<span>Paid</span></a>
+      <div class="navlinks">
+        <a href="#how">How it works</a>
+        <a href="#difference">Why SanPaid</a>
+        <a href="#evidence">Field proof</a>
+        <a href="#operatingModel">Roles</a>
       </div>
-      <div class="hero-chips">
-        <div class="chip"><svg><use href="#i-shield"/></svg>Verified workers</div>
-        <div class="chip"><svg><use href="#i-scale"/></svg>Fair ranking</div>
-        <div class="chip"><svg><use href="#i-receipt"/></svg>Transparent billing</div>
+      <div class="actions">
+        <button class="btn primary desktop-only" id="getStarted" type="button">OPEN PLATFORM</button>
+        <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileDrawer">☰</button>
       </div>
     </div>
-    <canvas id="heroCanvas" aria-hidden="true"></canvas>
-  </div>
-</section>
-
-<section class="scene-section">
-  <div class="wrap">
-    <svg class="scene" viewBox="0 0 640 190" role="img" aria-label="A worker's verified ID is checked against the customer's phone before service begins">
-      <line x1="14" y1="168" x2="626" y2="168" stroke="var(--line)" stroke-width="1"/>
-      <rect x="452" y="18" width="150" height="150" rx="10" fill="none" stroke="var(--line)" stroke-width="1.5"/>
-      <line x1="527" y1="18" x2="527" y2="168" stroke="var(--line)" stroke-width="1" stroke-dasharray="2 5"/>
-      <path d="M232,46 C300,-6 400,-6 452,44" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="3 6"/>
-      <use href="#i-worker" transform="translate(78,58) scale(3.6)" style="stroke:var(--ink)"/>
-      <use href="#i-shield" transform="translate(196,4) scale(1.7)" style="stroke:var(--teal)"/>
-      <use href="#i-check" transform="translate(320,4) scale(1.5)" style="stroke:var(--teal)"/>
-      <use href="#i-customer" transform="translate(468,58) scale(3.6)" style="stroke:var(--ink)"/>
-      <use href="#i-qr" transform="translate(560,4) scale(1.4)" style="stroke:var(--amber)"/>
-    </svg>
-    <p class="scene-caption">Every worker's identity is verified before they reach your door.</p>
-  </div>
-</section>
-
-<section id="how">
-  <div class="wrap">
-    <div class="sec-head">
-      <h2>One request. One trusted&nbsp;record.</h2>
-      <p>Every step is visible to the customer, the worker and the cooperative. Tap a step for detail.</p>
+    <div id="mobileDrawer" class="mobile-drawer hidden" aria-hidden="true">
+      <a href="#how">How it works</a>
+      <a href="#difference">Why SanPaid</a>
+      <a href="#evidence">Field proof</a>
+      <a href="#operatingModel">Roles</a>
+      <button type="button" class="btn primary" id="spMobileAccess">OPEN PLATFORM</button>
+      <button type="button" class="btn secondary" data-open-selector="0">PLATFORM TOUR</button>
     </div>
-    <div class="flow">
-      <button type="button" class="step" data-i="0" aria-expanded="false"><span class="step-num"><svg><use href="#i-request"/></svg></span><span class="step-label">Request</span></button>
-      <button type="button" class="step" data-i="1" aria-expanded="false"><span class="step-num"><svg><use href="#i-check"/></svg></span><span class="step-label">Eligibility</span></button>
-      <button type="button" class="step" data-i="2" aria-expanded="false"><span class="step-num"><svg><use href="#i-rank"/></svg></span><span class="step-label">Fair ranking</span></button>
-      <button type="button" class="step" data-i="3" aria-expanded="false"><span class="step-num"><svg><use href="#i-hand"/></svg></span><span class="step-label">Worker chooses</span></button>
-      <button type="button" class="step" data-i="4" aria-expanded="false"><span class="step-num"><svg><use href="#i-qr"/></svg></span><span class="step-label">Verify</span></button>
-      <button type="button" class="step" data-i="5" aria-expanded="false"><span class="step-num"><svg><use href="#i-record"/></svg></span><span class="step-label">Record</span></button>
-      <div class="step-detail"><div class="step-detail-inner" id="stepDetailText">Service, location and time — submitted in one short form.</div></div>
-    </div>
-  </div>
-</section>
+  </nav>
 
-<hr class="rule">
-
-<section id="why">
-  <div class="wrap">
-    <div class="sec-head">
-      <h2>Two systems behind every booking.</h2>
-      <p>Local capacity comes first. When it runs short, the network — not a stranger — steps in.</p>
-    </div>
-    <div class="why-grid">
-      <div class="why-card">
-        <div class="diagram"><svg viewBox="0 0 200 90" width="100%" height="100%" fill="none" style="stroke:var(--teal)" stroke-width="1.4">
-          <circle cx="40" cy="45" r="26" stroke-dasharray="3 4"/>
-          <circle cx="40" cy="45" r="5" style="fill:var(--teal); stroke:none"/>
-          <path d="M66 45h40" stroke-dasharray="2 4"/>
-          <circle cx="140" cy="30" r="13"/><circle cx="140" cy="60" r="13"/>
-          <circle cx="140" cy="30" r="2.6" style="fill:var(--teal); stroke:none"/><circle cx="140" cy="60" r="2.6" style="fill:var(--teal); stroke:none"/>
-        </svg></div>
-        <h3>Cooperative Capacity Exchange</h3>
-        <p>If local capacity is low, another cooperative can offer support — with worker consent and authorized approval.</p>
-        <div class="mini-flow"><span>Local gap</span><svg><use href="#i-arrow"/></svg><span>Worker consent</span><svg><use href="#i-arrow"/></svg><span>Authorized support</span></div>
+  <header class="hero eval-hero" id="home">
+    <div class="wrap eval-hero-grid">
+      <div class="eval-hero-copy" data-reveal>
+        <span class="eyebrow eval-badge">Cooperative-owned local workforce network</span>
+        <h1>Cooperative work,<br><em>connected locally.</em></h1>
+        <p class="lead"><b>Not another worker-listing app.</b> Customers, verified workers and cooperatives share one accountable service record—from request to payment.</p>
+        <div class="hero-ctas">
+          <button class="btn primary eval-primary" type="button" data-platform-access>OPEN PLATFORM</button>
+          <button class="btn secondary eval-secondary" id="heroTourCta" type="button" data-open-selector="0">SEE PLATFORM TOUR</button>
+        </div>
+        <div class="hero-assurance" aria-label="SanPaid operating principles">
+          <span>Verified workers</span><span>Worker choice</span><span>Transparent billing</span>
+        </div>
+        <div class="hero-usp-row" aria-label="SanPaid core differentiators">
+          <article class="hero-usp"><small>USP 01 · SERVE TODAY</small><b>Cooperative Capacity Exchange</b></article>
+          <article class="hero-usp"><small>USP 02 · PREPARE TOMORROW</small><b>Demand-to-Workforce Loop</b></article>
+        </div>
       </div>
-      <div class="why-card">
-        <div class="diagram"><svg viewBox="0 0 200 90" width="100%" height="100%" fill="none" style="stroke:var(--amber)" stroke-width="1.4">
-          <path d="M15 65 Q 60 20 105 45 T 185 25" stroke-dasharray="3 4"/>
-          <circle cx="15" cy="65" r="4" style="fill:var(--amber); stroke:none"/>
-          <circle cx="105" cy="45" r="4" style="fill:var(--amber); stroke:none"/>
-          <circle cx="185" cy="25" r="4" style="fill:var(--amber); stroke:none"/>
-        </svg></div>
-        <h3>Demand-to-Workforce Loop</h3>
-        <p>Completed services and unmet requests become skill-wise demand signals for training and onboarding.</p>
-        <div class="mini-flow"><span>Service signals</span><svg><use href="#i-arrow"/></svg><span>Skill demand</span><svg><use href="#i-arrow"/></svg><span>Human-reviewed action</span></div>
+
+      <aside class="network-visual" id="evalHeroSystem" aria-label="Animated cooperative service network" data-reveal>
+        <div class="network-orbit" aria-hidden="true">
+          <svg viewBox="0 0 520 520" role="presentation">
+            <g class="orbit-ring orbit-ring-one"><ellipse cx="260" cy="260" rx="188" ry="82"/></g>
+            <g class="orbit-ring orbit-ring-two"><ellipse cx="260" cy="260" rx="188" ry="82" transform="rotate(60 260 260)"/></g>
+            <g class="orbit-ring orbit-ring-three"><ellipse cx="260" cy="260" rx="188" ry="82" transform="rotate(120 260 260)"/></g>
+            <g class="network-lines">
+              <path d="M104 236 174 128 260 260 392 164 416 316 298 410 156 378 104 236Z"/>
+              <path d="M174 128 392 164M104 236 416 316M156 378 298 410M260 260 156 378M260 260 416 316"/>
+            </g>
+            <g class="network-points">
+              <circle cx="104" cy="236" r="8"/><circle cx="174" cy="128" r="7"/><circle cx="260" cy="260" r="16" class="network-core"/>
+              <circle cx="392" cy="164" r="8"/><circle cx="416" cy="316" r="7"/><circle cx="298" cy="410" r="8"/><circle cx="156" cy="378" r="7"/>
+            </g>
+          </svg>
+          <div class="orbit-label orbit-customer"><small>01</small><b>Customer</b><span>Requests</span></div>
+          <div class="orbit-label orbit-coop"><small>02</small><b>Cooperative</b><span>Verifies + matches</span></div>
+          <div class="orbit-label orbit-worker"><small>03</small><b>Worker</b><span>Chooses + delivers</span></div>
+        </div>
+        <div class="network-signal"><span class="signal-dot"></span><p><b>Service today → stronger capacity tomorrow.</b><br>Every outcome becomes a human-reviewed demand signal.</p></div>
+      </aside>
+    </div>
+    <div class="hero-proof-strip" aria-label="Validation summary">
+      <div class="wrap">
+        <b>Stakeholder-informed design · Kolhapur</b>
+        <span>~50-minute stakeholder discussion</span>
+        <span>Signed &amp; stamped acknowledgement</span>
+        <span>5 findings mapped to product controls</span>
+        <a href="https://youtu.be/NMOKz8rl-LQ" target="_blank" rel="noopener">View evidence ↗</a>
       </div>
     </div>
-  </div>
-</section>
+  </header>
 
-<section id="proof">
-  <div class="wrap">
-    <div class="proof">
-      <div class="proof-stats">
-        <div class="proof-stat"><div class="num">~50 min</div><div class="lab">Recorded stakeholder discussion</div></div>
-        <div class="proof-stat"><div class="num">5</div><div class="lab">Validated priorities</div></div>
-        <div class="proof-stat"><div class="num">4</div><div class="lab">Evidence artifacts</div></div>
-        <a class="proof-link" href="https://youtu.be/NMOKz8rl-LQ" target="_blank" rel="noopener">Watch the evidence <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#i-arrow"/></svg></a>
-        <p class="proof-disclaimer">Qualitative field validation — not government approval or measured pilot impact.</p>
+  <section class="doorstep-scene" aria-label="Verified service start">
+    <div class="wrap doorstep-grid">
+      <div class="doorstep-copy">
+        <span class="scene-kicker">Trust at the doorstep</span>
+        <h2>Know who arrived<br>before work begins.</h2>
+        <p>Customer confirms the booked worker with a service-linked OTP or QR. Identity, estimate and service history stay connected.</p>
       </div>
-      <ul class="proof-list">
-        <li><span class="finding">Reliable workers are hard to discover</span><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><span class="decision">Verified eligibility + fair ranking</span></li>
-        <li><span class="finding">Quotes and records lack transparency</span><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><span class="decision">Approved estimates + audit history</span></li>
-        <li><span class="finding">Unknown workers entering homes</span><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><span class="decision">Verified profile + OTP / QR start</span></li>
-        <li><span class="finding">Welfare visibility is uneven</span><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><span class="decision">Digital Service Passport</span></li>
-      </ul>
+      <svg class="doorstep-visual" viewBox="0 0 680 280" role="img" aria-label="Customer verifies a cooperative worker at the doorstep">
+        <line x1="24" y1="245" x2="656" y2="245" class="scene-ground"/>
+        <rect x="472" y="42" width="146" height="203" rx="3" class="scene-door"/>
+        <circle cx="581" cy="148" r="5" class="scene-accent-fill"/>
+        <circle cx="176" cy="91" r="31" class="scene-person"/>
+        <path d="M122 230v-54c0-37 24-60 54-60s54 23 54 60v54M143 230v-54M209 230v-54" class="scene-person"/>
+        <rect x="229" y="104" width="90" height="126" rx="10" class="scene-phone"/>
+        <rect x="241" y="119" width="66" height="81" rx="4" class="scene-screen"/>
+        <path d="M251 134h17v17h-17zM280 134h17v17h-17zM251 163h17v17h-17zM282 163h7v7h-7zM293 174h7v7h-7z" class="scene-qr"/>
+        <circle cx="403" cy="91" r="31" class="scene-person"/>
+        <path d="M349 230v-54c0-37 24-60 54-60s54 23 54 60v54M370 230v-54M436 230v-54" class="scene-person"/>
+        <rect x="360" y="142" width="86" height="50" rx="4" class="scene-id"/>
+        <circle cx="377" cy="160" r="8"/><path d="M392 154h42M392 166h30M371 181h63"/>
+        <circle cx="336" cy="79" r="22" class="scene-verified"/><path d="m326 79 7 7 14-16" class="scene-check"/>
+        <path d="M319 78h-28M358 78h20" class="scene-link"/>
+      </svg>
     </div>
-  </div>
-</section>
+  </section>
 
-<section>
-  <div class="wrap">
-    <div class="sec-head">
-      <h2>Controls where they matter.</h2>
-      <p>Trust isn't a badge — it's built into verification, delivery, billing and complaints.</p>
-    </div>
-    <div class="trust-layout">
-      <div class="passport-wrap">
-        <svg class="passport" viewBox="0 0 320 200" role="img" aria-label="Sample Digital Service Passport showing a verified worker's profile">
-          <rect x="1" y="1" width="318" height="198" rx="10" fill="var(--bg-raised)" stroke="var(--line)" stroke-width="1.5"/>
-          <line x1="18" y1="20" x2="302" y2="20" stroke="var(--line)" stroke-width="1" stroke-dasharray="1 3"/>
-          <circle cx="58" cy="74" r="34" fill="var(--teal-soft)"/>
-          <use href="#i-worker" transform="translate(37,52) scale(1.75)" style="stroke:var(--ink)"/>
-          <circle cx="84" cy="100" r="12" style="fill:var(--teal)"/>
-          <use href="#i-check" transform="translate(76,92) scale(0.68)" style="stroke:var(--bg-raised); stroke-width:2.6"/>
-          <text x="110" y="58" font-family="IBM Plex Sans" font-size="15" font-weight="600" fill="var(--ink)">Verified worker</text>
-          <text x="110" y="78" font-family="IBM Plex Sans" font-size="12" fill="var(--ink-soft)">Electrician · local cooperative</text>
-          <g transform="translate(110,90)">
-            <use href="#i-star" transform="translate(0,0) scale(0.8)" style="fill:var(--amber); stroke:none"/>
-            <use href="#i-star" transform="translate(20,0) scale(0.8)" style="fill:var(--amber); stroke:none"/>
-            <use href="#i-star" transform="translate(40,0) scale(0.8)" style="fill:var(--amber); stroke:none"/>
-            <use href="#i-star" transform="translate(60,0) scale(0.8)" style="fill:var(--amber); stroke:none"/>
-            <use href="#i-star" transform="translate(80,0) scale(0.8)" style="fill:none; stroke:var(--ink-faint); stroke-width:1.4"/>
-          </g>
-          <line x1="18" y1="142" x2="302" y2="142" stroke="var(--line)" stroke-width="1"/>
-          <text x="18" y="164" font-family="IBM Plex Serif" font-size="13" font-weight="600" fill="var(--ink)">Digital Service Passport</text>
-          <text x="18" y="182" font-family="IBM Plex Sans" font-size="10.5" fill="var(--ink-faint)">Skills · ratings · incidents — one traceable record</text>
-          <use href="#i-qr" transform="translate(270,150) scale(1.3)" style="stroke:var(--ink-soft)"/>
-        </svg>
+  <main id="mainContent" tabindex="-1">
+    <section class="section flow-section" id="how">
+      <div class="wrap">
+        <div class="section-intro" data-reveal><span class="tag">How SanPaid works</span><h2>One request. One trusted service record.</h2><p>From discovery to payment, every important decision stays visible to the customer, worker and cooperative.</p></div>
+        <ol class="service-flow" data-reveal>
+          <li><span>01</span><b>Request</b><small>Service + location + time</small></li>
+          <li><span>02</span><b>Check eligibility</b><small>Skill + documents + availability</small></li>
+          <li><span>03</span><b>Rank fairly</b><small>Explainable suitability factors</small></li>
+          <li><span>04</span><b>Worker chooses</b><small>Accept or decline without penalty</small></li>
+          <li><span>05</span><b>Verify service</b><small>Booking-linked OTP / QR start</small></li>
+          <li><span>06</span><b>Complete &amp; record</b><small>Bill + payment + rating + audit</small></li>
+        </ol>
+        <div class="flow-rule" data-reveal><b>Eligibility first.</b><span>Fair ranking second.</span><span>Worker choice always.</span></div>
       </div>
-      <div class="trust-grid">
-        <div class="trust-card"><svg><use href="#i-shield"/></svg><h4>Verified workers</h4><p>Identity, association and skill evidence reviewed.</p></div>
-        <div class="trust-card"><svg><use href="#i-qr"/></svg><h4>OTP / QR start</h4><p>Customer confirms the booked worker before work begins.</p></div>
-        <div class="trust-card"><svg><use href="#i-receipt"/></svg><h4>Transparent billing</h4><p>New cost requires fresh approval before the invoice.</p></div>
-        <div class="trust-card"><svg><use href="#i-record"/></svg><h4>Service Passport</h4><p>Skills, ratings, incidents stay traceable.</p></div>
-        <div class="trust-card"><svg><use href="#i-flag"/></svg><h4>Complaints + SLA</h4><p>Ownership, evidence and closure stay recorded.</p></div>
-        <div class="trust-card"><svg><use href="#i-audit"/></svg><h4>Audit trail</h4><p>Every action stays attributable and reviewable.</p></div>
+    </section>
+
+    <section class="section difference-section" id="difference">
+      <div class="wrap">
+        <div class="section-intro" data-reveal><span class="tag">Why SanPaid</span><h2>Beyond booking: manage today and prepare tomorrow.</h2><p>Two connected systems make SanPaid different from a standard worker-listing marketplace.</p></div>
+        <div class="difference-grid">
+          <article class="difference-card capacity-card" id="capacity" data-reveal>
+            <div class="difference-top"><span>01</span><small>Cooperative Capacity Exchange</small></div>
+            <h3>Local capacity first. Network support when needed.</h3>
+            <p>If suitable local capacity is low, another cooperative can offer verified support—with worker consent, authorized approval and recorded responsibility.</p>
+            <div class="capacity-mini" aria-label="Capacity exchange flow"><span>Local gap</span><i>→</i><span>Worker consent</span><i>→</i><span>Authorized support</span></div>
+            <div class="difference-actions"><button class="text-action" id="evalCapacityAction" type="button">Check exchange logic</button><button class="text-action secondary-action" id="evalCapacityConnected" type="button">View walkthrough</button></div>
+            <div class="eval-worker-message" id="evalCapacityStatus" hidden></div>
+          </article>
+          <article class="difference-card demand-card" id="demandLoop" data-reveal>
+            <div class="difference-top"><span>02</span><small>Demand-to-Workforce Loop</small></div>
+            <h3>Serve today. Prepare tomorrow.</h3>
+            <p>Completed services and unmet requests become skill-wise demand signals. Human-reviewed forecasting supports training, onboarding and capacity decisions.</p>
+            <div class="demand-mini" aria-label="Demand planning loop"><span>Service signals</span><i>→</i><span>Skill demand</span><i>→</i><span>Cooperative action</span></div>
+            <div class="human-review-note"><b>Human-reviewed AI</b><span>No automatic workforce action.</span></div>
+          </article>
+        </div>
       </div>
+    </section>
+
+    <section class="section proof-section" id="evidence">
+      <div class="wrap proof-layout">
+        <div class="proof-story" data-reveal>
+          <span class="tag">Field proof</span>
+          <h2>Real operational pain points shaped the product.</h2>
+          <p>A recorded cooperative stakeholder interaction surfaced the need for trusted discovery, transparent pricing, digital traceability, welfare visibility and stronger home-service safety.</p>
+          <div class="proof-facts">
+            <div><strong>~50 min</strong><span>Recorded discussion</span></div>
+            <div><strong>5</strong><span>Validated priorities</span></div>
+            <div><strong>4</strong><span>Evidence artifacts</span></div>
+          </div>
+          <a class="evidence-link" href="https://youtu.be/NMOKz8rl-LQ" target="_blank" rel="noopener">Watch stakeholder evidence <span>↗</span></a>
+        </div>
+        <div class="decision-map" data-reveal>
+          <div class="decision-map-head"><span>Finding</span><span>SanPaid decision</span></div>
+          <article><div><b>01</b><p>Nearby reliable workers are hard to discover.</p></div><strong>Verified local eligibility and fair ranking</strong></article>
+          <article><div><b>02</b><p>Quotes and service records lack transparency.</p></div><strong>Approved estimates, invoices and audit history</strong></article>
+          <article><div><b>03</b><p>Unknown workers entering homes need stronger trust.</p></div><strong>Verified profile plus OTP / QR service start</strong></article>
+          <article><div><b>04</b><p>Insurance and welfare visibility is uneven.</p></div><strong>Digital Service Passport with welfare status</strong></article>
+          <small>Qualitative field validation—not Government approval or measured pilot impact.</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="section trust-section" id="connectedDemoSection">
+      <div class="wrap">
+        <div class="section-intro" data-reveal><span class="tag">Trust built into the flow</span><h2>Controls appear where they matter.</h2><p>SanPaid connects verification, service delivery, billing and complaint ownership instead of treating trust as a profile badge.</p></div>
+        <div class="trust-control-grid" data-reveal>
+          <article><span>✓</span><div><b>Verified cooperative workers</b><p>Identity, association and skill evidence are reviewed.</p></div></article>
+          <article><span>✓</span><div><b>OTP / QR service start</b><p>The customer confirms the booked worker before work begins.</p></div></article>
+          <article><span>✓</span><div><b>Transparent billing</b><p>New cost requires fresh approval before the final invoice.</p></div></article>
+          <article><span>✓</span><div><b>Digital Service Passport</b><p>Skills, ratings, incidents and welfare status stay traceable.</p></div></article>
+          <article><span>✓</span><div><b>Complaints + SLA</b><p>Ownership, evidence, escalation and closure remain recorded.</p></div></article>
+          <article><span>✓</span><div><b>Role-based audit trail</b><p>Operational actions stay attributable and reviewable.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section live-proof-section" id="matching">
+      <div class="wrap">
+        <div class="section-intro" data-reveal><span class="tag">Working policy proof</span><h2>See eligibility and fair ranking in action.</h2><p>This explanatory scenario mirrors the connected assignment policy without claiming live Maps distance or a real booking.</p></div>
+        <div class="eval-match" data-reveal>
+          <div class="eval-request-bar">
+            <div class="eval-request-item"><small>Service</small><b>Electrician</b><span>Example request</span></div>
+            <div class="eval-request-item"><small>Policy</small><b>Verified · Skilled · Available</b><span>Eligibility before ranking</span></div>
+            <div class="eval-request-item eval-radius-control"><small>Scenario radius</small><select id="evalRadius" aria-label="Explanatory scenario radius"><option value="2">2 km</option><option value="5">5 km</option><option value="10">10 km</option><option value="20" selected>20 km</option><option value="30">30 km</option></select><span>Configurable policy example</span></div>
+          </div>
+          <div class="eval-radius-copy">Distances shown here are controlled scenario values. The connected platform applies the same eligibility-first decision sequence.</div>
+          <div class="eval-proof-body">
+            <div class="eval-proof-panel">
+              <div class="eval-panel-heading"><div><small>STEP 1</small><h3>Eligibility gate</h3></div><span id="evalEligibilityBadge">WAITING</span></div>
+              <div class="eval-stage-summary" id="evalEligibilitySummary"><span>5 candidates</span><i>→</i><span>Run check</span></div>
+              <div class="eval-candidate-list" id="evalCandidateList" aria-live="polite"></div>
+            </div>
+            <div class="eval-proof-panel">
+              <div class="eval-panel-heading"><div><small>STEP 2–3</small><h3>Fair ranking → worker choice</h3></div><span id="evalRankingBadge">LOCKED</span></div>
+              <div class="eval-ranking-list" id="evalRankingList" aria-live="polite"></div>
+              <div id="evalOfferRoot" aria-live="polite"></div>
+              <div class="eval-worker-message" id="evalWorkerMessage" hidden></div>
+              <div class="eval-audit-head"><small>Audit outcome</small><span>Reason-coded explanatory trail</span></div>
+              <div class="eval-audit" id="evalAudit" aria-live="polite"></div>
+            </div>
+          </div>
+          <div class="eval-actions-row">
+            <button class="btn primary" id="runMatchBtn" type="button">Run Eligibility Check</button>
+            <button class="btn secondary" id="evalRunRanking" type="button" disabled>Run Fair Ranking</button>
+            <button class="btn tertiary" id="evalResetMatch" type="button">Reset</button>
+            <span id="evalMatchState" class="eval-demo-truth">EXPLANATORY SCENARIO · NOT A LIVE ASSIGNMENT</span>
+          </div>
+        </div>
+        <div class="live-proof-bridge" data-reveal><div><b>Ready to explore the connected workflow?</b><span>Open the customer workspace to create and follow a service request.</span></div><button class="btn primary" id="evalOpenConnected" type="button">Open Customer Workspace</button></div>
+        <div id="matchResults" hidden></div>
+      </div>
+    </section>
+
+    <section class="section roles-section" id="operatingModel">
+      <div class="wrap">
+        <div class="section-intro" data-reveal><span class="tag">One platform · four clear roles</span><h2>Every role sees the work it owns.</h2><p>Customer service, worker delivery and cooperative governance stay connected without mixing authority.</p></div>
+        <div class="role-grid" data-reveal>
+          <article><span class="role-mark">CU</span><h3>Customer</h3><p>Request, approve, verify, pay and review a trusted local service.</p><button type="button" data-open-connected="CUSTOMER">Open customer workspace</button></article>
+          <article><span class="role-mark">WK</span><h3>Worker</h3><p>Manage availability, accept work, deliver service and build a verified record.</p><button type="button" data-open-connected="WORKER_A">Open worker workspace</button></article>
+          <article><span class="role-mark">CA</span><h3>Cooperative Admin</h3><p>Verify workers, manage local services, complaints, SLA and capacity.</p><button type="button" data-judge-role="COOPERATIVE_ADMIN">Open cooperative workspace</button></article>
+          <article><span class="role-mark">FA</span><h3>Federation Admin</h3><p>Coordinate network capacity, policy, regional demand and escalations.</p><button type="button" data-judge-role="FEDERATION_ADMIN">Open federation workspace</button></article>
+        </div>
+        <div class="role-action" data-reveal><button class="btn secondary" id="evalAdminPrototype" type="button" data-eval-open-admin>View Administration Workspaces</button></div>
+      </div>
+    </section>
+
+    <section class="section outcome-section" id="impact">
+      <div class="wrap">
+        <div class="section-intro" data-reveal><span class="tag">Pilot outcomes to measure</span><h2>Better service access. Stronger workforce readiness.</h2><p>SanPaid does not claim impact before a pilot. It defines the outcomes that cooperatives should measure.</p></div>
+        <div class="outcome-grid" data-reveal>
+          <article><span>01</span><b>Faster verified discovery</b><p>Time to first eligible worker and fulfilment rate.</p></article>
+          <article><span>02</span><b>Better access to local work opportunities</b><p>Opportunity distribution across eligible active workers.</p></article>
+          <article><span>03</span><b>Traceable service delivery</b><p>Verification, billing and complaint-resolution records.</p></article>
+          <article><span>04</span><b>Workforce preparation</b><p>Skill-wise capacity gaps reviewed for training or onboarding.</p></article>
+        </div>
+        <div class="pilot-sequence" data-reveal><span>Baseline</span><i>→</i><span>Pilot</span><i>→</i><span>Measure KPIs</span><i>→</i><span>Validate Impact</span></div>
+      </div>
+    </section>
+
+    <section class="section architecture-section" id="architecture">
+      <div class="wrap architecture-card" data-reveal>
+        <div><span class="tag">Connected and accountable</span><h2>One record from request to outcome.</h2><p>Role-based access, PostgreSQL-backed operations and audit history keep service, payment, complaint and capacity decisions connected.</p></div>
+        <div class="architecture-line" aria-label="SanPaid connected architecture"><span>People</span><i>→</i><span>Service workflow</span><i>→</i><span>Role controls</span><i>→</i><span>PostgreSQL + audit</span></div>
+        <button class="text-action" id="evalResearch" type="button">View full architecture &amp; research</button>
+      </div>
+    </section>
+
+    <section class="section scope-section" id="status">
+      <div class="wrap scope-bar" data-reveal><b>IMPLEMENTED IN CURRENT BUILD</b><span>Connected source and controlled sandbox functions are separated from future production integrations and pilot impact claims.</span></div>
+    </section>
+
+    <section class="final-cta" aria-label="Open SanPaid platform">
+      <div class="wrap" data-reveal>
+        <span class="tag">Serve today · prepare tomorrow</span>
+        <h2>Turn local workforce capacity into a trusted cooperative network.</h2>
+        <p>Explore the working role flows and see how one service record supports delivery, governance and planning.</p>
+        <div class="final-actions"><button class="btn primary" id="evalFinalPrototype" type="button" data-platform-access>OPEN PLATFORM</button><button class="btn secondary" id="evalFinalArchitecture" type="button">VIEW ARCHITECTURE</button></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-grid">
+      <div><div class="brand">San<span>Paid</span></div><p>Cooperative-owned local workforce network.</p></div>
+      <div><b>Core journey</b><p>Request → eligibility → fair ranking → worker choice → verified delivery → billing → audit.</p></div>
+      <div><b>Evidence boundary</b><p>Field research validates direction. Pilot KPIs will validate measured impact.</p></div>
     </div>
-  </div>
-</section>
-
-<hr class="rule">
-
-<section id="roles">
-  <div class="wrap">
-    <div class="sec-head">
-      <h2>Every role sees its own work.</h2>
-      <p>Customer service, worker delivery and cooperative governance — connected, never mixed.</p>
-    </div>
-    <div class="roles">
-      <article class="role-card"><svg><use href="#i-customer"/></svg><h4>Customer</h4><p>Request, approve, verify and pay for a trusted local service.</p><button type="button" class="platform-role-button" data-open-connected="CUSTOMER">Open customer workspace</button></article>
-      <article class="role-card"><svg><use href="#i-worker"/></svg><h4>Worker</h4><p>Accept work, deliver service, build a verified record.</p><button type="button" class="platform-role-button" data-open-connected="WORKER_A">Open worker workspace</button></article>
-      <article class="role-card"><svg><use href="#i-admin"/></svg><h4>Cooperative admin</h4><p>Verify workers, manage complaints, SLA and capacity.</p><button type="button" class="platform-role-button" data-judge-role="COOPERATIVE_ADMIN">Open cooperative workspace</button></article>
-      <article class="role-card"><svg><use href="#i-federation"/></svg><h4>Federation admin</h4><p>Coordinate network capacity, policy and escalations.</p><button type="button" class="platform-role-button" data-judge-role="FEDERATION_ADMIN">Open federation workspace</button></article>
-    </div>
-  </div>
-</section>
-
-<hr class="rule">
-
-<section id="kpis">
-  <div class="wrap">
-    <div class="sec-head">
-      <h2>Outcomes to measure, not claim.</h2>
-      <p>SanPaid doesn't claim impact before a pilot — it defines what a pilot should measure.</p>
-    </div>
-    <div class="trust-grid">
-      <div class="trust-card"><svg><use href="#i-signal"/></svg><h4>Faster discovery</h4><p>Time to first eligible worker, fulfilment rate.</p></div>
-      <div class="trust-card"><svg><use href="#i-scale"/></svg><h4>Fair opportunity</h4><p>Work distributed across eligible active workers.</p></div>
-      <div class="trust-card"><svg><use href="#i-audit"/></svg><h4>Traceable delivery</h4><p>Verification, billing and complaint records.</p></div>
-      <div class="trust-card"><svg><use href="#i-network"/></svg><h4>Workforce readiness</h4><p>Skill gaps reviewed for training, onboarding.</p></div>
-    </div>
-  </div>
-</section>
-
-<section style="padding-top:0;">
-  <div class="wrap">
-    <hr class="rule">
-    <div class="journey">
-      <div class="node"><svg><use href="#i-request"/></svg><span>Request</span></div>
-      <svg class="arrow" viewBox="0 0 24 24"><use href="#i-arrow"/></svg>
-      <div class="node"><svg><use href="#i-check"/></svg><span>Eligibility</span></div>
-      <svg class="arrow" viewBox="0 0 24 24"><use href="#i-arrow"/></svg>
-      <div class="node"><svg><use href="#i-rank"/></svg><span>Ranking</span></div>
-      <svg class="arrow" viewBox="0 0 24 24"><use href="#i-arrow"/></svg>
-      <div class="node"><svg><use href="#i-qr"/></svg><span>Delivery</span></div>
-      <svg class="arrow" viewBox="0 0 24 24"><use href="#i-arrow"/></svg>
-      <div class="node"><svg><use href="#i-receipt"/></svg><span>Billing</span></div>
-      <svg class="arrow" viewBox="0 0 24 24"><use href="#i-arrow"/></svg>
-      <div class="node"><svg><use href="#i-audit"/></svg><span>Audit</span></div>
-    </div>
-  </div>
-</section>
-
-</main>
-
-<footer>
-  <div class="wrap foot-inner">
-    <a class="wordmark" href="#home"><svg class="mark" viewBox="0 0 24 24"><use href="#i-network"/></svg>SanPaid</a>
-    <p class="foot-note">Field research validates direction. Pilot KPIs will validate measured impact — this build implements the connected workflow in a controlled sandbox.</p>
-  </div>
-</footer>
+  </footer>
 </div>
+
 <div id="toastWrap" class="toast-wrap"></div>
-<script src="homepage-v2.js"></script>
 <script src="app.js"></script>
 <script src="mobile.js"></script>
 <script src="connected-demo.js"></script>
