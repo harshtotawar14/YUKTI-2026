@@ -543,7 +543,7 @@
     if(customerWorkerLoaded)return;
     customerWorkerLoaded=true;
     loadRoleShell();
-    stylesheet('sanpaidCustomerWorkerStyles','customer-worker-dashboard.css');
+    stylesheet('sanpaidCustomerWorkerStyles','customer-worker-dashboard.css?v=worker-mobile-1');
     script('sanpaidCustomerWorkerRuntime','customer-worker-dashboard.js');
   }
 
