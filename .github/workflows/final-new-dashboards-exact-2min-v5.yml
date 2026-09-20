@@ -1,0 +1,116 @@
+name: FINAL New Dashboards Exact 2min v5
+
+on:
+  push:
+    branches:
+      - recording-90sec-20260920
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          pip install edge-tts
+
+      - name: Record complete latest-dashboard walkthrough
+        env:
+          TARGET_URL: https://yukti-2026-brown.vercel.app/
+        run: |
+          mkdir -p output/raw output/voice output/fast
+          node scripts/record-sanpaid-new-dash-120.mjs
+
+          RAW_DUR=$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 output/SanPaid-new-dash-raw.webm)
+          FACTOR=$(python - <<PY
+          d=float("$RAW_DUR")
+          print(d/120.0)
+          PY
+          )
+          echo "Raw duration: $RAW_DUR"
+          echo "Video speed factor: $FACTOR"
+          echo "$FACTOR" > output/video-factor.txt
+
+          ffmpeg -y -i output/SanPaid-new-dash-raw.webm \
+            -vf "setpts=PTS/$FACTOR,fps=30" -t 120 \
+            -c:v libx264 -profile:v main -level 4.0 -preset medium -crf 19 -pix_fmt yuv420p \
+            -an -movflags +faststart output/SanPaid-new-dash-exact-120-silent.mp4
+
+      - name: Generate clearer voice, five percent faster again
+        shell: bash
+        run: |
+          set -e
+          VOICE="en-IN-PrabhatNeural"
+          if edge-tts --list-voices | grep -q "en-IN-ArjunNeural"; then VOICE="en-IN-ArjunNeural"; fi
+          RATE="-8%"
+          tts(){ local txt="$1"; local out="$2"; for i in 1 2 3 4; do edge-tts --voice "$VOICE" --rate="$RATE" --text "$txt" --write-media "$out" && return 0; sleep 4; done; return 1; }
+
+          tts "SanPaid is a cooperative-owned local workforce network connecting customers, verified workers and cooperatives in one trusted system." output/voice/01.mp3
+          tts "The customer dashboard brings the complete service journey into one place. Customers can book a service, track the current status, verify the assigned worker, approve charges, pay and review updates." output/voice/02.mp3
+          tts "The worker dashboard focuses on fair opportunities and the next action. Workers can review suitable job requests, see why they were matched, accept or decline, manage availability and follow the service journey." output/voice/03.mp3
+          tts "Service starts only after two checks: worker verification and customer confirmation. Without both, work cannot begin." output/voice/04.mp3
+          tts "The Cooperative Admin manages workers, services, complaints, SLA, payments and local capacity from one governed workspace." output/voice/05.mp3
+          tts "The Federation Admin monitors regional capacity, escalations, demand patterns and cooperative coordination across the network." output/voice/06.mp3
+          tts "If local capacity is low, a nearby cooperative can help. Worker consent and authorized approval are required, and the assignment remains traceable." output/voice/07.mp3
+          tts "Demand and shortage data reveal skill gaps for human-reviewed training and onboarding. AI advises; the cooperative decides." output/voice/08.mp3
+          tts "The design is backed by field research, a recorded stakeholder discussion and signed evidence." output/voice/09.mp3
+          tts "SanPaid. Serve today. Prepare tomorrow." output/voice/10.mp3
+
+          for n in 01 02 03 04 05 06 07 08 09 10; do
+            ffmpeg -loglevel error -y -i output/voice/${n}.mp3 -filter:a "atempo=1.1025" -c:a libmp3lame -b:a 192k output/fast/${n}.mp3
+          done
+
+      - name: Scale scene timing and sync narration
+        run: |
+          python - <<'PY'
+          import json
+          marks=json.load(open('output/timings-new-dash.json'))
+          factor=float(open('output/video-factor.txt').read().strip())
+          names=['intro','customer','worker','trust','cooperative','federation','capacity','planning','evidence','end']
+          scaled={k:float(marks[k])/factor for k in names}
+          print('Original marks:', marks)
+          print('Scaled marks:', scaled)
+
+          parts=[]; labels=[]
+          for i,name in enumerate(names,1):
+              delay=max(0,int(scaled[name]*1000))
+              parts.append(f'[{i}:a]adelay={delay}|{delay},volume=1.45[a{i}]')
+              labels.append(f'[a{i}]')
+          parts.append(''.join(labels)+'amix=inputs=10:duration=longest:dropout_transition=0,loudnorm=I=-15:TP=-1.5:LRA=8[a]')
+          open('output/filter.txt','w').write(';'.join(parts))
+          json.dump(scaled,open('output/scaled-timings.json','w'),indent=2)
+          PY
+
+          ffmpeg -y \
+            -i output/SanPaid-new-dash-exact-120-silent.mp4 \
+            -i output/fast/01.mp3 -i output/fast/02.mp3 -i output/fast/03.mp3 -i output/fast/04.mp3 \
+            -i output/fast/05.mp3 -i output/fast/06.mp3 -i output/fast/07.mp3 -i output/fast/08.mp3 \
+            -i output/fast/09.mp3 -i output/fast/10.mp3 \
+            -filter_complex_script output/filter.txt \
+            -map 0:v -map "[a]" -t 120 \
+            -c:v copy -c:a aac -b:a 192k -ar 44100 -ac 2 -movflags +faststart \
+            output/SanPaid-Final-Latest-Dashboards-Exact-2Min.mp4
+
+          ffprobe -v error -show_entries format=duration -show_entries stream=codec_name,codec_type,width,height,sample_rate,channels -of json output/SanPaid-Final-Latest-Dashboards-Exact-2Min.mp4
+
+      - name: Upload final exact video
+        uses: actions/upload-artifact@v4
+        with:
+          name: sanpaid-final-latest-dashboards-exact-2min
+          path: output/SanPaid-Final-Latest-Dashboards-Exact-2Min.mp4
+          if-no-files-found: error
+          retention-days: 7
