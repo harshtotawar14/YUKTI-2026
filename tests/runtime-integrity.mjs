@@ -19,7 +19,8 @@ assert.equal(new Set(ids).size,ids.length,'index.html contains duplicate IDs');
 
 const localAssets=[...html.matchAll(/(?:src|href)="([^"]+)"/g)]
   .map(match=>match[1])
-  .filter(value=>!value.startsWith('#')&&!value.startsWith('http:')&&!value.startsWith('https:'));
+  .filter(value=>!value.startsWith('#')&&!value.startsWith('http:')&&!value.startsWith('https:'))
+  .map(value=>value.split(/[?#]/)[0]);
 for(const asset of localAssets){
   assert.ok(existsSync(resolve(root,asset)),`Missing local asset referenced by index.html: ${asset}`);
 }
