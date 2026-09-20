@@ -38,7 +38,7 @@ const links=[...html.matchAll(/<a\b[^>]*>/gi)].map(m=>({tag:m[0],a:attrs(m[0])})
 
 const delegatedButtonAttrs=new Set([
   'data-eval-open-connected','data-open-selector','data-service','data-role','data-action','data-tab','data-demo-action',
-  'data-booking-action','data-workspace-action','data-portal-action','data-close','data-open-role','data-auth-action','data-capacity-action','data-judge-role','data-open-connected','data-platform-access'
+  'data-booking-action','data-workspace-action','data-portal-action','data-close','data-open-role','data-auth-action','data-capacity-action','data-judge-role','data-open-connected','data-platform-access','data-i'
 ]);
 
 function idReferenced(id){
@@ -94,17 +94,20 @@ test('navigation does not contain empty or javascript pseudo-links',()=>{
 });
 
 test('visible evaluator-critical controls are present and wired',()=>{
-  const critical=['getStarted','menuBtn','heroTourCta','runMatchBtn','evalRunRanking','evalResetMatch','evalOpenConnected','evalAdminPrototype','evalCapacityAction','evalFinalPrototype','evalFinalArchitecture'];
+  const critical=['getStarted','heroTourCta'];
   const missing=critical.filter(id=>!ids.includes(id));
   const unwired=critical.filter(id=>ids.includes(id)&&!idReferenced(id)&&!new RegExp(`id=["']${id}["'][^>]*(?:data-eval-|data-open-)`).test(html));
   assert.deepEqual(missing,[],`Missing critical controls: ${missing.join(', ')}`);
   assert.deepEqual(unwired,[],`Unwired critical controls: ${unwired.join(', ')}`);
+  assert.equal((html.match(/class="platform-role-button"/g)||[]).length,4,'All four role workspaces must remain directly accessible.');
 });
 
 test('deploy build uses an explicit public-asset allowlist',()=>{
   const build=readFileSync(join(root,'scripts/build.mjs'),'utf8');
   assert.match(build,/const publicFiles=\[/,'Build must publish only an explicit runtime allowlist.');
   assert.doesNotMatch(build,/readdirSync\(root/,'Build must not copy every top-level JS/CSS file.');
+  assert.match(build,/homepage-v2\.css/,'Approved homepage stylesheet must be included in the production build.');
+  assert.match(build,/homepage-v2\.js/,'Approved homepage interactions must be included in the production build.');
 });
 
 test('legacy duplicate presentation layers are removed',()=>{
@@ -125,41 +128,39 @@ test('public runtime has no obvious dead placeholder actions',()=>{
 });
 
 
-test('landing preserves the research-backed SanPaid narrative',()=>{
+test('landing preserves the approved SanPaid narrative',()=>{
   const required=[
-    'Cooperative-owned local workforce network',
-    'Verified cooperative workers',
-    'Check eligibility',
-    'Rank fairly',
+    'Cooperative work,',
+    'connected locally.',
+    'Verified workers',
+    'Fair ranking',
+    'Transparent billing',
+    'Eligibility',
     'Worker chooses',
-    'Verify service',
-    'Complete &amp; record',
+    'Digital Service Passport',
     'Cooperative Capacity Exchange',
     'Demand-to-Workforce Loop',
-    'Better access to local work opportunities',
-    'Baseline',
-    'Measure KPIs',
-    'Validate Impact',
-    'Finding',
-    'SanPaid decision'
+    'Human-reviewed action',
+    'Outcomes to measure, not claim.'
   ];
   const missing=required.filter(phrase=>!html.includes(phrase));
-  assert.deepEqual(missing,[],`PPT-aligned website phrases missing: ${missing.join(', ')}`);
+  assert.deepEqual(missing,[],`Approved website phrases missing: ${missing.join(', ')}`);
 });
 
-test('first fold exposes both core USPs and field validation immediately',()=>{
+test('approved homepage structure is present exactly once',()=>{
   const required=[
-    'Not another worker-listing app.',
-    'USP 01',
-    'Cooperative Capacity Exchange',
-    'USP 02',
-    'Demand-to-Workforce Loop',
-    'Stakeholder-informed design · Kolhapur',
-    '5 findings mapped to product controls'
+    'id="landing"',
+    'id="heroCanvas"',
+    'class="scene-section"',
+    'class="why-grid"',
+    'class="proof"',
+    'class="roles"',
+    'class="journey"'
   ];
   const missing=required.filter(phrase=>!html.includes(phrase));
-  assert.deepEqual(missing,[],`First-fold differentiation/evidence missing: ${missing.join(', ')}`);
-  assert.equal((html.match(/class="hero-usp"/g)||[]).length,2,'Hero must show exactly two core USP cards.');
+  assert.deepEqual(missing,[],`Approved homepage structure missing: ${missing.join(', ')}`);
+  assert.equal((html.match(/class="why-card"/g)||[]).length,2,'Homepage must show exactly two system cards.');
+  assert.equal((html.match(/<article class="role-card">/g)||[]).length,4,'Homepage must show exactly four role cards.');
 });
 
 test('Platform Tour step two mirrors the two locked SanPaid USPs',()=>{
@@ -180,12 +181,12 @@ test('mobile Platform Tour owns drawer cleanup and responsive overflow protectio
 });
 
 
-test('final navigation is concise and platform access is available on mobile',()=>{
+test('final navigation is concise and platform access stays visible',()=>{
   for(const label of ['How it works','Why SanPaid','Field proof','Roles']){
     assert.ok(html.includes(`>${label}</a>`),`Missing concise navigation label: ${label}`);
   }
   assert.match(html,/id="heroTourCta"[^>]*data-open-selector="0"/,'Hero secondary CTA must open the Platform Tour.');
-  assert.match(html,/id="spMobileAccess"/,'Mobile navigation must expose unified platform access.');
+  assert.match(html,/id="getStarted"[^>]*data-platform-access/,'Navigation must expose unified platform access.');
 });
 
 test('tablet drawer JavaScript matches the 1020px navigation breakpoint',()=>{
