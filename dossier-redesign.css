@@ -55,7 +55,7 @@ body>*{min-width:0}
 #landing .mobile-drawer .btn{width:100%;margin-top:14px}
 #landing .drawer-title{position:absolute;inset:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--sp-line);color:var(--sp-navy)}
 #landing .drawer-close{width:40px;height:40px;border:1px solid var(--sp-line);border-radius:10px;background:#fff;color:var(--sp-navy);font-size:24px}
-#mobileDrawerScrim{z-index:79!important;background:rgba(7,29,47,.48)!important;backdrop-filter:blur(2px)}
+#mobileDrawerScrim{z-index:79!important;background:rgba(7,29,47,.48)!important}
 
 /* Hero */
 #landing #home.eval-hero{padding:86px 0 0!important;background:radial-gradient(circle at 78% 18%,rgba(15,129,123,.11),transparent 28%),radial-gradient(circle at 25% 20%,rgba(23,110,156,.08),transparent 28%),linear-gradient(180deg,#fbfdff 0%,#f1f6fa 100%)!important;color:var(--sp-ink)!important}
