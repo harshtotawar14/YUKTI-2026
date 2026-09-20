@@ -21,6 +21,11 @@ jobs:
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
 
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
       - name: Record 90-second website walkthrough
         env:
           TARGET_URL: https://yukti-2026-brown.vercel.app/
