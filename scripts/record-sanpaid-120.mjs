@@ -51,19 +51,19 @@ async function uiLogin(role,persona=null){
 // Intro
 mark('intro');
 await page.evaluate(()=>window.scrollTo({top:0,behavior:'auto'}));
-await hold(4000);
+await hold(5000);
 
 // Role access
 await page.evaluate(()=>window.SanPaidAuth?.openRoleChooser?.());
 await exists('#sanpaidUnifiedAuthRoot:not([hidden])');
-await hold(3000);
+await hold(4000);
 await page.evaluate(()=>window.SanPaidAuth?.close?.());
 
 // Customer
 await uiLogin('CUSTOMER','CUSTOMER');
 mark('customer');
 await exists('#cdService');
-await hold(1800);
+await hold(3000);
 await page.evaluate(()=>{
   const s=document.getElementById('cdService');
   if(s&&s.options.length>1){s.selectedIndex=1;s.dispatchEvent(new Event('change',{bubbles:true}))}
@@ -72,29 +72,29 @@ await page.evaluate(()=>{
   const l=document.getElementById('cdLang');if(l)l.value='en';
   const p=document.getElementById('cdProblem');if(p)p.value='Switch board is sparking and needs inspection.';
 });
-await hold(2200);
+await hold(3000);
 await page.evaluate(()=>{
   const shell=document.getElementById('connectedShell');
   const p=document.getElementById('cdProblem');
   if(shell&&p)shell.scrollTop=Math.max(0,p.offsetTop-180);
 });
-await hold(2200);
-await page.evaluate(()=>document.getElementById('connectedBookingForm')?.requestSubmit());
 await hold(3000);
+await page.evaluate(()=>document.getElementById('connectedBookingForm')?.requestSubmit());
+await hold(4000);
 
 // Worker
 await uiLogin('WORKER','WORKER_A');
 mark('worker');
 await exists('#connectedWorkerOffers');
-await hold(3800);
+await hold(5000);
 await page.evaluate(()=>{
   const shell=document.getElementById('connectedShell');
   const offer=document.querySelector('.connected-offer');
   if(shell&&offer)shell.scrollTop=Math.max(0,offer.offsetTop-130);
 });
-await hold(2200);
-await page.evaluate(()=>document.querySelector('[data-accept-offer]')?.click());
 await hold(3000);
+await page.evaluate(()=>document.querySelector('[data-accept-offer]')?.click());
+await hold(4000);
 
 // Trust
 await page.evaluate(()=>{
@@ -103,23 +103,32 @@ await page.evaluate(()=>{
 });
 await exists('#selectorModeShell:not(.hidden)');
 mark('trust');
-await hold(7000);
+await hold(10000);
 await page.evaluate(()=>window.SanPaidSelectorMode?.close?.({noHistory:true,restoreScroll:false}));
 
 // Cooperative admin
 await uiLogin('COOPERATIVE_ADMIN');
 mark('cooperative');
-await hold(900);
-await page.evaluate(()=>window.SanPaidJudgeMode?.switchTab?.('overview'));
-await hold(3900);
-await page.evaluate(()=>window.SanPaidJudgeMode?.switchTab?.('complaint'));
-await hold(3900);
+await hold(1000);
+await page.evaluate(()=>{
+  window.SanPaidJudgeMode?.switchTab?.('overview');
+  setTimeout(()=>document.querySelector('#sihJudgeShell .judge-section.active')?.scrollIntoView({block:'start',behavior:'auto'}),120);
+});
+await hold(5000);
+await page.evaluate(()=>{
+  window.SanPaidJudgeMode?.switchTab?.('complaint');
+  setTimeout(()=>document.querySelector('#sihJudgeShell .judge-section.active')?.scrollIntoView({block:'start',behavior:'auto'}),120);
+});
+await hold(5000);
 
 // Federation admin
 await uiLogin('FEDERATION_ADMIN');
 mark('federation');
-await page.evaluate(()=>window.SanPaidJudgeMode?.switchTab?.('overview'));
-await hold(5000);
+await page.evaluate(()=>{
+  window.SanPaidJudgeMode?.switchTab?.('overview');
+  setTimeout(()=>document.querySelector('#sihJudgeShell .judge-section.active')?.scrollIntoView({block:'start',behavior:'auto'}),120);
+});
+await hold(9000);
 
 // Capacity Exchange — dedicated visual proof
 await page.evaluate(()=>{
@@ -144,14 +153,14 @@ await page.evaluate(()=>{
   document.getElementById('evidence')?.scrollIntoView({block:'start',behavior:'auto'});
 });
 mark('evidence');
-await hold(5000);
+await hold(11000);
 
 // Final close
 await page.evaluate(()=>{
   document.querySelector('.final-cta')?.scrollIntoView({block:'center',behavior:'auto'});
 });
 mark('end');
-await hold(3000);
+await hold(8000);
 
 // Pad so the final artifact can be trimmed to exactly 120s.
 const elapsed=Date.now()-started;
