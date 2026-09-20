@@ -10,11 +10,11 @@ const packageMetadata=JSON.parse(readFileSync(resolve(root,'package.json'),'utf8
 const publicFiles=[
   'index.html',
   'app-icon.svg','manifest.webmanifest','robots.txt','sitemap.xml','social-preview.svg',
-  'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','master-v2.css','landing-pro.css','dossier-redesign.css',
+  'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','master-v2.css','landing-pro.css','dossier-redesign.css','homepage-v2.css',
   'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','customer-worker-dashboard.css',
   'admin-command-center.css','federation-govtech.css','federation-portal.css','cooperative-portal.css','handover-evidence.css',
   'credibility-layer.css','workforce-intelligence.css',
-  'app.js','mobile.js','connected-demo.js','connected-service-ui.js','connected-commerce-ui.js','connected-runtime-fix.js',
+  'app.js','mobile.js','homepage-v2.js','connected-demo.js','connected-service-ui.js','connected-commerce-ui.js','connected-runtime-fix.js',
   'capacity-worker-ui.js','judge-demo.js','selector-mode.js','top1-polish.js','evaluator-final.js','auth-unified.js',
   'customer-worker-dashboard.js','admin-command-center.js','federation-portal.js','cooperative-portal.js',
   'cooperative-deploy-guard.js','handover-evidence.js','credibility-layer.js','workforce-intelligence.js','service-worker.js'
@@ -39,7 +39,7 @@ for(const file of publicFiles){
 const buildInfo={
   product:'SanPaid',
   version:packageMetadata.version,
-  runtime:'v71',
+  runtime:'v72',
   commitSha:resolveCommit(),
   builtAt:new Date().toISOString(),
   source:'harshtotawar14/YUKTI-2026',
