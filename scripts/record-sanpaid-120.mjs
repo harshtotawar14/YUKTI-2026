@@ -121,21 +121,25 @@ mark('federation');
 await page.evaluate(()=>window.SanPaidJudgeMode?.switchTab?.('overview'));
 await hold(5000);
 
-// Capacity Exchange
+// Capacity Exchange — dedicated visual proof
+await page.evaluate(()=>{
+  try{window.SanPaidJudgeMode?.close?.()}catch{}
+  window.SanPaidSelectorMode?.open?.(6);
+});
+await exists('#selectorModeShell:not(.hidden)');
 mark('capacity');
-await page.evaluate(()=>window.SanPaidJudgeMode?.switchTab?.('capacity'));
-await page.waitForFunction(()=>document.getElementById('judge-capacity')?.classList.contains('active'),null,{timeout:10000}).catch(()=>{});
-await hold(7000);
+await hold(7500);
+await page.evaluate(()=>window.SanPaidSelectorMode?.close?.({noHistory:true,restoreScroll:false}));
 
-// Demand-to-Workforce
+// Demand-to-Workforce — dedicated visual proof
+await page.evaluate(()=>window.SanPaidSelectorMode?.open?.(7));
+await exists('#selectorModeShell:not(.hidden)');
 mark('planning');
-await page.evaluate(()=>window.SanPaidJudgeMode?.switchTab?.('planning'));
-await page.waitForFunction(()=>document.getElementById('judge-planning')?.classList.contains('active'),null,{timeout:10000}).catch(()=>{});
-await hold(7000);
+await hold(7500);
+await page.evaluate(()=>window.SanPaidSelectorMode?.close?.({noHistory:true,restoreScroll:false}));
 
 // Field evidence
 await page.evaluate(()=>{
-  try{window.SanPaidJudgeMode?.close?.()}catch{}
   document.body.style.overflow='';
   document.getElementById('evidence')?.scrollIntoView({block:'start',behavior:'auto'});
 });
