@@ -1,4 +1,4 @@
-name: Generate SanPaid Rich Narration
+name: Generate SanPaid Final Rich Narration
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
           python-version: '3.12'
       - name: Install neural TTS
         run: pip install edge-tts
-      - name: Generate richer narration with same voice
+      - name: Generate final narration
         run: |
           mkdir -p narration
           if edge-tts --list-voices | grep -q "en-IN-ArjunNeural"; then
@@ -24,29 +24,28 @@ jobs:
           else
             VOICE="en-IN-PrabhatNeural"
           fi
-          echo "Using voice: $VOICE"
-          RATE="+6%"
+          RATE="+10%"
 
-          edge-tts --voice "$VOICE" --rate="$RATE"             --text "This is SanPaid, a cooperative-owned local workforce network. It connects customers, verified workers and cooperatives in one accountable service journey, from request to verified delivery and service record."             --write-media narration/01-intro.mp3
+          edge-tts --voice "$VOICE" --rate="$RATE"             --text "This is SanPaid, a cooperative-owned local workforce network connecting customers, verified workers and cooperatives through one trusted service journey."             --write-media narration/01-intro.mp3
 
-          edge-tts --voice "$VOICE" --rate="$RATE"             --text "The core problem is coordination. Customers need trusted local workers, workers need fair access to jobs, and cooperatives need one clear system to manage service, trust and workforce capacity."             --write-media narration/02-problem.mp3
+          edge-tts --voice "$VOICE" --rate="$RATE"             --text "Customers need trusted local workers, workers need fair job opportunities, and cooperatives need one connected system to manage them."             --write-media narration/02-problem.mp3
 
-          edge-tts --voice "$VOICE" --rate="$RATE"             --text "SanPaid adds two important ideas. Capacity Exchange brings support from a nearby cooperative when local capacity is low. The Demand-to-Workforce Loop turns repeated shortages into useful signals for training and onboarding."             --write-media narration/03-usps.mp3
+          edge-tts --voice "$VOICE" --rate="$RATE"             --text "SanPaid has two key ideas: Capacity Exchange for local shortages, and a Demand-to-Workforce Loop that helps cooperatives identify future skill needs."             --write-media narration/03-usps.mp3
 
-          edge-tts --voice "$VOICE" --rate="$RATE"             --text "Matching is eligibility first, not distance first. SanPaid checks verification, required skill, availability and service radius before ranking. So a closer but unverified worker cannot outrank a verified eligible worker. Ranking then considers suitability in a transparent way."             --write-media narration/04-matching.mp3
+          edge-tts --voice "$VOICE" --rate="$RATE"             --text "Matching is eligibility first, not distance first. SanPaid checks worker verification, required skill, availability and service radius before ranking. A nearby unverified worker cannot outrank a verified eligible worker, making matching fair and explainable."             --write-media narration/04-matching.mp3
 
-          edge-tts --voice "$VOICE" --rate="$RATE"             --text "Workers also keep their choice. They can accept or decline a job. If Worker A declines, the same customer request continues to the next eligible worker, so the customer does not need to create the booking again."             --write-media narration/05-worker-choice.mp3
+          edge-tts --voice "$VOICE" --rate="$RATE"             --text "Workers keep their choice. They can accept or decline. If one worker declines, the same customer request automatically continues to the next eligible worker."             --write-media narration/05-worker-choice.mp3
 
-          edge-tts --voice "$VOICE" --rate="$RATE"             --text "Trust is checked at service start. The booked worker is verified, and the customer confirms the worker using the service-linked verification flow. Only after both checks can the service begin."             --write-media narration/06-trust.mp3
+          edge-tts --voice "$VOICE" --rate="$RATE"             --text "Before work begins, the booked worker is verified and the customer confirms the worker through the service-linked verification flow. Both checks are required."             --write-media narration/06-trust.mp3
 
-          edge-tts --voice "$VOICE" --rate="$RATE"             --text "For cooperative admins, one command center brings together verified workers, active services, complaints, capacity gaps and operational records. This makes local service delivery easier to monitor and review."             --write-media narration/07-governance.mp3
+          edge-tts --voice "$VOICE" --rate="$RATE"             --text "The cooperative command center brings together verified workers, active services, complaints, capacity gaps, billing and audit records for accountable operations."             --write-media narration/07-governance.mp3
 
-          edge-tts --voice "$VOICE" --rate="$RATE"             --text "And when local capacity is short, SanPaid can request support from a nearby cooperative. The worker still gives consent, and the assignment remains authorized and traceable. SanPaid: serve today, prepare tomorrow."             --write-media narration/08-capacity.mp3
+          edge-tts --voice "$VOICE" --rate="$RATE"             --text "If local capacity is low, a nearby cooperative can provide support, but worker consent and authorization remain required. SanPaid: serve today, prepare tomorrow."             --write-media narration/08-capacity.mp3
 
       - name: Upload narration
         uses: actions/upload-artifact@v4
         with:
-          name: sanpaid-rich-voice-segments
+          name: sanpaid-final-rich-voice-segments
           path: narration/*.mp3
           if-no-files-found: error
           retention-days: 7
