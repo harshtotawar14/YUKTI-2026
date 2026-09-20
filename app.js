@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD={release:'exact-attached-homepage',runtime:'v72',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
+  const BUILD={release:'editorial-network-redesign',runtime:'v71',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
   window.__SANPAID_BUILD__=Object.freeze(BUILD);
 
   const FALLBACK_SERVICES=[
