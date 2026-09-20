@@ -78,9 +78,15 @@ await page.evaluate(()=>{
   const l=document.getElementById('cdLang');if(l)l.value='en';
   const p=document.getElementById('cdProblem');if(p)p.value='Switch board is sparking and needs inspection.';
 });
-await move(page.locator('#cdProblem'));await hold(4200);
-await click(page.locator('#cdSubmit'));
-await hold(6800);
+await move(page.locator('#cdProblem'));await hold(3200);
+await page.locator('#cdBookingForm').evaluate(el=>el.scrollIntoView({block:'center',behavior:'auto'}));
+await hold(1200);
+await page.evaluate(()=>{
+  const form=document.getElementById('cdBookingForm');
+  if(!form)throw new Error('Customer booking form missing');
+  form.requestSubmit();
+});
+await hold(7800);
 
 await loginRole('WORKER','WORKER_A');
 await page.waitForSelector('#connectedShell:not(.hidden)');
