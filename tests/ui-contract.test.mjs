@@ -356,6 +356,16 @@ test('customer booking and worker opportunity UI avoid seeded or misleading defa
   assert.match(commerce,/Payment Method/,'Customer checkout must label the payment method control.');
 });
 
+test('customer mic sends actual audio and worker can securely play it',()=>{
+  const connected=readFileSync(join(root,'connected-demo.js'),'utf8');
+  assert.match(connected,/navigator\.mediaDevices\?\.getUserMedia/,'Customer mic must capture real audio input.');
+  assert.match(connected,/new MediaRecorder/,'Customer mic must create a recorded audio message.');
+  assert.match(connected,/voiceMessage:isVoice\?voiceMeta\.message:null/,'Recorded audio must be attached to the booking request.');
+  assert.match(connected,/data-load-voice/,'Worker offers must expose the customer voice message control.');
+  assert.match(connected,/SanPaidApi\?\.raw/,'Worker audio must be fetched through the authenticated API client.');
+  assert.match(connected,/URL\.createObjectURL\(blob\)/,'Worker playback must use a browser-safe blob URL.');
+});
+
 test('customer and worker dashboards keep action language concise and role-appropriate',()=>{
   const dashboard=readFileSync(join(root,'customer-worker-dashboard.js'),'utf8');
   assert.match(dashboard,/Payment & Invoice/,'Customer navigation should expose invoice access clearly.');
