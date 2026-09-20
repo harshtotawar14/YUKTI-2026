@@ -26,7 +26,7 @@ jobs:
           TARGET_URL: https://yukti-2026-brown.vercel.app/
         run: |
           mkdir -p recordings
-          cat > /tmp/record-demo.mjs <<'NODE'
+          cat > record-demo.mjs <<'NODE'
           import { chromium } from 'playwright';
           import fs from 'fs';
 
@@ -155,7 +155,7 @@ jobs:
           fs.copyFileSync(raw, 'recordings/sanpaid-raw.webm');
           NODE
 
-          node /tmp/record-demo.mjs
+          node record-demo.mjs
 
           # Convert and trim to exactly 90 seconds, with broad editor compatibility.
           ffmpeg -y -i recordings/sanpaid-raw.webm -t 90             -c:v libx264 -preset medium -crf 19 -pix_fmt yuv420p -movflags +faststart             recordings/SanPaid-Website-Walkthrough-90s.mp4
