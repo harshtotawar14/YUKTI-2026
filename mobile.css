@@ -25,7 +25,7 @@ button,a,input,select,textarea{touch-action:manipulation}
 .modal-body,.modal-head{min-width:0}
 .field input,.field select,.field textarea{width:100%}
 .qr{max-width:70vw;max-height:70vw}
-.mobile-drawer-scrim{position:fixed;inset:0;background:rgba(5,15,28,.48);z-index:35;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:auto}
+.mobile-drawer-scrim{position:fixed;inset:0;background:rgba(5,15,28,.48);z-index:35;pointer-events:auto}
 .mobile-drawer-scrim.hidden{display:none!important;pointer-events:none!important}
 body.mobile-drawer-open{overflow:hidden;overscroll-behavior:none}
 .mobile-drawer .drawer-title{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 4px 12px;border-bottom:1px solid var(--line);margin-bottom:8px}
