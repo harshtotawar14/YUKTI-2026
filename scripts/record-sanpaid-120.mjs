@@ -78,7 +78,7 @@ await page.evaluate(()=>{
   const l=document.getElementById('cdLang');if(l)l.value='en';
   const p=document.getElementById('cdProblem');if(p)p.value='Switch board is sparking and needs inspection.';
 });
-await move(page.locator('#cdProblem'));await hold(3200);
+await move(page.locator('#connectedShell:not(.hidden) #cdProblem:visible'));await hold(3200);
 await page.locator('#cdBookingForm').evaluate(el=>el.scrollIntoView({block:'center',behavior:'auto'}));
 await hold(1200);
 await page.evaluate(()=>{
@@ -92,7 +92,7 @@ await loginRole('WORKER','WORKER_A');
 await page.waitForSelector('#connectedShell:not(.hidden)');
 await page.waitForSelector('#connectedWorkerOffers',{timeout:15000});
 await hold(6200);
-const accept=page.locator('[data-accept-offer]').first();
+const accept=page.locator('#connectedShell:not(.hidden) [data-accept-offer]:visible').first();
 if(await accept.count()){await click(accept);await hold(5500)}else await hold(6000);
 await hold(2600);
 
