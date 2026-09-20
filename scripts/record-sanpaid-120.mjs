@@ -52,9 +52,16 @@ const accountFor=(role,persona=null)=>{
 async function loginRole(role,persona=null){
   const account=accountFor(role,persona);if(!account)throw new Error('Demo account missing for '+role);
   await page.evaluate(async ({identifier,password,role,persona})=>{
-    try{await window.SanPaidAuth?.logout?.({silent:true});}catch{}
+    try{window.ConnectedSanPaid?.close?.()}catch{}
+    try{window.SanPaidJudgeMode?.close?.()}catch{}
+    try{await window.SanPaidAuth?.logout?.({silent:true})}catch{}
     await window.SanPaidAuth.login({identifier,password,role,remember:false});
-    await window.SanPaidAuth.openRoleWorkspace(role,persona);
+    if(role==='CUSTOMER'||role==='WORKER'){
+      const opened=await window.ConnectedSanPaid?.open?.(persona);
+      if(!opened)throw new Error('Service workspace did not open for '+role);
+    }else{
+      await window.SanPaidAuth.openRoleWorkspace(role,persona);
+    }
   },{identifier:account.accessId,password:demo.password,role,persona});
 }
 
