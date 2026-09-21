@@ -71,37 +71,3 @@
 @media(prefers-reduced-motion:reduce){
   .selector-mode *, .selector-mode *:before, .selector-mode *:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
-
-/* === SANPAID UI 10 SELECTOR START === */
-.selector-mode{background:var(--sp-bg);color:var(--sp-text);font-family:var(--sp-font-body)}
-.selector-top{background:var(--sp-ink);min-height:66px}
-.selector-top .brand{font-family:var(--sp-font-display);font-weight:700}
-.selector-progress-wrap{background:rgba(246,248,250,.97);border-bottom-color:var(--sp-border)}
-.selector-progress button{border-radius:10px;color:var(--sp-muted)}
-.selector-progress button.active{background:var(--sp-soft-teal);color:var(--sp-teal)}
-.selector-progress button.active span{background:var(--sp-ink);border-color:var(--sp-ink)}
-.selector-main{max-width:var(--sp-page-max);padding-top:38px}
-.selector-step-head{max-width:820px;margin-bottom:28px}
-.selector-step-head h1{font-family:var(--sp-font-display);font-size:clamp(34px,5vw,52px);color:var(--sp-ink)}
-.selector-step-head p{font-size:16px;color:var(--sp-text-2)}
-.selector-kicker,.selector-mini-label{color:var(--sp-teal)}
-.selector-card,.selector-research-grid article,.selector-person,.selector-capacity-flow article,.selector-handoff article{
-  border-color:var(--sp-border);
-  border-radius:16px;
-  box-shadow:0 8px 24px rgba(11,31,51,.045);
-}
-.selector-card b,.selector-research-grid b{color:var(--sp-ink)}
-.selector-card p,.selector-research-grid p{color:var(--sp-text-2)}
-.selector-controls{backdrop-filter:blur(12px)}
-.selector-controls .btn{border-radius:12px}
-@media(max-width:720px){
-  .selector-main{padding:22px 14px 198px}
-  .selector-step-head h1{font-size:34px}
-  .selector-step-head p{font-size:15px}
-  .selector-card-grid.four,.selector-card-grid.three,.selector-card-grid.five{grid-template-columns:1fr!important}
-}
-@media(max-width:430px){
-  .selector-step-head h1{font-size:30px}
-  .selector-card,.selector-research-grid article,.selector-person,.selector-capacity-flow article,.selector-handoff article{padding:16px}
-}
-/* === SANPAID UI 10 SELECTOR END === */

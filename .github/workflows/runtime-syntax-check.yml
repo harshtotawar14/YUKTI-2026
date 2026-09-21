@@ -73,9 +73,9 @@ jobs:
           grep -F 'window.SanPaidSync=Object.freeze' connected-runtime-fix.js
           grep -F 'function wireMobileNavigation' app.js
           grep -F 'function setDrawerOpenState' app.js
-          grep -F "release:'editorial-network-redesign'" app.js
-          grep -F "runtime:'v71'" app.js
-          grep -F 'sanpaid-runtime-v71' service-worker.js
+          grep -F "release:'connected-backend-rebuild'" app.js
+          grep -F "runtime:'v70'" app.js
+          grep -F 'sanpaid-runtime-v70' service-worker.js
           grep -F "version:'handover-bootstrap-v1'" top1-polish.js
           grep -F 'loadAdministration,' top1-polish.js
           if sed -n '/function start()/,/^  }/p' top1-polish.js | grep -F 'loadAdministration();'; then
@@ -104,7 +104,7 @@ jobs:
           const fs=require('fs');
           const info=JSON.parse(fs.readFileSync('dist/build-info.json','utf8'));
           if(info.commitSha!==process.env.GITHUB_SHA) throw new Error('Build identity does not match tested commit.');
-          if(info.runtime!=='v71') throw new Error('Unexpected runtime identity.');
+          if(info.runtime!=='v70') throw new Error('Unexpected runtime identity.');
           const html=fs.readFileSync('dist/index.html','utf8');
           if(html.includes('quick-booking-details')) throw new Error('Hidden duplicate quick-access block leaked into deploy artifact.');
           NODE

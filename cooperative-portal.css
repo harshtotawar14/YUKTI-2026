@@ -91,56 +91,5 @@ html[data-sanpaid-theme="dark"] #sihJudgeShell.cooperative-govtech{background:va
 @media(max-width:1160px){.coop-capacity-request{grid-template-columns:1fr 1fr}.coop-capacity-request>div{grid-column:1/-1}.coop-capacity-request .btn{min-height:44px}}
 @media(max-width:620px){.coop-capacity-request{grid-template-columns:1fr}.coop-capacity-request>div,.coop-capacity-request>p{grid-column:auto}.coop-capacity-request input,.coop-capacity-request select{font-size:16px}.coop-capacity-request .btn{width:100%;min-height:48px}}
 
-/* === SANPAID UI 10 COOPERATIVE START === */
-#sihJudgeShell.cooperative-govtech{--coop-side:258px;background:var(--sp-bg)!important}
-#sihJudgeShell.cooperative-govtech .judge-top{
-  background:var(--sp-ink)!important;
-  border-bottom:3px solid var(--sp-teal)!important;
-}
-#sihJudgeShell.cooperative-govtech .coop-sidebar{
-  border-color:var(--sp-border);
-  border-radius:12px;
-  box-shadow:0 8px 24px rgba(11,31,51,.045);
-}
-.coop-side-brand{background:#FBFCFD;border-bottom-color:var(--sp-border)}
-.coop-side-brand>b{color:var(--sp-ink);font-family:var(--sp-font-display);font-size:20px}
-.coop-side-brand>span{color:var(--sp-teal);font-size:11px}
-.coop-side-brand>small{font-size:12px;color:var(--sp-muted)}
-.coop-nav-group{font-size:11px;color:var(--sp-muted)}
-.coop-sidebar nav button{min-height:46px;border-radius:8px;color:var(--sp-text)}
-.coop-sidebar nav button>span{font-size:13px}
-.coop-sidebar nav button>small{font-size:11px}
-#sihJudgeShell.cooperative-govtech .coop-sidebar nav button.active{
-  background:var(--sp-soft-teal)!important;
-  color:var(--sp-teal)!important;
-  border-color:var(--sp-success-border)!important;
-}
-#sihJudgeShell.cooperative-govtech .coop-sidebar nav button.active:before{background:var(--sp-teal)}
-#sihJudgeShell.cooperative-govtech .judge-hero,
-#sihJudgeShell.cooperative-govtech .admin-command-summary{
-  border-color:var(--sp-border)!important;
-  border-radius:14px!important;
-  background:#fff!important;
-}
-#sihJudgeShell.cooperative-govtech .judge-hero h1{color:var(--sp-ink)!important}
-#sihJudgeShell.cooperative-govtech .judge-hero p{color:var(--sp-text-2)!important;font-size:14px!important}
-#sihJudgeShell.cooperative-govtech .admin-attention-card{
-  min-height:122px;
-  border-radius:10px;
-  box-shadow:none!important;
-}
-#sihJudgeShell.cooperative-govtech .admin-attention-card>span{font-size:12px}
-#sihJudgeShell.cooperative-govtech .admin-attention-card>small{font-size:12px}
-.coop-capacity-request>div>span,.coop-capacity-request label>span{font-size:11px!important}
-.coop-capacity-request>div>small,.coop-capacity-request>p{font-size:12px!important}
-.coop-capacity-request input,.coop-capacity-request select{font-size:13px!important;border-radius:8px}
-.coop-table-action{min-height:40px;border-radius:8px}
-@media(max-width:820px){
-  .coop-nav-toggle{min-height:48px;border-radius:10px}
-  .coop-sidebar{width:min(320px,90vw)}
-}
-@media(max-width:560px){
-  #sihJudgeShell.cooperative-govtech .admin-attention-grid{grid-template-columns:1fr!important}
-  .coop-kpi-grid,.coop-cap-grid,.coop-quality-grid,.coop-worker-summary{grid-template-columns:1fr!important}
-}
-/* === SANPAID UI 10 COOPERATIVE END === */
+
+
