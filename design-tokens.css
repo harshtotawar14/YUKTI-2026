@@ -35,8 +35,8 @@
   --sp-future-border:#D5DDE2;
   --sp-soft-teal:#E8F5F2;
 
-  --sp-font-display:"Space Grotesk","Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  --sp-font-body:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --sp-font-display:"IBM Plex Serif",Georgia,serif;
+  --sp-font-body:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 
   --sp-fs-xs:.75rem;
   --sp-fs-sm:.875rem;
@@ -157,3 +157,25 @@ button,input,select,textarea{font:inherit}
     scroll-behavior:auto!important;
   }
 }
+
+/* === SANPAID UI 10 CANONICAL ALIASES START === */
+:root{
+  --sp-font-display:"IBM Plex Serif",Georgia,serif;
+  --sp-font-body:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --sp-serif:var(--sp-font-display);
+  --sp-sans:var(--sp-font-body);
+
+  --sp-navy:var(--sp-ink);
+  --sp-navy-2:var(--sp-ink-2);
+  --sp-blue-soft:#EAF2F7;
+  --sp-teal-soft:var(--sp-soft-teal);
+  --sp-amber-soft:#FFF3DF;
+  --sp-line:var(--sp-border);
+  --sp-white:var(--sp-surface-solid);
+
+  --sp-page-max:1180px;
+  --sp-control-h:44px;
+  --sp-card-radius:var(--sp-radius-lg);
+  --sp-control-radius:var(--sp-radius-md);
+}
+/* === SANPAID UI 10 CANONICAL ALIASES END === */
