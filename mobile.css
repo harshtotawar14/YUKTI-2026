@@ -195,3 +195,92 @@ body.mobile-drawer-open{overflow:hidden;overscroll-behavior:none}
 @media(min-width:769px){.mobile-bottom-nav{display:none!important}}
 @media(hover:none){.btn:hover,.service-card:hover{transform:none}}
 @supports(padding:max(0px)){.footer{padding-bottom:max(42px,calc(20px + env(safe-area-inset-bottom)))}}
+
+/* === SANPAID UI 10 MOBILE START === */
+:root{--mobile-page:clamp(12px,4vw,20px);--touch-min:44px}
+html,body{max-width:100%;overflow-x:hidden}
+img,svg,video,canvas{max-width:100%}
+@media(max-width:960px){
+  .connected-main,.judge-main{width:100%!important;max-width:100%!important}
+}
+@media(max-width:768px){
+  body{font-size:15px}
+  .btn,.menu-btn,.side button,.mobile-drawer button,.mobile-drawer a{min-height:48px}
+  .mobile-drawer{width:min(360px,92vw)!important;height:100dvh!important;overflow:auto!important}
+  .mobile-drawer .drawer-action{padding:13px!important}
+  .mobile-bottom-nav{padding-bottom:env(safe-area-inset-bottom)}
+  .connected-shell,.app-shell,#sihJudgeShell{overflow-x:hidden}
+  .connected-main,.judge-main{padding-left:12px!important;padding-right:12px!important}
+  table{max-width:100%}
+}
+@media(max-width:520px){
+  .btn{min-height:48px}
+  input,select,textarea{font-size:16px!important}
+  .card,.panel,.judge-card,.connected-card{max-width:100%;min-width:0}
+}
+@media(max-width:360px){
+  .connected-main,.judge-main{padding-left:10px!important;padding-right:10px!important}
+  .mobile-drawer{width:94vw!important}
+}
+/* === SANPAID UI 10 MOBILE END === */
+
+/* === SANPAID UI 10 TABLET NAV FIX === */
+@media(max-width:1020px){
+  #landing .eval-nav .navlinks{display:none!important}
+  #landing .eval-nav .desktop-only{display:none!important}
+  #landing .eval-nav .menu-btn{
+    display:grid!important;
+    place-items:center!important;
+    width:44px!important;
+    height:44px!important;
+  }
+
+  /* The legacy base stylesheet only enabled the drawer below 960px.
+     Extend the same accessible drawer behavior through the 1020px tablet breakpoint. */
+  #landing .mobile-drawer{
+    position:fixed!important;
+    top:var(--mobile-nav-h)!important;
+    right:0!important;
+    bottom:0!important;
+    left:auto!important;
+    width:min(360px,92vw)!important;
+    height:calc(100dvh - var(--mobile-nav-h))!important;
+    max-height:calc(100dvh - var(--mobile-nav-h))!important;
+    padding:14px max(14px,env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) 14px!important;
+    background:#fff!important;
+    border:0!important;
+    border-left:1px solid var(--sp-border)!important;
+    border-radius:18px 0 0 0!important;
+    box-shadow:-20px 0 55px rgba(11,31,51,.18)!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    pointer-events:auto!important;
+    z-index:110!important;
+  }
+  #landing .mobile-drawer:not(.hidden){display:block!important}
+  #landing .mobile-drawer.hidden{display:none!important;pointer-events:none!important}
+  #landing .mobile-drawer .btn,
+  #landing #spMobileAccess{
+    display:flex!important;
+    width:100%!important;
+    min-height:48px!important;
+    margin-top:12px!important;
+    visibility:visible!important;
+  }
+
+  #mobileDrawerScrim:not(.hidden){
+    display:block!important;
+    /* Keep the scrim on the page area only, never over the open drawer. */
+    right:min(360px,92vw)!important;
+    z-index:69!important;
+    pointer-events:auto!important;
+  }
+  body.mobile-drawer-open{overflow:hidden!important;overscroll-behavior:none!important}
+}
+@media(min-width:1021px){
+  #landing .eval-nav .menu-btn{display:none!important}
+  #landing .mobile-drawer{display:none!important}
+  #mobileDrawerScrim{display:none!important}
+}
+/* === SANPAID UI 10 TABLET NAV FIX END === */
