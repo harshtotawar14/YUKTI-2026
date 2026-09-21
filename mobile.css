@@ -271,7 +271,10 @@ img,svg,video,canvas{max-width:100%}
 
   #mobileDrawerScrim:not(.hidden){
     display:block!important;
+    /* Keep the scrim on the page area only, never over the open drawer. */
+    right:min(360px,92vw)!important;
     z-index:69!important;
+    pointer-events:auto!important;
   }
   body.mobile-drawer-open{overflow:hidden!important;overscroll-behavior:none!important}
 }
