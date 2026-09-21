@@ -42,3 +42,110 @@
 .cw-secondary,.cw-text-btn{color:var(--sp-blue,#316B9A)!important;border-color:#BFD2E2!important}
 .cw-panel,.cw-role-head,.cw-next,.cw-metrics article{border-color:var(--sp-border,#DCE5E9)}
 .cw-empty{border-radius:12px;background:#FAFCFE}
+
+/* === SANPAID UI 10 CUSTOMER WORKER START === */
+/* Consumer-simple Customer / action-first Worker hierarchy */
+.cw-dashboard{color:var(--sp-text);font-family:var(--sp-font-body)}
+.cw-shell{grid-template-columns:236px minmax(0,1fr);gap:18px}
+.cw-nav{
+  top:16px;
+  padding:10px;
+  background:#fff;
+  border-color:var(--sp-border);
+  border-radius:14px;
+  box-shadow:0 8px 26px rgba(11,31,51,.045);
+}
+.cw-nav-title{padding:9px 9px 13px;border-bottom-color:var(--sp-border)}
+.cw-nav-title b{font-size:14px;color:var(--sp-ink)}
+.cw-nav-title small{font-size:12px;color:var(--sp-muted)}
+.cw-nav button{min-height:48px;border-radius:10px;color:var(--sp-text-2)}
+.cw-nav button span{font-size:13px}
+.cw-nav button small{font-size:11px}
+.cw-nav button.active{
+  background:var(--sp-ink);
+  border-color:var(--sp-ink);
+  box-shadow:none;
+}
+.cw-role-head,.cw-next,.cw-panel,.cw-metrics article,.cw-module-slot>.connected-card,.cw-module-slot>.wi-block{
+  border-color:var(--sp-border);
+  border-radius:16px;
+  box-shadow:0 6px 22px rgba(11,31,51,.045);
+}
+.cw-role-head{
+  padding:24px;
+  border-top:0;
+  border-left:4px solid var(--sp-teal);
+}
+.cw-role-head h1{color:var(--sp-ink);font-size:clamp(1.5rem,2.6vw,2.15rem)}
+.cw-role-head p{color:var(--sp-text-2);font-size:14px}
+.cw-kicker,.cw-panel-head>div>span,.cw-view-head span{color:var(--sp-teal);font-size:11px}
+.cw-availability{
+  min-width:190px;
+  background:var(--sp-success-bg);
+  border-color:var(--sp-success-border);
+  border-radius:12px;
+}
+.cw-availability small{font-size:11px}
+.cw-availability b{color:var(--sp-teal);font-size:14px}
+.cw-availability button{border-color:var(--sp-teal);color:var(--sp-teal);border-radius:10px}
+.cw-next{
+  position:relative;
+  grid-template-columns:minmax(0,1.2fr) minmax(250px,.8fr);
+  border-left:4px solid var(--sp-teal);
+}
+.cw-next>div{padding:20px 22px}
+.cw-next>div+div{background:var(--sp-bg-soft);border-left-color:var(--sp-border)}
+.cw-next small{font-size:11px;color:var(--sp-muted)}
+.cw-next h3{font-size:1.15rem;color:var(--sp-ink)}
+.cw-next p{font-size:14px;color:var(--sp-text-2)}
+.cw-next-action{
+  min-height:44px;
+  padding:9px 14px;
+  border:1px solid var(--sp-ink);
+  border-radius:10px;
+  background:var(--sp-ink);
+  color:#fff;
+  font-size:13px;
+}
+.cw-next-action:hover{background:var(--sp-ink-2);border-color:var(--sp-ink-2)}
+.cw-metrics{gap:12px}
+.cw-metrics article{padding:17px}
+.cw-metrics span{font-size:11px;color:var(--sp-muted)}
+.cw-metrics strong{font-size:1.25rem;color:var(--sp-ink)}
+.cw-panel-head h2,.cw-panel-head h3{color:var(--sp-ink)}
+.cw-status{border-radius:999px}
+.cw-primary{background:var(--sp-ink)!important;border-color:var(--sp-ink)!important}
+.cw-primary:hover{background:var(--sp-ink-2)!important;border-color:var(--sp-ink-2)!important}
+.cw-secondary{border-color:var(--sp-border-strong)!important;color:var(--sp-ink)!important;background:#fff!important}
+.cw-service-card{border-color:var(--sp-border);border-radius:14px;box-shadow:none}
+.cw-service-card:hover{border-color:#AFC3CC;background:#FBFDFD}
+.cw-journey small{font-size:11px}
+@media(max-width:900px){
+  .cw-shell{grid-template-columns:1fr}
+  .cw-nav{
+    top:0;
+    margin:0 -2px 4px;
+    padding:8px;
+    border-radius:12px;
+    background:rgba(255,255,255,.97);
+  }
+  .cw-nav button{min-width:124px}
+}
+@media(max-width:720px){
+  .cw-dashboard{margin:6px 0 14px}
+  .cw-role-head{padding:18px;border-left-width:3px}
+  .cw-next{grid-template-columns:1fr}
+  .cw-next>div{padding:18px}
+  .cw-next>div+div{border-left:0;border-top:1px solid var(--sp-border)}
+  .cw-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cw-role-head p,.cw-next p{font-size:13px}
+  .cw-primary,.cw-secondary,.cw-next-action{min-height:48px}
+}
+@media(max-width:480px){
+  .cw-role-head h1{font-size:1.55rem}
+  .cw-metrics{grid-template-columns:1fr}
+  .cw-panel,.cw-next>div,.cw-module-slot>.connected-card{padding:15px}
+  .cw-nav button{min-width:112px}
+  .cw-journey small{font-size:12px}
+}
+/* === SANPAID UI 10 CUSTOMER WORKER END === */
