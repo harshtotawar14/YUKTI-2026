@@ -25,3 +25,50 @@ html[data-sanpaid-theme="dark"] .spu-shell{background:#102736}html[data-sanpaid-
 .spu-worker-switch{display:flex;gap:6px;margin-top:9px}.spu-worker-switch button{min-height:34px;padding:5px 10px;border:1px solid var(--sp-border,rgba(129,158,178,.25));border-radius:9px;background:var(--sp-surface,#fff);color:var(--sp-muted,#597083);font-size:9px;font-weight:800;cursor:pointer}.spu-worker-switch button.active{border-color:rgba(15,148,136,.5);background:rgba(15,148,136,.08);color:#0f766e}
 .spu-demo-use:focus-visible,.spu-worker-switch button:focus-visible{outline:3px solid rgba(15,148,136,.25);outline-offset:2px}
 @media(max-width:480px){.spu-demo-access{grid-template-columns:1fr}.spu-demo-use{width:100%}}
+
+/* === SANPAID TARGETED POLISH AUTH START === */
+
+/* 4) Role access: keep the same design, only improve readability and mobile choice clarity. */
+.spu-role b{font-size:10.5px}
+.spu-role small{
+  display:block;
+  margin-top:4px;
+  color:var(--sp-muted,#597083);
+  font-size:10px;
+  line-height:1.35;
+}
+.spu-helper,.spu-note,.spu-error,.spu-success,.spu-checking{
+  font-size:10.5px;
+}
+.spu-demo-access small,
+.spu-demo-credentials span{font-size:9px}
+.spu-demo-access b{font-size:12px}
+.spu-demo-access p{font-size:10px}
+.spu-demo-credentials code{font-size:11px}
+.spu-demo-use,.spu-worker-switch button{font-size:10px}
+@media(max-width:480px){
+  .spu-role-grid-entry{
+    grid-template-columns:1fr!important;
+  }
+  .spu-role-grid-entry .spu-role{
+    min-height:84px;
+    padding:12px 14px;
+    text-align:left;
+  }
+  .spu-role-grid-entry .spu-role-code{
+    display:inline-grid;
+    place-items:center;
+    min-width:30px;
+    min-height:30px;
+    margin-bottom:5px;
+    border-radius:8px;
+    background:rgba(15,148,136,.08);
+    color:#0F766E;
+    font-size:12px;
+    font-weight:850;
+  }
+  .spu-role-grid-entry .spu-role b{font-size:13px}
+  .spu-role-grid-entry .spu-role small{font-size:11px}
+}
+
+/* === SANPAID TARGETED POLISH AUTH END === */

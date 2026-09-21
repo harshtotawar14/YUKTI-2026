@@ -29,4 +29,45 @@ html[data-sanpaid-theme="dark"] #sihJudgeShell.federation-govtech .fed-network-t
 .fed-cap-note{margin:8px 0 0;padding:9px 10px;border-left:3px solid #A96813;background:#FFF8EA;color:#72501F;font-size:10.5px;line-height:1.45}.fed-cap-note.ok{border-left-color:#167A5B;background:#EDF8F3;color:#17644E}.fed-cap-message{min-height:16px;margin:7px 0 0;color:#506676;font-size:10.5px}
 @media(max-width:760px){.fed-cap-head{display:grid}.fed-cap-head>strong{justify-self:start}.fed-cap-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.fed-cap-action,.fed-cap-action.approval{grid-template-columns:1fr}.fed-cap-action select,.fed-cap-action input{font-size:16px}.fed-cap-action .btn{width:100%;min-height:48px}}
 
+/* === SANPAID TARGETED POLISH FED START === */
 
+/* 3) Federation: reduce filter dominance and improve planning readability. */
+.fed-network-toolbar{
+  background:#FBFCFD;
+  border-color:#E0E7EB;
+  box-shadow:none;
+}
+.fed-network-toolbar label>span{
+  font-size:10.5px;
+  letter-spacing:.035em;
+}
+.fed-filter-count{font-size:11.5px}
+.fed-demand-snapshot{
+  margin-top:22px;
+  padding-top:20px;
+}
+.fed-demand-metrics article{
+  min-height:102px;
+  padding:14px;
+  background:#fff;
+}
+.fed-demand-metrics span{font-size:11px}
+.fed-demand-metrics strong{font-size:27px}
+.fed-demand-bars>div>span,
+.fed-demand-bars p{font-size:11.5px!important}
+.fed-demand-bars>div>em{font-size:12px}
+.fed-table-action{font-size:11.5px}
+@media(max-width:700px){
+  .fed-network-toolbar{
+    grid-template-columns:1fr!important;
+    gap:10px;
+  }
+  .fed-filter-count{
+    text-align:left;
+  }
+  .fed-demand-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
+/* === SANPAID TARGETED POLISH FED END === */

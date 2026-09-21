@@ -195,3 +195,96 @@ body.mobile-drawer-open{overflow:hidden;overscroll-behavior:none}
 @media(min-width:769px){.mobile-bottom-nav{display:none!important}}
 @media(hover:none){.btn:hover,.service-card:hover{transform:none}}
 @supports(padding:max(0px)){.footer{padding-bottom:max(42px,calc(20px + env(safe-area-inset-bottom)))}}
+
+/* === SANPAID TARGETED POLISH MOBILE START === */
+
+/* 5) Mobile polish: slightly cleaner spacing and safer tap/readability on workspaces. */
+@media(max-width:768px){
+  #connectedShell .connected-main,
+  #sihJudgeShell .judge-main{
+    padding-left:12px!important;
+    padding-right:12px!important;
+  }
+  #cwDashboard .cw-nav{
+    gap:7px;
+    padding:8px;
+    scrollbar-width:none;
+  }
+  #cwDashboard .cw-nav::-webkit-scrollbar{display:none}
+  #cwDashboard .cw-nav button{
+    min-height:48px!important;
+  }
+  #sihJudgeShell table th,
+  #sihJudgeShell table td{
+    font-size:12px;
+  }
+  #sihJudgeShell .fed-table-action,
+  #sihJudgeShell .coop-table-action{
+    min-height:44px;
+  }
+}
+@media(max-width:430px){
+  #connectedShell .connected-main,
+  #sihJudgeShell .judge-main{
+    padding-left:10px!important;
+    padding-right:10px!important;
+  }
+  #cwDashboard .cw-nav button{
+    min-width:118px;
+  }
+  #cwDashboard .cw-role-head{
+    padding:16px!important;
+  }
+  #cwDashboard .cw-panel,
+  #cwDashboard .cw-next>div{
+    padding:15px!important;
+  }
+}
+
+/* === SANPAID TARGETED POLISH MOBILE END === */
+
+
+/* === SANPAID TARGETED TABLET DRAWER START === */
+@media(min-width:961px) and (max-width:1020px){
+  #landing .eval-nav .navlinks,
+  #landing .eval-nav .desktop-only{display:none!important}
+  #landing .eval-nav .menu-btn{
+    display:grid!important;
+    place-items:center!important;
+    width:44px!important;
+    height:44px!important;
+  }
+  #landing .mobile-drawer{
+    display:block;
+    position:fixed!important;
+    top:var(--mobile-nav-h)!important;
+    right:0!important;
+    bottom:0!important;
+    left:auto!important;
+    width:min(360px,92vw)!important;
+    height:calc(100dvh - var(--mobile-nav-h))!important;
+    max-height:calc(100dvh - var(--mobile-nav-h))!important;
+    padding:14px max(14px,env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) 14px!important;
+    background:#fff!important;
+    border:0!important;
+    border-left:1px solid var(--line)!important;
+    border-radius:18px 0 0 0!important;
+    box-shadow:-20px 0 55px rgba(11,25,48,.20)!important;
+    overflow-y:auto!important;
+    z-index:110!important;
+  }
+  #landing .mobile-drawer.hidden{display:none!important}
+  #landing #spMobileAccess{
+    display:flex!important;
+    width:100%!important;
+    min-height:48px!important;
+    visibility:visible!important;
+  }
+  #mobileDrawerScrim:not(.hidden){
+    display:block!important;
+    right:min(360px,92vw)!important;
+    z-index:69!important;
+  }
+  body.mobile-drawer-open{overflow:hidden!important}
+}
+/* === SANPAID TARGETED TABLET DRAWER END === */
