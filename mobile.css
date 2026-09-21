@@ -223,3 +223,14 @@ img,svg,video,canvas{max-width:100%}
   .mobile-drawer{width:94vw!important}
 }
 /* === SANPAID UI 10 MOBILE END === */
+
+/* === SANPAID UI 10 TABLET NAV FIX === */
+@media(max-width:1020px){
+  #landing .eval-nav .navlinks{display:none!important}
+  #landing .eval-nav .desktop-only{display:none!important}
+  #landing .eval-nav .menu-btn{display:grid!important;place-items:center!important;width:44px!important;height:44px!important}
+}
+@media(min-width:1021px){
+  #landing .eval-nav .menu-btn{display:none!important}
+}
+/* === SANPAID UI 10 TABLET NAV FIX END === */
