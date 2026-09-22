@@ -114,3 +114,47 @@
 }
 
 /* === SANPAID TARGETED POLISH CW END === */
+
+
+/* === SANPAID MOBILE COLOR RESTORE START === */
+/* Keep the approved earlier light color treatment on phones while preserving
+   the newer spacing/touch improvements. */
+@media(max-width:768px){
+  .cw-dashboard.customer .cw-next,
+  .cw-dashboard.worker .cw-next{
+    border-color:#D7E1E6;
+    box-shadow:0 4px 16px rgba(11,31,51,.045);
+  }
+  .cw-dashboard.customer .cw-next>div:first-child,
+  .cw-dashboard.worker .cw-next>div:first-child{
+    border-top:0;
+    border-left:0;
+  }
+  .cw-dashboard.customer .cw-metrics article,
+  .cw-dashboard.worker .cw-metrics article{
+    background:#fff;
+    box-shadow:0 4px 16px rgba(11,31,51,.045);
+  }
+  .cw-dashboard.worker .cw-role-head{
+    border-top-color:var(--sp-blue,#316B9A);
+  }
+  .cw-dashboard.worker .cw-availability{
+    background:#F3F8F7;
+    border-color:#CFE2DD;
+  }
+  .cw-dashboard.worker .cw-next-action{
+    min-height:48px;
+    padding:8px 12px;
+    background:#fff;
+    border-color:#BFD2E2;
+    color:var(--sp-blue,#316B9A);
+  }
+  .cw-dashboard.worker .cw-next-action:hover{
+    background:#F4F8FC;
+    border-color:#9DB9CF;
+  }
+  .cw-dashboard.worker .cw-metrics strong{
+    font-size:1.12rem;
+  }
+}
+/* === SANPAID MOBILE COLOR RESTORE END === */
