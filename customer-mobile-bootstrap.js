@@ -5,10 +5,11 @@
   const touchPoints=()=>Number(navigator.maxTouchPoints||0);
   const coarsePointer=()=>window.matchMedia('(pointer: coarse)').matches||touchPoints()>0;
   const screenMin=()=>Math.min(Number(window.screen?.width||Infinity),Number(window.screen?.height||Infinity));
+  const mobileUA=()=>/(Android|iPhone|iPad|iPod|Mobile|IEMobile|Opera Mini)/i.test(String(navigator.userAgent||''));
   const phoneLikeTouch=()=>{
-    if(!coarsePointer())return false;
+    if(!coarsePointer()&&!mobileUA())return false;
     const dpr=Number(window.devicePixelRatio||1);
-    return window.innerWidth<=1100||screenMin()<=820||(window.innerWidth<=1400&&dpr>=1.5);
+    return mobileUA()||window.innerWidth<=1100||screenMin()<=900||(window.innerWidth<=1400&&dpr>=1.5);
   };
   const mobile=()=>narrowViewport()||phoneLikeTouch();
 
@@ -20,8 +21,12 @@
     const active=isCustomer&&mobile();
     shell.classList.toggle('customer-mobile-bootstrap',active);
     shell.dataset.customerMobileMode=active?'true':'false';
-    if(active)shell.classList.add('customer-reference-page');
-    else shell.classList.remove('customer-mobile-ready');
+    if(active){
+      shell.classList.add('customer-reference-page','role-mobile-final');
+    }else{
+      shell.classList.remove('customer-mobile-ready');
+      if(!shell.classList.contains('worker-mobile-final'))shell.classList.remove('role-mobile-final');
+    }
   }
 
   let queued=false;
