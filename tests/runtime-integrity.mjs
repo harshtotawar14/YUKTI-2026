@@ -64,16 +64,37 @@ assert.match(runtime,/DEFAULT_TIMEOUT_MS/,'Canonical API timeout is missing');
 assert.match(read('evaluator-final.js'),/SanPaidReadiness\?\.require/,'Evaluator connected entry bypasses readiness');
 assert.match(read('selector-mode.js'),/SanPaidReadiness\?\.require/,'Guided connected entry bypasses readiness');
 
+// Final role UI architecture: one canonical Customer/Worker mobile surface and one canonical Admin shell.
+for(const asset of [
+  'customer-reference-dashboard.js','customer-reference-dashboard.css',
+  'customer-mobile-bootstrap.js','customer-mobile-reference.js','customer-mobile-reference.css',
+  'worker-mobile-final.js','worker-mobile-final.css',
+  'admin-final.js','admin-final.css','admin-final-guard.css'
+]){
+  assert.ok(existsSync(resolve(root,asset)),`Final role UI asset is missing: ${asset}`);
+}
+assert.ok(!existsSync(resolve(root,'cooperative-deploy-guard.js')),'Obsolete DB-dependent admin availability guard remains');
+const buildSource=read('scripts/build.mjs');
+assert.match(buildSource,/roleMobileUi:'FINAL_ONLY'/,'Build does not declare final-only Customer/Worker mobile UI');
+assert.match(buildSource,/adminUi:'REFERENCE_FINAL'/,'Build does not declare the final Admin UI');
+assert.match(buildSource,/uiArchitecture:'ROLE_SHELLS_FINAL'/,'Build does not identify the final role-shell architecture');
+assert.doesNotMatch(buildSource,/cooperative-deploy-guard\.js/,'Build still ships the obsolete admin availability guard');
+assert.match(buildSource,/admin-final\.js/,'Build does not ship the final Admin runtime');
+assert.match(buildSource,/admin-final-guard\.css/,'Build does not ship the Admin legacy-isolation guard');
+
 const serviceWorker=read('service-worker.js');
-assert.match(serviceWorker,/sanpaid-runtime-v71/,'Expected service-worker runtime v71');
+assert.match(serviceWorker,/sanpaid-runtime-v71-role-shells-final2/,'Expected final role-shell service-worker cache identity');
 assert.match(serviceWorker,/Promise\.allSettled/,'Service-worker precache must tolerate individual asset failure');
 assert.match(serviceWorker,/pathname\.startsWith\('\/api\/'\)/,'Service worker must not cache API requests');
 assert.match(serviceWorker,/build-info\.json/,'Service worker must not cache deployment identity');
+for(const asset of ['customer-mobile-reference.js','worker-mobile-final.js','admin-final.js','admin-final.css']){
+  assert.ok(serviceWorker.includes(`./${asset}`),`Service worker does not retire stale UI safely for ${asset}`);
+}
 
 const packageJson=JSON.parse(read('package.json'));
 assert.equal(packageJson.scripts?.build,'node scripts/build.mjs','Reproducible static build command is missing');
 assert.equal(vercelConfig.outputDirectory,'dist','Vercel must publish the verified dist build');
-assert.ok(read('scripts/build.mjs').includes(primaryProductionUrl),'Build must publish the brown Vercel URL as the primary production identity');
+assert.ok(buildSource.includes(primaryProductionUrl),'Build must publish the brown Vercel URL as the primary production identity');
 assert.ok(read('sitemap.xml').includes(primaryProductionUrl),'Sitemap must target the brown Vercel production URL');
 assert.ok(read('robots.txt').includes(`${primaryProductionUrl}/sitemap.xml`),'Robots file must advertise the brown Vercel sitemap');
 assert.ok(read('.github/workflows/production-e2e.yml').includes(primaryProductionUrl),'Production E2E must default to the brown Vercel URL');
