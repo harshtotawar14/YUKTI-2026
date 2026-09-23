@@ -19,6 +19,24 @@
     support: 'Support'
   };
 
+  // The base connected customer form is only a source for the real dashboard modules.
+  // Never let it paint while the customer dashboard layer is booting; this prevents
+  // the previous design from flashing for ~650 ms before the dashboard refresh runs.
+  function installCustomerFlashGuard() {
+    if (document.getElementById('sanpaidCustomerFlashGuard')) return;
+    const style = document.createElement('style');
+    style.id = 'sanpaidCustomerFlashGuard';
+    style.textContent = `
+      #connectedContent[data-connected-role="CUSTOMER"] > .connected-grid.connected-customer-grid {
+        display:none!important;
+      }
+      #connectedContent[data-connected-role="CUSTOMER"]:not(:has(.cw-dashboard.customer)) {
+        min-height:calc(100dvh - 118px);
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   function cleanMovedActions(shell, content) {
     const moved = shell?.querySelector('.connected-top [data-customer-header-moved="true"]');
     if (!moved) return;
@@ -68,6 +86,18 @@
     if (nextLabels[1]) nextLabels[1].textContent = 'Next Step';
   }
 
+  function requestImmediateCustomerDashboard(content) {
+    if (content.querySelector('.cw-dashboard.customer')) {
+      delete content.dataset.customerReferenceRefreshRequested;
+      return;
+    }
+    if (content.dataset.customerReferenceRefreshRequested === 'true') return;
+    content.dataset.customerReferenceRefreshRequested = 'true';
+    window.dispatchEvent(new CustomEvent('sanpaid:connected-sync', {
+      detail: { source: 'customer-reference-open' }
+    }));
+  }
+
   function applyCustomerReference() {
     const shell = document.getElementById('connectedShell');
     const content = document.getElementById('connectedContent');
@@ -77,9 +107,13 @@
     shell.classList.toggle('customer-reference-page', isCustomer);
 
     if (!isCustomer) {
+      delete content.dataset.customerReferenceRefreshRequested;
       cleanMovedActions(shell, content);
       return;
     }
+
+    requestImmediateCustomerDashboard(content);
+    if (!content.querySelector('.cw-dashboard.customer')) return;
 
     moveCustomerHeaderActions(shell, content);
     decorateNav(content);
@@ -96,6 +130,7 @@
     });
   };
 
+  installCustomerFlashGuard();
   new MutationObserver(schedule).observe(document.documentElement, {
     childList: true,
     subtree: true,
