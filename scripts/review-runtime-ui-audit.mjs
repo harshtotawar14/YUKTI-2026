@@ -38,6 +38,12 @@ try{
   assert(await page.evaluate(()=>window.SanPaidReviewRuntime?.enabled===true),'Review runtime was not installed.');
   assert(await page.evaluate(()=>document.documentElement.dataset.sanpaidRuntime==='review'),'Review runtime marker missing.');
 
+  // Use the same public entry action a judge/user clicks. This loads the lazy
+  // authentication and Customer/Worker dashboard assets before role access.
+  await page.locator('[data-platform-access]').first().click();
+  await page.locator('#spuLoginForm').waitFor({state:'attached'});
+  await page.waitForTimeout(350);
+
   const loginAndOpen=async({identifier,role,persona,target})=>{
     const result=await page.evaluate(async({identifier,role,persona})=>{
       await window.SanPaidAuth.logout({silent:true,keepModal:true}).catch(()=>{});
