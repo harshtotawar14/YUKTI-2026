@@ -60,6 +60,7 @@ jobs:
           node --check customer-reference-dashboard.js
           node --check customer-mobile-bootstrap.js
           node --check customer-mobile-reference.js
+          node --check worker-mobile-final.js
           node --check connected-runtime-fix.js
           node --check connected-demo.js
           node --check connected-service-ui.js
@@ -70,7 +71,9 @@ jobs:
           node --check admin-command-center.js
           node --check cooperative-portal.js
           node --check federation-portal.js
+          node --check admin-final.js
           node --check service-worker.js
+          node --check scripts/build.mjs
           node --check api/index.js
           node --check 'api/[...path].js'
           node --check api/_lib/db.cjs
@@ -105,6 +108,18 @@ jobs:
           grep -F 'customer-mobile-ready' customer-mobile-reference.js customer-mobile-reference.css
           grep -F 'cm-bottom-nav' customer-mobile-reference.js customer-mobile-reference.css
           grep -F 'customerMobileMode' customer-mobile-bootstrap.js
+          grep -F 'worker-mobile-ready' worker-mobile-final.js worker-mobile-final.css
+          grep -F 'wm-bottom-nav' worker-mobile-final.js worker-mobile-final.css
+          grep -F 'admin-final-active' admin-final.js admin-final.css admin-final-guard.css
+          grep -F 'restoreMoved' admin-final.js
+          if grep -F 'Preparing your SanPaid workspace' customer-reference-dashboard.js; then
+            echo 'Legacy Customer loading placeholder must not return.'
+            exit 1
+          fi
+          if test -f cooperative-deploy-guard.js; then
+            echo 'Removed legacy cooperative deploy guard must not return.'
+            exit 1
+          fi
           if sed -n '/function start()/,/^  }/p' top1-polish.js | grep -F 'loadAdministration();'; then
             echo 'Administration assets must remain lazy.'
             exit 1
@@ -127,18 +142,26 @@ jobs:
           npm run build
           test -s dist/index.html
           test -s dist/build-info.json
+          test -s dist/customer-reference-dashboard.js
           test -s dist/customer-mobile-reference.css
           test -s dist/customer-mobile-bootstrap.js
           test -s dist/customer-mobile-reference.js
+          test -s dist/worker-mobile-final.css
+          test -s dist/worker-mobile-final.js
+          test -s dist/admin-final.css
+          test -s dist/admin-final-guard.css
+          test -s dist/admin-final.js
           node - <<'NODE'
           const fs=require('fs');
           const info=JSON.parse(fs.readFileSync('dist/build-info.json','utf8'));
           if(info.commitSha!==process.env.GITHUB_SHA) throw new Error('Build identity does not match tested commit.');
           if(info.runtime!=='v71') throw new Error('Unexpected runtime identity.');
+          if(info.roleMobileUi!=='FINAL_ONLY') throw new Error('Final role mobile UI marker missing.');
+          if(info.adminUi!=='REFERENCE_FINAL') throw new Error('Final admin UI marker missing.');
           const html=fs.readFileSync('dist/index.html','utf8');
           if(html.includes('quick-booking-details')) throw new Error('Hidden duplicate quick-access block leaked into deploy artifact.');
           const version=process.env.GITHUB_SHA.slice(0,12);
-          for(const asset of ['customer-mobile-reference.css','customer-mobile-bootstrap.js','customer-mobile-reference.js']){
+          for(const asset of ['customer-reference-dashboard.js','customer-mobile-reference.css','customer-mobile-bootstrap.js','customer-mobile-reference.js','worker-mobile-final.css','worker-mobile-final.js','admin-final.css','admin-final-guard.css','admin-final.js']){
             if(!html.includes(`${asset}?v=${version}`)) throw new Error(`${asset} is missing commit-based cache busting in deploy artifact.`);
           }
           NODE
