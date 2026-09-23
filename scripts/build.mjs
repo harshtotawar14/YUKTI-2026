@@ -28,6 +28,9 @@ function resolveCommit(){
   catch{return 'LOCAL_BUILD';}
 }
 
+const buildCommit=resolveCommit();
+const assetVersion=buildCommit==='LOCAL_BUILD'?'local':buildCommit.slice(0,12);
+
 rmSync(output,{recursive:true,force:true});
 mkdirSync(output,{recursive:true});
 
@@ -40,15 +43,15 @@ for(const file of publicFiles){
 const builtIndexPath=resolve(output,'index.html');
 const builtIndex=readFileSync(builtIndexPath,'utf8')
   .replaceAll('https://sahkriya.vercel.app',primaryProductionUrl)
-  .replace('</head>','<link rel="stylesheet" href="login-reference.css?v=1">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=1">\n<link rel="stylesheet" href="customer-mobile-reference.css?v=1">\n</head>')
-  .replace('</body>','<script src="login-reference.js?v=1"></script>\n<script src="customer-reference-dashboard.js?v=1"></script>\n<script src="customer-mobile-reference.js?v=1"></script>\n</body>');
+  .replace('</head>',`<link rel="stylesheet" href="login-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-mobile-reference.css?v=${assetVersion}">\n</head>`)
+  .replace('</body>',`<script src="login-reference.js?v=${assetVersion}"></script>\n<script src="customer-reference-dashboard.js?v=${assetVersion}"></script>\n<script src="customer-mobile-reference.js?v=${assetVersion}"></script>\n</body>`);
 writeFileSync(builtIndexPath,builtIndex);
 
 const buildInfo={
   product:'SanPaid',
   version:packageMetadata.version,
   runtime:'v71',
-  commitSha:resolveCommit(),
+  commitSha:buildCommit,
   builtAt:new Date().toISOString(),
   source:'harshtotawar14/YUKTI-2026',
   branch:process.env.VERCEL_GIT_COMMIT_REF||process.env.GITHUB_REF_NAME||'local'
