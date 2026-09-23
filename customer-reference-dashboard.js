@@ -16,19 +16,19 @@
   const NAV_LABELS={overview:'Dashboard',book:'Book Service',booking:'My Bookings',verify:'Verified Workers',payment:'Payments & Invoice',support:'Support'};
   const $=(s,r=document)=>r.querySelector(s);
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  let headerOrigin=null;
 
   function currentUser(){try{return window.SanPaidAuth?.getCurrentUser?.()||{};}catch{return{};}}
   function customerName(){const u=currentUser();return String(u.fullName||u.name||'Customer').trim()||'Customer';}
   function customerEmail(){const u=currentUser();return String(u.email||u.loginId||u.username||'customer@sanpaid').trim();}
   function initials(value){const p=String(value||'C').trim().split(/\s+/).filter(Boolean);return (p.length>1?`${p[0][0]}${p.at(-1)[0]}`:(p[0]?.[0]||'C')).toUpperCase();}
   function mobileMode(shell){return shell?.dataset?.customerMobileMode==='true';}
-
   function parseCurrentLine(line){const p=String(line||'').split('·').map(v=>v.trim()).filter(Boolean);return{code:p[0]||'',service:p.slice(1).join(' · ')||''};}
+
   function readDashboard(dashboard){
     const overview=dashboard?.querySelector('[data-cw-view="overview"]');if(!overview)return null;
     const status=overview.querySelector('.cw-role-head>.cw-status')?.textContent?.trim()||'Ready';
-    const current=overview.querySelector('.cw-next>div:first-child');
-    const next=overview.querySelector('.cw-next>div+div');
+    const current=overview.querySelector('.cw-next>div:first-child'),next=overview.querySelector('.cw-next>div+div');
     const currentLine=parseCurrentLine(current?.querySelector('p')?.textContent?.trim());
     const metrics=[...overview.querySelectorAll('.cw-metrics>article')];
     const bookingCode=metrics[0]?.querySelector('strong')?.textContent?.trim()||currentLine.code||'—';
@@ -44,12 +44,19 @@
     const nextCopy=next?.querySelector('p')?.textContent?.trim()||'Choose a service, time and location.';
     const nextView=next?.querySelector('[data-cw-view-btn]')?.dataset?.cwViewBtn||'book';
     const journey=overview.querySelector('.cw-journey')?.innerHTML||'';
-    const activeBooking=Boolean(bookingCode&&bookingCode!=='—');
-    return{overview,status,bookingCode,worker,workerNote,amount,amountNote,serviceStart,service,bookingSummary,nextTitle,nextCopy,nextView,journey,activeBooking};
+    return{overview,status,bookingCode,worker,workerNote,amount,amountNote,serviceStart,service,bookingSummary,nextTitle,nextCopy,nextView,journey,activeBooking:Boolean(bookingCode&&bookingCode!=='—')};
   }
   function openView(dashboard,view){dashboard?.querySelector(`[data-cw-view-btn="${view}"]`)?.click();}
 
+  function rememberHeaderOrigin(node){if(headerOrigin||!node?.parentNode)return;headerOrigin={node,parent:node.parentNode,next:node.nextSibling};}
+  function restoreHeaderActions(){
+    if(!headerOrigin)return;
+    const {node,parent,next}=headerOrigin;
+    if(parent?.isConnected&&node?.isConnected){if(next?.parentNode===parent)parent.insertBefore(node,next);else parent.appendChild(node);}
+    headerOrigin=null;
+  }
   function clearDesktopPresentation(shell,dashboard){
+    restoreHeaderActions();
     shell?.querySelector('.cr-header-tools')?.remove();
     dashboard?.querySelector('.cr-desktop-home')?.remove();
     dashboard?.querySelector('.cr-nav-motto')?.remove();
@@ -66,15 +73,18 @@
     });
     if(!nav.querySelector('.cr-nav-motto')){const motto=document.createElement('div');motto.className='cr-nav-motto';motto.innerHTML='<span aria-hidden="true">🌱</span><div><b>Serve Today<br>Prepare Tomorrow</b><small>Better Homes<br>Stronger Communities</small></div>';nav.appendChild(motto);}
   }
-  function ensureDesktopHeader(shell,dashboard){
+  function ensureDesktopHeader(shell,content,dashboard){
     const subtitle=shell.querySelector('.connected-top-subtitle');if(subtitle)subtitle.textContent='Cooperative Workforce Network';
     const actions=shell.querySelector('.connected-top>.actions');if(!actions)return;
+    const native=content.querySelector('.connected-session-bar .connected-header-actions')||actions.querySelector('.connected-header-actions');
+    if(native&&native.parentElement!==actions){rememberHeaderOrigin(native);actions.insertBefore(native,shell.querySelector('#connectedClose')||null);}
     let tools=actions.querySelector('.cr-header-tools');if(!tools){tools=document.createElement('div');tools.className='cr-header-tools';actions.prepend(tools);}
     const name=customerName(),email=customerEmail(),signature=`${name}|${email}`;if(tools.dataset.signature===signature)return;
     tools.dataset.signature=signature;
     tools.innerHTML=`<div class="cr-location">${ICONS.pin}<span>Kolhapur, MH</span><b aria-hidden="true">⌄</b></div><button type="button" class="cr-bell" aria-label="Open support and updates">${ICONS.bell}<i>3</i></button><div class="cr-profile-chip"><span>${esc(initials(name))}</span><div><b>${esc(name)}</b><small>Customer</small></div><em title="${esc(email)}">✓</em></div>`;
     tools.querySelector('.cr-bell')?.addEventListener('click',()=>openView(dashboard,'support'));
   }
+
   function desktopHomeMarkup(data){
     const name=customerName(),assigned=data.worker&&!/^not assigned$/i.test(data.worker),status=data.activeBooking?data.status:'Ready',code=data.activeBooking?data.bookingCode:'No active booking',service=data.activeBooking?data.service:'Book your first service';
     return `<section class="cr-hero"><div><h1>Hello, ${esc(name)}! <span aria-hidden="true">👋</span></h1><p>Your service journey in one place.</p></div><div class="cr-hero-art" aria-hidden="true"><i></i><i></i><i></i><span>Safer service<br>Stronger communities</span></div></section><div class="cr-home-grid"><div class="cr-home-primary"><section class="cr-current-card"><div class="cr-section-top"><h2>Current Booking</h2><span class="cr-status">${esc(status)}</span><button type="button" data-cr-view="booking">View Details ${ICONS.arrow}</button></div><div class="cr-booking-main"><span class="cr-service-icon">${ICONS.overview}</span><div class="cr-booking-copy"><h3>${esc(service)}</h3><p>${esc(code)}</p><small>${esc(data.bookingSummary||'Kolhapur service request')}</small></div><div class="cr-booking-actions"><button type="button" class="primary" data-cr-view="${esc(data.nextView)}">Open Next Step ${ICONS.arrow}</button><button type="button" data-cr-view="support">Contact Support</button></div></div><div class="cw-journey cr-desktop-journey">${data.journey}</div></section><section class="cr-shortcuts-card"><div class="cr-section-top"><h2>Service Actions</h2><span>Everything you need for this booking</span></div><div class="cr-shortcuts"><button type="button" data-cr-view="book"><span>${ICONS.book}</span><div><b>Book Service</b><small>Start a new request</small></div>${ICONS.arrow}</button><button type="button" data-cr-view="booking"><span>${ICONS.booking}</span><div><b>My Bookings</b><small>Track service progress</small></div>${ICONS.arrow}</button><button type="button" data-cr-view="verify"><span>${ICONS.verify}</span><div><b>Verified Worker</b><small>Confirm service identity</small></div>${ICONS.arrow}</button><button type="button" data-cr-view="payment"><span>${ICONS.payment}</span><div><b>Payments & Invoice</b><small>Review approved amount</small></div>${ICONS.arrow}</button></div></section></div><aside class="cr-home-side"><section class="cr-side-card cr-worker-card"><div class="cr-section-top"><h2>Assigned Worker</h2><button type="button" data-cr-view="verify">View Profile ${ICONS.arrow}</button></div><div class="cr-worker-profile"><span class="cr-worker-avatar">${esc(assigned?initials(data.worker):'—')}</span><div><h3>${esc(assigned?data.worker:'Assignment pending')}</h3><p>${esc(assigned?data.workerNote:'A verified cooperative worker will appear here after acceptance.')}</p>${assigned?'<b class="cr-verified">✓ Verified</b>':''}</div></div><div class="cr-worker-stats"><div><strong>${assigned?'Verified':'Pending'}</strong><small>Trust status</small></div><div><strong>Local</strong><small>Cooperative network</small></div></div></section><section class="cr-side-card cr-amount-card"><div><span>Current Amount</span><strong>${esc(data.amount)}</strong><small>${esc(data.amountNote)}</small></div><button type="button" data-cr-view="payment">View Invoice ${ICONS.arrow}</button></section><section class="cr-side-card cr-help-card"><span>${ICONS.support}</span><div><h3>Need Help?</h3><p>Our support team is here for you.</p></div><button type="button" data-cr-view="support">Contact Support ${ICONS.arrow}</button></section><section class="cr-safety-card"><span>${ICONS.shield}</span><div><b>Your Safety Matters</b><small>Verify the booked worker and use the service-start confirmation before work begins.</small></div></section></aside></div>`;
@@ -92,7 +102,7 @@
     window.SanPaidCustomerWorkerDashboard?.requestRefresh?.();
     window.dispatchEvent(new CustomEvent('sanpaid:connected-sync',{detail:{source:'customer-final-open'}}));
   }
-  function cleanup(shell,content){shell.querySelector('.cr-header-tools')?.remove();delete content.dataset.crRefreshRequested;}
+  function cleanup(shell,content){restoreHeaderActions();shell.querySelector('.cr-header-tools')?.remove();delete content.dataset.crRefreshRequested;}
   function apply(){
     const shell=$('#connectedShell'),content=$('#connectedContent');if(!shell||!content)return;
     const isCustomer=!shell.classList.contains('hidden')&&String(content.dataset.connectedRole||'').toUpperCase()==='CUSTOMER';
@@ -101,15 +111,12 @@
     requestDashboard(content);
     const dashboard=content.querySelector('.cw-dashboard.customer');if(!dashboard)return;
     if(mobileMode(shell)){clearDesktopPresentation(shell,dashboard);return;}
-    decorateNav(dashboard);ensureDesktopHeader(shell,dashboard);ensureDesktopHome(dashboard);
+    decorateNav(dashboard);ensureDesktopHeader(shell,content,dashboard);ensureDesktopHome(dashboard);
   }
 
   window.SanPaidCustomerReference=Object.freeze({readDashboard,openView,customerName,customerEmail,currentUser,initials,icons:ICONS});
   let queued=false;
   function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply();});}
   new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','hidden','data-connected-role','data-customer-mobile-mode']});
-  window.addEventListener('sanpaid:connected-sync',schedule);
-  window.addEventListener('resize',schedule,{passive:true});
-  document.addEventListener('DOMContentLoaded',schedule,{once:true});
-  schedule();
+  window.addEventListener('sanpaid:connected-sync',schedule);window.addEventListener('resize',schedule,{passive:true});document.addEventListener('DOMContentLoaded',schedule,{once:true});schedule();
 })();
