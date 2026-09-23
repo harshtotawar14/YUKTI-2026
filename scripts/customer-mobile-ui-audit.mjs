@@ -56,13 +56,29 @@ async function openCustomer(context){
   return page;
 }
 
+async function diagnostic(page,selector){
+  const node=page.locator(selector).first();
+  if(!(await node.count()))return {missing:true};
+  return node.evaluate(element=>{
+    const chain=[];
+    for(let current=element;current&&chain.length<8;current=current.parentElement){
+      const style=getComputedStyle(current);
+      chain.push({tag:current.tagName,id:current.id,className:String(current.className||''),hidden:current.hidden,display:style.display,visibility:style.visibility,opacity:style.opacity});
+    }
+    return {innerWidth:window.innerWidth,media768:matchMedia('(max-width: 768px)').matches,chain};
+  });
+}
+
 async function assertMobileContract(page,label,{expectForced=false}={}){
   const shell=page.locator('#connectedShell');
   assert(await shell.getAttribute('data-customer-mobile-mode')==='true',`${label}: mobile mode was not activated`);
   for(const selector of ['.cm-mobile-header','.cm-mobile-greeting','.cm-book-cta','.cm-quick-grid','.cm-booking-card','.cm-support-card','.cm-bottom-nav']){
     const node=page.locator(selector).first();
     assert(await node.count()===1,`${label}: ${selector} is missing`);
-    assert(await node.isVisible(),`${label}: ${selector} is not visible`);
+    if(!(await node.isVisible())){
+      console.error(`${label} diagnostic for ${selector}:`,JSON.stringify(await diagnostic(page,selector),null,2));
+      throw new Error(`${label}: ${selector} is not visible`);
+    }
   }
   assert(!(await page.locator('#connectedShell .connected-top').isVisible()),`${label}: old connected header is still visible`);
   assert(!(await page.locator('.cw-dashboard.customer .cw-nav').isVisible()),`${label}: old customer sidebar is still visible`);
