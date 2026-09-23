@@ -6,6 +6,7 @@ const matchingRoutes=require('../backend/src/matching/connected-routes.cjs');
 const publicProof=require('../backend/src/proof/public-summary.cjs');
 const judgeTruth=require('../backend/src/judge/truth-routes.cjs');
 const workerProfile=require('../backend/src/worker/profile-routes.cjs');
+const cooperativeWorkspace=require('../backend/src/cooperative/workspace-routes.cjs');
 const complaints=require('../backend/src/complaints/routes.cjs');
 const billing=require('../backend/src/billing/routes.cjs');
 const capacity=require('../backend/src/capacity/routes.cjs');
@@ -22,6 +23,7 @@ module.exports=async function stableApiEntrypoint(req,res){
     if(await matchingRoutes.handle(req,res,rawPath))return;
     if(await judgeTruth.handle(req,res,rawPath))return;
     if(await workerProfile.handle(req,res,rawPath))return;
+    if(await cooperativeWorkspace.handle(req,res,rawPath))return;
     if(await complaints.handle(req,res,rawPath))return;
     if(await billing.handle(req,res,rawPath))return;
     if(await capacity.handle(req,res,rawPath))return;

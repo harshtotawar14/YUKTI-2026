@@ -35,9 +35,9 @@ async function seed(client){
     ['Driver','driver','🚗',499],['Elder Care','elder-care','🤝',599],['Beauty at Home','beauty-at-home','✨',549]
   ];
   await client.query(`INSERT INTO cooperatives(name,code,region) VALUES
-    ('YUKTI Community Services Cooperative','YUKTI-01','Indore'),
-    ('Narmada Worker Cooperative','NARMADA-02','Bhopal')
-    ON CONFLICT(code) DO NOTHING`);
+    ('YUKTI Kolhapur Services Cooperative','YUKTI-01','Kolhapur, Maharashtra'),
+    ('YUKTI Panhala Worker Cooperative','NARMADA-02','Panhala, Kolhapur, Maharashtra')
+    ON CONFLICT(code) DO UPDATE SET name=EXCLUDED.name,region=EXCLUDED.region`);
   for(const [name,slug,icon,price] of services){
     await client.query(`INSERT INTO services(name,slug,icon,base_price) VALUES($1,$2,$3,$4)
       ON CONFLICT(slug) DO UPDATE SET name=EXCLUDED.name,icon=EXCLUDED.icon,base_price=EXCLUDED.base_price,active=true`,[name,slug,icon,price]);
