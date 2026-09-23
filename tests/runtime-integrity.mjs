@@ -8,6 +8,7 @@ const root=resolve(fileURLToPath(new URL('..',import.meta.url)));
 const read=file=>readFileSync(resolve(root,file),'utf8');
 const files=readdirSync(root,{withFileTypes:true}).filter(entry=>entry.isFile()).map(entry=>entry.name);
 const jsFiles=files.filter(file=>extname(file)==='.js');
+const primaryProductionUrl='https://yukti-2026-brown.vercel.app';
 
 for(const file of jsFiles){
   execFileSync(process.execPath,['--check',resolve(root,file)],{stdio:'pipe'});
@@ -72,6 +73,11 @@ assert.match(serviceWorker,/build-info\.json/,'Service worker must not cache dep
 const packageJson=JSON.parse(read('package.json'));
 assert.equal(packageJson.scripts?.build,'node scripts/build.mjs','Reproducible static build command is missing');
 assert.equal(vercelConfig.outputDirectory,'dist','Vercel must publish the verified dist build');
+assert.ok(read('scripts/build.mjs').includes(primaryProductionUrl),'Build must publish the brown Vercel URL as the primary production identity');
+assert.ok(read('sitemap.xml').includes(primaryProductionUrl),'Sitemap must target the brown Vercel production URL');
+assert.ok(read('robots.txt').includes(`${primaryProductionUrl}/sitemap.xml`),'Robots file must advertise the brown Vercel sitemap');
+assert.ok(read('.github/workflows/production-e2e.yml').includes(primaryProductionUrl),'Production E2E must default to the brown Vercel URL');
+assert.ok(read('.github/workflows/production-diagnostics.yml').includes(primaryProductionUrl),'Production diagnostics must default to the brown Vercel URL');
 assert.match(runtime,/id:'frontend',label:'Deployed frontend build'/,'Readiness must verify deployed build identity');
 assert.match(runtime,/id:'auth',label:'Authentication route'/,'Readiness must verify authentication route availability');
 assert.match(runtime,/id:'snapshot',label:'Connected snapshot route'/,'Readiness must verify the connected read route');
