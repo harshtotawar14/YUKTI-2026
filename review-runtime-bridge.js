@@ -15,7 +15,14 @@
   }
 
   function signal(role){
-    try{window.dispatchEvent(new CustomEvent('sanpaid:connected-sync',{detail:{source:'review-runtime-role-ready',role,at:Date.now()}}));}catch{}
+    try{
+      const dashboard=window.SanPaidCustomerWorkerDashboard;
+      if(typeof dashboard?.requestRefresh==='function'){
+        dashboard.requestRefresh({detail:{source:'review-runtime-role-ready',role,at:Date.now()}});
+        return;
+      }
+      window.dispatchEvent(new CustomEvent('sanpaid:connected-sync',{detail:{source:'review-runtime-role-ready',role,at:Date.now()}}));
+    }catch{}
   }
 
   async function ensureBundle(){
@@ -24,10 +31,14 @@
     if(!role){lastRole='';clearTimeout(retryTimer);return;}
     if(document.querySelector(`#cwDashboard.${role.toLowerCase()}`))return;
 
-    const loader=window.SanPaidBootstrap?.loadCustomerWorker;
-    if(typeof loader==='function'){
-      if(!loading)loading=Promise.resolve(loader()).catch(error=>console.warn('[SanPaid review] customer/worker bundle load failed',error?.message||error)).finally(()=>{loading=null;});
-      await loading;
+    // The production build eagerly exposes the existing dashboard renderer.
+    // Only fall back to the legacy lazy loader when that hook is unavailable.
+    if(!window.SanPaidCustomerWorkerDashboard){
+      const loader=window.SanPaidBootstrap?.loadCustomerWorker;
+      if(typeof loader==='function'){
+        if(!loading)loading=Promise.resolve(loader()).catch(error=>console.warn('[SanPaid review] customer/worker bundle load failed',error?.message||error)).finally(()=>{loading=null;});
+        await loading;
+      }
     }
 
     signal(role);
@@ -35,7 +46,7 @@
     clearTimeout(retryTimer);
     retryTimer=setTimeout(()=>{
       if(activeConnectedRole()===role&&!document.querySelector(`#cwDashboard.${role.toLowerCase()}`))signal(role);
-    },220);
+    },260);
   }
 
   function schedule(){
