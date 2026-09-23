@@ -26,10 +26,14 @@ jobs:
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: node scripts/review-runtime-ui-audit.mjs
-      - name: Verify exact Customer mobile app UI
+      - name: Verify final Customer and Worker role UI
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: node scripts/customer-mobile-ui-audit.mjs
+      - name: Verify final Cooperative and Federation admin UI
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: node scripts/admin-final-ui-audit.mjs
       - name: Run broader Chromium button and dialog audit
         continue-on-error: true
         env:

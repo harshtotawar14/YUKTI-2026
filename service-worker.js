@@ -1,14 +1,15 @@
-const CACHE_NAME='sanpaid-runtime-v71-mobile-final1';
+const CACHE_NAME='sanpaid-runtime-v71-role-shells-final2';
 const FALLBACK_ASSETS=[
   './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./master-v2.css','./dossier-redesign.css',
   './connected-demo.css','./judge-demo.css','./selector-mode.css','./auth-unified.css','./login-reference.css',
   './customer-worker-dashboard.css','./customer-reference-dashboard.css','./customer-mobile-reference.css','./worker-mobile-final.css',
+  './admin-final.css','./admin-final-guard.css','./admin-command-center.css','./cooperative-portal.css','./federation-portal.css','./federation-govtech.css',
   './app.js','./mobile.js','./evaluator-final.js','./top1-polish.js','./auth-unified.js','./login-reference.js',
   './connected-demo.js','./connected-service-ui.js','./connected-commerce-ui.js','./connected-runtime-fix.js','./review-runtime.js','./review-runtime-bridge.js',
   './customer-worker-dashboard.js','./customer-reference-dashboard.js','./customer-mobile-bootstrap.js','./customer-mobile-reference.js','./worker-mobile-final.js',
-  './capacity-worker-ui.js','./judge-demo.js','./selector-mode.js',
+  './capacity-worker-ui.js','./judge-demo.js','./selector-mode.js','./admin-command-center.js','./cooperative-portal.js','./federation-portal.js','./admin-final.js',
   './manifest.webmanifest','./app-icon.svg','./social-preview.svg','./robots.txt','./sitemap.xml'
-]
+];
 
 self.addEventListener('install',event=>{
   event.waitUntil((async()=>{
@@ -43,20 +44,32 @@ async function networkFirst(request,fallbackKey=null){
   }catch(error){
     const cached=await cache.match(request);
     if(cached)return cached;
-    if(fallbackKey){const fallback=await cache.match(fallbackKey);if(fallback)return fallback;}throw error;
+    if(fallbackKey){const fallback=await cache.match(fallbackKey);if(fallback)return fallback;}
+    throw error;
   }
 }
 
 self.addEventListener('fetch',event=>{
-  const request=event.request;if(request.method!=='GET')return;
-  const url=new URL(request.url);if(url.origin!==self.location.origin)return;
+  const request=event.request;
+  if(request.method!=='GET')return;
+  const url=new URL(request.url);
+  if(url.origin!==self.location.origin)return;
   if(url.pathname.startsWith('/api/')||url.pathname==='/build-info.json')return;
-  if(request.mode==='navigate'){event.respondWith(networkFirst(request,'./index.html'));return;}
-  if(/\.(?:js|css|html)$/i.test(url.pathname)){event.respondWith(networkFirst(request));return;}
+  if(request.mode==='navigate'){
+    event.respondWith(networkFirst(request,'./index.html'));
+    return;
+  }
+  if(/\.(?:js|css|html)$/i.test(url.pathname)){
+    event.respondWith(networkFirst(request));
+    return;
+  }
   if(/\.(?:svg|png|jpg|jpeg|webp|ico|woff2?)$/i.test(url.pathname)){
     event.respondWith(caches.open(CACHE_NAME).then(async cache=>{
       const cached=await cache.match(request);
-      const network=fetch(request).then(response=>{if(response&&response.ok)cache.put(request,response.clone()).catch(()=>{});return response;}).catch(()=>cached);
+      const network=fetch(request).then(response=>{
+        if(response&&response.ok)cache.put(request,response.clone()).catch(()=>{});
+        return response;
+      }).catch(()=>cached);
       return cached||network;
     }));
   }
