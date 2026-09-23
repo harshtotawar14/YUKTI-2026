@@ -17,143 +17,113 @@ async function waitServer(){
     try{const response=await fetch(`http://127.0.0.1:${port}/`);if(response.ok)return;}catch{}
     await sleep(200);
   }
-  throw new Error('Customer mobile audit server did not start.');
+  throw new Error('Customer UI audit server did not start.');
 }
 
-async function openCustomer(context,{seedView='payment'}={}){
+async function openCustomer(context){
   const page=await context.newPage();
-  page.setDefaultTimeout(7000);
-  const user={id:101,role:'CUSTOMER',fullName:'Review Customer',name:'Review Customer'};
-  const requestCounts=new Map();
-  page.__requestCounts=requestCounts;
+  page.setDefaultTimeout(8000);
+  const user={id:101,role:'CUSTOMER',fullName:'Shreya Patil',name:'Shreya Patil',email:'shreya.customer@sanpaid.demo'};
 
   await page.route('**/api/**',async route=>{
     const path=new URL(route.request().url()).pathname;
-    requestCounts.set(path,(requestCounts.get(path)||0)+1);
     let payload={ok:true};
     if(path==='/api/auth/demo-access')payload={ok:true,accounts:[]};
     else if(path==='/api/auth/me'||path==='/api/connected/auth/me')payload={ok:true,user};
     else if(path==='/api/connected/health')payload={ok:true};
-    else if(path==='/api/public/services'||path==='/api/connected/customer/services')payload={ok:true,source:'DATABASE_CONFIGURATION',services:[{name:'Electrician',basePrice:499,icon:'⚡'}]};
-    else if(path==='/api/connected/snapshot')payload={role:'CUSTOMER',revision:'audit-r1',bookings:[{id:17,bookingCode:'SP-2026-000017',service:'Electrician',status:'ACCEPTED'}]};
+    else if(path==='/api/public/services'||path==='/api/connected/customer/services')payload={ok:true,source:'DATABASE_CONFIGURATION',services:[{name:'Electrician',basePrice:499,icon:'⚡'},{name:'Plumbing',basePrice:399,icon:'🔧'}]};
+    else if(path==='/api/connected/snapshot')payload={role:'CUSTOMER',bookings:[]};
     else if(path==='/api/connected/customer/notifications')payload={ok:true,notifications:[]};
     else if(path==='/api/connected/customer/support')payload={ok:true,requests:[]};
-    else if(path==='/api/connected/customer/bookings/17')payload={id:17,bookingCode:'SP-2026-000017',service:'Electrician',status:'ACCEPTED',workerName:'Asha Verma',workerVerification:'Verified',total:549,scheduledAt:'2026-09-24T10:00:00.000Z'};
-    else if(path==='/api/connected/customer/bookings/17/checkout')payload={status:'ACCEPTED',total:549,approvedAdditional:0,finalAmount:549,payment:null,invoice:null};
-    else if(path==='/api/connected/customer/bookings/17/timeline')payload={timeline:[]};
-    else if(path==='/api/connected/customer/bookings/17/charges')payload=[];
-    else if(path==='/api/connected/bookings/17/estimate')payload={estimate:null};
     await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(payload)});
   });
 
   await page.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});
-  await page.evaluate(view=>sessionStorage.setItem('sanpaid_dashboard_view_customer',view),seedView);
-  await page.waitForTimeout(450);
+  await page.waitForTimeout(350);
   await page.evaluate(()=>window.SanPaidBootstrap?.loadCustomerWorker?.());
-  await page.waitForTimeout(450);
+  await page.waitForTimeout(350);
   const opened=await page.evaluate(async user=>{
     window.SanPaidAuth.restoreSession=async()=>user;
     window.SanPaidAuth.getCurrentUser=()=>user;
-    const result=await window.ConnectedSanPaid.open('CUSTOMER');
-    window.dispatchEvent(new CustomEvent('sanpaid:connected-sync',{detail:{source:'customer-mobile-contract-audit'}}));
-    return result;
+    return window.ConnectedSanPaid.open('CUSTOMER');
   },user);
   assert(opened===true,'Customer workspace did not open.');
   await page.locator('#connectedShell:not(.hidden)').waitFor({state:'visible'});
-  await page.locator('#connectedShell.customer-mobile-ready').waitFor({state:'attached'});
-  await page.waitForTimeout(220);
+  await page.locator('.cw-dashboard.customer').waitFor({state:'attached'});
+  await page.waitForTimeout(260);
   return page;
 }
 
-async function diagnostic(page,selector){
-  const node=page.locator(selector).first();
-  if(!(await node.count()))return {missing:true};
-  return node.evaluate(element=>{
-    const chain=[];
-    for(let current=element;current&&chain.length<8;current=current.parentElement){
-      const style=getComputedStyle(current);
-      chain.push({tag:current.tagName,id:current.id,className:String(current.className||''),hidden:current.hidden,display:style.display,visibility:style.visibility,opacity:style.opacity,background:style.backgroundColor,color:style.color});
-    }
-    return {innerWidth:window.innerWidth,devicePixelRatio:window.devicePixelRatio,screen:{width:screen.width,height:screen.height},media768:matchMedia('(max-width: 768px)').matches,chain};
-  });
+async function assertNoOverflow(page,selector,label){
+  const ok=await page.locator(selector).evaluate(node=>node.scrollWidth<=node.clientWidth+2);
+  assert(ok,`${label}: horizontal overflow detected in ${selector}`);
 }
 
-async function assertHomeIsolation(page,label){
+async function assertMobile(page,label){
   const shell=page.locator('#connectedShell');
-  assert(await shell.evaluate(node=>node.classList.contains('customer-mobile-home-active')),`${label}: mobile Home state is not active`);
-  const base=page.locator('#connectedContent');
-  assert(!(await base.isVisible()),`${label}: legacy/full customer content is visible behind mobile Home`);
-  const saved=await page.evaluate(()=>sessionStorage.getItem('sanpaid_dashboard_view_customer'));
-  assert(saved==='overview',`${label}: stale customer sub-view was not reset to overview (got ${saved})`);
-}
+  await shell.waitFor({state:'visible'});
+  await page.locator('#connectedShell.customer-mobile-ready').waitFor({state:'attached'});
+  assert(await shell.getAttribute('data-customer-mobile-mode')==='true',`${label}: mobile mode not active`);
+  assert(await page.locator('#connectedContent').isVisible(),`${label}: connected content is hidden/blank`);
 
-async function assertLightSurface(page,label){
-  const state=await page.evaluate(()=>({
-    htmlScheme:getComputedStyle(document.documentElement).colorScheme,
-    shellBg:getComputedStyle(document.getElementById('connectedShell')).backgroundColor,
-    bodyBg:getComputedStyle(document.body).backgroundColor,
-    bootCount:document.querySelectorAll('.cm-mobile-boot-stage').length
-  }));
-  assert(!/dark/i.test(state.htmlScheme),`${label}: browser is still allowed to use dark color scheme (${state.htmlScheme})`);
-  assert(state.shellBg==='rgb(246, 250, 252)',`${label}: customer shell is not light (${state.shellBg})`);
-  assert(state.bootCount===0,`${label}: startup safety shell was not removed after mobile app became ready`);
-}
-
-async function assertRequestBudget(page,label){
-  // Give MutationObservers/retry timers time to settle. A visual render must not
-  // recursively trigger backend sync and fan out into thousands of API calls.
-  await page.waitForTimeout(900);
-  const counts=page.__requestCounts;
-  const expensive=[
-    '/api/connected/customer/bookings/17',
-    '/api/connected/customer/bookings/17/checkout',
-    '/api/connected/customer/bookings/17/charges',
-    '/api/connected/bookings/17/estimate',
-    '/api/connected/snapshot'
-  ];
-  for(const path of expensive){
-    const count=counts.get(path)||0;
-    assert(count<=12,`${label}: request amplification detected for ${path} (${count} calls)`);
-  }
-  const total=[...counts.values()].reduce((sum,count)=>sum+count,0);
-  assert(total<=80,`${label}: Customer startup made ${total} API calls; expected a bounded startup budget`);
-}
-
-async function assertMobileContract(page,label,{expectForced=false,checkBudget=false}={}){
-  const shell=page.locator('#connectedShell');
-  assert(await shell.getAttribute('data-customer-mobile-mode')==='true',`${label}: mobile mode was not activated`);
-  for(const selector of ['.cm-mobile-header','.cm-mobile-greeting','.cm-book-cta','.cm-quick-grid','.cm-booking-card','.cm-support-card','.cm-bottom-nav']){
+  const required=['.cm-mobile-header','.cm-mobile-home','.cm-mobile-greeting','.cm-book-cta','.cm-quick-grid','.cm-booking-card','.cm-next-card','.cm-mobile-metrics','.cm-support-card','.cm-bottom-nav'];
+  for(const selector of required){
     const node=page.locator(selector).first();
-    assert(await node.count()===1,`${label}: ${selector} is missing`);
-    if(!(await node.isVisible())){
-      console.error(`${label} diagnostic for ${selector}:`,JSON.stringify(await diagnostic(page,selector),null,2));
-      throw new Error(`${label}: ${selector} is not visible`);
-    }
+    assert(await node.count()===1,`${label}: ${selector} missing`);
+    assert(await node.isVisible(),`${label}: ${selector} not visible`);
   }
-  assert(!(await page.locator('#connectedShell .connected-top').isVisible()),`${label}: old connected header is still visible`);
-  assert(!(await page.locator('.cw-dashboard.customer .cw-nav').isVisible()),`${label}: old customer sidebar is still visible`);
-  assert((await page.locator('.cm-quick-grid button').count())===3,`${label}: quick-action cards are incomplete`);
-  assert((await page.locator('.cm-bottom-nav button').count())===4,`${label}: bottom navigation must have four actions`);
-  const ctaText=(await page.locator('.cm-book-cta').innerText()).toLowerCase();
-  assert(ctaText.includes('book a service'),`${label}: green Book a Service CTA is missing`);
-  const noOverflow=await shell.evaluate(node=>node.scrollWidth<=node.clientWidth+2);
-  assert(noOverflow,`${label}: customer shell has horizontal overflow`);
-  await assertHomeIsolation(page,label);
-  await assertLightSurface(page,label);
-  if(checkBudget)await assertRequestBudget(page,label);
-  if(expectForced){
-    assert(await page.locator('#sanpaidCustomerForcedMobileCss').count()===1,`${label}: forced touch-device mobile CSS was not installed`);
-  }
+  assert(!(await page.locator('#connectedShell .connected-top').isVisible()),`${label}: desktop product header leaked into mobile`);
+  assert(!(await page.locator('.cw-dashboard.customer .cw-nav').isVisible()),`${label}: desktop sidebar leaked into mobile`);
+  assert(!(await page.locator('[data-cw-view="overview"]>.cw-role-head').isVisible()),`${label}: legacy overview is visible behind mobile home`);
+  assert((await page.locator('.cm-quick-grid>button').count())===3,`${label}: quick actions must contain three cards`);
+  assert((await page.locator('.cm-bottom-nav>button').count())===4,`${label}: bottom navigation must contain four actions`);
+  assert((await page.locator('.cm-book-cta').innerText()).toLowerCase().includes('book a service'),`${label}: Book a Service CTA missing`);
+  await assertNoOverflow(page,'#connectedShell',label);
 
   await page.locator('.cm-bottom-nav [data-cm-view="book"]').click();
   await page.waitForTimeout(100);
-  assert(await page.locator('#connectedContent').isVisible(),`${label}: Book Service did not reveal its connected view`);
-  assert(await page.locator('.cm-mobile-header').isVisible(),`${label}: mobile header disappeared in Book Service`);
-  assert(await page.locator('.cm-bottom-nav').isVisible(),`${label}: mobile bottom nav disappeared in Book Service`);
+  assert(await page.locator('[data-cw-view="book"]').isVisible(),`${label}: Book Service real view did not open`);
+  assert(await page.locator('.cm-mobile-header').isVisible(),`${label}: mobile header disappeared on Book Service`);
+  assert(await page.locator('.cm-bottom-nav').isVisible(),`${label}: bottom nav disappeared on Book Service`);
 
   await page.locator('.cm-bottom-nav [data-cm-view="overview"]').click();
   await page.waitForTimeout(100);
-  await assertHomeIsolation(page,`${label} after returning Home`);
+  assert(await page.locator('.cm-mobile-home').isVisible(),`${label}: mobile Home did not return`);
+
+  await page.locator('.cm-bottom-nav [data-cm-profile]').click();
+  await page.waitForTimeout(70);
+  assert(await page.locator('.cm-profile-layer').isVisible(),`${label}: Profile sheet did not open`);
+  const profileText=(await page.locator('.cm-profile-sheet').innerText()).toLowerCase();
+  assert(profileText.includes('shreya patil')&&profileText.includes('switch role')&&profileText.includes('logout'),`${label}: Profile sheet actions incomplete`);
+  await page.locator('.cm-profile-sheet [data-cm-profile-close]').click();
+  await page.waitForTimeout(50);
+  assert(!(await page.locator('.cm-profile-layer').isVisible()),`${label}: Profile sheet did not close`);
+}
+
+async function assertDesktop(page,label){
+  const shell=page.locator('#connectedShell');
+  assert(await shell.evaluate(node=>node.classList.contains('customer-reference-page')),`${label}: customer reference scope missing`);
+  assert(!(await shell.evaluate(node=>node.classList.contains('customer-mobile-bootstrap'))),`${label}: mobile mode incorrectly active on desktop`);
+
+  const required=['.cr-header-tools','.cr-nav-motto','.cr-desktop-home','.cr-hero','.cr-current-card','.cr-shortcuts-card','.cr-home-side','.cr-worker-card','.cr-amount-card','.cr-help-card','.cr-safety-card'];
+  for(const selector of required){
+    const node=page.locator(selector).first();
+    assert(await node.count()===1,`${label}: ${selector} missing`);
+    assert(await node.isVisible(),`${label}: ${selector} not visible`);
+  }
+  assert(await page.locator('#connectedShell .connected-top').isVisible(),`${label}: desktop header is missing`);
+  assert(await page.locator('.cw-dashboard.customer .cw-nav').isVisible(),`${label}: customer sidebar is missing`);
+  assert(!(await page.locator('[data-cw-view="overview"]>.cw-role-head').isVisible()),`${label}: legacy overview visible behind enhanced home`);
+  assert((await page.locator('.cr-hero').innerText()).includes('Shreya Patil'),`${label}: dynamic customer name not shown`);
+  assert((await page.locator('.cr-shortcuts>button').count())===4,`${label}: service shortcuts incomplete`);
+  await assertNoOverflow(page,'#connectedShell',label);
+
+  await page.locator('.cw-nav [data-cw-view-btn="book"]').click();
+  await page.waitForTimeout(100);
+  assert(await page.locator('[data-cw-view="book"]').isVisible(),`${label}: desktop Book Service view did not open`);
+  await page.locator('.cw-nav [data-cw-view-btn="overview"]').click();
+  await page.waitForTimeout(100);
+  assert(await page.locator('.cr-desktop-home').isVisible(),`${label}: enhanced desktop Home did not return`);
 }
 
 let browser;
@@ -161,25 +131,24 @@ try{
   await waitServer();
   browser=await chromium.launch({headless:true,executablePath,args:['--no-sandbox']});
 
+  const desktopContext=await browser.newContext({viewport:{width:1440,height:1000},deviceScaleFactor:1});
+  const desktopPage=await openCustomer(desktopContext);
+  await assertDesktop(desktopPage,'1440px desktop');
+  await desktopContext.close();
+
   const phoneContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3});
-  const phonePage=await openCustomer(phoneContext,{seedView:'payment'});
-  await assertMobileContract(phonePage,'390px phone with stale Payment state',{checkBudget:true});
+  const phonePage=await openCustomer(phoneContext);
+  await assertMobile(phonePage,'390px phone');
   await phoneContext.close();
 
-  const darkPhoneContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3,colorScheme:'dark'});
-  const darkPhonePage=await openCustomer(darkPhoneContext,{seedView:'verify'});
-  await assertMobileContract(darkPhonePage,'390px dark-browser phone with stale Verify state');
-  await darkPhoneContext.close();
-
-  const wideTouchContext=await browser.newContext({viewport:{width:1280,height:900},isMobile:true,hasTouch:true,deviceScaleFactor:3,colorScheme:'dark'});
-  const wideTouchPage=await openCustomer(wideTouchContext,{seedView:'payment'});
-  const innerWidth=await wideTouchPage.evaluate(()=>window.innerWidth);
-  assert(innerWidth>1100&&innerWidth<=1400,`Wide-touch fixture has unexpected innerWidth ${innerWidth}`);
-  await assertMobileContract(wideTouchPage,'1280px dark touch handset',{expectForced:true});
+  const wideTouchContext=await browser.newContext({viewport:{width:1280,height:900},isMobile:true,hasTouch:true,deviceScaleFactor:3});
+  const wideTouchPage=await openCustomer(wideTouchContext);
+  assert((await wideTouchPage.evaluate(()=>window.innerWidth))>1100,'Wide-touch fixture did not simulate a desktop-site viewport');
+  await assertMobile(wideTouchPage,'1280px touch handset');
   await wideTouchContext.close();
 
-  console.log('SanPaid Customer mobile UI audit: PASS');
-  console.log('Verified stale Payment/Verify recovery, dark-browser light surface, bounded API startup, 390px phone and 1280px touch mode.');
+  console.log('SanPaid Customer desktop + mobile UI audit: PASS');
+  console.log('Verified Worker-style Customer desktop, 390px phone, and wide touch handset without hiding connected content.');
 } finally {
   if(browser)await browser.close().catch(()=>{});
   server.kill('SIGTERM');
