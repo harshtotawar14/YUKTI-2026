@@ -9,6 +9,9 @@ const {PUBLIC_DEMO_PASSWORD,DEMO_ACCOUNTS,DEMO_WORKER_EMAILS}=require('./demo-ac
 let pool;
 let readyPromise;
 
+const RESOURCE_ERROR_CODES=new Set(['53000','53100','53200','53300','53400','57P03']);
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+
 function getPool(){
   const connectionString=process.env.DATABASE_URL;
   if(!connectionString)throw Object.assign(new Error('DATABASE_URL is not configured.'),{status:503,code:'DATABASE_NOT_CONFIGURED'});
@@ -17,12 +20,16 @@ function getPool(){
     const managedRuntime=Boolean(process.env.VERCEL);
     pool=new Pool({
       connectionString,
-      max:managedRuntime?2:5,
-      idleTimeoutMillis:managedRuntime?5000:10000,
-      connectionTimeoutMillis:5000,
+      // A serverless deployment can have many warm function instances. Keep each
+      // instance to one backend connection so a small managed Postgres plan is not
+      // exhausted by parallel pools during the SIH demo.
+      max:managedRuntime?1:5,
+      idleTimeoutMillis:managedRuntime?1500:10000,
+      connectionTimeoutMillis:managedRuntime?3000:5000,
       allowExitOnIdle:true,
       ssl:local?false:{rejectUnauthorized:false}
     });
+    pool.on('error',error=>console.error('[sanpaid-db-pool]',error.code||'POOL_ERROR',error.message));
   }
   return pool;
 }
@@ -94,19 +101,48 @@ async function bootstrapDatabase(){
 
 async function ensureDatabase(){
   if(!readyPromise){
-    const readiness=shouldBootstrapDatabase()
-      ? bootstrapDatabase()
-      : getPool().query('SELECT 1').then(()=>undefined);
+    // Production migrations are applied out of band. Do not spend an extra DB
+    // connection/query on every new Vercel function instance before the real query.
+    const readiness=shouldBootstrapDatabase()?bootstrapDatabase():Promise.resolve();
     readyPromise=readiness.catch(error=>{readyPromise=null;throw error;});
   }
   return readyPromise;
 }
 
-async function query(text,params=[]){await ensureDatabase();return getPool().query(text,params);}
-async function transaction(work){
-  await ensureDatabase();const client=await getPool().connect();
-  try{await client.query('BEGIN');const result=await work(client);await client.query('COMMIT');return result;}
-  catch(error){await client.query('ROLLBACK').catch(()=>{});throw error;}finally{client.release();}
+function isResourceError(error){return RESOURCE_ERROR_CODES.has(String(error?.code||''));}
+async function resetPool(){
+  const current=pool;
+  pool=undefined;
+  readyPromise=undefined;
+  if(current)await current.end().catch(()=>{});
 }
 
-module.exports={getPool,ensureDatabase,query,transaction,migrationSql,shouldBootstrapDatabase};
+async function query(text,params=[]){
+  await ensureDatabase();
+  try{return await getPool().query(text,params);}
+  catch(error){
+    if(!isResourceError(error))throw error;
+    console.warn('[sanpaid-db-retry]',error.code,error.message);
+    await resetPool();
+    await sleep(250);
+    return getPool().query(text,params);
+  }
+}
+
+async function transaction(work){
+  await ensureDatabase();
+  const client=await getPool().connect();
+  try{
+    await client.query('BEGIN');
+    const result=await work(client);
+    await client.query('COMMIT');
+    return result;
+  }catch(error){
+    await client.query('ROLLBACK').catch(()=>{});
+    throw error;
+  }finally{
+    client.release();
+  }
+}
+
+module.exports={getPool,ensureDatabase,query,transaction,migrationSql,shouldBootstrapDatabase,isResourceError,resetPool};

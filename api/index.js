@@ -11,6 +11,8 @@ const complaints=require('../backend/src/complaints/routes.cjs');
 const billing=require('../backend/src/billing/routes.cjs');
 const capacity=require('../backend/src/capacity/routes.cjs');
 
+function isDatabaseResourceError(error){return /^53/.test(String(error?.code||''))||String(error?.code||'')==='57P03';}
+
 module.exports=async function stableApiEntrypoint(req,res){
   const requestUrl=new URL(req.url,'https://sanpaid.local');
   const rawPath=String(requestUrl.searchParams.get('path')||'').replace(/^\/+|\/+$/g,'');
@@ -28,9 +30,10 @@ module.exports=async function stableApiEntrypoint(req,res){
     if(await billing.handle(req,res,rawPath))return;
     if(await capacity.handle(req,res,rawPath))return;
   }catch(error){
-    console.error('[sanpaid-api-adapter]',rawPath,error.code||error.message);
-    const status=Number(error.status)||500;
-    if(error.retryAfter)res.setHeader('Retry-After',String(error.retryAfter));
+    const resourcePressure=isDatabaseResourceError(error);
+    console.error('[sanpaid-api-adapter]',rawPath,error.code||'INTERNAL_ERROR',error.message||'Unknown error');
+    const status=Number(error.status)||(resourcePressure?503:500);
+    if(error.retryAfter||resourcePressure)res.setHeader('Retry-After',String(error.retryAfter||2));
     res.statusCode=status;
     res.setHeader('Content-Type','application/json; charset=utf-8');
     res.setHeader('Cache-Control','no-store');

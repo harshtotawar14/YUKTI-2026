@@ -4,7 +4,7 @@ const {query,transaction}=require('../../../api/_lib/db.cjs');
 const {sha256,randomToken,verifyPassword,bearerToken,sessionCookie,clearSessionCookie}=require('../../../api/_lib/security.cjs');
 const {normalizeRole,publicUser}=require('../../../api/_lib/policy.cjs');
 const {authenticate,allow,send,httpError}=require('../shared/auth-context.cjs');
-const {resolveLoginIdentifier,isPublicDemoCredential,publicDemoPayload}=require('../../../api/_lib/demo-access.cjs');
+const {DEMO_ACCOUNTS,resolveLoginIdentifier,isPublicDemoCredential,publicDemoPayload}=require('../../../api/_lib/demo-access.cjs');
 
 const MAX_FAILURES=8;
 const WINDOW_MINUTES=15;
@@ -48,16 +48,54 @@ async function createSession(userId,remember=false){
   return {raw,maxAge};
 }
 
+async function createPublicDemoSession(identifier,remember=false){
+  const raw=randomToken(32),days=remember?7:1,maxAge=days*86400;
+  // Shared review credentials are already published by /auth/demo-access. Keep
+  // their sign-in path to one atomic SQL round trip instead of throttle lookup,
+  // user lookup, throttle cleanup and a separate session transaction.
+  const result=await query(`WITH expired AS (
+      DELETE FROM sessions WHERE expires_at<=now()
+    ), selected AS (
+      SELECT * FROM users WHERE email=$1 AND active=true
+    ), created AS (
+      INSERT INTO sessions(user_id,token_hash,expires_at)
+      SELECT id,$2,now()+($3||' days')::interval FROM selected
+      RETURNING user_id
+    )
+    SELECT selected.* FROM selected JOIN created ON created.user_id=selected.id`,[identifier,sha256(raw),String(days)]);
+  const user=result.rows[0];
+  if(!user)throw httpError(503,'Shared review account is not initialized.','DEMO_ACCOUNT_UNAVAILABLE');
+  return {raw,maxAge,user};
+}
+
 async function login(req,res){
-  method(req,'POST');const data=body(req),submittedIdentifier=clean(data.identifier,200).toLowerCase(),identifier=resolveLoginIdentifier(submittedIdentifier),requestedRole=normalizeRole(data.role),password=clean(data.password,200);
+  method(req,'POST');
+  const data=body(req),submittedIdentifier=clean(data.identifier,200).toLowerCase(),identifier=resolveLoginIdentifier(submittedIdentifier),requestedRole=normalizeRole(data.role),password=clean(data.password,200);
   if(!submittedIdentifier||!password)throw httpError(422,'Access ID and password are required.','LOGIN_INPUT');
-  const keyHash=throttleKey(req,identifier);await assertNotBlocked(keyHash);
+
+  const publicDemoAccess=isPublicDemoCredential(submittedIdentifier,password);
+  if(publicDemoAccess){
+    const account=DEMO_ACCOUNTS.find(item=>item.email===identifier);
+    if(!account)throw httpError(401,'Access ID or password is incorrect.','INVALID_CREDENTIALS');
+    if(requestedRole&&normalizeRole(account.role)!==requestedRole)throw httpError(403,'This account does not have the selected role.','ROLE_MISMATCH');
+    const session=await createPublicDemoSession(identifier,Boolean(data.remember));
+    res.setHeader('Set-Cookie',sessionCookie(session.raw,session.maxAge));
+    return send(res,200,{ok:true,user:publicUser(session.user),demoToken:session.raw,authentication:'SHARED_PLATFORM_SESSION'});
+  }
+
+  const keyHash=throttleKey(req,identifier);
+  await assertNotBlocked(keyHash);
   const result=await query('SELECT * FROM users WHERE email=$1 AND active=true',[identifier]),user=result.rows[0];
-  const publicDemoAccess=Boolean(user)&&isPublicDemoCredential(submittedIdentifier,password);
-  if(!user||(!publicDemoAccess&&!(await verifyPassword(password,user.password_hash)))){const failure=await registerFailure(keyHash);if(failure.blockedUntil){const error=httpError(429,'Too many login attempts. Wait before retrying.','LOGIN_RATE_LIMIT');error.retryAfter=BLOCK_MINUTES*60;throw error;}throw httpError(401,'Access ID or password is incorrect.','INVALID_CREDENTIALS');}
+  if(!user||!(await verifyPassword(password,user.password_hash))){
+    const failure=await registerFailure(keyHash);
+    if(failure.blockedUntil){const error=httpError(429,'Too many login attempts. Wait before retrying.','LOGIN_RATE_LIMIT');error.retryAfter=BLOCK_MINUTES*60;throw error;}
+    throw httpError(401,'Access ID or password is incorrect.','INVALID_CREDENTIALS');
+  }
   if(requestedRole&&normalizeRole(user.role)!==requestedRole){await registerFailure(keyHash);throw httpError(403,'This account does not have the selected role.','ROLE_MISMATCH');}
-  await clearFailures(keyHash);const session=await createSession(user.id,Boolean(data.remember));res.setHeader('Set-Cookie',sessionCookie(session.raw,session.maxAge));
-  return send(res,200,{ok:true,user:publicUser(user),demoToken:session.raw,authentication:publicDemoAccess?'SHARED_PLATFORM_SESSION':'EVENT_SCOPED_SESSION'});
+  await clearFailures(keyHash);
+  const session=await createSession(user.id,Boolean(data.remember));
+  res.setHeader('Set-Cookie',sessionCookie(session.raw,session.maxAge));
+  return send(res,200,{ok:true,user:publicUser(user),demoToken:session.raw,authentication:'EVENT_SCOPED_SESSION'});
 }
 
 async function me(req,res){method(req,'GET');const user=await authenticate(req);return send(res,200,{ok:true,user:publicUser(user)});}
