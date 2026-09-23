@@ -74,6 +74,10 @@ jobs:
           node --check admin-final.js
           node --check service-worker.js
           node --check scripts/build.mjs
+          node --check scripts/browser-ui-audit.mjs
+          node --check scripts/admin-final-ui-audit.mjs
+          node --check scripts/customer-mobile-ui-audit.mjs
+          node --check scripts/review-runtime-ui-audit.mjs
           node --check api/index.js
           node --check 'api/[...path].js'
           node --check api/_lib/db.cjs
@@ -111,7 +115,10 @@ jobs:
           grep -F 'worker-mobile-ready' worker-mobile-final.js worker-mobile-final.css
           grep -F 'wm-bottom-nav' worker-mobile-final.js worker-mobile-final.css
           grep -F 'admin-final-active' admin-final.js admin-final.css admin-final-guard.css
-          grep -F 'restoreMoved' admin-final.js
+          grep -F 'restoreMovedNodes' admin-final.js
+          grep -F 'afProfileMenu' admin-final.js admin-final-guard.css
+          grep -F 'afSwitchRole' admin-final.js
+          grep -F 'afLogout' admin-final.js
           if grep -F 'Preparing your SanPaid workspace' customer-reference-dashboard.js; then
             echo 'Legacy Customer loading placeholder must not return.'
             exit 1
@@ -158,6 +165,7 @@ jobs:
           if(info.runtime!=='v71') throw new Error('Unexpected runtime identity.');
           if(info.roleMobileUi!=='FINAL_ONLY') throw new Error('Final role mobile UI marker missing.');
           if(info.adminUi!=='REFERENCE_FINAL') throw new Error('Final admin UI marker missing.');
+          if(info.roleUiCleanup!=='FOUR_ROLE_FINAL') throw new Error('Four-role cleanup marker missing.');
           const html=fs.readFileSync('dist/index.html','utf8');
           if(html.includes('quick-booking-details')) throw new Error('Hidden duplicate quick-access block leaked into deploy artifact.');
           const version=process.env.GITHUB_SHA.slice(0,12);
