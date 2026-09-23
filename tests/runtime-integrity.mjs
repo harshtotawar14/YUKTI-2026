@@ -69,13 +69,16 @@ const workerFinal=read('worker-mobile-final.js');
 const adminFinal=read('admin-final.js');
 const loginReference=read('login-reference.js');
 const selectorPolish=read('selector-final-polish.js');
-assert.doesNotMatch(customerReference,/Preparing your SanPaid workspace/,'Legacy Customer preparation placeholder remains');
+assert.match(customerReference,/SanPaidCustomerReference/,'Canonical Customer presentation hook is missing');
 assert.match(workerFinal,/'"':'&quot;'/,'Worker final UI escaping is incomplete');
 assert.match(adminFinal,/restoreMovedNodes/,'Admin final UI does not restore operational modules safely');
 assert.doesNotMatch(loginReference,/<b>Demo:<\/b>/,'Selector-facing login still exposes a Demo label');
 assert.match(loginReference,/Review Access:/,'Selector-facing login review access helper is missing');
-assert.match(selectorPolish,/data-selector-finding/,'Fifth selector-facing evidence mapping is missing');
+assert.match(selectorPolish,/sanpaidCustomerBootGuard/,'Selector polish does not neutralize the legacy Customer preparation placeholder');
+assert.match(selectorPolish,/5 validated priorities informing product controls/,'Selector evidence summary is not aligned with the five validated priorities');
+assert.doesNotMatch(selectorPolish,/data-selector-finding/,'Selector polish must not invent an unsupported fifth research finding');
 assert.match(selectorPolish,/WHAT YOU CAN EXPLORE NOW/,'Selector-facing implementation boundary is missing');
+assert.match(selectorPolish,/Workspace Ready/,'Admin review workspace must avoid an unsupported live-network claim');
 
 assert.ok(!existsSync(resolve(root,'cooperative-deploy-guard.js')),'Obsolete DB-dependent admin availability guard remains');
 const buildSource=read('scripts/build.mjs');
