@@ -242,7 +242,7 @@
     attributes:true,
     attributeFilter:['class','hidden','data-connected-role','data-customer-mobile-mode','aria-current']
   });
-  window.addEventListener('sanpaid:connected-sync',schedule);
+  window.addEventListener('sanpaid:customer-mobile-render',schedule);
   document.addEventListener('DOMContentLoaded',schedule,{once:true});
   window.addEventListener('resize',schedule,{passive:true});
   schedule();

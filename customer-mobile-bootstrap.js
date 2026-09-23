@@ -107,16 +107,18 @@
     } catch (_) {}
   }
 
-  function dispatchSync(source) {
-    window.dispatchEvent(new CustomEvent('sanpaid:connected-sync', { detail: { source } }));
+  // Mobile rendering is a UI-only concern. Never reuse sanpaid:connected-sync
+  // here: that event intentionally triggers server snapshot refreshes.
+  function dispatchMobileRender(source) {
+    window.dispatchEvent(new CustomEvent('sanpaid:customer-mobile-render', { detail: { source } }));
   }
 
   function requestMobileUi(shell) {
-    dispatchSync('customer-mobile-bootstrap');
+    dispatchMobileRender('customer-mobile-bootstrap');
     clearTimeout(Number(shell.dataset.customerMobileRetry || 0));
     const retry = setTimeout(() => {
       if (!shell.classList.contains('hidden') && !shell.classList.contains('customer-mobile-ready')) {
-        dispatchSync('customer-mobile-bootstrap-retry');
+        dispatchMobileRender('customer-mobile-bootstrap-retry');
       }
     }, 120);
     shell.dataset.customerMobileRetry = String(retry);
@@ -138,17 +140,17 @@
     const timer = setTimeout(() => {
       if (shell.classList.contains('hidden') || shell.classList.contains('customer-mobile-ready')) return;
       ensureOverview(content, shell);
-      dispatchSync('customer-mobile-recovery-1');
+      dispatchMobileRender('customer-mobile-recovery-1');
       setTimeout(() => {
         if (shell.classList.contains('hidden') || shell.classList.contains('customer-mobile-ready')) return;
         ensureOverview(content, shell);
-        dispatchSync('customer-mobile-recovery-2');
+        dispatchMobileRender('customer-mobile-recovery-2');
       }, 350);
       setTimeout(() => {
         if (shell.classList.contains('hidden') || shell.classList.contains('customer-mobile-ready')) return;
         const note = shell.querySelector('.cm-mobile-boot-note');
         if (note) note.textContent = 'Still preparing your mobile workspace…';
-        dispatchSync('customer-mobile-recovery-3');
+        dispatchMobileRender('customer-mobile-recovery-3');
       }, 900);
     }, 650);
     shell.dataset.customerMobileFailSafe = String(timer);
