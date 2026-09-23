@@ -87,7 +87,7 @@
     nav.querySelectorAll('[data-cw-view-btn]').forEach(button=>{
       const id=button.dataset.cwViewBtn;
       const label=button.querySelector(':scope>span:not(.cr-nav-icon)');
-      if(label&&NAV_LABELS[id])label.textContent=NAV_LABELS[id];
+      if(label&&NAV_LABELS[id]&&label.textContent!==NAV_LABELS[id])label.textContent=NAV_LABELS[id];
       if(!button.querySelector('.cr-nav-icon')&&ICONS[id]){
         const icon=document.createElement('span');
         icon.className='cr-nav-icon';
@@ -106,7 +106,7 @@
 
   function ensureDesktopHeader(shell,content,dashboard){
     const subtitle=shell.querySelector('.connected-top-subtitle');
-    if(subtitle)subtitle.textContent='Cooperative Workforce Network';
+    if(subtitle&&subtitle.textContent!=='Cooperative Workforce Network')subtitle.textContent='Cooperative Workforce Network';
     const actions=shell.querySelector('.connected-top>.actions');
     const headerActions=content.querySelector('.connected-session-bar .connected-header-actions');
     const close=shell.querySelector('#connectedClose');
@@ -123,6 +123,9 @@
     }
     const name=customerName();
     const email=customerEmail();
+    const signature=`${name}|${email}`;
+    if(tools.dataset.signature===signature)return;
+    tools.dataset.signature=signature;
     tools.innerHTML=`
       <div class="cr-location">${ICONS.pin}<span>Kolhapur, MH</span><b aria-hidden="true">⌄</b></div>
       <button type="button" class="cr-bell" aria-label="Open support and updates">${ICONS.bell}<i>3</i></button>
