@@ -1,10 +1,10 @@
-const CACHE_NAME='sanpaid-runtime-v71-customer7';
+const CACHE_NAME='sanpaid-runtime-v71-review8';
 const FALLBACK_ASSETS=[
   './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./master-v2.css','./dossier-redesign.css',
   './connected-demo.css','./judge-demo.css','./selector-mode.css','./auth-unified.css','./login-reference.css',
   './customer-worker-dashboard.css','./customer-reference-dashboard.css','./customer-mobile-reference.css',
   './app.js','./mobile.js','./evaluator-final.js','./top1-polish.js','./auth-unified.js','./login-reference.js',
-  './connected-demo.js','./connected-service-ui.js','./connected-commerce-ui.js','./connected-runtime-fix.js',
+  './connected-demo.js','./connected-service-ui.js','./connected-commerce-ui.js','./connected-runtime-fix.js','./review-runtime.js',
   './customer-worker-dashboard.js','./customer-reference-dashboard.js','./customer-mobile-bootstrap.js','./customer-mobile-reference.js',
   './capacity-worker-ui.js','./judge-demo.js','./selector-mode.js',
   './manifest.webmanifest','./app-icon.svg','./social-preview.svg','./robots.txt','./sitemap.xml'
