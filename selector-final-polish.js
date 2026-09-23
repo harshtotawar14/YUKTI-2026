@@ -1,6 +1,16 @@
 (() => {
   'use strict';
 
+  const CUSTOMER_BASE_GRID_GUARD='#connectedContent[data-connected-role="CUSTOMER"]>.connected-grid.connected-customer-grid{position:absolute!important;left:-99999px!important;width:1px!important;height:1px!important;overflow:hidden!important;opacity:0!important;pointer-events:none!important}';
+
+  function neutralizeLegacyCustomerBootGuard(){
+    const guard=document.getElementById('sanpaidCustomerBootGuard');
+    if(!guard)return;
+    // Keep the duplicate base Customer grid isolated, but remove the old
+    // "Preparing your SanPaid workspace" presentation completely.
+    if(guard.textContent!==CUSTOMER_BASE_GRID_GUARD)guard.textContent=CUSTOMER_BASE_GRID_GUARD;
+  }
+
   function ensureFifthResearchDecision(){
     const map=document.querySelector('#evidence .decision-map');
     if(!map||map.querySelector('[data-selector-finding="05"]'))return;
@@ -29,12 +39,21 @@
   }
 
   function apply(){
+    neutralizeLegacyCustomerBootGuard();
     ensureFifthResearchDecision();
     alignArchitectureTruth();
     alignCurrentBuildTruth();
     document.documentElement.dataset.selectorReady='true';
   }
 
+  let queued=false;
+  function schedule(){
+    if(queued)return;
+    queued=true;
+    requestAnimationFrame(()=>{queued=false;apply();});
+  }
+
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});
   else apply();
+  new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});
 })();
