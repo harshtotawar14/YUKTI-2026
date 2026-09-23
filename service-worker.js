@@ -1,10 +1,10 @@
-const CACHE_NAME='sanpaid-runtime-v71-role-shells-final2';
+const CACHE_NAME='sanpaid-runtime-v71-selector-final3';
 const FALLBACK_ASSETS=[
   './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./master-v2.css','./dossier-redesign.css',
   './connected-demo.css','./judge-demo.css','./selector-mode.css','./auth-unified.css','./login-reference.css',
   './customer-worker-dashboard.css','./customer-reference-dashboard.css','./customer-mobile-reference.css','./worker-mobile-final.css',
   './admin-final.css','./admin-final-guard.css','./admin-command-center.css','./cooperative-portal.css','./federation-portal.css','./federation-govtech.css',
-  './app.js','./mobile.js','./evaluator-final.js','./top1-polish.js','./auth-unified.js','./login-reference.js',
+  './app.js','./mobile.js','./evaluator-final.js','./top1-polish.js','./selector-final-polish.js','./auth-unified.js','./login-reference.js',
   './connected-demo.js','./connected-service-ui.js','./connected-commerce-ui.js','./connected-runtime-fix.js','./review-runtime.js','./review-runtime-bridge.js',
   './customer-worker-dashboard.js','./customer-reference-dashboard.js','./customer-mobile-bootstrap.js','./customer-mobile-reference.js','./worker-mobile-final.js',
   './capacity-worker-ui.js','./judge-demo.js','./selector-mode.js','./admin-command-center.js','./cooperative-portal.js','./federation-portal.js','./admin-final.js',
