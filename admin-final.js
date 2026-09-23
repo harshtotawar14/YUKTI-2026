@@ -65,6 +65,7 @@
   let activeKey='overview';
   let timer=0;
   let shellObserver=null;
+  let profileOutsideBound=false;
   const movedNodes=new Map();
 
   function role(){
@@ -218,7 +219,7 @@
     const profileName=currentUserName()||cfg.name;
     return `<div id="adminFinalApp">
       <header class="af-topbar">
-        <div class="af-brand"><button type="button" class="af-mobile-menu" id="afMobileMenu" aria-label="Open navigation">☰</button><img src="app-icon.svg" alt=""><div><strong>San<span>Paid</span></strong><small>Cooperative Workforce Network</small></div></div>
+        <div class="af-brand"><button type="button" class="af-mobile-menu" id="afMobileMenu" aria-label="Open navigation" aria-expanded="false">☰</button><img src="app-icon.svg" alt=""><div><strong>San<span>Paid</span></strong><small>Cooperative Workforce Network</small></div></div>
         <div class="af-top-actions">
           <span class="af-pill online"><i class="af-dot"></i>${esc(cfg.online)}</span>
           <span class="af-pill">${ICON.clock}<span id="afLastSync">Last sync: ${esc(now())}</span></span>
@@ -303,12 +304,15 @@
     activeKey=key;
     setActive(key);
     $('#adminFinalApp')?.classList.remove('nav-open');
+    $('#afMobileMenu')?.setAttribute('aria-expanded','false');
     const dashboardNode=$('#afDashboard'),stage=$('#afDetailStage');
     if(key==='overview'){
+      restoreMovedNodes();
       if(dashboardNode)dashboardNode.hidden=false;
       if(stage)stage.hidden=true;
       return;
     }
+    restoreMovedNodes();
     if(dashboardNode)dashboardNode.hidden=true;
     if(stage)stage.hidden=false;
     $('#afDetailTitle').textContent=item[1];
@@ -356,13 +360,20 @@
     restoreMovedNodes();
     document.getElementById('judgeClose')?.click();
     try{await window.SanPaidAuth?.logout?.({silent:true,keepModal:true});}catch{}
-    window.SanPaidAuth?.open?.('CUSTOMER','login');
+    window.SanPaidAuth?.openRoleChooser?.();
   }
 
   async function logout(){
     restoreMovedNodes();
     try{await window.SanPaidAuth?.logout?.();}
     finally{document.getElementById('judgeClose')?.click();}
+  }
+
+  function closeProfileOnOutside(event){
+    if(event.target.closest('.af-profile-wrap'))return;
+    const button=$('#afProfileButton'),menu=$('#afProfileMenu');
+    if(menu)menu.hidden=true;
+    button?.setAttribute('aria-expanded','false');
   }
 
   function bindProfile(){
@@ -376,12 +387,10 @@
     });
     $('#afSwitchRole')?.addEventListener('click',switchRole);
     $('#afLogout')?.addEventListener('click',logout);
-    document.addEventListener('click',event=>{
-      if(!event.target.closest('.af-profile-wrap')){
-        menu.hidden=true;
-        button.setAttribute('aria-expanded','false');
-      }
-    },{capture:true});
+    if(!profileOutsideBound){
+      profileOutsideBound=true;
+      document.addEventListener('click',closeProfileOnOutside,{capture:true});
+    }
   }
 
   function bind(){
@@ -391,7 +400,10 @@
       const button=event.target.closest('[data-af-key]');
       if(button&&!button.closest('#afDashboard'))openKey(button.dataset.afKey);
     });
-    $('#afMobileMenu',app)?.addEventListener('click',()=>app.classList.toggle('nav-open'));
+    $('#afMobileMenu',app)?.addEventListener('click',event=>{
+      const open=app.classList.toggle('nav-open');
+      event.currentTarget.setAttribute('aria-expanded',String(open));
+    });
     bindProfile();
     bindDashboard();
   }
