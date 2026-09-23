@@ -13,13 +13,12 @@
 
   function alignEvidenceTruth(){
     const strip=document.querySelector('.hero-proof-strip .wrap');
-    if(strip){
-      [...strip.querySelectorAll('span')].forEach(node=>{
-        if(node.textContent.trim()==='5 findings mapped to product controls'){
-          node.textContent='5 validated priorities informing product controls';
-        }
-      });
-    }
+    if(!strip)return;
+    [...strip.querySelectorAll('span')].forEach(node=>{
+      if(node.textContent.trim()==='5 findings mapped to product controls'){
+        node.textContent='5 validated priorities informing product controls';
+      }
+    });
   }
 
   function alignArchitectureTruth(){
@@ -42,6 +41,7 @@
 
   function alignAdminTruth(){
     document.querySelectorAll('#adminFinalApp .af-pill.online').forEach(node=>{
+      if(node.textContent.trim()==='Workspace Ready')return;
       const dot=node.querySelector('.af-dot');
       node.textContent='';
       if(dot)node.appendChild(dot);
@@ -66,8 +66,7 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});
   else apply();
 
-  // Admin cards are rendered after authentication, so observe only the small
-  // admin shell instead of the whole document once it becomes available.
+  // Admin cards render after authentication, so observe only that shell.
   const observeAdmin=()=>{
     const shell=document.getElementById('sihJudgeShell');
     if(!shell){setTimeout(observeAdmin,250);return;}
