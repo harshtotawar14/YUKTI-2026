@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root=resolve(fileURLToPath(new URL('..',import.meta.url)));
 const output=resolve(root,'dist');
 const packageMetadata=JSON.parse(readFileSync(resolve(root,'package.json'),'utf8'));
+const primaryProductionUrl='https://yukti-2026-brown.vercel.app';
 
 const publicFiles=[
   'index.html',
@@ -35,6 +36,11 @@ for(const file of publicFiles){
   if(!existsSync(source))throw new Error(`Required public asset is missing: ${file}`);
   cpSync(source,resolve(output,file));
 }
+
+const builtIndexPath=resolve(output,'index.html');
+const builtIndex=readFileSync(builtIndexPath,'utf8')
+  .replaceAll('https://sahkriya.vercel.app',primaryProductionUrl);
+writeFileSync(builtIndexPath,builtIndex);
 
 const buildInfo={
   product:'SanPaid',
