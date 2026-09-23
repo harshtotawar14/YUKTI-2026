@@ -21,6 +21,20 @@ jobs:
   source-integrity:
     name: Source integrity
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: sanpaid
+          POSTGRES_PASSWORD: sanpaid_ci
+          POSTGRES_DB: sanpaid_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sanpaid -d sanpaid_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,6 +43,12 @@ jobs:
 
       - name: Install locked dependencies
         run: npm ci
+
+      - name: Validate PostgreSQL schema, migrations and Cooperative Admin contract
+        env:
+          DATABASE_URL: postgresql://sanpaid:sanpaid_ci@127.0.0.1:5432/sanpaid_ci
+          SANPAID_DEMO_PASSWORD: CIOnly@26089
+        run: node scripts/database-contract-smoke.mjs
 
       - name: Check critical JavaScript syntax
         run: |
