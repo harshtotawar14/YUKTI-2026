@@ -21,6 +21,19 @@ const publicFiles=[
   'cooperative-deploy-guard.js','handover-evidence.js','credibility-layer.js','workforce-intelligence.js','service-worker.js'
 ];
 
+function sourceText(file){return readFileSync(resolve(root,file),'utf8');}
+function assertFinalRoleSources(){
+  const customer=sourceText('customer-reference-dashboard.js');
+  const worker=sourceText('worker-mobile-final.js');
+  const admin=sourceText('admin-final.js');
+  const adminGuard=sourceText('admin-final-guard.css');
+  if(customer.includes('Preparing your SanPaid workspace'))throw new Error('Legacy Customer preparation placeholder must not ship.');
+  if(!worker.includes('"\'":"&#39;"')||!worker.includes("'\\\"':'&quot;'"))throw new Error('Worker mobile HTML escaping contract is incomplete.');
+  if(!admin.includes('restoreMoved')||!admin.includes('movedOrigins'))throw new Error('Final Admin UI must restore borrowed legacy modules before cleanup.');
+  if(!adminGuard.includes('#afDetailBody>.judge-section'))throw new Error('Final Admin legacy-visibility guard is missing.');
+}
+assertFinalRoleSources();
+
 function resolveCommit(){
   const fromEnvironment=process.env.VERCEL_GIT_COMMIT_SHA||process.env.GITHUB_SHA||'';
   if(fromEnvironment)return fromEnvironment.trim();
@@ -80,8 +93,8 @@ writeFileSync(roleCssPath,roleCssFinal);
 if(roleCssFinal===roleCssSource)throw new Error('Legacy role mobile media blocks were not found in Customer/Worker dashboard CSS.');
 
 // The Customer/Worker dashboard is an existing private IIFE. Expose only its
-// refresh entry points in the deploy artifact so the SIH review runtime can
-// activate the same production UI renderer without duplicating dashboard code.
+// refresh entry points in the deploy artifact so the review runtime and final
+// role shells can activate the same production renderer without duplication.
 const dashboardPath=resolve(output,'customer-worker-dashboard.js');
 const dashboardSource=readFileSync(dashboardPath,'utf8');
 const dashboardEnd=dashboardSource.lastIndexOf('})();');
@@ -105,8 +118,9 @@ const buildInfo={
   source:'harshtotawar14/YUKTI-2026',
   branch:process.env.VERCEL_GIT_COMMIT_REF||process.env.GITHUB_REF_NAME||'local',
   roleMobileUi:'FINAL_ONLY',
-  adminUi:'REFERENCE_FINAL'
+  adminUi:'REFERENCE_FINAL',
+  roleUiCleanup:'FOUR_ROLE_FINAL'
 };
 
 writeFileSync(resolve(output,'build-info.json'),`${JSON.stringify(buildInfo,null,2)}\n`);
-console.log(`Built SanPaid ${buildInfo.version} (${buildInfo.commitSha}) into dist/ with ${publicFiles.length} allowlisted public assets, final-only role mobile UI, and reference admin UI.`);
+console.log(`Built SanPaid ${buildInfo.version} (${buildInfo.commitSha}) into dist/ with ${publicFiles.length} allowlisted public assets and final four-role UI guards.`);
