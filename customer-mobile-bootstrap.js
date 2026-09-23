@@ -95,9 +95,8 @@
     forceMobileMediaRules();
 
     if (shell.dataset.customerMobileEntered !== 'true') {
-      // Hide the complete legacy customer surface immediately. The dedicated
-      // mobile app stage becomes visible without a desktop-layout flash.
-      shell.classList.add('customer-mobile-home-active');
+      // Keep the legacy DOM mounted/readable for the mobile renderer, while
+      // the paint guard prevents any desktop/full layout from flashing.
       const overviewButton = content.querySelector('.cw-dashboard.customer [data-cw-view-btn="overview"]');
       if (overviewButton) {
         shell.dataset.customerMobileEntered = 'true';
