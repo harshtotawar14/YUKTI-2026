@@ -30,6 +30,19 @@
   function applyReferenceLogin() {
     const root = document.getElementById('sanpaidUnifiedAuthRoot');
     if (!root || root.hidden) return;
+
+    const entryCustomer = root.querySelector('[data-spu-entry-role="CUSTOMER"]');
+    if (entryCustomer && !root.querySelector('#spuLoginForm')) {
+      if (root.dataset.referenceOpening !== 'true') {
+        root.dataset.referenceOpening = 'true';
+        setTimeout(() => {
+          root.dataset.referenceOpening = '';
+          if (entryCustomer.isConnected) entryCustomer.click();
+        }, 0);
+      }
+      return;
+    }
+
     const form = root.querySelector('#spuLoginForm');
     const content = root.querySelector('#spuContent');
     if (!form || !content || form.dataset.referenceApplied === 'true') return;
