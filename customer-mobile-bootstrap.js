@@ -12,10 +12,23 @@
     const shouldUseMobile = isCustomer && mobile();
 
     shell.classList.toggle('customer-mobile-bootstrap', shouldUseMobile);
-    if (shouldUseMobile) {
-      shell.classList.add('customer-reference-page');
-      window.dispatchEvent(new CustomEvent('sanpaid:connected-sync', { detail: { source: 'customer-mobile-bootstrap' } }));
+
+    if (!shouldUseMobile) {
+      delete shell.dataset.customerMobileEntered;
+      return;
     }
+
+    shell.classList.add('customer-reference-page');
+
+    if (shell.dataset.customerMobileEntered !== 'true') {
+      const overviewButton = content.querySelector('.cw-dashboard.customer [data-cw-view-btn="overview"]');
+      if (overviewButton) {
+        shell.dataset.customerMobileEntered = 'true';
+        overviewButton.click();
+      }
+    }
+
+    window.dispatchEvent(new CustomEvent('sanpaid:connected-sync', { detail: { source: 'customer-mobile-bootstrap' } }));
   }
 
   let scheduled = false;
