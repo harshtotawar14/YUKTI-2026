@@ -32,7 +32,7 @@
   }
 
   let queued=false;
-  function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply();});}
+  function schedule(){if(queued)return;queued=true;queueMicrotask(()=>{queued=false;apply();});}
   new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','hidden','data-connected-role']});
   window.addEventListener('resize',schedule,{passive:true});
   window.addEventListener('orientationchange',schedule,{passive:true});
