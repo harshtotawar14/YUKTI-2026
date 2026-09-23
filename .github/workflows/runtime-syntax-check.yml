@@ -56,6 +56,9 @@ jobs:
           node --check mobile.js
           node --check evaluator-final.js
           node --check auth-unified.js
+          node --check login-reference.js
+          node --check customer-reference-dashboard.js
+          node --check customer-mobile-reference.js
           node --check connected-runtime-fix.js
           node --check connected-demo.js
           node --check connected-service-ui.js
@@ -98,6 +101,8 @@ jobs:
           grep -F 'sanpaid-runtime-v71' service-worker.js
           grep -F "version:'handover-bootstrap-v1'" top1-polish.js
           grep -F 'loadAdministration,' top1-polish.js
+          grep -F 'customer-mobile-ready' customer-mobile-reference.js customer-mobile-reference.css
+          grep -F 'cm-bottom-nav' customer-mobile-reference.js customer-mobile-reference.css
           if sed -n '/function start()/,/^  }/p' top1-polish.js | grep -F 'loadAdministration();'; then
             echo 'Administration assets must remain lazy.'
             exit 1
@@ -120,6 +125,8 @@ jobs:
           npm run build
           test -s dist/index.html
           test -s dist/build-info.json
+          test -s dist/customer-mobile-reference.css
+          test -s dist/customer-mobile-reference.js
           node - <<'NODE'
           const fs=require('fs');
           const info=JSON.parse(fs.readFileSync('dist/build-info.json','utf8'));
@@ -127,6 +134,8 @@ jobs:
           if(info.runtime!=='v71') throw new Error('Unexpected runtime identity.');
           const html=fs.readFileSync('dist/index.html','utf8');
           if(html.includes('quick-booking-details')) throw new Error('Hidden duplicate quick-access block leaked into deploy artifact.');
+          if(!html.includes('customer-mobile-reference.css?v=1')) throw new Error('Customer mobile CSS missing from deploy artifact.');
+          if(!html.includes('customer-mobile-reference.js?v=1')) throw new Error('Customer mobile JS missing from deploy artifact.');
           NODE
 
   production-verification:
