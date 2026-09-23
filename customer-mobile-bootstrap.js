@@ -28,8 +28,7 @@
       style.textContent = Array.from(sourceRule.cssRules || []).map(rule => rule.cssText).join('\n');
       document.head.appendChild(style);
     } catch (_) {
-      // The stylesheet is same-origin in production. If CSSOM access is unavailable,
-      // the regular narrow-viewport media query remains the safe fallback.
+      // Same-origin CSS normally allows this; regular mobile media rules remain the fallback.
     }
   }
 
@@ -95,7 +94,6 @@
   });
   window.addEventListener('resize', schedule, { passive: true });
   window.addEventListener('orientationchange', schedule, { passive: true });
-  window.addEventListener('sanpaid:connected-sync', schedule);
   document.addEventListener('DOMContentLoaded', schedule, { once: true });
   schedule();
 })();
