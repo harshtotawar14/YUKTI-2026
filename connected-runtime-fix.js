@@ -5,6 +5,7 @@
   const ADMIN_TOKEN_KEY='sanpaid_judge_demo_token_v1';
   const subscribers=new Set();
   let syncTimer=0;
+  let externalRefreshTimer=0;
   let syncInFlight=false;
   let lastSignature='';
   let lastSnapshot=null;
@@ -166,7 +167,9 @@
   function emit(snapshot,changed=true){
     lastSnapshot=snapshot;
     for(const listener of subscribers){try{listener(snapshot,{changed});}catch(error){console.error('[SanPaidSync subscriber]',error);}}
-    try{window.dispatchEvent(new CustomEvent('sanpaid:connected-sync',{detail:{source:'snapshot',snapshot,changed,at:Date.now()}}));}catch{}
+    if(changed){
+      try{window.dispatchEvent(new CustomEvent('sanpaid:connected-sync',{detail:{source:'snapshot',snapshot,changed:true,at:Date.now()}}));}catch{}
+    }
   }
   function clearTimer(){clearTimeout(syncTimer);syncTimer=0;}
   function schedule(delay){clearTimer();if(!subscribers.size)return;syncTimer=setTimeout(tick,delay);}
@@ -178,7 +181,8 @@
     try{
       const snapshot=await get('/api/connected/snapshot');
       const nextSignature=signature(snapshot),changed=nextSignature!==lastSignature;
-      if(changed||force){lastSignature=nextSignature;emit(snapshot,changed);}
+      if(changed){lastSignature=nextSignature;emit(snapshot,true);}
+      else if(force){lastSnapshot=snapshot;}
       setConnectionState('online');
     }catch(error){
       setConnectionState(error?.status===401?'offline':'retry');
@@ -200,7 +204,7 @@
     return()=>{subscribers.delete(listener);if(!subscribers.size)clearTimer();};
   }
   function refreshNow(){if(!subscribers.size)return Promise.resolve();clearTimer();return tick(true);}
-  function stop(){subscribers.clear();clearTimer();lastSignature='';lastSnapshot=null;}
+  function stop(){subscribers.clear();clearTimer();clearTimeout(externalRefreshTimer);externalRefreshTimer=0;lastSignature='';lastSnapshot=null;}
 
   window.SanPaidSync=Object.freeze({subscribe,refreshNow,stop,getLastSnapshot:()=>lastSnapshot,mode:'ONE_ROLE_AWARE_SNAPSHOT_LOOP'});
 
@@ -210,13 +214,19 @@
     catch{setConnectionState('offline');}
   }
 
+  function queueExternalRefresh(event){
+    if(event?.detail?.source==='snapshot')return;
+    clearTimeout(externalRefreshTimer);
+    externalRefreshTimer=setTimeout(()=>{externalRefreshTimer=0;refreshNow();},120);
+  }
+
   function start(){
     checkHealth();
     window.addEventListener('online',()=>{checkHealth();refreshNow();});
     window.addEventListener('offline',()=>setConnectionState('offline'));
     document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkHealth();refreshNow();}});
     window.addEventListener('pageshow',()=>{checkHealth();refreshNow();});
-    window.addEventListener('sanpaid:connected-sync',event=>{if(event.detail?.source!=='snapshot')refreshNow();});
+    window.addEventListener('sanpaid:connected-sync',queueExternalRefresh);
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
