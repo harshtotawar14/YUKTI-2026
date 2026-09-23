@@ -16,7 +16,7 @@
   };
 
   const $=(s,r=document)=>r.querySelector(s);
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const narrowViewport=()=>window.matchMedia('(max-width: 768px)').matches;
   const touchPoints=()=>Number(navigator.maxTouchPoints||0);
   const coarsePointer=()=>window.matchMedia('(pointer: coarse)').matches||touchPoints()>0;
@@ -37,122 +37,62 @@
   function openView(view){dashboard()?.querySelector(`[data-cw-view-btn="${view}"]`)?.click();schedule();}
 
   function readDashboard(){
-    const dash=dashboard();
-    const overview=dash?.querySelector('[data-cw-view="overview"]');
-    if(!overview)return null;
-    const roleHead=overview.querySelector('.cw-role-head');
-    const availability=roleHead?.querySelector('.cw-status')?.textContent?.trim()||'Available';
-    const current=overview.querySelector('.cw-next>div:first-child');
-    const next=overview.querySelector('.cw-next>div+div');
-    const metrics=[...overview.querySelectorAll('.cw-metrics>article')];
-    const journey=overview.querySelector('.cw-journey')?.innerHTML||'';
+    const dash=dashboard(),overview=dash?.querySelector('[data-cw-view="overview"]');if(!overview)return null;
+    const availability=overview.querySelector('.cw-role-head .cw-status')?.textContent?.trim()||'Available';
+    const current=overview.querySelector('.cw-next>div:first-child'),next=overview.querySelector('.cw-next>div+div');
+    const metrics=[...overview.querySelectorAll('.cw-metrics>article')],journey=overview.querySelector('.cw-journey')?.innerHTML||'';
     const service=current?.querySelector('h3')?.textContent?.trim()||'No active opportunity';
     const serviceMeta=current?.querySelector('p')?.textContent?.trim()||'Suitable opportunities appear after eligibility checks.';
     const nextTitle=next?.querySelector('h3')?.textContent?.trim()||'View suitable jobs';
     const nextCopy=next?.querySelector('p')?.textContent?.trim()||'Review opportunities and choose Accept or Decline.';
     const nextView=next?.querySelector('[data-cw-view-btn]')?.dataset?.cwViewBtn||'offers';
     const metric=index=>({label:metrics[index]?.querySelector('span')?.textContent?.trim()||'',value:metrics[index]?.querySelector('strong')?.textContent?.trim()||'—',note:metrics[index]?.querySelector('small')?.textContent?.trim()||''});
-    return {overview,availability,service,serviceMeta,nextTitle,nextCopy,nextView,journey,offers:metric(0),active:metric(1),earnings:metric(2),rating:metric(3)};
+    return{overview,availability,service,serviceMeta,nextTitle,nextCopy,nextView,journey,offers:metric(0),active:metric(1),earnings:metric(2),rating:metric(3)};
   }
 
-  function ensureHeader(main){
-    let node=main.querySelector(':scope>.wm-mobile-header');
-    if(!node){node=document.createElement('header');node.className='wm-mobile-header';main.prepend(node);}
-    return node;
-  }
+  function ensureHeader(main){let node=main.querySelector(':scope>.wm-mobile-header');if(!node){node=document.createElement('header');node.className='wm-mobile-header';main.prepend(node);}return node;}
   function renderHeader(node){
-    const name=workerName();
-    if(node.dataset.signature===name)return;
-    node.dataset.signature=name;
+    const name=workerName();if(node.dataset.signature===name)return;node.dataset.signature=name;
     node.innerHTML=`<div class="wm-brand"><img src="app-icon.svg" alt=""><div><strong>San<span>Paid</span></strong><small>Cooperative Workforce Network</small></div></div><div class="wm-header-actions"><span class="wm-location">${ICONS.pin}<b>Kolhapur, MH</b></span><button type="button" class="wm-icon-btn" aria-label="Open updates">${ICONS.bell}<i>2</i></button><button type="button" class="wm-avatar" aria-label="Open profile">${esc(initials(name))}</button></div>`;
-    node.querySelector('.wm-icon-btn')?.addEventListener('click',()=>openView('updates'));
-    node.querySelector('.wm-avatar')?.addEventListener('click',openProfile);
+    node.querySelector('.wm-icon-btn')?.addEventListener('click',()=>openView('updates'));node.querySelector('.wm-avatar')?.addEventListener('click',openProfile);
   }
-
   function homeMarkup(data){
-    const name=workerName();
-    const first=String(name).split(/\s+/)[0]||'Worker';
-    return `<section class="wm-greeting"><div><span>Hello,</span><h1>${esc(first)}</h1><p>Your work journey in one place.</p></div><div class="wm-duty"><span class="wm-duty-pill">${esc(data.availability)}</span><small>Opportunity control</small></div></section>
-      <button type="button" class="wm-primary-cta" data-wm-view="offers"><span class="wm-primary-icon">${ICONS.jobs}</span><span><b>View Job Requests</b><small>Only suitable cooperative opportunities appear here</small></span><span class="wm-primary-arrow">${ICONS.arrow}</span></button>
-      <section class="wm-quick-grid">
-        <button type="button" data-wm-view="current"><span class="wm-quick-icon">${ICONS.current}</span><b>Current Job</b><small>Track service work</small><span class="wm-mini-arrow">${ICONS.arrow}</span></button>
-        <button type="button" data-wm-view="schedule"><span class="wm-quick-icon teal">${ICONS.calendar}</span><b>Availability</b><small>Manage work time</small><span class="wm-mini-arrow">${ICONS.arrow}</span></button>
-        <button type="button" data-wm-view="passport"><span class="wm-quick-icon">${ICONS.shield}</span><b>Trust Passport</b><small>Skills & records</small><span class="wm-mini-arrow">${ICONS.arrow}</span></button>
-      </section>
-      <section class="wm-work-card"><div class="wm-work-top"><span class="wm-status-chip">${esc(data.availability)}</span><button type="button" data-wm-view="${esc(data.nextView==='offers'?'offers':'current')}">View Details ${ICONS.arrow}</button></div><div class="wm-work-main"><span class="wm-service-icon">${ICONS.current}</span><div class="wm-work-copy"><h2>${esc(data.service)}</h2><b>${esc(data.serviceMeta)}</b><small>Worker choice remains with you.</small></div></div><div class="cw-journey wm-home-journey">${data.journey}</div></section>
-      <section class="wm-next-card"><span class="wm-next-icon">${ICONS.next}</span><div><small>WHAT'S NEXT?</small><h3>${esc(data.nextTitle)}</h3><p>${esc(data.nextCopy)}</p></div><button type="button" data-wm-view="${esc(data.nextView)}">Open ${ICONS.arrow}</button></section>
-      <section class="wm-metrics"><button type="button" data-wm-view="offers"><span>${esc(data.offers.label||'New Offers')}</span><strong>${esc(data.offers.value)}</strong><small>${esc(data.offers.note||'Worker choice preserved')}</small>${ICONS.arrow}</button><button type="button" data-wm-view="earnings"><span>${esc(data.earnings.label||'Recorded Earnings')}</span><strong>${esc(data.earnings.value)}</strong><small>${esc(data.rating.value!=='—'?`Rating ${data.rating.value}`:'Payment ledger')}</small>${ICONS.arrow}</button></section>
-      <section class="wm-trust-card"><span class="wm-trust-icon">${ICONS.shield}</span><div><b>Your trust record travels with you</b><small>Verification, skills and work outcomes remain visible.</small></div><button type="button" data-wm-view="passport">View Passport</button></section>`;
+    const first=workerName().split(/\s+/)[0]||'Worker';
+    return `<section class="wm-greeting"><div><span>Hello,</span><h1>${esc(first)}</h1><p>Your work journey in one place.</p></div><div class="wm-duty"><span class="wm-duty-pill">${esc(data.availability)}</span><small>Opportunity control</small></div></section><button type="button" class="wm-primary-cta" data-wm-view="offers"><span class="wm-primary-icon">${ICONS.jobs}</span><span><b>View Job Requests</b><small>Only suitable cooperative opportunities appear here</small></span><span class="wm-primary-arrow">${ICONS.arrow}</span></button><section class="wm-quick-grid"><button type="button" data-wm-view="current"><span class="wm-quick-icon">${ICONS.current}</span><b>Current Job</b><small>Track service work</small><span class="wm-mini-arrow">${ICONS.arrow}</span></button><button type="button" data-wm-view="schedule"><span class="wm-quick-icon teal">${ICONS.calendar}</span><b>Availability</b><small>Manage work time</small><span class="wm-mini-arrow">${ICONS.arrow}</span></button><button type="button" data-wm-view="passport"><span class="wm-quick-icon">${ICONS.shield}</span><b>Trust Passport</b><small>Skills & records</small><span class="wm-mini-arrow">${ICONS.arrow}</span></button></section><section class="wm-work-card"><div class="wm-work-top"><span class="wm-status-chip">${esc(data.availability)}</span><button type="button" data-wm-view="${esc(data.nextView==='offers'?'offers':'current')}">View Details ${ICONS.arrow}</button></div><div class="wm-work-main"><span class="wm-service-icon">${ICONS.current}</span><div class="wm-work-copy"><h2>${esc(data.service)}</h2><b>${esc(data.serviceMeta)}</b><small>Worker choice remains with you.</small></div></div><div class="cw-journey wm-home-journey">${data.journey}</div></section><section class="wm-next-card"><span class="wm-next-icon">${ICONS.next}</span><div><small>WHAT'S NEXT?</small><h3>${esc(data.nextTitle)}</h3><p>${esc(data.nextCopy)}</p></div><button type="button" data-wm-view="${esc(data.nextView)}">Open ${ICONS.arrow}</button></section><section class="wm-metrics"><button type="button" data-wm-view="offers"><span>${esc(data.offers.label||'New Offers')}</span><strong>${esc(data.offers.value)}</strong><small>${esc(data.offers.note||'Worker choice preserved')}</small>${ICONS.arrow}</button><button type="button" data-wm-view="earnings"><span>${esc(data.earnings.label||'Recorded Earnings')}</span><strong>${esc(data.earnings.value)}</strong><small>${esc(data.rating.value!=='—'?`Rating ${data.rating.value}`:'Payment ledger')}</small>${ICONS.arrow}</button></section><section class="wm-trust-card"><span class="wm-trust-icon">${ICONS.shield}</span><div><b>Your trust record travels with you</b><small>Verification, skills and work outcomes remain visible.</small></div><button type="button" data-wm-view="passport">View Passport</button></section>`;
   }
-
   function ensureHome(overview,data){
-    let home=overview.querySelector(':scope>.wm-mobile-home');
-    if(!home){home=document.createElement('div');home.className='wm-mobile-home';overview.appendChild(home);}
+    let home=overview.querySelector(':scope>.wm-mobile-home');if(!home){home=document.createElement('div');home.className='wm-mobile-home';overview.appendChild(home);}
     const signature=[workerName(),data.availability,data.service,data.serviceMeta,data.nextTitle,data.nextCopy,data.nextView,data.offers.value,data.earnings.value,data.rating.value,data.journey].join('|');
-    if(home.dataset.signature!==signature){
-      home.dataset.signature=signature;
-      home.innerHTML=homeMarkup(data);
-      home.querySelectorAll('[data-wm-view]').forEach(button=>button.addEventListener('click',()=>openView(button.dataset.wmView)));
-    }
+    if(home.dataset.signature!==signature){home.dataset.signature=signature;home.innerHTML=homeMarkup(data);home.querySelectorAll('[data-wm-view]').forEach(button=>button.addEventListener('click',()=>openView(button.dataset.wmView)));}
     overview.classList.add('wm-home-ready');
   }
-
   function ensureBottomNav(shell){
-    let nav=shell.querySelector(':scope>.wm-bottom-nav');
-    if(!nav){
-      nav=document.createElement('nav');nav.className='wm-bottom-nav';nav.setAttribute('aria-label','Worker mobile navigation');
-      nav.innerHTML=`<button type="button" data-wm-view="overview">${ICONS.home}<span>Home</span></button><button type="button" data-wm-view="offers">${ICONS.jobs}<span>Jobs</span></button><button type="button" data-wm-view="current">${ICONS.current}<span>Current</span></button><button type="button" data-wm-profile>${ICONS.profile}<span>Profile</span></button>`;
-      shell.appendChild(nav);
-      nav.querySelectorAll('[data-wm-view]').forEach(button=>button.addEventListener('click',()=>openView(button.dataset.wmView)));
-      nav.querySelector('[data-wm-profile]')?.addEventListener('click',openProfile);
-    }
-    return nav;
+    let nav=shell.querySelector(':scope>.wm-bottom-nav');if(!nav){nav=document.createElement('nav');nav.className='wm-bottom-nav';nav.setAttribute('aria-label','Worker mobile navigation');nav.innerHTML=`<button type="button" data-wm-view="overview">${ICONS.home}<span>Home</span></button><button type="button" data-wm-view="offers">${ICONS.jobs}<span>Jobs</span></button><button type="button" data-wm-view="current">${ICONS.current}<span>Current</span></button><button type="button" data-wm-profile>${ICONS.profile}<span>Profile</span></button>`;shell.appendChild(nav);nav.querySelectorAll('[data-wm-view]').forEach(button=>button.addEventListener('click',()=>openView(button.dataset.wmView)));nav.querySelector('[data-wm-profile]')?.addEventListener('click',openProfile);}return nav;
   }
-  function syncBottomNav(nav,dash){
-    const current=dash?.querySelector('[data-cw-view]:not([hidden])')?.dataset?.cwView||'overview';
-    nav.querySelectorAll('[data-wm-view]').forEach(button=>{const active=button.dataset.wmView===current;button.classList.toggle('active',active);if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});
-    nav.querySelector('[data-wm-profile]')?.classList.remove('active');
-  }
-
+  function syncBottomNav(nav,dash){const current=dash?.querySelector('[data-cw-view]:not([hidden])')?.dataset?.cwView||'overview';nav.querySelectorAll('[data-wm-view]').forEach(button=>{const active=button.dataset.wmView===current;button.classList.toggle('active',active);if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});nav.querySelector('[data-wm-profile]')?.classList.remove('active');}
   function ensureProfile(shell){let layer=shell.querySelector(':scope>.wm-profile-layer');if(!layer){layer=document.createElement('div');layer.className='wm-profile-layer';layer.hidden=true;shell.appendChild(layer);}return layer;}
   function renderProfile(layer){
-    const name=workerName(),email=workerEmail(),sig=`${name}|${email}`;
-    if(layer.dataset.signature===sig)return;
-    layer.dataset.signature=sig;
+    const name=workerName(),email=workerEmail(),sig=`${name}|${email}`;if(layer.dataset.signature===sig)return;layer.dataset.signature=sig;
     layer.innerHTML=`<div class="wm-profile-backdrop" data-wm-profile-close></div><section class="wm-profile-sheet" role="dialog" aria-modal="true" aria-label="Worker profile"><div class="wm-profile-head"><span>${esc(initials(name))}</span><div><h3>${esc(name)}</h3><p>${esc(email)}</p><b>Worker</b></div><button type="button" data-wm-profile-close aria-label="Close profile">×</button></div><div class="wm-profile-actions"><button type="button" data-wm-view="schedule">${ICONS.calendar}<span><b>Availability</b><small>Manage when you receive work</small></span>${ICONS.arrow}</button><button type="button" data-wm-view="passport">${ICONS.shield}<span><b>Trust Passport</b><small>Skills, verification and outcomes</small></span>${ICONS.arrow}</button><button type="button" data-wm-view="earnings">${ICONS.wallet}<span><b>Earnings</b><small>Review recorded payments</small></span>${ICONS.arrow}</button><button type="button" data-wm-switch>${ICONS.jobs}<span><b>Switch Role</b><small>Open another SanPaid workspace</small></span>${ICONS.arrow}</button><button type="button" class="danger" data-wm-logout>${ICONS.profile}<span><b>Logout</b><small>End this session</small></span>${ICONS.arrow}</button></div></section>`;
-    layer.querySelectorAll('[data-wm-profile-close]').forEach(node=>node.addEventListener('click',closeProfile));
-    layer.querySelectorAll('[data-wm-view]').forEach(button=>button.addEventListener('click',()=>{closeProfile();openView(button.dataset.wmView);}));
-    layer.querySelector('[data-wm-switch]')?.addEventListener('click',()=>document.getElementById('connectedSwitch')?.click());
-    layer.querySelector('[data-wm-logout]')?.addEventListener('click',()=>document.getElementById('connectedLogout')?.click());
+    layer.querySelectorAll('[data-wm-profile-close]').forEach(node=>node.addEventListener('click',closeProfile));layer.querySelectorAll('[data-wm-view]').forEach(button=>button.addEventListener('click',()=>{closeProfile();openView(button.dataset.wmView);}));layer.querySelector('[data-wm-switch]')?.addEventListener('click',()=>document.getElementById('connectedSwitch')?.click());layer.querySelector('[data-wm-logout]')?.addEventListener('click',()=>document.getElementById('connectedLogout')?.click());
   }
   function openProfile(){const shell=$('#connectedShell');if(!shell)return;const layer=ensureProfile(shell);renderProfile(layer);layer.hidden=false;document.documentElement.classList.add('wm-profile-open');}
   function closeProfile(){const layer=$('#connectedShell>.wm-profile-layer');if(layer)layer.hidden=true;document.documentElement.classList.remove('wm-profile-open');}
-
-  function cleanup(shell){shell?.querySelector(':scope>.wm-bottom-nav')?.remove();shell?.querySelector(':scope>.wm-profile-layer')?.remove();document.documentElement.classList.remove('wm-profile-open');}
+  function cleanup(shell){shell?.querySelector(':scope>.wm-bottom-nav')?.remove();shell?.querySelector(':scope>.wm-profile-layer')?.remove();shell?.classList.remove('worker-mobile-final','worker-mobile-ready');document.documentElement.classList.remove('wm-profile-open');}
 
   function apply(){
-    const shell=$('#connectedShell'),content=$('#connectedContent');
-    if(!shell||!content)return;
+    const shell=$('#connectedShell'),content=$('#connectedContent');if(!shell||!content)return;
     const isWorker=!shell.classList.contains('hidden')&&String(content.dataset.connectedRole||'').toUpperCase()==='WORKER';
-    const active=isWorker&&mobile();
-    shell.classList.toggle('worker-mobile-final',active);
-    shell.dataset.workerMobileMode=active?'true':'false';
-    if(active)shell.classList.add('role-mobile-final');else shell.classList.remove('worker-mobile-ready');
+    const active=isWorker&&mobile();shell.dataset.workerMobileMode=active?'true':'false';
     if(!active){cleanup(shell);if(!shell.classList.contains('customer-mobile-bootstrap'))shell.classList.remove('role-mobile-final');return;}
-    const dash=dashboard();if(!dash)return;
-    const data=readDashboard();if(!data)return;
-    const main=dash.querySelector('.cw-main');if(!main)return;
-    renderHeader(ensureHeader(main));
-    ensureHome(data.overview,data);
-    const nav=ensureBottomNav(shell);syncBottomNav(nav,dash);
-    shell.classList.add('worker-mobile-ready');
+    const dash=dashboard(),data=readDashboard(),main=dash?.querySelector('.cw-main');
+    if(!dash||!data||!main){shell.classList.remove('worker-mobile-final','worker-mobile-ready');return;}
+    renderHeader(ensureHeader(main));ensureHome(data.overview,data);const nav=ensureBottomNav(shell);syncBottomNav(nav,dash);
+    shell.classList.add('worker-mobile-final','worker-mobile-ready','role-mobile-final');
   }
 
   let queued=false;
   function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply();});}
   new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','hidden','data-connected-role']});
-  window.addEventListener('resize',schedule,{passive:true});
-  window.addEventListener('orientationchange',schedule,{passive:true});
-  document.addEventListener('DOMContentLoaded',schedule,{once:true});
-  schedule();
+  window.addEventListener('resize',schedule,{passive:true});window.addEventListener('orientationchange',schedule,{passive:true});document.addEventListener('DOMContentLoaded',schedule,{once:true});schedule();
 })();
