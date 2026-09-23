@@ -18,7 +18,7 @@ const publicFiles=[
   'app.js','mobile.js','connected-demo.js','connected-service-ui.js','connected-commerce-ui.js','connected-runtime-fix.js','review-runtime.js','review-runtime-bridge.js',
   'capacity-worker-ui.js','judge-demo.js','selector-mode.js','top1-polish.js','evaluator-final.js','auth-unified.js','login-reference.js',
   'customer-worker-dashboard.js','customer-reference-dashboard.js','customer-mobile-bootstrap.js','customer-mobile-reference.js','worker-mobile-final.js','admin-command-center.js','federation-portal.js','cooperative-portal.js','admin-final.js',
-  'cooperative-deploy-guard.js','handover-evidence.js','credibility-layer.js','workforce-intelligence.js','service-worker.js'
+  'handover-evidence.js','credibility-layer.js','workforce-intelligence.js','service-worker.js'
 ];
 
 function resolveCommit(){
@@ -105,7 +105,8 @@ const buildInfo={
   source:'harshtotawar14/YUKTI-2026',
   branch:process.env.VERCEL_GIT_COMMIT_REF||process.env.GITHUB_REF_NAME||'local',
   roleMobileUi:'FINAL_ONLY',
-  adminUi:'REFERENCE_FINAL'
+  adminUi:'REFERENCE_FINAL',
+  uiArchitecture:'ROLE_SHELLS_FINAL'
 };
 
 writeFileSync(resolve(output,'build-info.json'),`${JSON.stringify(buildInfo,null,2)}\n`);
