@@ -7,17 +7,19 @@
     const guard=document.getElementById('sanpaidCustomerBootGuard');
     if(!guard)return;
     // Keep the duplicate base Customer grid isolated, but remove the old
-    // "Preparing your SanPaid workspace" presentation completely.
+    // preparation placeholder from the selector-facing experience.
     if(guard.textContent!==CUSTOMER_BASE_GRID_GUARD)guard.textContent=CUSTOMER_BASE_GRID_GUARD;
   }
 
-  function ensureFifthResearchDecision(){
-    const map=document.querySelector('#evidence .decision-map');
-    if(!map||map.querySelector('[data-selector-finding="05"]'))return;
-    const article=document.createElement('article');
-    article.dataset.selectorFinding='05';
-    article.innerHTML='<div><b>05</b><p>Skill-wise shortages and training needs are hard to see across scattered records.</p></div><strong>Demand-to-Workforce Loop with human-reviewed training and onboarding actions</strong>';
-    map.insertBefore(article,map.querySelector(':scope>small')||null);
+  function alignEvidenceTruth(){
+    const strip=document.querySelector('.hero-proof-strip .wrap');
+    if(strip){
+      [...strip.querySelectorAll('span')].forEach(node=>{
+        if(node.textContent.trim()==='5 findings mapped to product controls'){
+          node.textContent='5 validated priorities informing product controls';
+        }
+      });
+    }
   }
 
   function alignArchitectureTruth(){
@@ -35,25 +37,41 @@
     const heading=bar.querySelector('b');
     const copy=bar.querySelector('span');
     if(heading)heading.textContent='WHAT YOU CAN EXPLORE NOW';
-    if(copy)copy.textContent='Four role workflows and controlled sandbox interactions are implemented; production integrations and measured pilot impact remain separate.';
+    if(copy)copy.textContent='Four role workflows and controlled review interactions are implemented; production integrations and measured pilot impact remain separate.';
+  }
+
+  function alignAdminTruth(){
+    document.querySelectorAll('#adminFinalApp .af-pill.online').forEach(node=>{
+      const dot=node.querySelector('.af-dot');
+      node.textContent='';
+      if(dot)node.appendChild(dot);
+      node.append(document.createTextNode('Workspace Ready'));
+    });
+    document.querySelectorAll('#adminFinalApp .af-task-row span').forEach(node=>{
+      if(node.textContent.trim()==='Check 1 SLA breach across cooperatives'){
+        node.textContent='Review SLA status across cooperatives';
+      }
+    });
   }
 
   function apply(){
     neutralizeLegacyCustomerBootGuard();
-    ensureFifthResearchDecision();
+    alignEvidenceTruth();
     alignArchitectureTruth();
     alignCurrentBuildTruth();
+    alignAdminTruth();
     document.documentElement.dataset.selectorReady='true';
-  }
-
-  let queued=false;
-  function schedule(){
-    if(queued)return;
-    queued=true;
-    requestAnimationFrame(()=>{queued=false;apply();});
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});
   else apply();
-  new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});
+
+  // Admin cards are rendered after authentication, so observe only the small
+  // admin shell instead of the whole document once it becomes available.
+  const observeAdmin=()=>{
+    const shell=document.getElementById('sihJudgeShell');
+    if(!shell){setTimeout(observeAdmin,250);return;}
+    new MutationObserver(()=>requestAnimationFrame(alignAdminTruth)).observe(shell,{childList:true,subtree:true});
+  };
+  observeAdmin();
 })();
