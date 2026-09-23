@@ -28,7 +28,7 @@ function assertFinalRoleSources(){
   const admin=sourceText('admin-final.js');
   const adminGuard=sourceText('admin-final-guard.css');
   if(customer.includes('Preparing your SanPaid workspace'))throw new Error('Legacy Customer preparation placeholder must not ship.');
-  if(!worker.includes('"\'":"&#39;"')||!worker.includes("'\\\"':'&quot;'"))throw new Error('Worker mobile HTML escaping contract is incomplete.');
+  if(worker.includes(`'"':'&quot'`)||!worker.includes(`'"':'&quot;'`))throw new Error('Worker mobile HTML escaping contract is incomplete.');
   if(!admin.includes('restoreMoved')||!admin.includes('movedOrigins'))throw new Error('Final Admin UI must restore borrowed legacy modules before cleanup.');
   if(!adminGuard.includes('#afDetailBody>.judge-section'))throw new Error('Final Admin legacy-visibility guard is missing.');
 }
@@ -37,7 +37,7 @@ assertFinalRoleSources();
 function resolveCommit(){
   const fromEnvironment=process.env.VERCEL_GIT_COMMIT_SHA||process.env.GITHUB_SHA||'';
   if(fromEnvironment)return fromEnvironment.trim();
-  try{return execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();}
+  try{return execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8')).trim();}
   catch{return 'LOCAL_BUILD';}
 }
 
@@ -53,10 +53,6 @@ for(const file of publicFiles){
   cpSync(source,resolve(output,file));
 }
 
-// The shared dashboard stylesheet historically contained several separate phone
-// fallbacks. They are intentionally removed from the deploy artifact now that
-// Customer and Worker each have one dedicated final mobile surface. Desktop and
-// tablet/1180px rules remain unchanged.
 function findCssBlockEnd(css,openIndex){
   let depth=0,quote='',comment=false;
   for(let i=openIndex;i<css.length;i+=1){
@@ -92,9 +88,6 @@ const roleCssFinal=stripLegacyRoleMobileMedia(roleCssSource);
 writeFileSync(roleCssPath,roleCssFinal);
 if(roleCssFinal===roleCssSource)throw new Error('Legacy role mobile media blocks were not found in Customer/Worker dashboard CSS.');
 
-// The Customer/Worker dashboard is an existing private IIFE. Expose only its
-// refresh entry points in the deploy artifact so the review runtime and final
-// role shells can activate the same production renderer without duplication.
 const dashboardPath=resolve(output,'customer-worker-dashboard.js');
 const dashboardSource=readFileSync(dashboardPath,'utf8');
 const dashboardEnd=dashboardSource.lastIndexOf('})();');
