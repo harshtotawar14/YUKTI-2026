@@ -2,11 +2,38 @@
   'use strict';
 
   const narrowViewport = () => window.matchMedia('(max-width: 768px)').matches;
-  const coarsePointer = () => window.matchMedia('(pointer: coarse)').matches || Number(navigator.maxTouchPoints || 0) > 0;
-  const mobile = () => narrowViewport() || (coarsePointer() && window.innerWidth <= 1100);
+  const touchPoints = () => Number(navigator.maxTouchPoints || 0);
+  const coarsePointer = () => window.matchMedia('(pointer: coarse)').matches || touchPoints() > 0;
+  const screenMin = () => Math.min(Number(window.screen?.width || Infinity), Number(window.screen?.height || Infinity));
+  const phoneLikeTouch = () => {
+    if (!coarsePointer()) return false;
+    const dpr = Number(window.devicePixelRatio || 1);
+    return window.innerWidth <= 1100 || screenMin() <= 820 || (window.innerWidth <= 1400 && dpr >= 1.5);
+  };
+  const mobile = () => narrowViewport() || phoneLikeTouch();
+
+  function installMobilePaintGuard() {
+    if (document.getElementById('sanpaidCustomerMobilePaintGuard')) return;
+    const style = document.createElement('style');
+    style.id = 'sanpaidCustomerMobilePaintGuard';
+    style.textContent = `
+      #connectedShell.customer-mobile-bootstrap:not(.customer-mobile-ready) #connectedContent{
+        visibility:hidden!important;
+        pointer-events:none!important;
+      }
+      #connectedShell.customer-mobile-bootstrap:not(.customer-mobile-ready) .connected-top,
+      #connectedShell.customer-mobile-bootstrap:not(.customer-mobile-ready) .connected-session-bar{
+        visibility:hidden!important;
+      }
+      #connectedShell.customer-mobile-bootstrap.customer-mobile-home-active #connectedContent{
+        display:none!important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
 
   function forceMobileMediaRules() {
-    const shouldForce = !narrowViewport() && coarsePointer() && window.innerWidth <= 1100;
+    const shouldForce = !narrowViewport() && mobile();
     const existing = document.getElementById('sanpaidCustomerForcedMobileCss');
     if (!shouldForce) {
       existing?.remove();
@@ -51,10 +78,12 @@
     const isCustomer = !shell.classList.contains('hidden') && String(content.dataset.connectedRole || '').toUpperCase() === 'CUSTOMER';
     const shouldUseMobile = isCustomer && mobile();
 
+    installMobilePaintGuard();
     shell.classList.toggle('customer-mobile-bootstrap', shouldUseMobile);
     shell.dataset.customerMobileMode = shouldUseMobile ? 'true' : 'false';
 
     if (!shouldUseMobile) {
+      shell.classList.remove('customer-mobile-home-active', 'customer-mobile-ready');
       delete shell.dataset.customerMobileEntered;
       clearTimeout(Number(shell.dataset.customerMobileRetry || 0));
       delete shell.dataset.customerMobileRetry;
@@ -66,6 +95,8 @@
     forceMobileMediaRules();
 
     if (shell.dataset.customerMobileEntered !== 'true') {
+      // Keep the legacy DOM mounted/readable for the mobile renderer, while
+      // the paint guard prevents any desktop/full layout from flashing.
       const overviewButton = content.querySelector('.cw-dashboard.customer [data-cw-view-btn="overview"]');
       if (overviewButton) {
         shell.dataset.customerMobileEntered = 'true';
