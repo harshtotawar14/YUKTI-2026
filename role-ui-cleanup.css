@@ -1,0 +1,39 @@
+/* SanPaid final role UI cleanup — prevents legacy shell leakage without hiding working detail modules. */
+
+/* Customer/Worker source layers remain functional data sources, but never stack behind an enhanced role dashboard. */
+#connectedContent[data-connected-role="CUSTOMER"]:has(.cw-dashboard.customer) > .connected-grid.connected-customer-grid:empty{display:none!important}
+#connectedShell.customer-mobile-ready .connected-top{display:none!important}
+#connectedShell.customer-mobile-ready .cw-dashboard.customer .cw-nav{display:none!important}
+#connectedShell.worker-mobile-final .connected-top{display:none!important}
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-nav{display:none!important}
+
+/* Final admin shell is canonical. Direct legacy judge content is source-only until moved into the final detail stage. */
+#sihJudgeShell.admin-final-active #judgeContent > .judge-section,
+#sihJudgeShell.admin-final-active #judgeContent > .judge-grid,
+#sihJudgeShell.admin-final-active #judgeContent > .judge-actions-panel{display:none!important}
+#sihJudgeShell.admin-final-active #afDetailBody > .judge-section{display:block!important}
+
+/* Minimal shared states formerly inherited from the retired command-center stylesheet. */
+#sihJudgeShell.admin-final-active .admin-skeleton,
+#sihJudgeShell.admin-final-active .admin-health-error{padding:16px;border:1px dashed #c9d8e8;border-radius:12px;background:#f7faff;color:#6a82a3;font-size:12px;line-height:1.5}
+#sihJudgeShell.admin-final-active .admin-health-error{border-color:#f0c9cf;background:#fff4f5;color:#a33d4d}
+
+/* Admin profile is an actual control, not a decorative chip. */
+#adminFinalApp .af-profile{position:relative;cursor:pointer;user-select:none}
+#adminFinalApp .af-profile:focus-visible{outline:3px solid rgba(19,118,232,.2);outline-offset:2px}
+#adminFinalApp .af-profile-menu{position:absolute;top:64px;right:24px;z-index:90;width:min(270px,calc(100vw - 32px));padding:8px;border:1px solid #d9e5f2;border-radius:14px;background:#fff;box-shadow:0 18px 45px rgba(13,45,83,.16)}
+#adminFinalApp .af-profile-menu[hidden]{display:none!important}
+#adminFinalApp .af-profile-menu button{width:100%;display:grid;grid-template-columns:34px 1fr;align-items:center;gap:9px;min-height:54px;padding:8px 10px;text-align:left;border:0;border-radius:10px;background:transparent;color:#0c2550;cursor:pointer}
+#adminFinalApp .af-profile-menu button:hover,#adminFinalApp .af-profile-menu button:focus-visible{background:#f3f8fd;outline:none}
+#adminFinalApp .af-profile-menu button span:first-child{width:32px;height:32px;display:grid;place-items:center;border-radius:9px;background:#edf5ff;color:#0a4e94;font-weight:900}
+#adminFinalApp .af-profile-menu button b{display:block;font-size:12px}.af-profile-menu button small{display:block;margin-top:2px;color:#7085a5;font-size:10px}
+#adminFinalApp .af-profile-menu button.danger span:first-child{background:#fff0f2;color:#c9374c}
+#adminFinalApp .af-profile-menu button.danger b{color:#b72f43}
+
+/* Detail stage must be the only visible content surface after a sidebar selection. */
+#adminFinalApp .af-detail-body > [data-af-fallback][hidden]{display:none!important}
+#adminFinalApp .af-detail-body > [data-af-moved="1"][hidden]{display:none!important}
+
+@media(max-width:720px){
+  #adminFinalApp .af-profile-menu{top:68px;right:12px}
+}
