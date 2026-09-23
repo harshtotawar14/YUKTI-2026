@@ -58,6 +58,7 @@ jobs:
           node --check auth-unified.js
           node --check login-reference.js
           node --check customer-reference-dashboard.js
+          node --check customer-mobile-bootstrap.js
           node --check customer-mobile-reference.js
           node --check connected-runtime-fix.js
           node --check connected-demo.js
@@ -103,6 +104,7 @@ jobs:
           grep -F 'loadAdministration,' top1-polish.js
           grep -F 'customer-mobile-ready' customer-mobile-reference.js customer-mobile-reference.css
           grep -F 'cm-bottom-nav' customer-mobile-reference.js customer-mobile-reference.css
+          grep -F 'customerMobileMode' customer-mobile-bootstrap.js
           if sed -n '/function start()/,/^  }/p' top1-polish.js | grep -F 'loadAdministration();'; then
             echo 'Administration assets must remain lazy.'
             exit 1
@@ -126,6 +128,7 @@ jobs:
           test -s dist/index.html
           test -s dist/build-info.json
           test -s dist/customer-mobile-reference.css
+          test -s dist/customer-mobile-bootstrap.js
           test -s dist/customer-mobile-reference.js
           node - <<'NODE'
           const fs=require('fs');
@@ -134,8 +137,10 @@ jobs:
           if(info.runtime!=='v71') throw new Error('Unexpected runtime identity.');
           const html=fs.readFileSync('dist/index.html','utf8');
           if(html.includes('quick-booking-details')) throw new Error('Hidden duplicate quick-access block leaked into deploy artifact.');
-          if(!html.includes('customer-mobile-reference.css?v=1')) throw new Error('Customer mobile CSS missing from deploy artifact.');
-          if(!html.includes('customer-mobile-reference.js?v=1')) throw new Error('Customer mobile JS missing from deploy artifact.');
+          const version=process.env.GITHUB_SHA.slice(0,12);
+          for(const asset of ['customer-mobile-reference.css','customer-mobile-bootstrap.js','customer-mobile-reference.js']){
+            if(!html.includes(`${asset}?v=${version}`)) throw new Error(`${asset} is missing commit-based cache busting in deploy artifact.`);
+          }
           NODE
 
   production-verification:

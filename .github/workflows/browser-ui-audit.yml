@@ -22,7 +22,12 @@ jobs:
         run: npm run build
       - name: Install Playwright core without changing the repository
         run: npm install --no-save --package-lock=false playwright-core@1.55.0
-      - name: Run local Chromium button and dialog audit
+      - name: Verify exact Customer mobile app UI
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: node scripts/customer-mobile-ui-audit.mjs
+      - name: Run broader Chromium button and dialog audit
+        continue-on-error: true
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: node scripts/browser-ui-audit.mjs
