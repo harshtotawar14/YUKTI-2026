@@ -26,3 +26,7 @@ jobs:
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: node scripts/browser-ui-audit.mjs
+      - name: Verify exact Customer mobile app UI
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: node scripts/customer-mobile-ui-audit.mjs
