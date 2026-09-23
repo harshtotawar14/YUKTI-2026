@@ -40,6 +40,16 @@ for(const file of publicFiles){
   cpSync(source,resolve(output,file));
 }
 
+// The Customer/Worker dashboard is an existing private IIFE. Expose only its
+// refresh entry points in the deploy artifact so the SIH review runtime can
+// activate the same production UI renderer without duplicating dashboard code.
+const dashboardPath=resolve(output,'customer-worker-dashboard.js');
+const dashboardSource=readFileSync(dashboardPath,'utf8');
+const dashboardEnd=dashboardSource.lastIndexOf('})();');
+if(dashboardEnd<0)throw new Error('Customer/Worker dashboard IIFE end marker was not found.');
+const dashboardHook=`\n  window.SanPaidCustomerWorkerDashboard=Object.freeze({refresh,requestRefresh});\n`;
+writeFileSync(dashboardPath,dashboardSource.slice(0,dashboardEnd)+dashboardHook+dashboardSource.slice(dashboardEnd));
+
 const builtIndexPath=resolve(output,'index.html');
 const builtIndex=readFileSync(builtIndexPath,'utf8')
   .replaceAll('https://sahkriya.vercel.app',primaryProductionUrl)
