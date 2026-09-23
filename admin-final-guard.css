@@ -1,6 +1,30 @@
-/* Final admin shell guard: legacy page chrome and judge sections never leak below the new UI. */
+/* Final admin shell hardening: prevent legacy UI leakage and keep the new shell interactive. */
 #sihJudgeShell.admin-final-active #judgeContent>.judge-section,
 #sihJudgeShell.admin-final-active #judgeContent>.judge-grid,
-#sihJudgeShell.admin-final-active #judgeContent>.judge-actions-panel{display:none!important}
-/* A legacy judge section becomes visible again only after admin-final.js moves it into the new detail stage. */
-#sihJudgeShell.admin-final-active #afDetailBody>.judge-section{display:block!important}
+#sihJudgeShell.admin-final-active #judgeContent>.judge-actions-panel,
+#sihJudgeShell.admin-final-active #judgeContent>.fed-demand-snapshot,
+#sihJudgeShell.admin-final-active #judgeContent>.fed-network-block,
+#sihJudgeShell.admin-final-active #judgeContent>.fed-records-block,
+#sihJudgeShell.admin-final-active #judgeContent>.coop-section{display:none!important}
+
+/* Legacy operational modules are visible only after admin-final.js moves them into the final detail stage. */
+#sihJudgeShell.admin-final-active #afDetailBody>[data-af-moved="1"]{display:block!important}
+#sihJudgeShell.admin-final-active #afDetailBody>.judge-section,
+#sihJudgeShell.admin-final-active #afDetailBody>.fed-demand-snapshot,
+#sihJudgeShell.admin-final-active #afDetailBody>.fed-network-block,
+#sihJudgeShell.admin-final-active #afDetailBody>.fed-records-block,
+#sihJudgeShell.admin-final-active #afDetailBody>.coop-section{display:block!important}
+
+.af-profile-wrap{position:relative;display:flex;align-items:center}
+.af-profile{appearance:none;border:0;cursor:pointer;font:inherit}
+.af-profile:focus-visible,.af-nav button:focus-visible,.af-refresh:focus-visible,.af-back:focus-visible,.af-stat-link:focus-visible,.af-list-title button:focus-visible{outline:3px solid rgba(19,118,232,.28);outline-offset:2px}
+.af-profile-menu{position:absolute;right:0;top:calc(100% + 9px);z-index:80;min-width:180px;padding:7px;border:1px solid #d9e5f2;border-radius:13px;background:#fff;box-shadow:0 18px 40px rgba(15,47,82,.16)}
+.af-profile-menu[hidden]{display:none!important}
+.af-profile-menu button{display:block;width:100%;min-height:40px;padding:0 11px;border:0;border-radius:9px;background:transparent;color:#15345f;text-align:left;font:750 12px/1.2 Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}
+.af-profile-menu button:hover{background:#f2f7fc}
+.af-profile-menu button.danger{color:#c53045}
+
+@media(max-width:760px){
+  .af-profile-copy small{display:none}
+  .af-profile-menu{position:fixed;right:12px;top:70px;min-width:190px}
+}
