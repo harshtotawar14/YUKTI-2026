@@ -201,7 +201,14 @@
     if(typeof listener!=='function')return()=>{};
     subscribers.add(listener);if(subscribers.size===1)schedule(80);
     if(lastSnapshot)queueMicrotask(()=>{try{listener(lastSnapshot,{changed:false,cached:true});}catch{}});
-    return()=>{subscribers.delete(listener);if(!subscribers.size)clearTimer();};
+    return()=>{
+      subscribers.delete(listener);
+      if(!subscribers.size){
+        clearTimer();
+        clearTimeout(externalRefreshTimer);externalRefreshTimer=0;
+        lastSignature='';lastSnapshot=null;
+      }
+    };
   }
   function refreshNow(){if(!subscribers.size)return Promise.resolve();clearTimer();return tick(true);}
   function stop(){subscribers.clear();clearTimer();clearTimeout(externalRefreshTimer);externalRefreshTimer=0;lastSignature='';lastSnapshot=null;}
