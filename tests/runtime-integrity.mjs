@@ -33,11 +33,28 @@ for(const file of jsFiles){
 assert.doesNotMatch(read('README.md'),/Demo@20\d{2}/,'README exposes a shared demo password');
 
 const vercel=read('vercel.json');
+const vercelConfig=JSON.parse(vercel);
 assert.match(vercel,/connect-src 'self'/,'CSP must keep browser API calls same-origin');
 assert.ok(!vercel.includes('onrender.com'),'Vercel must not proxy API traffic to the deleted Render service');
 assert.ok(existsSync(resolve(root,'api/[...path].js')),'Vercel catch-all API is missing');
 assert.ok(existsSync(resolve(root,'database/schema.sql')),'PostgreSQL schema is missing');
 assert.ok(existsSync(resolve(root,'api/_lib/demo-access.cjs')),'Public demo credential policy module is missing');
+assert.ok(existsSync(resolve(root,'backend/src/cooperative/workspace-routes.cjs')),'Connected Cooperative Admin workspace route is missing');
+assert.match(read('api/index.js'),/cooperativeWorkspace\.handle/,'Stable API adapter does not dispatch the Cooperative Admin workspace route');
+const databaseBundle=String(vercelConfig.functions?.['api/index.js']?.includeFiles||'');
+assert.ok(databaseBundle.includes('database/'),'Vercel API bundle must include the database schema and migrations directory');
+assert.ok(existsSync(resolve(root,'database/migrations/008_geography_alignment.sql')),'Kolhapur geography alignment migration is missing');
+const databaseSource=read('api/_lib/db.cjs');
+assert.match(databaseSource,/Kolhapur, Maharashtra/,'Seed data must align with the Kolhapur field-validation scope');
+assert.match(databaseSource,/Panhala, Kolhapur, Maharashtra/,'Seed data must include the Panhala cooperative network scope');
+assert.doesNotMatch(databaseSource,/\bIndore\b|\bBhopal\b|Narmada Worker Cooperative/,'Legacy Madhya Pradesh seed geography remains');
+
+const cooperativeRoute=read('backend/src/cooperative/workspace-routes.cjs');
+for(const field of ['metrics','workers','skills','services','complaints','capacityRequests','payments','trainingRecommendations']){
+  assert.ok(cooperativeRoute.includes(field),`Cooperative workspace contract is missing ${field}`);
+}
+assert.match(cooperativeRoute,/source:'DATABASE_AGGREGATION'/,'Cooperative workspace must identify database-backed aggregation');
+assert.match(cooperativeRoute,/documentEvidence:\{source:'NO_DOCUMENT_REGISTRY_CONNECTED'/,'Cooperative workspace must not invent document-registry evidence');
 
 const runtime=read('connected-runtime-fix.js');
 assert.match(runtime,/window\.SanPaidApi=Object\.freeze/,'Canonical API client is missing');
@@ -54,7 +71,7 @@ assert.match(serviceWorker,/build-info\.json/,'Service worker must not cache dep
 
 const packageJson=JSON.parse(read('package.json'));
 assert.equal(packageJson.scripts?.build,'node scripts/build.mjs','Reproducible static build command is missing');
-assert.equal(JSON.parse(vercel).outputDirectory,'dist','Vercel must publish the verified dist build');
+assert.equal(vercelConfig.outputDirectory,'dist','Vercel must publish the verified dist build');
 assert.match(runtime,/id:'frontend',label:'Deployed frontend build'/,'Readiness must verify deployed build identity');
 assert.match(runtime,/id:'auth',label:'Authentication route'/,'Readiness must verify authentication route availability');
 assert.match(runtime,/id:'snapshot',label:'Connected snapshot route'/,'Readiness must verify the connected read route');
