@@ -28,7 +28,7 @@ function assertFinalRoleSources(){
   const admin=sourceText('admin-final.js');
   const adminGuard=sourceText('admin-final-guard.css');
   if(customer.includes('Preparing your SanPaid workspace'))throw new Error('Legacy Customer preparation placeholder must not ship.');
-  if(worker.includes(`'"':'&quot'`)||!worker.includes(`'"':'&quot;'`))throw new Error('Worker mobile HTML escaping contract is incomplete.');
+  if(worker.includes(`'"':'&quot',`)||!worker.includes(`'"':'&quot;',`))throw new Error('Worker mobile HTML escaping contract is incomplete.');
   if(!admin.includes('restoreMoved')||!admin.includes('movedOrigins'))throw new Error('Final Admin UI must restore borrowed legacy modules before cleanup.');
   if(!adminGuard.includes('#afDetailBody>.judge-section'))throw new Error('Final Admin legacy-visibility guard is missing.');
 }
@@ -37,7 +37,7 @@ assertFinalRoleSources();
 function resolveCommit(){
   const fromEnvironment=process.env.VERCEL_GIT_COMMIT_SHA||process.env.GITHUB_SHA||'';
   if(fromEnvironment)return fromEnvironment.trim();
-  try{return execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8')).trim();}
+  try{return execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();}
   catch{return 'LOCAL_BUILD';}
 }
 
