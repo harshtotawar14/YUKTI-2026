@@ -52,6 +52,7 @@
     {"source": "/auth-unified.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
     {"source": "/login-reference.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
     {"source": "/customer-reference-dashboard.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/customer-mobile-bootstrap.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
     {"source": "/customer-mobile-reference.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
     {"source": "/connected-runtime-fix.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
     {"source": "/connected-demo.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
