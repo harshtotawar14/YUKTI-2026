@@ -14,7 +14,15 @@ function getPool(){
   if(!connectionString)throw Object.assign(new Error('DATABASE_URL is not configured.'),{status:503,code:'DATABASE_NOT_CONFIGURED'});
   if(!pool){
     const local=/localhost|127\.0\.0\.1/.test(connectionString);
-    pool=new Pool({connectionString,max:5,idleTimeoutMillis:10000,connectionTimeoutMillis:10000,ssl:local?false:{rejectUnauthorized:false}});
+    const managedRuntime=Boolean(process.env.VERCEL);
+    pool=new Pool({
+      connectionString,
+      max:managedRuntime?2:5,
+      idleTimeoutMillis:managedRuntime?5000:10000,
+      connectionTimeoutMillis:5000,
+      allowExitOnIdle:true,
+      ssl:local?false:{rejectUnauthorized:false}
+    });
   }
   return pool;
 }
@@ -60,21 +68,36 @@ async function seed(client){
     ON CONFLICT(worker_id,service_id) DO UPDATE SET status='VERIFIED'`,[DEMO_WORKER_EMAILS]);
 }
 
+function shouldBootstrapDatabase(){
+  if(process.env.SANPAID_AUTO_MIGRATE==='1')return true;
+  return !process.env.VERCEL;
+}
+
+async function bootstrapDatabase(){
+  const client=await getPool().connect();
+  try{
+    const schema=readFileSync(resolve(__dirname,'../../database/schema.sql'),'utf8');
+    const migrations=migrationSql();
+    await client.query('BEGIN');
+    await client.query("SELECT pg_advisory_xact_lock(hashtext('sanpaid-schema-v3'))");
+    await client.query(schema);
+    for(const migration of migrations)await client.query(migration.sql);
+    await seed(client);
+    await client.query('COMMIT');
+  }catch(error){
+    await client.query('ROLLBACK').catch(()=>{});
+    throw error;
+  }finally{
+    client.release();
+  }
+}
+
 async function ensureDatabase(){
   if(!readyPromise){
-    readyPromise=(async()=>{
-      const client=await getPool().connect();
-      try{
-        const schema=readFileSync(resolve(__dirname,'../../database/schema.sql'),'utf8');
-        const migrations=migrationSql();
-        await client.query('BEGIN');
-        await client.query("SELECT pg_advisory_xact_lock(hashtext('sanpaid-schema-v3'))");
-        await client.query(schema);
-        for(const migration of migrations)await client.query(migration.sql);
-        await seed(client);
-        await client.query('COMMIT');
-      }catch(error){await client.query('ROLLBACK').catch(()=>{});readyPromise=null;throw error;}finally{client.release();}
-    })();
+    const readiness=shouldBootstrapDatabase()
+      ? bootstrapDatabase()
+      : getPool().query('SELECT 1').then(()=>undefined);
+    readyPromise=readiness.catch(error=>{readyPromise=null;throw error;});
   }
   return readyPromise;
 }
@@ -86,4 +109,4 @@ async function transaction(work){
   catch(error){await client.query('ROLLBACK').catch(()=>{});throw error;}finally{client.release();}
 }
 
-module.exports={getPool,ensureDatabase,query,transaction,migrationSql};
+module.exports={getPool,ensureDatabase,query,transaction,migrationSql,shouldBootstrapDatabase};
