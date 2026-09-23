@@ -151,7 +151,7 @@
   window.addEventListener('resize',schedule,{passive:true});
   window.addEventListener('orientationchange',schedule,{passive:true});
   window.addEventListener('sanpaid:connected-sync',schedule);
-  observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden','data-connected-role','data-customer-mobile-mode','data-admin-role']});
+  observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden','data-connected-role','data-admin-role']});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
 
   window.SanPaidRoleUICleanup=Object.freeze({
