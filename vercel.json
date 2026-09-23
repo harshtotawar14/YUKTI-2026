@@ -6,7 +6,7 @@
   },
   "functions": {
     "api/index.js": {
-      "includeFiles": "database/schema.sql",
+      "includeFiles": "database/**/*",
       "maxDuration": 30
     }
   },
@@ -20,318 +20,56 @@
     {
       "source": "/",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        },
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "Cross-Origin-Opener-Policy",
-          "value": "same-origin"
-        },
-        {
-          "key": "Cross-Origin-Resource-Policy",
-          "value": "same-origin"
-        },
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=63072000; includeSubDomains; preload"
-        },
-        {
-          "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(self), geolocation=(self)"
-        }
+        {"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"},
+        {"key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"},
+        {"key": "Referrer-Policy", "value": "strict-origin-when-cross-origin"},
+        {"key": "X-Content-Type-Options", "value": "nosniff"},
+        {"key": "X-Frame-Options", "value": "DENY"},
+        {"key": "Cross-Origin-Opener-Policy", "value": "same-origin"},
+        {"key": "Cross-Origin-Resource-Policy", "value": "same-origin"},
+        {"key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload"},
+        {"key": "Permissions-Policy", "value": "camera=(), microphone=(self), geolocation=(self)"}
       ]
     },
     {
       "source": "/index.html",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        },
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "Cross-Origin-Opener-Policy",
-          "value": "same-origin"
-        },
-        {
-          "key": "Cross-Origin-Resource-Policy",
-          "value": "same-origin"
-        },
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=63072000; includeSubDomains; preload"
-        },
-        {
-          "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(self), geolocation=(self)"
-        }
+        {"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"},
+        {"key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"},
+        {"key": "Referrer-Policy", "value": "strict-origin-when-cross-origin"},
+        {"key": "X-Content-Type-Options", "value": "nosniff"},
+        {"key": "X-Frame-Options", "value": "DENY"},
+        {"key": "Cross-Origin-Opener-Policy", "value": "same-origin"},
+        {"key": "Cross-Origin-Resource-Policy", "value": "same-origin"},
+        {"key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload"},
+        {"key": "Permissions-Policy", "value": "camera=(), microphone=(self), geolocation=(self)"}
       ]
     },
-    {
-      "source": "/service-worker.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/build-info.json",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/app.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/mobile.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/auth-unified.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/connected-runtime-fix.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/connected-demo.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/connected-service-ui.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/connected-commerce-ui.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/customer-worker-dashboard.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/judge-demo.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/top1-polish.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/admin-command-center.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/cooperative-portal.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/federation-portal.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/cooperative-deploy-guard.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/handover-evidence.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/evaluator-final.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/design-tokens.css",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/mobile.css",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/auth-unified.css",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/connected-demo.css",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/customer-worker-dashboard.css",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/cooperative-portal.css",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/federation-portal.css",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/handover-evidence.css",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    }
+    {"source": "/service-worker.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/build-info.json", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/app.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/mobile.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/auth-unified.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/connected-runtime-fix.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/connected-demo.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/connected-service-ui.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/connected-commerce-ui.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/customer-worker-dashboard.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/judge-demo.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/top1-polish.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/admin-command-center.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/cooperative-portal.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/federation-portal.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/cooperative-deploy-guard.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/handover-evidence.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/evaluator-final.js", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/design-tokens.css", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/mobile.css", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/auth-unified.css", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/connected-demo.css", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/customer-worker-dashboard.css", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/cooperative-portal.css", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/federation-portal.css", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]},
+    {"source": "/handover-evidence.css", "headers": [{"key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"}]}
   ]
 }
