@@ -1,12 +1,12 @@
-const CACHE_NAME='sanpaid-runtime-v71-role-clean2';
+const CACHE_NAME='sanpaid-runtime-v71-role-clean3';
 const FALLBACK_ASSETS=[
   './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./master-v2.css','./dossier-redesign.css',
   './connected-demo.css','./judge-demo.css','./selector-mode.css','./auth-unified.css','./login-reference.css',
-  './customer-worker-dashboard.css','./customer-reference-dashboard.css','./customer-mobile-reference.css','./worker-mobile-final.css',
+  './customer-worker-dashboard.css','./customer-reference-dashboard.css','./customer-mobile-reference.css','./worker-mobile-final.css','./worker-desktop-final.css',
   './federation-govtech.css','./federation-portal.css','./cooperative-portal.css','./admin-final.css','./role-ui-cleanup.css',
   './app.js','./mobile.js','./evaluator-final.js','./top1-polish.js','./auth-unified.js','./login-reference.js',
   './connected-demo.js','./connected-service-ui.js','./connected-commerce-ui.js','./connected-runtime-fix.js','./review-runtime.js','./review-runtime-bridge.js',
-  './customer-worker-dashboard.js','./customer-reference-dashboard.js','./customer-mobile-reference.js','./worker-mobile-final.js',
+  './customer-worker-dashboard.js','./customer-reference-dashboard.js','./customer-mobile-reference.js','./worker-mobile-final.js','./worker-desktop-final.js',
   './admin-command-center.js','./federation-portal.js','./cooperative-portal.js','./admin-final.js','./role-ui-cleanup.js',
   './capacity-worker-ui.js','./judge-demo.js','./selector-mode.js',
   './manifest.webmanifest','./app-icon.svg','./social-preview.svg','./robots.txt','./sitemap.xml'
