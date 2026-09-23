@@ -69,11 +69,27 @@ assert.match(serviceWorker,/sanpaid-runtime-v71/,'Expected service-worker runtim
 assert.match(serviceWorker,/Promise\.allSettled/,'Service-worker precache must tolerate individual asset failure');
 assert.match(serviceWorker,/pathname\.startsWith\('\/api\/'\)/,'Service worker must not cache API requests');
 assert.match(serviceWorker,/build-info\.json/,'Service worker must not cache deployment identity');
+assert.match(serviceWorker,/role-ui-cleanup\.js/,'Service worker must precache the consolidated role UI cleanup runtime');
+assert.doesNotMatch(serviceWorker,/customer-mobile-bootstrap|admin-final-guard|handover-evidence|cooperative-deploy-guard|admin-command-center\.css/,'Service worker still precaches retired UI assets');
+
+const buildSource=read('scripts/build.mjs');
+assert.ok(existsSync(resolve(root,'role-ui-cleanup.css')),'Consolidated role UI cleanup stylesheet is missing');
+assert.ok(existsSync(resolve(root,'role-ui-cleanup.js')),'Consolidated role UI cleanup runtime is missing');
+assert.ok(existsSync(resolve(root,'admin-final.css')),'Final admin stylesheet is missing');
+assert.ok(existsSync(resolve(root,'admin-final.js')),'Final admin runtime is missing');
+for(const retired of ['customer-mobile-bootstrap.js','admin-final-guard.css','admin-command-center.css','handover-evidence.css','handover-evidence.js','cooperative-deploy-guard.js']){
+  assert.ok(!existsSync(resolve(root,retired)),`Retired role UI asset still exists: ${retired}`);
+  assert.ok(!buildSource.includes(`'${retired}',`),`Retired role UI asset is still allowlisted by the build: ${retired}`);
+}
+assert.match(buildSource,/Preparing your SanPaid workspace/,'Build must explicitly guard against the retired Customer preparation placeholder');
+assert.match(buildSource,/uiCleanup:'CONSOLIDATED_V1'/,'Build identity must expose consolidated UI cleanup mode');
+assert.match(read('role-ui-cleanup.js'),/restoreMovedNodes/,'Final admin module restoration guard is missing');
+assert.match(read('role-ui-cleanup.js'),/openRoleChooser/,'Final admin profile menu must support role switching');
 
 const packageJson=JSON.parse(read('package.json'));
 assert.equal(packageJson.scripts?.build,'node scripts/build.mjs','Reproducible static build command is missing');
 assert.equal(vercelConfig.outputDirectory,'dist','Vercel must publish the verified dist build');
-assert.ok(read('scripts/build.mjs').includes(primaryProductionUrl),'Build must publish the brown Vercel URL as the primary production identity');
+assert.ok(buildSource.includes(primaryProductionUrl),'Build must publish the brown Vercel URL as the primary production identity');
 assert.ok(read('sitemap.xml').includes(primaryProductionUrl),'Sitemap must target the brown Vercel production URL');
 assert.ok(read('robots.txt').includes(`${primaryProductionUrl}/sitemap.xml`),'Robots file must advertise the brown Vercel sitemap');
 assert.ok(read('.github/workflows/production-e2e.yml').includes(primaryProductionUrl),'Production E2E must default to the brown Vercel URL');
