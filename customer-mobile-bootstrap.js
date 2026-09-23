@@ -19,20 +19,23 @@
     if(!shell||!content)return;
     const isCustomer=!shell.classList.contains('hidden')&&String(content.dataset.connectedRole||'').toUpperCase()==='CUSTOMER';
     const active=isCustomer&&mobile();
+    shell.classList.toggle('customer-mobile-bootstrap',active);
     shell.dataset.customerMobileMode=active?'true':'false';
     if(active){
-      shell.classList.add('customer-reference-page');
-      const ready=shell.classList.contains('customer-mobile-ready');
-      shell.classList.toggle('customer-mobile-bootstrap',ready);
-      if(ready)shell.classList.add('role-mobile-final');
+      shell.classList.add('customer-reference-page','role-mobile-final');
     }else{
-      shell.classList.remove('customer-mobile-bootstrap','customer-mobile-ready');
+      shell.classList.remove('customer-mobile-ready');
       if(!shell.classList.contains('worker-mobile-final'))shell.classList.remove('role-mobile-final');
     }
   }
 
   let queued=false;
-  function schedule(){if(queued)return;queued=true;queueMicrotask(()=>{queued=false;apply();});}
+  const schedule=()=>{
+    if(queued)return;
+    queued=true;
+    requestAnimationFrame(()=>{queued=false;apply();});
+  };
+
   new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','hidden','data-connected-role']});
   window.addEventListener('resize',schedule,{passive:true});
   window.addEventListener('orientationchange',schedule,{passive:true});
