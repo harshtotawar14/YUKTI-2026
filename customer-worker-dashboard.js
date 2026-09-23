@@ -6,12 +6,12 @@
   const WORKER_NAV=[['overview','Overview'],['offers','Job Requests'],['current','Current Job'],['schedule','Availability'],['passport','Trust Passport'],['earnings','Earnings'],['updates','Updates']];
   const CUSTOMER_STEPS=['Request','Eligibility','Worker Choice','Arrival','Verification','Service','Payment'];
   const WORKER_STEPS=['Understand','Choose','Travel','Verify','Work','Complete','Paid'];
-  let refreshBusy=false,refreshQueued=false,lastRole='';
+  let refreshBusy=false,refreshQueued=false,refreshTimer=0,lastRole='';
   const scheduleState={date:todayLocal(),voicePlan:null};
 
   const $=(s,r=document)=>r.querySelector(s);
   const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
   const human=s=>String(s||'—').replaceAll('_',' ').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
   const money=n=>`₹${Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2})}`;
   const fmtDate=v=>{try{return new Date(v).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'})}catch{return String(v||'—')}};
@@ -24,7 +24,7 @@
   function navKey(r){return `sanpaid_dashboard_view_${r.toLowerCase()}`;}
   function activeView(r){const valid=(r==='CUSTOMER'?CUSTOMER_NAV:WORKER_NAV).map(x=>x[0]);const saved=sessionGet(navKey(r));return valid.includes(saved)?saved:'overview';}
   function setActiveView(r,id){sessionSet(navKey(r),id);}
-  const STATUS_TONES=Object.freeze({good:new Set(['PAID','COMPLETED','VERIFIED','CONFIRMED','CUSTOMER_CONFIRMED','ACCEPTED','ELIGIBLE','AVAILABLE','RESOLVED','READY']),risk:new Set(['NO_WORKER_AVAILABLE','CANCELLED','EXPIRED','REJECTED','NOT_ELIGIBLE','UNAVAILABLE','SUSPENDED']),warn:new Set(['PENDING','MATCHING','OFFERING','PENDING_WORKER_ACCEPTANCE','FINDING_REPLACEMENT','AWAITING_CUSTOMER_CONFIRMATION','ARRIVED','IN_PROGRESS','OPEN','IN_REVIEW','ESCALATED','PAYMENT_PENDING'])});
+  const STATUS_TONES=Object.freeze({good:new Set(['PAID','CLOSED','COMPLETED','VERIFIED','CONFIRMED','CUSTOMER_CONFIRMED','ACCEPTED','ELIGIBLE','AVAILABLE','RESOLVED','READY']),risk:new Set(['NO_WORKER_AVAILABLE','CANCELLED','EXPIRED','REJECTED','NOT_ELIGIBLE','UNAVAILABLE','SUSPENDED']),warn:new Set(['REQUESTED','VALIDATING','MATCHING','OFFERING','PENDING','PENDING_WORKER_ACCEPTANCE','FINDING_REPLACEMENT','AWAITING_CUSTOMER_CONFIRMATION','ARRIVED','SERVICE_STARTED','IN_PROGRESS','OPEN','IN_REVIEW','ESCALATED','PAYMENT_PENDING'])});
   function statusClass(s){const value=String(s||'').toUpperCase();if(STATUS_TONES.risk.has(value))return'risk';if(STATUS_TONES.good.has(value))return'good';if(STATUS_TONES.warn.has(value))return'warn';return'neutral';}
   function label(s,text=null){return `<span class="cw-status ${statusClass(s)}">${esc(text||human(s))}</span>`;}
   function empty(text){return `<div class="cw-empty">${esc(text)}</div>`;}
@@ -34,11 +34,28 @@
   const settled=async promise=>{try{return{ok:true,data:await promise}}catch(error){return{ok:false,error}}};
   function handleAuthError(error){if(Number(error?.status)===401)window.SanPaidAuth?.handleExpiredSession?.();}
 
-  function currentNextCustomer(status){const s=String(status||'').toUpperCase();if(!s)return ['Book your first service','Choose a service, time and location.'];if(['MATCHING','PENDING_WORKER_ACCEPTANCE','FINDING_REPLACEMENT'].includes(s))return ['Wait for worker response','The same booking stays active while eligible workers choose Accept or Decline.'];if(['ACCEPTED','ASSIGNED'].includes(s))return ['Worker accepted','Wait for travel to begin.'];if(['ON_THE_WAY','TRAVELING'].includes(s))return ['Worker is travelling','Keep the booking open until arrival.'];if(s==='ARRIVED')return ['Verify the booked worker','Use the booking-specific verification flow before service starts.'];if(s==='IDENTITY_VERIFIED')return ['Confirm the worker','Check the identity details and confirm this booking.'];if(s==='CUSTOMER_CONFIRMED')return ['Service start unlocked','The worker can now start service.'];if(s==='IN_PROGRESS')return ['Service in progress','Approve or reject any additional work before it changes the amount.'];if(s==='AWAITING_CUSTOMER_CONFIRMATION')return ['Inspect completed work','Confirm completion or use Support if something is wrong.'];if(['COMPLETED','PAYMENT_PENDING'].includes(s))return ['Review and pay','Review the final amount, complete payment, and rate the service.'];if(s==='PAID')return ['Rate your service','Payment and invoice are recorded.'];if(s==='NO_WORKER_AVAILABLE')return ['Local capacity unavailable','The booking remains traceable for cooperative review.'];return ['Check latest status',human(s)];}
+  function currentNextCustomer(status){
+    const s=String(status||'').toUpperCase();
+    if(!s)return ['Book your first service','Choose a service, time and location.'];
+    if(['REQUESTED','VALIDATING','MATCHING','OFFERING','PENDING_WORKER_ACCEPTANCE','FINDING_REPLACEMENT'].includes(s))return ['Finding a verified worker','Eligibility and worker choice are being processed for this booking.'];
+    if(['ACCEPTED','ASSIGNED'].includes(s))return ['Worker accepted','Wait for travel to begin.'];
+    if(['ON_THE_WAY','TRAVELING'].includes(s))return ['Worker is travelling','Keep the booking open until arrival.'];
+    if(s==='ARRIVED')return ['Verify the booked worker','Review the estimate and use the booking-specific verification flow before service starts.'];
+    if(s==='IDENTITY_VERIFIED')return ['Confirm the worker','Check the identity details and confirm this booking.'];
+    if(s==='CUSTOMER_CONFIRMED')return ['Service start unlocked','The worker can now start service.'];
+    if(['SERVICE_STARTED','IN_PROGRESS'].includes(s))return ['Service in progress','Approve or reject any additional work before it changes the amount.'];
+    if(s==='AWAITING_CUSTOMER_CONFIRMATION')return ['Inspect completed work','Confirm completion or use Support if something is wrong.'];
+    if(['COMPLETED','PAYMENT_PENDING'].includes(s))return ['Review and pay','Review the final amount, complete payment, and rate the service.'];
+    if(s==='PAID')return ['Rate your service','Payment and invoice are recorded.'];
+    if(s==='CLOSED')return ['Service record closed','Payment, invoice and service history remain available.'];
+    if(s==='CANCELLED')return ['Booking cancelled','You can book another service whenever needed.'];
+    if(s==='NO_WORKER_AVAILABLE')return ['Local capacity unavailable','The booking remains traceable for cooperative review.'];
+    return ['Check latest status',human(s)];
+  }
   function currentNextWorker(status,offerStatus){const s=String(status||'').toUpperCase(),o=String(offerStatus||'').toUpperCase();if(o==='PENDING')return ['Choose Accept or Decline','Review service, location, schedule and expected amount.'];if(!s)return ['Stay ready for suitable work','Only eligible opportunities appear here.'];if(s==='ACCEPTED')return ['Start travel when ready','This booking is assigned because you accepted it.'];if(['ON_THE_WAY','TRAVELING'].includes(s))return ['Reach the customer','Mark arrival only at the service location.'];if(s==='ARRIVED')return ['Verify identity','Complete the service-start identity check before work begins.'];if(s==='IDENTITY_VERIFIED')return ['Wait for customer confirmation','Service remains locked until the customer confirms you.'];if(s==='CUSTOMER_CONFIRMED')return ['Start service','Both service-start trust checks are complete.'];if(s==='IN_PROGRESS')return ['Complete the work','Request approval first if additional work is needed.'];if(s==='AWAITING_CUSTOMER_CONFIRMATION')return ['Wait for customer confirmation','Completion is not silently finalized.'];if(s==='COMPLETED')return ['Completion recorded','Wait for customer payment.'];if(s==='PAID')return ['Outcome recorded','Payment contributes to your work record.'];return ['Review current work',human(s)];}
-  function customerStage(status){const s=String(status||'').toUpperCase();if(['PAID','CLOSED'].includes(s))return 6;if(['IN_PROGRESS','AWAITING_CUSTOMER_CONFIRMATION','COMPLETED','PAYMENT_PENDING'].includes(s))return 5;if(['IDENTITY_VERIFIED','CUSTOMER_CONFIRMED'].includes(s))return 4;if(s==='ARRIVED')return 3;if(['ACCEPTED','ASSIGNED','ON_THE_WAY','TRAVELING'].includes(s))return 2;if(['MATCHING','PENDING_WORKER_ACCEPTANCE','FINDING_REPLACEMENT','NO_WORKER_AVAILABLE'].includes(s))return 1;return 0;}
+  function customerStage(status){const s=String(status||'').toUpperCase();if(['PAID','CLOSED'].includes(s))return 6;if(['SERVICE_STARTED','IN_PROGRESS','AWAITING_CUSTOMER_CONFIRMATION','COMPLETED','PAYMENT_PENDING'].includes(s))return 5;if(['IDENTITY_VERIFIED','CUSTOMER_CONFIRMED'].includes(s))return 4;if(s==='ARRIVED')return 3;if(['ACCEPTED','ASSIGNED','ON_THE_WAY','TRAVELING'].includes(s))return 2;if(['VALIDATING','MATCHING','OFFERING','PENDING_WORKER_ACCEPTANCE','FINDING_REPLACEMENT','NO_WORKER_AVAILABLE'].includes(s))return 1;return 0;}
   function workerStage(status,offerStatus){if(String(offerStatus).toUpperCase()==='PENDING')return 0;const s=String(status||'').toUpperCase();if(s==='PAID')return 6;if(s==='COMPLETED')return 5;if(['IN_PROGRESS','AWAITING_CUSTOMER_CONFIRMATION'].includes(s))return 4;if(['ARRIVED','IDENTITY_VERIFIED','CUSTOMER_CONFIRMED'].includes(s))return 3;if(['ON_THE_WAY','TRAVELING'].includes(s))return 2;if(s==='ACCEPTED')return 1;return 0;}
-  function nextCustomerView(status){const s=String(status||'').toUpperCase();if(!s)return 'book';if(['MATCHING','PENDING_WORKER_ACCEPTANCE','FINDING_REPLACEMENT','ACCEPTED','ASSIGNED','ON_THE_WAY','TRAVELING','NO_WORKER_AVAILABLE'].includes(s))return 'booking';if(['ARRIVED','IDENTITY_VERIFIED','CUSTOMER_CONFIRMED'].includes(s))return 'verify';if(['IN_PROGRESS','AWAITING_CUSTOMER_CONFIRMATION'].includes(s))return 'booking';if(['COMPLETED','PAYMENT_PENDING','PAID'].includes(s))return 'payment';return 'booking';}
+  function nextCustomerView(status){const s=String(status||'').toUpperCase();if(!s)return 'book';if(['REQUESTED','VALIDATING','MATCHING','OFFERING','PENDING_WORKER_ACCEPTANCE','FINDING_REPLACEMENT','ACCEPTED','ASSIGNED','ON_THE_WAY','TRAVELING','NO_WORKER_AVAILABLE'].includes(s))return 'booking';if(['ARRIVED','IDENTITY_VERIFIED','CUSTOMER_CONFIRMED'].includes(s))return 'verify';if(['SERVICE_STARTED','IN_PROGRESS','AWAITING_CUSTOMER_CONFIRMATION'].includes(s))return 'booking';if(['COMPLETED','PAYMENT_PENDING','PAID','CLOSED'].includes(s))return 'payment';if(s==='CANCELLED')return 'book';return 'booking';}
   function nextWorkerView(status,offerStatus){const s=String(status||'').toUpperCase(),o=String(offerStatus||'').toUpperCase();if(o==='PENDING')return 'offers';if(['ACCEPTED','ON_THE_WAY','TRAVELING','ARRIVED','IDENTITY_VERIFIED','CUSTOMER_CONFIRMED','IN_PROGRESS','AWAITING_CUSTOMER_CONFIRMATION','COMPLETED'].includes(s))return 'current';if(s==='PAID')return 'earnings';return 'offers';}
   function nextActionButton(view,label='Open next step'){return `<button type="button" class="cw-next-action" data-cw-view-btn="${esc(view)}">${esc(label)} <span aria-hidden="true">→</span></button>`;}
   function journey(labels,current){return `<div class="cw-journey">${labels.map((x,i)=>`<div class="${i<current?'done':i===current?'active':''}"><span>${i<current?'✓':i+1}</span><small>${esc(x)}</small></div>`).join('')}</div>`;}
@@ -82,9 +99,18 @@
 
   async function refresh(){
     if(!shellOpen())return;const r=role();if(!['CUSTOMER','WORKER'].includes(r))return;if(refreshBusy){refreshQueued=true;return;}refreshBusy=true;
-    try{const data=r==='CUSTOMER'?await customerData():await workerData();const modules=collectModules(r);if(r==='CUSTOMER')renderCustomer(data,modules);else renderWorker(data,modules);}catch(error){fallback(r,error);}finally{refreshBusy=false;if(refreshQueued){refreshQueued=false;setTimeout(refresh,80);}}
+    try{const data=r==='CUSTOMER'?await customerData():await workerData();const modules=collectModules(r);if(r==='CUSTOMER')renderCustomer(data,modules);else renderWorker(data,modules);}catch(error){fallback(r,error);}finally{refreshBusy=false;if(refreshQueued){refreshQueued=false;requestRefresh();}}
   }
-  function requestRefresh(){setTimeout(refresh,80);}
-  function start(){setTimeout(refresh,650);setTimeout(refresh,1600);window.addEventListener('sanpaid:connected-sync',requestRefresh);document.addEventListener('visibilitychange',()=>{if(!document.hidden)requestRefresh();});}
+  function requestRefresh(event){
+    if(event?.detail?.source==='snapshot'&&event.detail?.changed===false)return;
+    clearTimeout(refreshTimer);
+    refreshTimer=setTimeout(()=>{refreshTimer=0;refresh();},100);
+  }
+  function start(){
+    requestRefresh();
+    setTimeout(()=>{if(shellOpen()&&!content()?.querySelector('.cw-dashboard'))requestRefresh();},1200);
+    window.addEventListener('sanpaid:connected-sync',requestRefresh);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)requestRefresh();});
+  }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
