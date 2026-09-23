@@ -1,0 +1,6 @@
+/* Final admin shell guard: legacy page chrome and judge sections never leak below the new UI. */
+#sihJudgeShell.admin-final-active #judgeContent>.judge-section,
+#sihJudgeShell.admin-final-active #judgeContent>.judge-grid,
+#sihJudgeShell.admin-final-active #judgeContent>.judge-actions-panel{display:none!important}
+/* A legacy judge section becomes visible again only after admin-final.js moves it into the new detail stage. */
+#sihJudgeShell.admin-final-active #afDetailBody>.judge-section{display:block!important}
