@@ -6,12 +6,14 @@ on:
 jobs:
   diagnose-production:
     runs-on: ubuntu-latest
+    env:
+      SANPAID_PRODUCTION_URL: ${{ vars.SANPAID_PRODUCTION_URL || 'https://sahkriya.vercel.app' }}
     steps:
       - name: Probe SanPaid production API safely
         shell: bash
         run: |
           set -u
-          base='https://yukti-2026-brown.vercel.app'
+          base="$SANPAID_PRODUCTION_URL"
           for endpoint in '/api/connected/health' '/api/public/services'; do
             body="$(mktemp)"
             status="$(curl --silent --show-error --location --connect-timeout 15 --max-time 60 --output "$body" --write-out '%{http_code}' "$base$endpoint" || true)"
