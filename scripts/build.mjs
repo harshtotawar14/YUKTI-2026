@@ -12,12 +12,12 @@ const publicFiles=[
   'index.html',
   'app-icon.svg','manifest.webmanifest','robots.txt','sitemap.xml','social-preview.svg',
   'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','master-v2.css','landing-pro.css','dossier-redesign.css',
-  'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','login-reference.css','customer-worker-dashboard.css','customer-reference-dashboard.css',
+  'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','login-reference.css','customer-worker-dashboard.css','customer-reference-dashboard.css','customer-mobile-reference.css',
   'admin-command-center.css','federation-govtech.css','federation-portal.css','cooperative-portal.css','handover-evidence.css',
   'credibility-layer.css','workforce-intelligence.css',
   'app.js','mobile.js','connected-demo.js','connected-service-ui.js','connected-commerce-ui.js','connected-runtime-fix.js',
   'capacity-worker-ui.js','judge-demo.js','selector-mode.js','top1-polish.js','evaluator-final.js','auth-unified.js','login-reference.js',
-  'customer-worker-dashboard.js','customer-reference-dashboard.js','admin-command-center.js','federation-portal.js','cooperative-portal.js',
+  'customer-worker-dashboard.js','customer-reference-dashboard.js','customer-mobile-reference.js','admin-command-center.js','federation-portal.js','cooperative-portal.js',
   'cooperative-deploy-guard.js','handover-evidence.js','credibility-layer.js','workforce-intelligence.js','service-worker.js'
 ];
 
@@ -40,8 +40,8 @@ for(const file of publicFiles){
 const builtIndexPath=resolve(output,'index.html');
 const builtIndex=readFileSync(builtIndexPath,'utf8')
   .replaceAll('https://sahkriya.vercel.app',primaryProductionUrl)
-  .replace('</head>','<link rel="stylesheet" href="login-reference.css?v=1">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=1">\n</head>')
-  .replace('</body>','<script src="login-reference.js?v=1"></script>\n<script src="customer-reference-dashboard.js?v=1"></script>\n</body>');
+  .replace('</head>','<link rel="stylesheet" href="login-reference.css?v=1">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=1">\n<link rel="stylesheet" href="customer-mobile-reference.css?v=1">\n</head>')
+  .replace('</body>','<script src="login-reference.js?v=1"></script>\n<script src="customer-reference-dashboard.js?v=1"></script>\n<script src="customer-mobile-reference.js?v=1"></script>\n</body>');
 writeFileSync(builtIndexPath,builtIndex);
 
 const buildInfo={
