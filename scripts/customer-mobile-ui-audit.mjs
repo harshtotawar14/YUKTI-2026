@@ -65,8 +65,15 @@ async function diagnostic(page,selector){
       const style=getComputedStyle(current);
       chain.push({tag:current.tagName,id:current.id,className:String(current.className||''),hidden:current.hidden,display:style.display,visibility:style.visibility,opacity:style.opacity});
     }
-    return {innerWidth:window.innerWidth,media768:matchMedia('(max-width: 768px)').matches,chain};
+    return {innerWidth:window.innerWidth,devicePixelRatio:window.devicePixelRatio,screen:{width:screen.width,height:screen.height},media768:matchMedia('(max-width: 768px)').matches,chain};
   });
+}
+
+async function assertHomeIsolation(page,label){
+  const shell=page.locator('#connectedShell');
+  assert(await shell.evaluate(node=>node.classList.contains('customer-mobile-home-active')),`${label}: mobile Home state is not active`);
+  const base=page.locator('#connectedContent');
+  assert(!(await base.isVisible()),`${label}: legacy/full customer content is visible behind mobile Home`);
 }
 
 async function assertMobileContract(page,label,{expectForced=false}={}){
@@ -88,9 +95,22 @@ async function assertMobileContract(page,label,{expectForced=false}={}){
   assert(ctaText.includes('book a service'),`${label}: green Book a Service CTA is missing`);
   const noOverflow=await shell.evaluate(node=>node.scrollWidth<=node.clientWidth+2);
   assert(noOverflow,`${label}: customer shell has horizontal overflow`);
+  await assertHomeIsolation(page,label);
   if(expectForced){
     assert(await page.locator('#sanpaidCustomerForcedMobileCss').count()===1,`${label}: forced touch-device mobile CSS was not installed`);
   }
+
+  // Opening a real sub-view may reveal the connected content, but the mobile
+  // shell/header and bottom navigation must remain in control.
+  await page.locator('.cm-bottom-nav [data-cm-view="book"]').click();
+  await page.waitForTimeout(100);
+  assert(await page.locator('#connectedContent').isVisible(),`${label}: Book Service did not reveal its connected view`);
+  assert(await page.locator('.cm-mobile-header').isVisible(),`${label}: mobile header disappeared in Book Service`);
+  assert(await page.locator('.cm-bottom-nav').isVisible(),`${label}: mobile bottom nav disappeared in Book Service`);
+
+  await page.locator('.cm-bottom-nav [data-cm-view="overview"]').click();
+  await page.waitForTimeout(100);
+  await assertHomeIsolation(page,`${label} after returning Home`);
 }
 
 let browser;
@@ -98,20 +118,21 @@ try{
   await waitServer();
   browser=await chromium.launch({headless:true,executablePath,args:['--no-sandbox']});
 
-  const phoneContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  const phoneContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3});
   const phonePage=await openCustomer(phoneContext);
   await assertMobileContract(phonePage,'390px phone');
   await phoneContext.close();
 
-  const wideTouchContext=await browser.newContext({viewport:{width:980,height:900},isMobile:true,hasTouch:true});
+  // Simulates Android/browser "Desktop site" style viewport reporting.
+  const wideTouchContext=await browser.newContext({viewport:{width:1280,height:900},isMobile:true,hasTouch:true,deviceScaleFactor:3});
   const wideTouchPage=await openCustomer(wideTouchContext);
   const innerWidth=await wideTouchPage.evaluate(()=>window.innerWidth);
-  assert(innerWidth>768&&innerWidth<=1100,`Wide-touch fixture has unexpected innerWidth ${innerWidth}`);
-  await assertMobileContract(wideTouchPage,'980px touch device',{expectForced:true});
+  assert(innerWidth>1100&&innerWidth<=1400,`Wide-touch fixture has unexpected innerWidth ${innerWidth}`);
+  await assertMobileContract(wideTouchPage,'1280px touch handset',{expectForced:true});
   await wideTouchContext.close();
 
   console.log('SanPaid Customer mobile UI audit: PASS');
-  console.log('Verified new customer mobile app UI at 390px and forced touch-device mode at 980px.');
+  console.log('Verified isolated mobile Home at 390px and forced touch-handset mode at 1280px.');
 } finally {
   if(browser)await browser.close().catch(()=>{});
   server.kill('SIGTERM');
