@@ -1,0 +1,622 @@
+/* Customer-only SIH dashboard polish based on the approved visual reference.
+   Scoped to .customer-reference-page so Worker/Admin workspaces remain untouched. */
+#connectedShell.customer-reference-page{
+  --cr-navy:#07365d;
+  --cr-navy-2:#0b4e7d;
+  --cr-blue:#0d77bd;
+  --cr-teal:#0aa58f;
+  --cr-green:#079a75;
+  --cr-ink:#07142f;
+  --cr-muted:#526d96;
+  --cr-line:#d9e6ef;
+  --cr-soft:#f4f9fd;
+  --cr-card:#ffffff;
+  background:linear-gradient(180deg,#f9fcfe 0%,#eef7fb 100%);
+}
+
+/* Top product bar */
+#connectedShell.customer-reference-page .connected-top{
+  min-height:74px;
+  padding:0 36px;
+  background:linear-gradient(100deg,#08365d 0%,#073151 58%,#062f4f 100%);
+  border-bottom:0;
+  box-shadow:0 2px 12px rgba(4,31,55,.12);
+}
+#connectedShell.customer-reference-page .connected-top>div:first-child{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  min-width:0;
+}
+#connectedShell.customer-reference-page .connected-top .brand{
+  color:#fff;
+  font-size:30px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.04em;
+  white-space:nowrap;
+}
+#connectedShell.customer-reference-page .connected-top .brand span{color:#1fd7bf}
+#connectedShell.customer-reference-page .connected-top-subtitle{
+  margin:0;
+  padding-left:20px;
+  border-left:1px solid rgba(255,255,255,.34);
+  color:#fff;
+  font-size:16px;
+  font-weight:650;
+  line-height:28px;
+  white-space:nowrap;
+}
+#connectedShell.customer-reference-page .connected-top>.actions{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin:0;
+}
+#connectedShell.customer-reference-page #connectedTopStatus{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding-right:18px;
+  border-right:1px solid rgba(255,255,255,.25);
+  color:#fff!important;
+  font-size:15px;
+  font-weight:750;
+  white-space:nowrap;
+}
+#connectedShell.customer-reference-page #connectedTopStatus::before{
+  content:"";
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:#12d882;
+  box-shadow:0 0 0 4px rgba(18,216,130,.08);
+}
+#connectedShell.customer-reference-page #connectedTopStatus{font-size:0}
+#connectedShell.customer-reference-page #connectedTopStatus::after{content:"Live";font-size:15px}
+#connectedShell.customer-reference-page .connected-top .connected-header-actions{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin:0;
+  width:auto;
+}
+#connectedShell.customer-reference-page .connected-top .connected-header-actions .btn{
+  min-height:46px;
+  padding:0 20px;
+  border-radius:11px;
+  background:transparent;
+  border:1px solid rgba(255,255,255,.78);
+  color:#fff;
+  font-size:14px;
+  font-weight:750;
+  box-shadow:none;
+}
+#connectedShell.customer-reference-page .connected-top .connected-header-actions #connectedSwitch::before{
+  content:"⇄";
+  margin-right:9px;
+  font-size:20px;
+  vertical-align:-1px;
+}
+#connectedShell.customer-reference-page .connected-top .connected-header-actions #connectedLogout{
+  border-color:#ef4051;
+  color:#ff5968;
+}
+#connectedShell.customer-reference-page .connected-top .connected-header-actions #connectedLogout::before{
+  content:"↪";
+  margin-right:9px;
+  font-size:19px;
+}
+#connectedShell.customer-reference-page #connectedClose{display:none!important}
+
+/* Main frame + authorized workspace */
+#connectedShell.customer-reference-page .connected-main{
+  width:min(1640px,100%);
+  margin:0 auto;
+  padding:16px 36px 40px;
+  contain:layout style;
+}
+#connectedShell.customer-reference-page .connected-session-bar{
+  min-height:70px;
+  margin:0 0 22px;
+  padding:10px 18px;
+  border:1px solid #cbe9e4;
+  border-radius:17px;
+  background:linear-gradient(90deg,#ebfbf7 0%,#edfafa 100%);
+  box-shadow:none;
+}
+#connectedShell.customer-reference-page .connected-session-user{
+  display:grid;
+  grid-template-columns:54px minmax(0,1fr);
+  grid-template-rows:auto auto;
+  column-gap:14px;
+  row-gap:1px;
+  align-items:center;
+  width:100%;
+}
+#connectedShell.customer-reference-page .connected-session-user::before{
+  content:"▦";
+  grid-column:1;
+  grid-row:1 / 3;
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#d9f6ef;
+  color:#087c73;
+  font-size:27px;
+  font-weight:900;
+}
+#connectedShell.customer-reference-page .connected-session-user .connected-badge{
+  grid-column:2;
+  grid-row:1;
+  display:block;
+  width:max-content;
+  max-width:100%;
+  margin:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#1f3e66;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:0;
+}
+#connectedShell.customer-reference-page .connected-session-user>.connected-live{
+  grid-column:2;
+  grid-row:2;
+  color:var(--cr-ink)!important;
+  font-size:16px;
+  font-weight:850;
+  overflow-wrap:anywhere;
+}
+#connectedShell.customer-reference-page .connected-session-bar>.connected-header-actions{display:none!important}
+
+/* Customer shell and sidebar */
+#connectedShell.customer-reference-page .cw-dashboard.customer{
+  margin:0;
+  color:var(--cr-ink);
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-shell{
+  grid-template-columns:310px minmax(0,1fr);
+  gap:24px;
+  align-items:stretch;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-nav{
+  position:sticky;
+  top:92px;
+  align-self:start;
+  display:grid;
+  gap:8px;
+  min-height:692px;
+  padding:18px 14px;
+  border:1px solid #e0eaf1;
+  border-radius:17px;
+  background:#fff;
+  box-shadow:0 6px 22px rgba(25,65,94,.045);
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-nav-title{display:none}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-nav button{
+  position:relative;
+  display:grid;
+  grid-template-columns:46px minmax(0,1fr);
+  align-items:center;
+  gap:10px;
+  width:100%;
+  min-width:0;
+  min-height:70px;
+  padding:10px 16px;
+  border:0;
+  border-radius:14px;
+  background:transparent;
+  color:#111a3f;
+  text-align:left;
+  box-shadow:none;
+  transition:background .18s ease,color .18s ease,transform .18s ease;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-nav button:hover{
+  background:#f4f9fd;
+  border:0;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-nav button.active{
+  background:linear-gradient(90deg,#eef9ff 0%,#e7f5fc 100%);
+  color:#0876bc;
+  box-shadow:none;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-nav button>span:not(.cw-ref-nav-icon){
+  font-size:16px;
+  font-weight:650;
+  color:inherit;
+}
+#connectedShell.customer-reference-page .cw-ref-nav-icon{
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  color:#111a3f;
+}
+#connectedShell.customer-reference-page .cw-nav button.active .cw-ref-nav-icon{color:#0876bc}
+#connectedShell.customer-reference-page .cw-ref-nav-icon svg{
+  width:27px;
+  height:27px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+/* Main overview cards */
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-main{min-width:0}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-view{gap:20px}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-role-head{
+  min-height:180px;
+  align-items:center;
+  padding:26px 44px;
+  border:1px solid #dce8f0;
+  border-top:1px solid #dce8f0;
+  border-radius:17px;
+  background:#fff;
+  box-shadow:0 6px 22px rgba(25,65,94,.04);
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-kicker{
+  display:block;
+  margin-bottom:8px;
+  color:#355d91;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.24em;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-role-head h1{
+  margin:0 0 7px;
+  color:#07102f;
+  font-size:clamp(2rem,3.35vw,3.15rem);
+  line-height:1.04;
+  letter-spacing:-.045em;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-role-head p{
+  max-width:940px;
+  margin:0;
+  color:#45658f;
+  font-size:18px;
+  line-height:1.5;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-role-head>.cw-status{
+  flex:0 0 auto;
+  min-height:62px;
+  padding:0 22px;
+  border:1px solid #ccebe1;
+  border-radius:16px;
+  background:#eafaf5;
+  color:#07825f;
+  font-size:15px;
+  font-weight:850;
+  letter-spacing:0;
+  text-transform:none;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-role-head>.cw-status::before{
+  content:"✓";
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  margin-right:12px;
+  border-radius:50%;
+  background:#089c79;
+  color:#fff;
+  font-size:20px;
+  font-weight:900;
+}
+
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-next{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  overflow:visible;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-next>div{
+  position:relative;
+  display:grid;
+  grid-template-columns:78px minmax(0,1fr);
+  grid-template-rows:auto auto 1fr auto;
+  column-gap:22px;
+  align-content:center;
+  min-height:196px;
+  padding:28px 34px;
+  border:1px solid #dce8f0;
+  border-radius:17px;
+  background:#fff;
+  box-shadow:0 6px 22px rgba(25,65,94,.04);
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-next>div+div{
+  border-left:1px solid #dce8f0;
+  background:#fff;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-next>div::before{
+  content:"▤";
+  grid-column:1;
+  grid-row:1 / 5;
+  align-self:start;
+  width:70px;
+  height:70px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#dff7ef;
+  color:#078f6e;
+  font-size:34px;
+  font-weight:900;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-next>div+div::before{
+  content:"→";
+  background:#e6f4fc;
+  color:#0a74b7;
+  font-size:42px;
+  font-weight:500;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-next small,
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-next h3,
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-next p,
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-next .cw-next-action{grid-column:2}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-next small{
+  margin:0 0 7px;
+  color:#4d6d99;
+  font-size:15px;
+  font-weight:500;
+  letter-spacing:0;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-next h3{
+  margin:0 0 7px;
+  color:#07102f;
+  font-size:29px;
+  line-height:1.05;
+  letter-spacing:-.025em;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-next p{
+  margin:0;
+  color:#52709a;
+  font-size:15px;
+  line-height:1.45;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-next-action{
+  justify-self:start;
+  min-height:52px;
+  margin-top:15px;
+  padding:0 28px;
+  border:0;
+  border-radius:12px;
+  background:linear-gradient(100deg,#0d72b2,#0067a2);
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
+  box-shadow:0 6px 14px rgba(0,94,153,.16);
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-next-action:hover{background:#075f98}
+
+/* Journey */
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey{
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:0;
+  overflow:visible;
+  padding:24px 34px 20px;
+  border:1px solid #dce8f0;
+  border-radius:17px;
+  background:#fff;
+  box-shadow:0 6px 22px rgba(25,65,94,.04);
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey>div{
+  gap:8px;
+  color:#49678f;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey>div:not(:last-child)::after{
+  top:23px;
+  left:60%;
+  right:-40%;
+  height:3px;
+  background:#d9e4ec;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey>div.done:not(:last-child)::after{background:#17a98d}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey span{
+  width:48px;
+  height:48px;
+  border:1px solid #cbdce8;
+  background:#f3f8fc;
+  color:#47658d;
+  font-size:17px;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey .done span{
+  border-color:#39bda5;
+  background:#0da889;
+  color:#fff;
+  box-shadow:0 0 0 5px #e6f8f3;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey .active span{
+  border-color:#073f6c;
+  background:#073f6c;
+  color:#fff;
+  box-shadow:none;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey small{
+  color:inherit;
+  font-size:13px;
+  font-weight:650;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey .done small{color:#078f72}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey .active small{color:#07142f;font-weight:850}
+
+/* Overview metrics */
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics article{
+  display:grid;
+  grid-template-columns:62px minmax(0,1fr);
+  grid-template-rows:auto auto auto;
+  column-gap:16px;
+  align-items:center;
+  min-height:126px;
+  padding:20px;
+  border:1px solid #dce8f0;
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 6px 22px rgba(25,65,94,.04);
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics article::before{
+  content:"▤";
+  grid-column:1;
+  grid-row:1 / 4;
+  width:56px;
+  height:56px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#e6f5fd;
+  color:#0876bd;
+  font-size:26px;
+  font-weight:900;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics article:nth-child(2)::before{content:"●"}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics article:nth-child(3)::before{content:"₹";font-size:23px}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics article:nth-child(4)::before{content:"✓";font-size:25px}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics span,
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics strong,
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics small{grid-column:2}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics span{
+  color:#4e6f99;
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:0;
+  text-transform:none;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics strong{
+  margin:4px 0 2px;
+  color:#07142f;
+  font-size:20px;
+  line-height:1.1;
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics small{
+  color:#54719a;
+  font-size:11px;
+}
+
+/* Other customer tabs keep the same visual system without changing behavior. */
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-panel,
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-module-slot>.connected-card,
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-trust-explainer article,
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-service-card{
+  border-color:#dce8f0;
+  border-radius:16px;
+  box-shadow:0 5px 18px rgba(25,65,94,.035);
+}
+#connectedShell.customer-reference-page .cw-dashboard.customer .cw-primary{
+  background:linear-gradient(100deg,#0a9b87,#079c86)!important;
+  border-color:#079c86!important;
+  border-radius:11px;
+}
+
+/* Tablet */
+@media(max-width:1100px){
+  #connectedShell.customer-reference-page .connected-main{padding-left:20px;padding-right:20px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-shell{grid-template-columns:240px minmax(0,1fr);gap:16px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-nav{min-height:620px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-role-head{padding:24px 30px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-role-head p{font-size:16px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-next>div{grid-template-columns:62px minmax(0,1fr);padding:24px;column-gap:16px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-next>div::before{width:58px;height:58px;font-size:28px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-next h3{font-size:23px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* Mobile keeps every action reachable and avoids horizontal overflow. */
+@media(max-width:900px){
+  #connectedShell.customer-reference-page .connected-top{min-height:64px;padding:0 16px}
+  #connectedShell.customer-reference-page .connected-top .brand{font-size:23px}
+  #connectedShell.customer-reference-page .connected-top-subtitle{display:none}
+  #connectedShell.customer-reference-page .connected-top>.actions{gap:9px}
+  #connectedShell.customer-reference-page #connectedTopStatus{padding-right:10px;border-right:0}
+  #connectedShell.customer-reference-page #connectedTopStatus::before{width:11px;height:11px}
+  #connectedShell.customer-reference-page #connectedTopStatus::after{font-size:12px}
+  #connectedShell.customer-reference-page .connected-top .connected-header-actions{gap:7px}
+  #connectedShell.customer-reference-page .connected-top .connected-header-actions .btn{min-height:40px;padding:0 11px;font-size:12px}
+  #connectedShell.customer-reference-page .connected-top .connected-header-actions #connectedSwitch::before,
+  #connectedShell.customer-reference-page .connected-top .connected-header-actions #connectedLogout::before{display:none}
+  #connectedShell.customer-reference-page .connected-main{padding:12px 14px calc(28px + env(safe-area-inset-bottom))}
+  #connectedShell.customer-reference-page .connected-session-bar{min-height:64px;margin-bottom:14px;padding:9px 12px;border-radius:14px}
+  #connectedShell.customer-reference-page .connected-session-user{grid-template-columns:42px minmax(0,1fr);column-gap:10px}
+  #connectedShell.customer-reference-page .connected-session-user::before{width:38px;height:38px;font-size:22px}
+  #connectedShell.customer-reference-page .connected-session-user>.connected-live{font-size:13px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-shell{grid-template-columns:1fr;gap:14px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-nav{
+    position:sticky;
+    top:64px;
+    z-index:20;
+    display:flex;
+    min-height:0;
+    padding:8px;
+    overflow-x:auto;
+    border-radius:13px;
+    background:rgba(255,255,255,.97);
+    backdrop-filter:blur(12px);
+    scrollbar-width:none;
+  }
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-nav::-webkit-scrollbar{display:none}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-nav button{
+    flex:0 0 auto;
+    grid-template-columns:30px auto;
+    gap:7px;
+    width:auto;
+    min-width:132px;
+    min-height:50px;
+    padding:7px 10px;
+  }
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-ref-nav-icon{width:28px;height:28px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-ref-nav-icon svg{width:21px;height:21px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-nav button>span:not(.cw-ref-nav-icon){font-size:12px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-role-head{min-height:0;padding:22px;display:grid}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-role-head h1{font-size:clamp(1.8rem,7vw,2.45rem)}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-role-head p{font-size:14px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-role-head>.cw-status{justify-self:start;min-height:48px;margin-top:10px;padding:0 16px;font-size:13px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-role-head>.cw-status::before{width:27px;height:27px;font-size:16px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-next{grid-template-columns:1fr;gap:12px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-next>div,
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-next>div+div{min-height:0;padding:20px;border:1px solid #dce8f0}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey{overflow-x:auto;grid-template-columns:repeat(7,minmax(92px,1fr));padding:20px 18px;scroll-snap-type:x proximity}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey>div{scroll-snap-align:center}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+}
+
+@media(max-width:560px){
+  #connectedShell.customer-reference-page .connected-top{align-items:center}
+  #connectedShell.customer-reference-page .connected-top>.actions{gap:5px}
+  #connectedShell.customer-reference-page #connectedTopStatus{display:none}
+  #connectedShell.customer-reference-page .connected-top .connected-header-actions .btn{padding:0 9px;font-size:11px}
+  #connectedShell.customer-reference-page .connected-session-user .connected-badge{font-size:10px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-view{gap:12px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-role-head{padding:18px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-kicker{font-size:10px;letter-spacing:.18em}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-role-head h1{font-size:1.75rem}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-next>div{grid-template-columns:50px minmax(0,1fr);column-gap:13px;padding:17px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-next>div::before{width:48px;height:48px;font-size:23px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-next h3{font-size:19px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-next small{font-size:12px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-next p{font-size:12px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-next-action{min-height:46px;padding:0 18px;font-size:13px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey{display:grid;grid-template-columns:1fr;overflow:visible;padding:15px 16px 15px 20px;gap:0}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey>div{display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center;text-align:left;min-height:48px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey>div:not(:last-child)::after{left:20px;right:auto;top:36px;bottom:-12px;width:3px;height:auto}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-journey span{width:40px;height:40px}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics{grid-template-columns:1fr}
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-metrics article{min-height:104px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  #connectedShell.customer-reference-page .cw-dashboard.customer .cw-nav button{transition:none}
+}
