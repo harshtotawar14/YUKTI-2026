@@ -22,7 +22,8 @@
     const style=document.createElement('style');
     style.id='sanpaidCustomerStableMobileStyles';
     style.textContent=`
-      #connectedShell .cm-mobile-app{display:none}
+      #connectedShell .cm-mobile-stage,#connectedShell .cm-mobile-app{display:none}
+      #connectedShell.customer-mobile-bootstrap .cm-mobile-stage{display:block;width:100%;max-width:100%;padding:0 14px 18px}
       #connectedShell.customer-mobile-bootstrap.customer-mobile-home-active .cm-mobile-app{display:grid;gap:14px}
       #connectedShell.customer-mobile-bootstrap.customer-mobile-home-active #connectedContent{display:none!important}
       #connectedShell.customer-mobile-bootstrap:not(.customer-mobile-home-active) .cm-mobile-app{display:none!important}
@@ -63,8 +64,17 @@
     schedule();
   }
 
-  function ensureHeader(main){
-    let header=main.querySelector(':scope > .cm-mobile-header');
+  function ensureStage(shell,content){
+    let stage=shell.querySelector(':scope > .cm-mobile-stage');
+    if(stage)return stage;
+    stage=document.createElement('div');
+    stage.className='cm-mobile-stage';
+    shell.insertBefore(stage,content);
+    return stage;
+  }
+
+  function ensureHeader(stage){
+    let header=stage.querySelector(':scope > .cm-mobile-header');
     if(header)return header;
     header=document.createElement('header');
     header.className='cm-mobile-header';
@@ -78,12 +88,12 @@
         <span class="cm-bell" aria-label="Updates">${ICONS.bell}</span>
         <span class="cm-avatar" aria-label="Customer profile">C</span>
       </div>`;
-    main.prepend(header);
+    stage.prepend(header);
     return header;
   }
 
-  function ensureMobileApp(main,header){
-    let app=main.querySelector(':scope > .cm-mobile-app');
+  function ensureMobileApp(stage,header){
+    let app=stage.querySelector(':scope > .cm-mobile-app');
     if(app)return app;
     app=document.createElement('section');
     app.className='cm-mobile-app';
@@ -205,11 +215,11 @@
     }
 
     const dashboard=content.querySelector('.cw-dashboard.customer');
-    const main=shell.querySelector('.connected-main');
-    if(!dashboard||!main)return;
+    if(!dashboard)return;
 
-    const header=ensureHeader(main);
-    const app=ensureMobileApp(main,header);
+    const stage=ensureStage(shell,content);
+    const header=ensureHeader(stage);
+    const app=ensureMobileApp(stage,header);
     const bottom=ensureBottomNav(shell);
     syncHome(app,dashboard);
     wireActions(app);
