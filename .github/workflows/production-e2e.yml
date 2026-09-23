@@ -10,7 +10,7 @@ jobs:
   production-e2e:
     runs-on: ubuntu-latest
     env:
-      SANPAID_PRODUCTION_URL: ${{ vars.SANPAID_PRODUCTION_URL || 'https://sahkriya.vercel.app' }}
+      SANPAID_PRODUCTION_URL: ${{ vars.SANPAID_PRODUCTION_URL || 'https://yukti-2026-brown.vercel.app' }}
       SANPAID_E2E_PASSWORD: ${{ secrets.SANPAID_E2E_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
