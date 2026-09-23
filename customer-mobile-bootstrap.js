@@ -17,10 +17,16 @@
     const style = document.createElement('style');
     style.id = 'sanpaidCustomerMobilePaintGuard';
     style.textContent = `
+      html.customer-mobile-document,
+      html.customer-mobile-document body,
+      html.customer-mobile-document #connectedShell,
       #connectedShell.customer-mobile-bootstrap{
         background:#f6fafc!important;
         color:#0a1d47!important;
+        color-scheme:light!important;
       }
+      html.customer-mobile-document{background-color:#f6fafc!important}
+      html.customer-mobile-document body{min-height:100dvh!important}
       #connectedShell.customer-mobile-bootstrap:not(.customer-mobile-ready) .connected-top,
       #connectedShell.customer-mobile-bootstrap:not(.customer-mobile-ready) .connected-session-bar{
         display:none!important;
@@ -35,10 +41,7 @@
   function forceMobileMediaRules() {
     const shouldForce = !narrowViewport() && mobile();
     const existing = document.getElementById('sanpaidCustomerForcedMobileCss');
-    if (!shouldForce) {
-      existing?.remove();
-      return;
-    }
+    if (!shouldForce) { existing?.remove(); return; }
     if (existing) return;
     const sheet = Array.from(document.styleSheets).find(item => String(item.href || '').includes('customer-mobile-reference.css'));
     if (!sheet) return;
@@ -66,20 +69,36 @@
     shell.dataset.customerMobileRetry = String(retry);
   }
 
-  function installReadyFailSafe(shell) {
+  function ensureOverview(content, shell) {
+    const dashboard = content.querySelector('.cw-dashboard.customer');
+    if (!dashboard) return false;
+    const overview = dashboard.querySelector('[data-cw-view="overview"]');
+    const overviewButton = dashboard.querySelector('[data-cw-view-btn="overview"]');
+    const visible = overview && !overview.hidden;
+    if (!visible && overviewButton) overviewButton.click();
+    shell.dataset.customerMobileEntered = 'true';
+    return true;
+  }
+
+  function installReadyFailSafe(shell, content) {
     clearTimeout(Number(shell.dataset.customerMobileFailSafe || 0));
     const timer = setTimeout(() => {
       if (shell.classList.contains('hidden') || shell.classList.contains('customer-mobile-ready')) return;
-      // Never leave a phone on a blank/black workspace. If the app-style
-      // renderer is delayed, reveal the responsive connected workspace.
-      shell.classList.remove('customer-mobile-home-active');
-      const content = document.getElementById('connectedContent');
-      if (content) {
+      // Retry the actual mobile home first. Never expose a stale deep desktop
+      // customer view (payment/verification) as the phone fallback.
+      ensureOverview(content, shell);
+      window.dispatchEvent(new CustomEvent('sanpaid:connected-sync', { detail: { source: 'customer-mobile-failsafe-retry' } }));
+
+      setTimeout(() => {
+        if (shell.classList.contains('hidden') || shell.classList.contains('customer-mobile-ready')) return;
+        shell.classList.remove('customer-mobile-home-active');
+        const dashboard = content.querySelector('.cw-dashboard.customer');
+        const overview = dashboard?.querySelector('[data-cw-view="overview"]');
+        dashboard?.querySelectorAll('[data-cw-view]').forEach(view => { view.hidden = view !== overview; });
         content.style.removeProperty('visibility');
         content.style.removeProperty('pointer-events');
         content.style.removeProperty('display');
-      }
-      window.dispatchEvent(new CustomEvent('sanpaid:connected-sync', { detail: { source: 'customer-mobile-failsafe' } }));
+      }, 500);
     }, 900);
     shell.dataset.customerMobileFailSafe = String(timer);
   }
@@ -95,6 +114,7 @@
     installMobilePaintGuard();
     shell.classList.toggle('customer-mobile-bootstrap', shouldUseMobile);
     shell.dataset.customerMobileMode = shouldUseMobile ? 'true' : 'false';
+    document.documentElement.classList.toggle('customer-mobile-document', shouldUseMobile);
 
     if (!shouldUseMobile) {
       shell.classList.remove('customer-mobile-home-active', 'customer-mobile-ready');
@@ -110,16 +130,12 @@
     shell.classList.add('customer-reference-page');
     forceMobileMediaRules();
 
-    if (shell.dataset.customerMobileEntered !== 'true') {
-      const overviewButton = content.querySelector('.cw-dashboard.customer [data-cw-view-btn="overview"]');
-      if (overviewButton) {
-        shell.dataset.customerMobileEntered = 'true';
-        overviewButton.click();
-      }
-    }
+    // Every fresh entry into Customer on a phone must start at Home. A stale
+    // payment/verification view from desktop/session state must never flash.
+    if (shell.dataset.customerMobileEntered !== 'true') ensureOverview(content, shell);
 
     requestMobileUi(shell);
-    if (!shell.classList.contains('customer-mobile-ready')) installReadyFailSafe(shell);
+    if (!shell.classList.contains('customer-mobile-ready')) installReadyFailSafe(shell, content);
     else {
       clearTimeout(Number(shell.dataset.customerMobileFailSafe || 0));
       delete shell.dataset.customerMobileFailSafe;
@@ -130,10 +146,7 @@
   const schedule = () => {
     if (scheduled) return;
     scheduled = true;
-    requestAnimationFrame(() => {
-      scheduled = false;
-      apply();
-    });
+    requestAnimationFrame(() => { scheduled = false; apply(); });
   };
 
   new MutationObserver(schedule).observe(document.documentElement, {
