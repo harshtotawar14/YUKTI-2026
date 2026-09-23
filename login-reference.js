@@ -23,7 +23,7 @@
     };
     return {
       id: codes[0] || fallbackIds[role] || 'customer',
-      password: codes[1] || 'SanPaid@26089'
+      password: codes[1] || ''
     };
   }
 
@@ -98,11 +98,12 @@
     const credentials = referenceCredentials(root);
     const demo = document.createElement('div');
     demo.className = 'spu-login-demo-line';
-    demo.setAttribute('role', 'button');
-    demo.setAttribute('tabindex', '0');
-    demo.setAttribute('aria-label', 'Use shared demo credentials');
-    demo.innerHTML = `<span><b>Demo:</b> <code>${credentials.id}</code> / <code>${credentials.password}</code></span>`;
+    demo.setAttribute('role', credentials.password ? 'button' : 'status');
+    if (credentials.password) demo.setAttribute('tabindex', '0');
+    demo.setAttribute('aria-label', credentials.password ? 'Use shared demo credentials' : 'Loading shared demo credentials');
+    demo.innerHTML = `<span><b>Demo:</b> <code>${credentials.id}</code> / <code>${credentials.password || 'Loading…'}</code></span>`;
     const fill = () => {
+      if (!credentials.password) return;
       const idInput = root.querySelector('#spuEmail');
       const passwordInput = root.querySelector('#spuPassword');
       if (idInput) { idInput.value = credentials.id; idInput.dataset.referenceUserEdited = 'true'; }
