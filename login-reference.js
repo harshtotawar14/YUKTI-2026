@@ -96,12 +96,12 @@
 
     root.querySelector('.spu-login-demo-line')?.remove();
     const credentials = referenceCredentials(root);
-    const demo = document.createElement('div');
-    demo.className = 'spu-login-demo-line';
-    demo.setAttribute('role', credentials.password ? 'button' : 'status');
-    if (credentials.password) demo.setAttribute('tabindex', '0');
-    demo.setAttribute('aria-label', credentials.password ? 'Use shared demo credentials' : 'Loading shared demo credentials');
-    demo.innerHTML = `<span><b>Demo:</b> <code>${credentials.id}</code> / <code>${credentials.password || 'Loading…'}</code></span>`;
+    const accessLine = document.createElement('div');
+    accessLine.className = 'spu-login-demo-line';
+    accessLine.setAttribute('role', credentials.password ? 'button' : 'status');
+    if (credentials.password) accessLine.setAttribute('tabindex', '0');
+    accessLine.setAttribute('aria-label', credentials.password ? 'Use review access credentials' : 'Loading review access credentials');
+    accessLine.innerHTML = `<span><b>Review Access:</b> <code>${credentials.id}</code> / <code>${credentials.password || 'Loading…'}</code></span>`;
     const fill = () => {
       if (!credentials.password) return;
       const idInput = root.querySelector('#spuEmail');
@@ -110,11 +110,11 @@
       if (passwordInput) passwordInput.value = credentials.password;
       idInput?.focus();
     };
-    demo.addEventListener('click', fill);
-    demo.addEventListener('keydown', event => {
+    accessLine.addEventListener('click', fill);
+    accessLine.addEventListener('keydown', event => {
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); fill(); }
     });
-    form.insertAdjacentElement('afterend', demo);
+    form.insertAdjacentElement('afterend', accessLine);
   }
 
   let queued = false;
