@@ -38,7 +38,7 @@ function assertFinalRoleSources(){
 function resolveCommit(){
   const fromEnvironment=process.env.VERCEL_GIT_COMMIT_SHA||process.env.GITHUB_SHA||'';
   if(fromEnvironment)return fromEnvironment.trim();
-  try{return execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8').trim();}
+  try{return execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();}
   catch{return 'LOCAL_BUILD';}
 }
 
