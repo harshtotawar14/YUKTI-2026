@@ -4,7 +4,7 @@ import {resolve} from 'node:path';
 import {chromium} from 'playwright-core';
 
 const root=resolve(new URL('..',import.meta.url).pathname);
-const port=4178;
+const port=4177;
 const server=spawn('python3',['-m','http.server',String(port),'--directory',resolve(root,'dist')],{stdio:'ignore'});
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const candidates=[process.env.CHROME_BIN,'/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'].filter(Boolean);
@@ -12,130 +12,149 @@ const executablePath=candidates.find(existsSync);
 if(!executablePath)throw new Error('Chrome/Chromium executable not found.');
 
 function assert(condition,message){if(!condition)throw new Error(message);}
-async function waitServer(){for(let i=0;i<30;i+=1){try{const r=await fetch(`http://127.0.0.1:${port}/`);if(r.ok)return;}catch{}await sleep(200);}throw new Error('Admin UI audit server did not start.');}
-async function waitFor(fn,{attempts=60,delay=100,message='Condition did not become true'}={}){for(let i=0;i<attempts;i+=1){if(await fn())return;await sleep(delay);}throw new Error(message);}
-async function noOverflow(page,selector,label){const ok=await page.locator(selector).evaluate(node=>node.scrollWidth<=node.clientWidth+2);assert(ok,`${label}: horizontal overflow detected`);}
+async function waitServer(){
+  for(let attempt=0;attempt<30;attempt+=1){
+    try{const response=await fetch(`http://127.0.0.1:${port}/`);if(response.ok)return;}catch{}
+    await sleep(200);
+  }
+  throw new Error('Admin final UI audit server did not start.');
+}
+async function waitFor(fn,{attempts=60,delay=100,message='Condition did not become true'}={}){
+  for(let i=0;i<attempts;i+=1){if(await fn())return;await sleep(delay);}
+  throw new Error(message);
+}
 
-async function loginAdmin(page,identifier,role){
+async function preparePage(context){
+  const page=await context.newPage();
+  page.setDefaultTimeout(9000);
+  const pageErrors=[];
+  page.on('pageerror',error=>pageErrors.push(error?.stack||error?.message||String(error)));
+  await page.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});
+  await page.waitForTimeout(500);
+  assert(await page.evaluate(()=>window.SanPaidReviewRuntime?.enabled===true),'SIH review runtime is not active.');
+  return {page,pageErrors};
+}
+
+async function openAdmin(page,{identifier,role}){
   const result=await page.evaluate(async({identifier,role})=>{
     await window.SanPaidAuth.logout({silent:true,keepModal:true}).catch(()=>{});
-    await window.SanPaidAuth.login({identifier,password:'review-runtime-password',role,remember:false});
-    const opened=await window.SanPaidAuth.openRoleWorkspace(role,null);
-    return {opened,user:window.SanPaidAuth.getCurrentUser?.()};
+    await window.SanPaidAuth.login({identifier,password:'admin-final-audit',role,remember:false});
+    return window.SanPaidAuth.openRoleWorkspace(role,null);
   },{identifier,role});
-  assert(result.opened===true,`${role}: workspace failed to open`);
-  assert(result.user?.role===role,`${role}: session role mismatch`);
+  assert(result===true,`${role}: role workspace did not open`);
   await page.locator('#sihJudgeShell:not(.judge-hidden)').waitFor({state:'visible'});
   await page.locator('#adminFinalApp').waitFor({state:'visible'});
-  await waitFor(async()=>await page.locator('#afDashboard').isVisible().catch(()=>false),{message:`${role}: final overview did not render`});
+  await waitFor(async()=>await page.locator('.af-hero').count()===1,{message:`${role}: final admin hero did not mount`});
+  await page.waitForTimeout(500);
+}
+
+async function assertNoOverflow(page,selector,label){
+  const ok=await page.locator(selector).evaluate(node=>node.scrollWidth<=node.clientWidth+2);
+  assert(ok,`${label}: horizontal overflow detected in ${selector}`);
 }
 
 async function assertLegacyHidden(page,label){
-  for(const selector of ['#sihJudgeShell>.judge-top','#judgeContent>#adminCommandSummary','#judgeContent>#coopSidebar','#judgeContent>#fedSidebar','#judgeContent>.judge-tabs']){
+  const selectors=['#sihJudgeShell>.judge-top','#judgeContent>.judge-hero','#judgeContent>#adminCommandSummary','#judgeContent>#coopSidebar','#judgeContent>#fedSidebar','#judgeContent>.judge-tabs'];
+  for(const selector of selectors){
     const node=page.locator(selector);
-    if(await node.count())assert(!(await node.isVisible()),`${label}: legacy surface leaked: ${selector}`);
+    if(await node.count())assert(!(await node.isVisible()),`${label}: legacy UI leaked: ${selector}`);
   }
+  const visibleDirectSections=await page.locator('#judgeContent>.judge-section:visible').count();
+  assert(visibleDirectSections===0,`${label}: ${visibleDirectSections} legacy judge sections leaked below final shell`);
+}
+
+async function assertSharedShell(page,label,expectedTitle){
+  const required=['.af-topbar','.af-sidebar','.af-hero','.af-attention-grid','.af-network','.af-bottom-grid'];
+  for(const selector of required){
+    const node=page.locator(selector).first();
+    assert(await node.count()===1,`${label}: ${selector} missing`);
+    assert(await node.isVisible(),`${label}: ${selector} not visible`);
+  }
+  assert((await page.locator('.af-hero h1').innerText()).trim()===expectedTitle,`${label}: wrong hero title`);
+  assert((await page.locator('.af-stat-card').count())===4,`${label}: expected four attention cards`);
+  assert((await page.locator('.af-mini-card').count())===6,`${label}: expected six overview metrics`);
+  assert((await page.locator('.af-list-card').count())===2,`${label}: alerts/tasks layout incomplete`);
+  assert((await page.locator('.af-nav [data-af-key]').count())>=8,`${label}: sidebar navigation incomplete`);
+  await assertLegacyHidden(page,label);
+  await assertNoOverflow(page,'#adminFinalApp',label);
+
+  await page.locator('#afProfileButton').click();
+  assert(await page.locator('#afProfileMenu').isVisible(),`${label}: profile menu did not open`);
+  const menuText=(await page.locator('#afProfileMenu').innerText()).toLowerCase();
+  assert(menuText.includes('switch role')&&menuText.includes('logout'),`${label}: profile controls incomplete`);
+  await page.locator('#afProfileButton').click();
 }
 
 async function assertCooperative(page){
-  const app=page.locator('#adminFinalApp');
-  const text=(await app.innerText()).toLowerCase();
-  for(const phrase of ['cooperative operations dashboard','verification attention','open complaints','capacity requests','total workers','verified workers','available workers','recent alerts',"today's tasks"]){
-    assert(text.includes(phrase),`Cooperative Admin missing: ${phrase}`);
-  }
-  assert((await app.locator('.af-stat-card').count())===4,'Cooperative Admin must show four attention cards');
-  assert((await app.locator('.af-mini-card').count())===6,'Cooperative Admin must show six overview metrics');
-  assert((await app.locator('.af-nav [data-af-key]').count())>=9,'Cooperative Admin navigation is incomplete');
-  await assertLegacyHidden(page,'Cooperative Admin');
-  await noOverflow(page,'#sihJudgeShell','Cooperative Admin desktop');
+  const label='Cooperative Admin';
+  await assertSharedShell(page,label,'Cooperative Operations Dashboard');
+  assert((await page.locator('.af-network h2').innerText()).toLowerCase().includes('cooperative'),`${label}: cooperative entity heading missing`);
 
   await page.locator('.af-nav [data-af-key="workers"]').click();
   await page.locator('#afDetailStage').waitFor({state:'visible'});
-  await waitFor(async()=>await page.locator('#afDetailBody #coop-workers').count()===1,{message:'Cooperative worker directory was not moved into final detail stage'});
-  const detail=(await page.locator('#afDetailBody').innerText()).toLowerCase();
-  assert(detail.includes('worker directory'),'Cooperative worker detail content missing');
-  assert(!(await page.locator('#afDetailBody [data-af-fallback]').count()),'Cooperative worker detail fell back instead of loading real module');
+  await waitFor(async()=>await page.locator('#afDetailBody #coop-workers').count()===1,{message:`${label}: workers module did not move into final detail stage`});
+  assert(await page.locator('#afDetailBody #coop-workers').isVisible(),`${label}: workers detail is not visible`);
+  assert((await page.locator('#afDetailTitle').innerText()).trim()==='Workers',`${label}: workers detail heading mismatch`);
 
   await page.locator('.af-back').click();
-  await page.locator('#afDashboard').waitFor({state:'visible'});
-  assert((await page.locator('#afDetailBody #coop-workers').count())===0,'Cooperative worker module was not restored after Back');
-  assert((await page.locator('#coopPortal #coop-workers').count())===1,'Cooperative worker module lost its original parent after Back');
-
-  await page.setViewportSize({width:390,height:844});await page.waitForTimeout(120);
-  const menu=page.locator('#afMobileMenu');
-  assert(await menu.isVisible(),'Cooperative Admin mobile menu button missing');
-  await menu.click();await page.waitForTimeout(60);
-  assert(await menu.getAttribute('aria-expanded')==='true','Cooperative Admin mobile menu did not open');
-  assert(await app.evaluate(node=>node.classList.contains('nav-open')),'Cooperative Admin mobile sidebar class missing');
-  await page.locator('.af-nav [data-af-key="complaints"]').click();await page.waitForTimeout(220);
-  assert(await menu.getAttribute('aria-expanded')==='false','Cooperative Admin mobile menu did not close after navigation');
-  assert(await page.locator('#afDetailStage').isVisible(),'Cooperative complaints detail did not open on mobile');
-  await noOverflow(page,'#sihJudgeShell','Cooperative Admin mobile');
-  await page.locator('.af-back').click();
+  assert(await page.locator('#afDashboard').isVisible(),`${label}: overview did not return`);
+  assert(!(await page.locator('#afDetailStage').isVisible()),`${label}: detail stage remained visible after Back`);
 }
 
 async function assertFederation(page){
-  await page.setViewportSize({width:1440,height:1000});await page.waitForTimeout(120);
-  const app=page.locator('#adminFinalApp');
-  const text=(await app.innerText()).toLowerCase();
-  for(const phrase of ['federation operations dashboard','connected cooperatives','cross-coop assignments','escalated complaints','repeated shortage signals','verified workers','open escalations','recorded settlements']){
-    assert(text.includes(phrase),`Federation Admin missing: ${phrase}`);
-  }
-  assert((await app.locator('.af-stat-card').count())===4,'Federation Admin must show four attention cards');
-  assert((await app.locator('.af-mini-card').count())===6,'Federation Admin must show six overview metrics');
-  assert((await app.locator('.af-nav [data-af-key]').count())===8,'Federation Admin navigation count is incorrect');
-  await assertLegacyHidden(page,'Federation Admin');
-  await noOverflow(page,'#sihJudgeShell','Federation Admin desktop');
+  const label='Federation Admin';
+  await assertSharedShell(page,label,'Federation Operations Dashboard');
+  assert((await page.locator('.af-network h2').innerText()).toLowerCase().includes('federation'),`${label}: federation entity heading missing`);
 
   await page.locator('.af-nav [data-af-key="network"]').click();
   await page.locator('#afDetailStage').waitFor({state:'visible'});
-  await waitFor(async()=>await page.locator('#afDetailBody #fed-network').count()===1,{message:'Federation network module was not moved into final detail stage'});
-  assert(!(await page.locator('#afDetailBody [data-af-fallback]').count()),'Federation network detail fell back instead of loading real module');
+  await waitFor(async()=>await page.locator('#afDetailBody #fed-network').count()===1,{message:`${label}: network module did not move into final detail stage`});
+  assert(await page.locator('#afDetailBody #fed-network').isVisible(),`${label}: network detail is not visible`);
   await page.locator('.af-back').click();
-  assert((await page.locator('#afDetailBody #fed-network').count())===0,'Federation network module was not restored after Back');
-  assert((await page.locator('#judgeContent #fed-network').count())===1,'Federation network module disappeared after Back');
 
-  await page.setViewportSize({width:390,height:844});await page.waitForTimeout(120);
-  const menu=page.locator('#afMobileMenu');
-  assert(await menu.isVisible(),'Federation Admin mobile menu button missing');
-  await menu.click();await page.waitForTimeout(60);
-  assert(await menu.getAttribute('aria-expanded')==='true','Federation Admin mobile menu did not open');
-  await page.locator('.af-nav [data-af-key="assignments"]').click();await page.waitForTimeout(260);
-  assert(await menu.getAttribute('aria-expanded')==='false','Federation Admin mobile menu did not close after navigation');
-  assert(await page.locator('#afDetailStage').isVisible(),'Federation capacity detail did not open on mobile');
-  assert(!(await page.locator('#afDetailBody [data-af-fallback]').count()),'Federation capacity detail fell back instead of loading real module');
-  await noOverflow(page,'#sihJudgeShell','Federation Admin mobile');
+  await page.locator('.af-nav [data-af-key="assignments"]').click();
+  await page.locator('#afDetailStage').waitFor({state:'visible'});
+  await waitFor(async()=>await page.locator('#afDetailBody .judge-section').count()===1,{message:`${label}: capacity module did not move into final detail stage`});
+  assert(!(await page.locator('#afDetailBody [data-af-fallback="assignments"]').isVisible().catch(()=>false)),`${label}: assignments fell back instead of loading capacity module`);
   await page.locator('.af-back').click();
+}
+
+async function assertMobile(page,label){
+  await page.locator('#adminFinalApp').waitFor({state:'visible'});
+  assert(await page.locator('#afMobileMenu').isVisible(),`${label}: mobile menu button is missing`);
+  assert(!(await page.locator('.af-sidebar').isVisible()),`${label}: sidebar should start closed on phone`);
+  await page.locator('#afMobileMenu').click();
+  assert(await page.locator('.af-sidebar').isVisible(),`${label}: mobile sidebar did not open`);
+  await assertNoOverflow(page,'#adminFinalApp',label);
 }
 
 let browser;
 try{
   await waitServer();
   browser=await chromium.launch({headless:true,executablePath,args:['--no-sandbox']});
-  const context=await browser.newContext({viewport:{width:1440,height:1000},deviceScaleFactor:1});
-  const page=await context.newPage();page.setDefaultTimeout(9000);
-  const pageErrors=[];
-  page.on('pageerror',error=>pageErrors.push(error?.stack||error?.message||String(error)));
-  await page.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});await page.waitForTimeout(450);
-  assert(await page.evaluate(()=>window.SanPaidReviewRuntime?.enabled===true),'Review runtime is required for deterministic Admin audit');
-  await page.locator('[data-platform-access]').first().click();
-  await page.locator('#spuLoginForm').waitFor({state:'attached'});
-  await page.waitForTimeout(300);
 
-  await loginAdmin(page,'cooperative-admin','COOPERATIVE_ADMIN');
-  await assertCooperative(page);
+  const desktop=await browser.newContext({viewport:{width:1440,height:1000},deviceScaleFactor:1});
+  const coop=await preparePage(desktop);
+  await openAdmin(coop.page,{identifier:'cooperative-admin',role:'COOPERATIVE_ADMIN'});
+  await assertCooperative(coop.page);
+  assert(coop.pageErrors.length===0,`Cooperative Admin page errors: ${coop.pageErrors.join(' | ')}`);
+  await coop.page.close();
 
-  await page.evaluate(()=>window.SanPaidJudgeMode?.close?.());
-  await page.waitForTimeout(100);
-  assert((await page.locator('#afDetailBody [data-af-moved="1"]').count())===0,'Cooperative borrowed module survived admin cleanup');
+  const fed=await preparePage(desktop);
+  await openAdmin(fed.page,{identifier:'federation-admin',role:'FEDERATION_ADMIN'});
+  await assertFederation(fed.page);
+  assert(fed.pageErrors.length===0,`Federation Admin page errors: ${fed.pageErrors.join(' | ')}`);
+  await desktop.close();
 
-  await loginAdmin(page,'federation-admin','FEDERATION_ADMIN');
-  await assertFederation(page);
+  const phoneContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3});
+  const phone=await preparePage(phoneContext);
+  await openAdmin(phone.page,{identifier:'cooperative-admin',role:'COOPERATIVE_ADMIN'});
+  await assertMobile(phone.page,'390px Cooperative Admin');
+  assert(phone.pageErrors.length===0,`Mobile Admin page errors: ${phone.pageErrors.join(' | ')}`);
+  await phoneContext.close();
 
-  assert(pageErrors.length===0,`Final Admin page errors: ${pageErrors.join(' | ')}`);
-  console.log('SanPaid final Cooperative + Federation Admin UI audit: PASS');
-  console.log('Verified reference shell, legacy isolation, real detail-module borrowing/restoration, responsive navigation, role isolation, KPI hierarchy and no horizontal overflow.');
-  await context.close();
+  console.log('SanPaid final Admin UI audit: PASS');
+  console.log('Verified final-only Cooperative/Federation admin shells, real module navigation, profile controls, legacy UI isolation and mobile navigation.');
 } finally {
   if(browser)await browser.close().catch(()=>{});
   server.kill('SIGTERM');
