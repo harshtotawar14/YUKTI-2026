@@ -12,12 +12,12 @@ const publicFiles=[
   'index.html',
   'app-icon.svg','manifest.webmanifest','robots.txt','sitemap.xml','social-preview.svg',
   'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','master-v2.css','landing-pro.css','dossier-redesign.css',
-  'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','login-reference.css','customer-worker-dashboard.css','customer-reference-dashboard.css','customer-mobile-reference.css','worker-mobile-final.css',
+  'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','login-reference.css','customer-worker-dashboard.css','customer-reference-dashboard.css','customer-mobile-reference.css','worker-mobile-final.css','worker-desktop-final.css',
   'federation-govtech.css','federation-portal.css','cooperative-portal.css','admin-final.css','role-ui-cleanup.css',
   'credibility-layer.css','workforce-intelligence.css',
   'app.js','mobile.js','connected-demo.js','connected-service-ui.js','connected-commerce-ui.js','connected-runtime-fix.js','review-runtime.js','review-runtime-bridge.js',
   'capacity-worker-ui.js','judge-demo.js','selector-mode.js','top1-polish.js','evaluator-final.js','auth-unified.js','login-reference.js',
-  'customer-worker-dashboard.js','customer-reference-dashboard.js','customer-mobile-reference.js','worker-mobile-final.js','admin-command-center.js','federation-portal.js','cooperative-portal.js','admin-final.js','role-ui-cleanup.js',
+  'customer-worker-dashboard.js','customer-reference-dashboard.js','customer-mobile-reference.js','worker-mobile-final.js','worker-desktop-final.js','admin-command-center.js','federation-portal.js','cooperative-portal.js','admin-final.js','role-ui-cleanup.js',
   'credibility-layer.js','workforce-intelligence.js','service-worker.js'
 ];
 
@@ -129,8 +129,8 @@ for(const retiredName of ['admin-command-center.css','handover-evidence.css','ha
 const builtIndexPath=resolve(output,'index.html');
 const builtIndex=readFileSync(builtIndexPath,'utf8')
   .replaceAll('https://sahkriya.vercel.app',primaryProductionUrl)
-  .replace('</head>',`<meta name="color-scheme" content="light">\n<meta name="supported-color-schemes" content="light">\n<link rel="stylesheet" href="login-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-mobile-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="worker-mobile-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="role-ui-cleanup.css?v=${assetVersion}">\n</head>`)
-  .replace('</body>',`<script src="review-runtime.js?v=${assetVersion}"></script>\n<script src="customer-worker-dashboard.js?v=${assetVersion}"></script>\n<script src="review-runtime-bridge.js?v=${assetVersion}"></script>\n<script src="login-reference.js?v=${assetVersion}"></script>\n<script src="customer-reference-dashboard.js?v=${assetVersion}"></script>\n<script src="customer-mobile-reference.js?v=${assetVersion}"></script>\n<script src="worker-mobile-final.js?v=${assetVersion}"></script>\n<script src="admin-final.js?v=${assetVersion}"></script>\n<script src="role-ui-cleanup.js?v=${assetVersion}"></script>\n</body>`);
+  .replace('</head>',`<meta name="color-scheme" content="light">\n<meta name="supported-color-schemes" content="light">\n<link rel="stylesheet" href="login-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-mobile-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="worker-mobile-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="worker-desktop-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="role-ui-cleanup.css?v=${assetVersion}">\n</head>`)
+  .replace('</body>',`<script src="review-runtime.js?v=${assetVersion}"></script>\n<script src="customer-worker-dashboard.js?v=${assetVersion}"></script>\n<script src="review-runtime-bridge.js?v=${assetVersion}"></script>\n<script src="login-reference.js?v=${assetVersion}"></script>\n<script src="customer-reference-dashboard.js?v=${assetVersion}"></script>\n<script src="customer-mobile-reference.js?v=${assetVersion}"></script>\n<script src="worker-mobile-final.js?v=${assetVersion}"></script>\n<script src="worker-desktop-final.js?v=${assetVersion}"></script>\n<script src="admin-final.js?v=${assetVersion}"></script>\n<script src="role-ui-cleanup.js?v=${assetVersion}"></script>\n</body>`);
 writeFileSync(builtIndexPath,builtIndex);
 
 const buildInfo={
@@ -141,6 +141,8 @@ const buildInfo={
   builtAt:new Date().toISOString(),
   source:'harshtotawar14/YUKTI-2026',
   branch:process.env.VERCEL_GIT_COMMIT_REF||process.env.GITHUB_REF_NAME||'local',
+  customerUi:'REFERENCE_FINAL',
+  workerUi:'REFERENCE_FINAL',
   roleMobileUi:'FINAL_ONLY',
   adminUi:'REFERENCE_FINAL',
   uiCleanup:'CONSOLIDATED_V1'
