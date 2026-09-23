@@ -24,6 +24,12 @@
 .af-profile-menu button:hover{background:#f2f7fc}
 .af-profile-menu button.danger{color:#c53045}
 
+@media(max-width:980px){
+  /* Off-canvas navigation must not remain focusable/clickable while visually closed. */
+  #adminFinalApp .af-sidebar{visibility:hidden;pointer-events:none}
+  #adminFinalApp.nav-open .af-sidebar{visibility:visible;pointer-events:auto}
+}
+
 @media(max-width:760px){
   .af-profile-copy small{display:none}
   .af-profile-menu{position:fixed;right:12px;top:70px;min-width:190px}
