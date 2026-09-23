@@ -8,7 +8,7 @@
   const phoneLikeTouch = () => {
     if (!coarsePointer()) return false;
     const dpr = Number(window.devicePixelRatio || 1);
-    return window.innerWidth <= 1100 || screenMin() <= 820 || (window.innerWidth <= 1400 && dpr >= 1.5 && touchPoints() > 1);
+    return window.innerWidth <= 1100 || screenMin() <= 820 || (window.innerWidth <= 1400 && dpr >= 1.5);
   };
   const mobile = () => narrowViewport() || phoneLikeTouch();
 
