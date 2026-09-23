@@ -22,6 +22,9 @@
     shell.dataset.customerMobileMode=active?'true':'false';
     if(active){
       shell.classList.add('customer-reference-page');
+      const ready=shell.classList.contains('customer-mobile-ready');
+      shell.classList.toggle('customer-mobile-bootstrap',ready);
+      if(ready)shell.classList.add('role-mobile-final');
     }else{
       shell.classList.remove('customer-mobile-bootstrap','customer-mobile-ready');
       if(!shell.classList.contains('worker-mobile-final'))shell.classList.remove('role-mobile-final');
