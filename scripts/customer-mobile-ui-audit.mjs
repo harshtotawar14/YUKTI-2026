@@ -42,7 +42,13 @@ async function openCustomer(context){
   await page.waitForTimeout(350);
   await page.evaluate(()=>window.SanPaidBootstrap?.loadCustomerWorker?.());
   await page.waitForTimeout(350);
+
   const opened=await page.evaluate(async user=>{
+    if(window.SanPaidReviewRuntime?.enabled){
+      await window.SanPaidAuth.logout({silent:true,keepModal:true}).catch(()=>{});
+      await window.SanPaidAuth.login({identifier:'customer',password:'customer-ui-audit',role:'CUSTOMER',remember:false});
+      return window.SanPaidAuth.openRoleWorkspace('CUSTOMER','CUSTOMER');
+    }
     window.SanPaidAuth.restoreSession=async()=>user;
     window.SanPaidAuth.getCurrentUser=()=>user;
     return window.ConnectedSanPaid.open('CUSTOMER');
