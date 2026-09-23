@@ -52,7 +52,6 @@
   }
   function value(label,source,r){return read(source,label)||demo(r,label);}
   function numberValue(v){const n=Number(String(v).replace(/[^0-9.-]/g,''));return Number.isFinite(n)?n:0;}
-
   function statCard(tone,icon,label,val,detail,key){return `<article class="af-stat-card ${tone}"><span class="af-stat-icon">${ICON[icon]}</span><span>${esc(label)}</span><strong>${esc(val)}</strong><small>${esc(detail)}</small><button type="button" class="af-stat-link" data-af-key="${esc(key)}">View details →</button></article>`;}
   function miniCard(icon,label,val,detail){return `<article class="af-mini-card"><span class="af-mini-icon">${ICON[icon]}</span><div><span>${esc(label)}</span><strong>${esc(val)}</strong><small>${esc(detail)}</small></div></article>`;}
   function navMarkup(cfg){return cfg.nav.map(item=>item[0]==='sep'?'<div class="af-nav-sep"></div>':`<button type="button" data-af-key="${esc(item[0])}" class="${item[0]==='overview'?'active':''}">${ICON[item[3]]}<b>${esc(item[1])}</b><small>${esc(item[2])}</small></button>`).join('');}
@@ -130,11 +129,15 @@
       const next=$('#afRefresh');if(next){next.disabled=false;next.innerHTML=`↻ &nbsp; ${esc(CONFIG[activeRole].refresh)}`;}
     },650);
   }
+  function closeMobileNavOnOutside(event){
+    const app=$('#adminFinalApp');if(!app?.classList.contains('nav-open'))return;
+    if(event.target.closest('#adminFinalApp .af-sidebar,#afMobileMenu'))return;
+    app.classList.remove('nav-open');$('#afMobileMenu')?.setAttribute('aria-expanded','false');
+  }
   function bindApp(){
     const app=$('#adminFinalApp');if(!app)return;
     app.addEventListener('click',event=>{const button=event.target.closest('[data-af-key]');if(button&&!button.closest('#afDashboard'))openKey(button.dataset.afKey);});
     $('#afMobileMenu',app)?.addEventListener('click',event=>{const open=app.classList.toggle('nav-open');event.currentTarget.setAttribute('aria-expanded',String(open));});
-    document.addEventListener('click',event=>{if(!app.classList.contains('nav-open'))return;if(event.target.closest('#adminFinalApp .af-sidebar,#afMobileMenu'))return;app.classList.remove('nav-open');$('#afMobileMenu')?.setAttribute('aria-expanded','false');},{capture:true});
     bindDashboard();
   }
   function mount(){
@@ -148,6 +151,7 @@
   function onMutations(mutations){if(mutations.every(m=>m.target?.closest?.('#adminFinalApp')))return;schedule();}
 
   new MutationObserver(onMutations).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','data-admin-role']});
+  document.addEventListener('click',closeMobileNavOnOutside,{capture:true});
   window.addEventListener('sanpaid:connected-sync',schedule);
   document.addEventListener('DOMContentLoaded',schedule,{once:true});
   setTimeout(schedule,0);setTimeout(schedule,900);
