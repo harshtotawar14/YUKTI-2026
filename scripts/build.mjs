@@ -15,7 +15,7 @@ const publicFiles=[
   'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','login-reference.css','customer-worker-dashboard.css','customer-reference-dashboard.css','customer-mobile-reference.css',
   'admin-command-center.css','federation-govtech.css','federation-portal.css','cooperative-portal.css','handover-evidence.css',
   'credibility-layer.css','workforce-intelligence.css',
-  'app.js','mobile.js','connected-demo.js','connected-service-ui.js','connected-commerce-ui.js','connected-runtime-fix.js','review-runtime.js',
+  'app.js','mobile.js','connected-demo.js','connected-service-ui.js','connected-commerce-ui.js','connected-runtime-fix.js','review-runtime.js','review-runtime-bridge.js',
   'capacity-worker-ui.js','judge-demo.js','selector-mode.js','top1-polish.js','evaluator-final.js','auth-unified.js','login-reference.js',
   'customer-worker-dashboard.js','customer-reference-dashboard.js','customer-mobile-bootstrap.js','customer-mobile-reference.js','admin-command-center.js','federation-portal.js','cooperative-portal.js',
   'cooperative-deploy-guard.js','handover-evidence.js','credibility-layer.js','workforce-intelligence.js','service-worker.js'
@@ -44,7 +44,7 @@ const builtIndexPath=resolve(output,'index.html');
 const builtIndex=readFileSync(builtIndexPath,'utf8')
   .replaceAll('https://sahkriya.vercel.app',primaryProductionUrl)
   .replace('</head>',`<meta name="color-scheme" content="light">\n<meta name="supported-color-schemes" content="light">\n<link rel="stylesheet" href="login-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-mobile-reference.css?v=${assetVersion}">\n</head>`)
-  .replace('</body>',`<script src="review-runtime.js?v=${assetVersion}"></script>\n<script src="login-reference.js?v=${assetVersion}"></script>\n<script src="customer-reference-dashboard.js?v=${assetVersion}"></script>\n<script src="customer-mobile-bootstrap.js?v=${assetVersion}"></script>\n<script src="customer-mobile-reference.js?v=${assetVersion}"></script>\n</body>`);
+  .replace('</body>',`<script src="review-runtime.js?v=${assetVersion}"></script>\n<script src="review-runtime-bridge.js?v=${assetVersion}"></script>\n<script src="login-reference.js?v=${assetVersion}"></script>\n<script src="customer-reference-dashboard.js?v=${assetVersion}"></script>\n<script src="customer-mobile-bootstrap.js?v=${assetVersion}"></script>\n<script src="customer-mobile-reference.js?v=${assetVersion}"></script>\n</body>`);
 writeFileSync(builtIndexPath,builtIndex);
 
 const buildInfo={
