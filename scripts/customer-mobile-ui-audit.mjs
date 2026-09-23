@@ -20,7 +20,7 @@ async function waitServer(){
   throw new Error('Customer mobile audit server did not start.');
 }
 
-async function openCustomer(context){
+async function openCustomer(context,{seedView='payment'}={}){
   const page=await context.newPage();
   page.setDefaultTimeout(7000);
   const user={id:101,role:'CUSTOMER',fullName:'Review Customer',name:'Review Customer'};
@@ -39,6 +39,7 @@ async function openCustomer(context){
   });
 
   await page.goto(`http://127.0.0.1:${port}/`,{waitUntil:'domcontentloaded'});
+  await page.evaluate(view=>sessionStorage.setItem('sanpaid_dashboard_view_customer',view),seedView);
   await page.waitForTimeout(450);
   await page.evaluate(()=>window.SanPaidBootstrap?.loadCustomerWorker?.());
   await page.waitForTimeout(450);
@@ -63,7 +64,7 @@ async function diagnostic(page,selector){
     const chain=[];
     for(let current=element;current&&chain.length<8;current=current.parentElement){
       const style=getComputedStyle(current);
-      chain.push({tag:current.tagName,id:current.id,className:String(current.className||''),hidden:current.hidden,display:style.display,visibility:style.visibility,opacity:style.opacity});
+      chain.push({tag:current.tagName,id:current.id,className:String(current.className||''),hidden:current.hidden,display:style.display,visibility:style.visibility,opacity:style.opacity,background:style.backgroundColor,color:style.color});
     }
     return {innerWidth:window.innerWidth,devicePixelRatio:window.devicePixelRatio,screen:{width:screen.width,height:screen.height},media768:matchMedia('(max-width: 768px)').matches,chain};
   });
@@ -74,6 +75,20 @@ async function assertHomeIsolation(page,label){
   assert(await shell.evaluate(node=>node.classList.contains('customer-mobile-home-active')),`${label}: mobile Home state is not active`);
   const base=page.locator('#connectedContent');
   assert(!(await base.isVisible()),`${label}: legacy/full customer content is visible behind mobile Home`);
+  const saved=await page.evaluate(()=>sessionStorage.getItem('sanpaid_dashboard_view_customer'));
+  assert(saved==='overview',`${label}: stale customer sub-view was not reset to overview (got ${saved})`);
+}
+
+async function assertLightSurface(page,label){
+  const state=await page.evaluate(()=>({
+    htmlScheme:getComputedStyle(document.documentElement).colorScheme,
+    shellBg:getComputedStyle(document.getElementById('connectedShell')).backgroundColor,
+    bodyBg:getComputedStyle(document.body).backgroundColor,
+    bootCount:document.querySelectorAll('.cm-mobile-boot-stage').length
+  }));
+  assert(!/dark/i.test(state.htmlScheme),`${label}: browser is still allowed to use dark color scheme (${state.htmlScheme})`);
+  assert(state.shellBg==='rgb(246, 250, 252)',`${label}: customer shell is not light (${state.shellBg})`);
+  assert(state.bootCount===0,`${label}: startup safety shell was not removed after mobile app became ready`);
 }
 
 async function assertMobileContract(page,label,{expectForced=false}={}){
@@ -96,12 +111,11 @@ async function assertMobileContract(page,label,{expectForced=false}={}){
   const noOverflow=await shell.evaluate(node=>node.scrollWidth<=node.clientWidth+2);
   assert(noOverflow,`${label}: customer shell has horizontal overflow`);
   await assertHomeIsolation(page,label);
+  await assertLightSurface(page,label);
   if(expectForced){
     assert(await page.locator('#sanpaidCustomerForcedMobileCss').count()===1,`${label}: forced touch-device mobile CSS was not installed`);
   }
 
-  // Opening a real sub-view may reveal the connected content, but the mobile
-  // shell/header and bottom navigation must remain in control.
   await page.locator('.cm-bottom-nav [data-cm-view="book"]').click();
   await page.waitForTimeout(100);
   assert(await page.locator('#connectedContent').isVisible(),`${label}: Book Service did not reveal its connected view`);
@@ -119,20 +133,24 @@ try{
   browser=await chromium.launch({headless:true,executablePath,args:['--no-sandbox']});
 
   const phoneContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3});
-  const phonePage=await openCustomer(phoneContext);
-  await assertMobileContract(phonePage,'390px phone');
+  const phonePage=await openCustomer(phoneContext,{seedView:'payment'});
+  await assertMobileContract(phonePage,'390px phone with stale Payment state');
   await phoneContext.close();
 
-  // Simulates Android/browser "Desktop site" style viewport reporting.
-  const wideTouchContext=await browser.newContext({viewport:{width:1280,height:900},isMobile:true,hasTouch:true,deviceScaleFactor:3});
-  const wideTouchPage=await openCustomer(wideTouchContext);
+  const darkPhoneContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3,colorScheme:'dark'});
+  const darkPhonePage=await openCustomer(darkPhoneContext,{seedView:'verify'});
+  await assertMobileContract(darkPhonePage,'390px dark-browser phone with stale Verify state');
+  await darkPhoneContext.close();
+
+  const wideTouchContext=await browser.newContext({viewport:{width:1280,height:900},isMobile:true,hasTouch:true,deviceScaleFactor:3,colorScheme:'dark'});
+  const wideTouchPage=await openCustomer(wideTouchContext,{seedView:'payment'});
   const innerWidth=await wideTouchPage.evaluate(()=>window.innerWidth);
   assert(innerWidth>1100&&innerWidth<=1400,`Wide-touch fixture has unexpected innerWidth ${innerWidth}`);
-  await assertMobileContract(wideTouchPage,'1280px touch handset',{expectForced:true});
+  await assertMobileContract(wideTouchPage,'1280px dark touch handset',{expectForced:true});
   await wideTouchContext.close();
 
   console.log('SanPaid Customer mobile UI audit: PASS');
-  console.log('Verified isolated mobile Home at 390px and forced touch-handset mode at 1280px.');
+  console.log('Verified stale Payment/Verify recovery, dark-browser light surface, 390px phone and 1280px touch mode.');
 } finally {
   if(browser)await browser.close().catch(()=>{});
   server.kill('SIGTERM');
