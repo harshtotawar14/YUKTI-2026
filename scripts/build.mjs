@@ -13,12 +13,12 @@ const publicFiles=[
   'app-icon.svg','manifest.webmanifest','robots.txt','sitemap.xml','social-preview.svg',
   'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','master-v2.css','landing-pro.css','dossier-redesign.css',
   'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','login-reference.css','customer-worker-dashboard.css','customer-reference-dashboard.css','customer-mobile-reference.css','worker-mobile-final.css',
-  'admin-command-center.css','federation-govtech.css','federation-portal.css','cooperative-portal.css','admin-final.css','admin-final-guard.css','handover-evidence.css',
+  'federation-govtech.css','federation-portal.css','cooperative-portal.css','admin-final.css','role-ui-cleanup.css',
   'credibility-layer.css','workforce-intelligence.css',
   'app.js','mobile.js','connected-demo.js','connected-service-ui.js','connected-commerce-ui.js','connected-runtime-fix.js','review-runtime.js','review-runtime-bridge.js',
   'capacity-worker-ui.js','judge-demo.js','selector-mode.js','top1-polish.js','evaluator-final.js','auth-unified.js','login-reference.js',
-  'customer-worker-dashboard.js','customer-reference-dashboard.js','customer-mobile-bootstrap.js','customer-mobile-reference.js','worker-mobile-final.js','admin-command-center.js','federation-portal.js','cooperative-portal.js','admin-final.js',
-  'cooperative-deploy-guard.js','handover-evidence.js','credibility-layer.js','workforce-intelligence.js','service-worker.js'
+  'customer-worker-dashboard.js','customer-reference-dashboard.js','customer-mobile-reference.js','worker-mobile-final.js','admin-command-center.js','federation-portal.js','cooperative-portal.js','admin-final.js','role-ui-cleanup.js',
+  'credibility-layer.js','workforce-intelligence.js','service-worker.js'
 ];
 
 function resolveCommit(){
@@ -40,10 +40,9 @@ for(const file of publicFiles){
   cpSync(source,resolve(output,file));
 }
 
-// The shared dashboard stylesheet historically contained several separate phone
-// fallbacks. They are intentionally removed from the deploy artifact now that
-// Customer and Worker each have one dedicated final mobile surface. Desktop and
-// tablet/1180px rules remain unchanged.
+// The shared Customer/Worker dashboard still owns desktop module styling, but its
+// historical phone fallbacks are removed from the deploy artifact. Dedicated
+// Customer and Worker mobile surfaces are the only phone UI shipped.
 function findCssBlockEnd(css,openIndex){
   let depth=0,quote='',comment=false;
   for(let i=openIndex;i<css.length;i+=1){
@@ -80,8 +79,8 @@ writeFileSync(roleCssPath,roleCssFinal);
 if(roleCssFinal===roleCssSource)throw new Error('Legacy role mobile media blocks were not found in Customer/Worker dashboard CSS.');
 
 // The Customer/Worker dashboard is an existing private IIFE. Expose only its
-// refresh entry points in the deploy artifact so the SIH review runtime can
-// activate the same production UI renderer without duplicating dashboard code.
+// refresh entry points so review mode activates the same renderer without a
+// duplicate dashboard implementation.
 const dashboardPath=resolve(output,'customer-worker-dashboard.js');
 const dashboardSource=readFileSync(dashboardPath,'utf8');
 const dashboardEnd=dashboardSource.lastIndexOf('})();');
@@ -89,11 +88,49 @@ if(dashboardEnd<0)throw new Error('Customer/Worker dashboard IIFE end marker was
 const dashboardHook=`\n  window.SanPaidCustomerWorkerDashboard=Object.freeze({refresh,requestRefresh});\n`;
 writeFileSync(dashboardPath,dashboardSource.slice(0,dashboardEnd)+dashboardHook+dashboardSource.slice(dashboardEnd));
 
+// Remove the retired Customer blocking boot guard from the deployed artifact.
+// The final cleanup runtime handles mobile mode without ever replacing the
+// workspace with a "Preparing..." placeholder.
+const customerReferencePath=resolve(output,'customer-reference-dashboard.js');
+let customerReferenceSource=readFileSync(customerReferencePath,'utf8');
+const bootGuardStart=customerReferenceSource.indexOf('  function installCustomerBootGuard(){');
+const bootGuardEnd=bootGuardStart>=0?customerReferenceSource.indexOf('  function parseCurrentLine(line){',bootGuardStart):-1;
+if(bootGuardStart>=0&&bootGuardEnd>bootGuardStart){
+  customerReferenceSource=customerReferenceSource.slice(0,bootGuardStart)+customerReferenceSource.slice(bootGuardEnd);
+}
+customerReferenceSource=customerReferenceSource.replace('\n  installCustomerBootGuard();\n','\n');
+writeFileSync(customerReferencePath,customerReferenceSource);
+if(customerReferenceSource.includes('Preparing your SanPaid workspace'))throw new Error('Retired Customer preparation placeholder remains in deploy artifact.');
+
+// Fix the final Worker mobile HTML escaping entity in the deployed runtime.
+const workerMobilePath=resolve(output,'worker-mobile-final.js');
+let workerMobileSource=readFileSync(workerMobilePath,'utf8');
+workerMobileSource=workerMobileSource.replaceAll(`'"':'&quot'`,`'"':'&quot;'`);
+writeFileSync(workerMobilePath,workerMobileSource);
+
+// Administration still uses the existing data/module engines, but old visual
+// command-center CSS and retired evidence/availability observers are not shipped.
+// Strip their lazy-loader calls from the built bootstrap while retaining the
+// Cooperative/Federation portal logic required by the final detail stage.
+const bootstrapPath=resolve(output,'top1-polish.js');
+let bootstrapSource=readFileSync(bootstrapPath,'utf8');
+const retiredAdminLoads=[
+  "    stylesheet('sanpaidAdminCommandStyles','admin-command-center.css');\n",
+  "    stylesheet('sanpaidHandoverEvidenceStyles','handover-evidence.css');\n",
+  "    script('sanpaidCooperativeAvailabilityRuntime','cooperative-deploy-guard.js');\n",
+  "    script('sanpaidHandoverEvidenceRuntime','handover-evidence.js');\n"
+];
+for(const retired of retiredAdminLoads)bootstrapSource=bootstrapSource.replaceAll(retired,'');
+writeFileSync(bootstrapPath,bootstrapSource);
+for(const retiredName of ['admin-command-center.css','handover-evidence.css','handover-evidence.js','cooperative-deploy-guard.js']){
+  if(bootstrapSource.includes(retiredName))throw new Error(`Retired admin runtime reference remains: ${retiredName}`);
+}
+
 const builtIndexPath=resolve(output,'index.html');
 const builtIndex=readFileSync(builtIndexPath,'utf8')
   .replaceAll('https://sahkriya.vercel.app',primaryProductionUrl)
-  .replace('</head>',`<meta name="color-scheme" content="light">\n<meta name="supported-color-schemes" content="light">\n<link rel="stylesheet" href="login-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-mobile-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="worker-mobile-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final-guard.css?v=${assetVersion}">\n</head>`)
-  .replace('</body>',`<script src="review-runtime.js?v=${assetVersion}"></script>\n<script src="customer-worker-dashboard.js?v=${assetVersion}"></script>\n<script src="review-runtime-bridge.js?v=${assetVersion}"></script>\n<script src="login-reference.js?v=${assetVersion}"></script>\n<script src="customer-reference-dashboard.js?v=${assetVersion}"></script>\n<script src="customer-mobile-bootstrap.js?v=${assetVersion}"></script>\n<script src="customer-mobile-reference.js?v=${assetVersion}"></script>\n<script src="worker-mobile-final.js?v=${assetVersion}"></script>\n<script src="admin-final.js?v=${assetVersion}"></script>\n</body>`);
+  .replace('</head>',`<meta name="color-scheme" content="light">\n<meta name="supported-color-schemes" content="light">\n<link rel="stylesheet" href="login-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-mobile-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="worker-mobile-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="role-ui-cleanup.css?v=${assetVersion}">\n</head>`)
+  .replace('</body>',`<script src="review-runtime.js?v=${assetVersion}"></script>\n<script src="customer-worker-dashboard.js?v=${assetVersion}"></script>\n<script src="review-runtime-bridge.js?v=${assetVersion}"></script>\n<script src="login-reference.js?v=${assetVersion}"></script>\n<script src="customer-reference-dashboard.js?v=${assetVersion}"></script>\n<script src="customer-mobile-reference.js?v=${assetVersion}"></script>\n<script src="worker-mobile-final.js?v=${assetVersion}"></script>\n<script src="admin-final.js?v=${assetVersion}"></script>\n<script src="role-ui-cleanup.js?v=${assetVersion}"></script>\n</body>`);
 writeFileSync(builtIndexPath,builtIndex);
 
 const buildInfo={
@@ -105,8 +142,9 @@ const buildInfo={
   source:'harshtotawar14/YUKTI-2026',
   branch:process.env.VERCEL_GIT_COMMIT_REF||process.env.GITHUB_REF_NAME||'local',
   roleMobileUi:'FINAL_ONLY',
-  adminUi:'REFERENCE_FINAL'
+  adminUi:'REFERENCE_FINAL',
+  uiCleanup:'CONSOLIDATED_V1'
 };
 
 writeFileSync(resolve(output,'build-info.json'),`${JSON.stringify(buildInfo,null,2)}\n`);
-console.log(`Built SanPaid ${buildInfo.version} (${buildInfo.commitSha}) into dist/ with ${publicFiles.length} allowlisted public assets, final-only role mobile UI, and reference admin UI.`);
+console.log(`Built SanPaid ${buildInfo.version} (${buildInfo.commitSha}) into dist/ with ${publicFiles.length} allowlisted assets and consolidated final role UI.`);
