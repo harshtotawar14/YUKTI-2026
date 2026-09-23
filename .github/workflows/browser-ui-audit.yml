@@ -26,10 +26,14 @@ jobs:
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: node scripts/review-runtime-ui-audit.mjs
-      - name: Verify final Customer and Worker desktop/mobile UI
+      - name: Verify final Customer and Worker mobile UI
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: node scripts/customer-mobile-ui-audit.mjs
+      - name: Verify final Worker desktop UI
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: node scripts/worker-desktop-ui-audit.mjs
       - name: Verify final Cooperative and Federation admin UI
         env:
           CHROME_BIN: /usr/bin/google-chrome
