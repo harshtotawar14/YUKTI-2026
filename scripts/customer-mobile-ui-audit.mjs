@@ -24,17 +24,25 @@ async function openCustomer(context,{seedView='payment'}={}){
   const page=await context.newPage();
   page.setDefaultTimeout(7000);
   const user={id:101,role:'CUSTOMER',fullName:'Review Customer',name:'Review Customer'};
+  const requestCounts=new Map();
+  page.__requestCounts=requestCounts;
 
   await page.route('**/api/**',async route=>{
     const path=new URL(route.request().url()).pathname;
+    requestCounts.set(path,(requestCounts.get(path)||0)+1);
     let payload={ok:true};
     if(path==='/api/auth/demo-access')payload={ok:true,accounts:[]};
     else if(path==='/api/auth/me'||path==='/api/connected/auth/me')payload={ok:true,user};
     else if(path==='/api/connected/health')payload={ok:true};
     else if(path==='/api/public/services'||path==='/api/connected/customer/services')payload={ok:true,source:'DATABASE_CONFIGURATION',services:[{name:'Electrician',basePrice:499,icon:'⚡'}]};
-    else if(path==='/api/connected/snapshot')payload={role:'CUSTOMER',bookings:[]};
+    else if(path==='/api/connected/snapshot')payload={role:'CUSTOMER',revision:'audit-r1',bookings:[{id:17,bookingCode:'SP-2026-000017',service:'Electrician',status:'ACCEPTED'}]};
     else if(path==='/api/connected/customer/notifications')payload={ok:true,notifications:[]};
     else if(path==='/api/connected/customer/support')payload={ok:true,requests:[]};
+    else if(path==='/api/connected/customer/bookings/17')payload={id:17,bookingCode:'SP-2026-000017',service:'Electrician',status:'ACCEPTED',workerName:'Asha Verma',workerVerification:'Verified',total:549,scheduledAt:'2026-09-24T10:00:00.000Z'};
+    else if(path==='/api/connected/customer/bookings/17/checkout')payload={status:'ACCEPTED',total:549,approvedAdditional:0,finalAmount:549,payment:null,invoice:null};
+    else if(path==='/api/connected/customer/bookings/17/timeline')payload={timeline:[]};
+    else if(path==='/api/connected/customer/bookings/17/charges')payload=[];
+    else if(path==='/api/connected/bookings/17/estimate')payload={estimate:null};
     await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(payload)});
   });
 
@@ -53,7 +61,7 @@ async function openCustomer(context,{seedView='payment'}={}){
   assert(opened===true,'Customer workspace did not open.');
   await page.locator('#connectedShell:not(.hidden)').waitFor({state:'visible'});
   await page.locator('#connectedShell.customer-mobile-ready').waitFor({state:'attached'});
-  await page.waitForTimeout(180);
+  await page.waitForTimeout(220);
   return page;
 }
 
@@ -91,7 +99,27 @@ async function assertLightSurface(page,label){
   assert(state.bootCount===0,`${label}: startup safety shell was not removed after mobile app became ready`);
 }
 
-async function assertMobileContract(page,label,{expectForced=false}={}){
+async function assertRequestBudget(page,label){
+  // Give MutationObservers/retry timers time to settle. A visual render must not
+  // recursively trigger backend sync and fan out into thousands of API calls.
+  await page.waitForTimeout(900);
+  const counts=page.__requestCounts;
+  const expensive=[
+    '/api/connected/customer/bookings/17',
+    '/api/connected/customer/bookings/17/checkout',
+    '/api/connected/customer/bookings/17/charges',
+    '/api/connected/bookings/17/estimate',
+    '/api/connected/snapshot'
+  ];
+  for(const path of expensive){
+    const count=counts.get(path)||0;
+    assert(count<=12,`${label}: request amplification detected for ${path} (${count} calls)`);
+  }
+  const total=[...counts.values()].reduce((sum,count)=>sum+count,0);
+  assert(total<=80,`${label}: Customer startup made ${total} API calls; expected a bounded startup budget`);
+}
+
+async function assertMobileContract(page,label,{expectForced=false,checkBudget=false}={}){
   const shell=page.locator('#connectedShell');
   assert(await shell.getAttribute('data-customer-mobile-mode')==='true',`${label}: mobile mode was not activated`);
   for(const selector of ['.cm-mobile-header','.cm-mobile-greeting','.cm-book-cta','.cm-quick-grid','.cm-booking-card','.cm-support-card','.cm-bottom-nav']){
@@ -112,6 +140,7 @@ async function assertMobileContract(page,label,{expectForced=false}={}){
   assert(noOverflow,`${label}: customer shell has horizontal overflow`);
   await assertHomeIsolation(page,label);
   await assertLightSurface(page,label);
+  if(checkBudget)await assertRequestBudget(page,label);
   if(expectForced){
     assert(await page.locator('#sanpaidCustomerForcedMobileCss').count()===1,`${label}: forced touch-device mobile CSS was not installed`);
   }
@@ -134,7 +163,7 @@ try{
 
   const phoneContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3});
   const phonePage=await openCustomer(phoneContext,{seedView:'payment'});
-  await assertMobileContract(phonePage,'390px phone with stale Payment state');
+  await assertMobileContract(phonePage,'390px phone with stale Payment state',{checkBudget:true});
   await phoneContext.close();
 
   const darkPhoneContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3,colorScheme:'dark'});
@@ -150,7 +179,7 @@ try{
   await wideTouchContext.close();
 
   console.log('SanPaid Customer mobile UI audit: PASS');
-  console.log('Verified stale Payment/Verify recovery, dark-browser light surface, 390px phone and 1280px touch mode.');
+  console.log('Verified stale Payment/Verify recovery, dark-browser light surface, bounded API startup, 390px phone and 1280px touch mode.');
 } finally {
   if(browser)await browser.close().catch(()=>{});
   server.kill('SIGTERM');
