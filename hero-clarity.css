@@ -1,0 +1,191 @@
+/* Hero-only clarity fix: replace the abstract CSS person with a clearly readable verified-worker profile. */
+#landing.reference-home .reference-worker-visual{
+  min-height:430px!important;
+  border:1px solid #dce8f1!important;
+  border-radius:26px!important;
+  background:linear-gradient(145deg,#f8fcff 0%,#f0faf7 100%)!important;
+  box-shadow:0 24px 60px rgba(7,56,111,.10)!important;
+  overflow:hidden!important;
+}
+#landing.reference-home .reference-worker-visual::before{
+  content:"VERIFIED LOCAL SERVICE";
+  inset:22px auto auto 24px!important;
+  width:auto!important;
+  height:auto!important;
+  border-radius:999px!important;
+  padding:7px 11px;
+  background:#e8f7f2!important;
+  color:#087563;
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.1em;
+  line-height:1;
+  z-index:7;
+}
+#landing.reference-home .reference-worker-visual::after{
+  content:"Customer request  →  verified worker  →  accountable service record";
+  right:24px!important;
+  left:24px!important;
+  bottom:18px!important;
+  width:auto!important;
+  height:auto!important;
+  border-radius:12px!important;
+  padding:10px 12px;
+  background:#07386f!important;
+  color:#dcebf7;
+  font-size:9px;
+  font-weight:700;
+  text-align:center;
+  letter-spacing:.01em;
+  z-index:7;
+}
+#landing.reference-home .reference-note{display:none!important}
+
+#landing.reference-home .reference-worker-card{
+  left:24px!important;
+  right:112px!important;
+  top:66px!important;
+  bottom:62px!important;
+  min-height:0!important;
+  border:1px solid #d9e6ef!important;
+  border-radius:20px!important;
+  background:#fff!important;
+  box-shadow:0 14px 34px rgba(7,56,111,.08)!important;
+  overflow:hidden!important;
+}
+#landing.reference-home .reference-worker-card::before{
+  content:"Cooperative Worker"!important;
+  left:22px!important;
+  top:22px!important;
+  width:auto!important;
+  height:auto!important;
+  transform:none!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:#07386f!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  letter-spacing:-.01em;
+}
+#landing.reference-home .reference-worker-card::after{
+  content:"Electrician  •  Local service member"!important;
+  left:22px!important;
+  top:43px!important;
+  width:auto!important;
+  height:auto!important;
+  transform:none!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:#69809a!important;
+  font-size:9px!important;
+  font-weight:650!important;
+}
+
+#landing.reference-home .reference-worker-avatar{
+  left:22px!important;
+  top:78px!important;
+  width:168px!important;
+  height:190px!important;
+  transform:none!important;
+  border:0!important;
+  border-radius:18px!important;
+  background-color:#edf8f4!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 200'%3E%3Crect width='180' height='200' rx='22' fill='%23edf8f4'/%3E%3Cpath d='M43 75c0-30 21-54 47-54s47 24 47 54' fill='%230b987d'/%3E%3Crect x='32' y='70' width='116' height='14' rx='7' fill='%2307386f'/%3E%3Ccircle cx='90' cy='105' r='35' fill='%23d7a47d'/%3E%3Cpath d='M58 200v-31c0-31 15-49 32-49s32 18 32 49v31' fill='%2307386f'/%3E%3Cpath d='M48 200v-25c0-33 18-55 42-55s42 22 42 55v25' fill='%230b4f8f'/%3E%3Ccircle cx='77' cy='102' r='3' fill='%23182b38'/%3E%3Ccircle cx='103' cy='102' r='3' fill='%23182b38'/%3E%3Cpath d='M78 119c8 6 16 6 24 0' fill='none' stroke='%236b3d2d' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M72 146h36' stroke='%23bcefe4' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E")!important;
+  background-size:cover!important;
+  background-position:center!important;
+  box-shadow:none!important;
+}
+#landing.reference-home .reference-worker-avatar::before,
+#landing.reference-home .reference-worker-avatar::after{display:none!important}
+
+#landing.reference-home .reference-worker-shirt{
+  left:210px!important;
+  top:88px!important;
+  bottom:auto!important;
+  width:150px!important;
+  height:132px!important;
+  transform:none!important;
+  border-radius:14px!important;
+  background:#f5f9fc!important;
+  border:1px solid #e1eaf1!important;
+}
+#landing.reference-home .reference-worker-shirt::before{
+  content:"Why this worker?"!important;
+  left:14px!important;
+  right:auto!important;
+  top:14px!important;
+  color:#07386f!important;
+  font-size:11px!important;
+  font-weight:800!important;
+}
+#landing.reference-home .reference-worker-shirt::after{
+  content:"✓ Identity reviewed\A ✓ Skill verified\A ✓ Available locally"!important;
+  left:14px!important;
+  right:10px!important;
+  top:39px!important;
+  color:#4d6882!important;
+  font-size:9px!important;
+  font-weight:650!important;
+  line-height:1.9!important;
+  white-space:pre-line!important;
+}
+
+#landing.reference-home .reference-phone{
+  right:18px!important;
+  top:88px!important;
+  bottom:auto!important;
+  width:142px!important;
+  min-height:226px!important;
+  padding:24px 13px 15px!important;
+  border:5px solid #173950!important;
+  border-radius:24px!important;
+  background:#fff!important;
+  box-shadow:0 18px 42px rgba(7,56,111,.14)!important;
+}
+#landing.reference-home .reference-phone b{margin:11px 0 14px!important;font-size:11px!important}
+#landing.reference-home .reference-phone span{margin:10px 0!important;font-size:9px!important}
+#landing.reference-home .reference-phone span::before{width:18px!important;height:18px!important}
+
+#landing.reference-home .reference-worker-badge{
+  left:210px!important;
+  right:auto!important;
+  bottom:78px!important;
+  padding:9px 11px!important;
+  border-color:#cfe3df!important;
+  border-radius:12px!important;
+  background:#fff!important;
+  box-shadow:0 9px 24px rgba(7,56,111,.08)!important;
+}
+#landing.reference-home .reference-worker-badge i{width:27px!important;height:27px!important;font-size:11px!important}
+#landing.reference-home .reference-worker-badge b{font-size:9px!important}
+#landing.reference-home .reference-worker-badge small{font-size:8px!important}
+
+@media (max-width:1000px){
+  #landing.reference-home .reference-worker-visual{min-height:410px!important}
+}
+@media (max-width:760px){
+  #landing.reference-home .reference-worker-visual{min-height:390px!important}
+  #landing.reference-home .reference-worker-card{left:16px!important;right:92px!important;top:62px!important;bottom:58px!important}
+  #landing.reference-home .reference-worker-avatar{left:18px!important;top:78px!important;width:144px!important;height:164px!important}
+  #landing.reference-home .reference-worker-shirt{left:176px!important;top:86px!important;width:132px!important}
+  #landing.reference-home .reference-phone{right:10px!important;top:100px!important;width:122px!important;min-height:205px!important}
+  #landing.reference-home .reference-worker-badge{left:176px!important;bottom:72px!important}
+}
+@media (max-width:520px){
+  #landing.reference-home .reference-worker-visual{min-height:360px!important}
+  #landing.reference-home .reference-worker-visual::after{left:12px!important;right:12px!important;font-size:8px!important}
+  #landing.reference-home .reference-worker-card{left:12px!important;right:78px!important;top:58px!important;bottom:54px!important}
+  #landing.reference-home .reference-worker-card::before{left:14px!important;top:16px!important;font-size:11px!important}
+  #landing.reference-home .reference-worker-card::after{left:14px!important;top:35px!important;font-size:8px!important}
+  #landing.reference-home .reference-worker-avatar{left:14px!important;top:64px!important;width:120px!important;height:144px!important}
+  #landing.reference-home .reference-worker-shirt{left:145px!important;top:71px!important;width:112px!important;height:116px!important}
+  #landing.reference-home .reference-worker-shirt::before{left:10px!important;top:11px!important;font-size:9px!important}
+  #landing.reference-home .reference-worker-shirt::after{left:10px!important;top:31px!important;font-size:7px!important;line-height:1.8!important}
+  #landing.reference-home .reference-phone{right:7px!important;top:92px!important;width:102px!important;min-height:184px!important;padding:20px 8px 10px!important;border-width:4px!important}
+  #landing.reference-home .reference-phone b{font-size:8px!important}
+  #landing.reference-home .reference-phone span{font-size:7px!important;margin:8px 0!important;gap:5px!important}
+  #landing.reference-home .reference-phone span::before{width:15px!important;height:15px!important;font-size:8px!important}
+  #landing.reference-home .reference-worker-badge{left:145px!important;bottom:65px!important;padding:7px 8px!important}
+  #landing.reference-home .reference-worker-badge b{font-size:8px!important}
+  #landing.reference-home .reference-worker-badge small{display:none!important}
+}
