@@ -48,3 +48,242 @@
   word-break:normal!important;
   text-align:center!important;
 }
+
+/* Customer + Worker phone reference parity.
+   Keep the existing mobile renderers; only correct the final layout layer to match the approved phone references. */
+#connectedShell.customer-mobile-bootstrap .cm-mobile-home,
+#connectedShell.worker-mobile-final .wm-mobile-home{
+  gap:13px!important;
+  padding:15px 0 2px!important;
+}
+
+#connectedShell.customer-mobile-bootstrap .cm-mobile-header,
+#connectedShell.worker-mobile-final .wm-mobile-header{
+  min-height:78px!important;
+  padding:max(11px,env(safe-area-inset-top)) var(--sp-page-pad) 10px!important;
+  overflow:visible!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-brand-lockup img,
+#connectedShell.worker-mobile-final .wm-brand img{width:42px!important;height:42px!important;flex-basis:42px!important}
+#connectedShell.customer-mobile-bootstrap .cm-brand-lockup strong,
+#connectedShell.worker-mobile-final .wm-brand strong{font-size:22px!important}
+#connectedShell.customer-mobile-bootstrap .cm-brand-lockup small,
+#connectedShell.worker-mobile-final .wm-brand small{font-size:8.5px!important}
+#connectedShell.customer-mobile-bootstrap .cm-bell,
+#connectedShell.customer-mobile-bootstrap .cm-avatar,
+#connectedShell.worker-mobile-final .wm-icon-btn,
+#connectedShell.worker-mobile-final .wm-avatar{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;flex-basis:40px!important}
+
+/* Do not display fabricated unread totals. The bell remains available without a hard-coded count. */
+#connectedShell.customer-mobile-bootstrap .cm-bell i,
+#connectedShell.worker-mobile-final .wm-icon-btn i{display:none!important}
+
+/* Approved Customer reference places the location beside the greeting, not inside the crowded top row. */
+#connectedShell.customer-mobile-bootstrap .cm-location{
+  display:flex!important;
+  position:absolute!important;
+  top:78px!important;
+  right:var(--sp-page-pad)!important;
+  z-index:3!important;
+  min-height:36px!important;
+  max-width:118px!important;
+  padding:0 9px!important;
+  border:1px solid #d8e5ed!important;
+  border-radius:20px!important;
+  background:#fff!important;
+  color:#0d2f61!important;
+  box-shadow:0 4px 12px rgba(7,56,111,.04)!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-location b{max-width:72px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;font-size:10px!important}
+#connectedShell.customer-mobile-bootstrap .cm-mobile-greeting{
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  min-height:60px!important;
+  padding:4px 118px 2px 2px!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-motto{display:none!important}
+#connectedShell.customer-mobile-bootstrap .cm-mobile-greeting span{font-size:15px!important}
+#connectedShell.customer-mobile-bootstrap .cm-mobile-greeting h1{font-size:30px!important;line-height:1!important}
+#connectedShell.customer-mobile-bootstrap .cm-mobile-greeting p{font-size:13px!important;line-height:1.35!important}
+
+/* Worker keeps location in the top bar and availability on the greeting row, like the approved reference. */
+#connectedShell.worker-mobile-final .wm-location{
+  display:flex!important;
+  min-height:34px!important;
+  max-width:94px!important;
+  padding:0 8px!important;
+  border:1px solid #d8e5ed!important;
+  border-radius:18px!important;
+  background:#fff!important;
+  color:#516d91!important;
+}
+#connectedShell.worker-mobile-final .wm-location b{max-width:62px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;font-size:9px!important}
+#connectedShell.worker-mobile-final .wm-greeting{
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  padding:4px 2px 2px!important;
+}
+#connectedShell.worker-mobile-final .wm-duty{justify-items:end!important;margin-top:0!important}
+#connectedShell.worker-mobile-final .wm-duty-pill{min-height:31px!important;padding:0 10px!important;font-size:9.5px!important}
+#connectedShell.worker-mobile-final .wm-duty small{font-size:9px!important}
+
+/* Approved reference uses three compact, scannable quick actions on one row. */
+#connectedShell.customer-mobile-bootstrap .cm-quick-grid,
+#connectedShell.worker-mobile-final .wm-quick-grid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:9px!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-quick-grid>button,
+#connectedShell.worker-mobile-final .wm-quick-grid>button{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:40px auto auto!important;
+  align-content:start!important;
+  align-items:start!important;
+  gap:0!important;
+  min-width:0!important;
+  min-height:112px!important;
+  padding:10px 9px!important;
+  border-radius:15px!important;
+  text-align:left!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-quick-icon,
+#connectedShell.worker-mobile-final .wm-quick-icon{
+  grid-column:auto!important;
+  grid-row:auto!important;
+  width:38px!important;
+  height:38px!important;
+  border-radius:11px!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-quick-grid b,
+#connectedShell.worker-mobile-final .wm-quick-grid b{
+  grid-column:auto!important;
+  margin:6px 12px 0 0!important;
+  font-size:11px!important;
+  line-height:1.15!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-quick-grid small,
+#connectedShell.worker-mobile-final .wm-quick-grid small{
+  grid-column:auto!important;
+  margin:3px 12px 0 0!important;
+  padding:0!important;
+  font-size:9px!important;
+  line-height:1.25!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-mini-arrow,
+#connectedShell.worker-mobile-final .wm-mini-arrow{
+  position:absolute!important;
+  right:6px!important;
+  bottom:12px!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+}
+
+/* Keep all seven journey stages visible at once, as in the approved reference, without page overflow. */
+#connectedShell.customer-mobile-bootstrap .cm-home-journey,
+#connectedShell.worker-mobile-final .wm-home-journey{
+  display:grid!important;
+  grid-template-columns:repeat(7,minmax(0,1fr))!important;
+  gap:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  padding:9px 0 2px!important;
+  margin-top:11px!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-home-journey>div,
+#connectedShell.worker-mobile-final .wm-home-journey>div{min-width:0!important}
+#connectedShell.customer-mobile-bootstrap .cm-home-journey span,
+#connectedShell.worker-mobile-final .wm-home-journey span{width:28px!important;height:28px!important;font-size:9px!important}
+#connectedShell.customer-mobile-bootstrap .cm-home-journey small,
+#connectedShell.worker-mobile-final .wm-home-journey small{
+  max-width:46px!important;
+  font-size:8px!important;
+  line-height:1.12!important;
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
+}
+
+/* What's next / help / trust cards remain horizontal instead of stacking the action underneath. */
+#connectedShell.customer-mobile-bootstrap .cm-next-card,
+#connectedShell.worker-mobile-final .wm-next-card,
+#connectedShell.customer-mobile-bootstrap .cm-support-card,
+#connectedShell.worker-mobile-final .wm-trust-card{
+  grid-template-columns:44px minmax(0,1fr) auto!important;
+  gap:9px!important;
+  padding:12px!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-next-card>button,
+#connectedShell.worker-mobile-final .wm-next-card>button,
+#connectedShell.customer-mobile-bootstrap .cm-support-card>button,
+#connectedShell.worker-mobile-final .wm-trust-card>button{
+  grid-column:auto!important;
+  justify-self:end!important;
+  width:auto!important;
+  min-width:0!important;
+  min-height:40px!important;
+  margin:0!important;
+  padding:0 10px!important;
+  font-size:9px!important;
+  white-space:nowrap!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-next-card small,
+#connectedShell.worker-mobile-final .wm-next-card small{font-size:9px!important}
+#connectedShell.customer-mobile-bootstrap .cm-next-card h3,
+#connectedShell.worker-mobile-final .wm-next-card h3{font-size:15px!important}
+#connectedShell.customer-mobile-bootstrap .cm-next-card p,
+#connectedShell.worker-mobile-final .wm-next-card p{font-size:9px!important;line-height:1.3!important}
+#connectedShell.customer-mobile-bootstrap .cm-support-card b,
+#connectedShell.worker-mobile-final .wm-trust-card b{font-size:14px!important}
+#connectedShell.customer-mobile-bootstrap .cm-support-card small,
+#connectedShell.worker-mobile-final .wm-trust-card small{font-size:9px!important}
+
+#connectedShell.customer-mobile-bootstrap .cm-mobile-metrics>button,
+#connectedShell.worker-mobile-final .wm-metrics>button{min-height:106px!important;padding:12px!important}
+#connectedShell.customer-mobile-bootstrap .cm-mobile-metrics span,
+#connectedShell.worker-mobile-final .wm-metrics span{font-size:9px!important}
+#connectedShell.customer-mobile-bootstrap .cm-mobile-metrics strong,
+#connectedShell.worker-mobile-final .wm-metrics strong{font-size:15px!important;margin:7px 18px 4px 0!important}
+#connectedShell.customer-mobile-bootstrap .cm-mobile-metrics small,
+#connectedShell.worker-mobile-final .wm-metrics small{font-size:9px!important}
+
+@media(max-width:340px){
+  #connectedShell.customer-mobile-bootstrap,
+  #connectedShell.worker-mobile-final{--sp-page-pad:10px}
+  #connectedShell.worker-mobile-final .wm-location{display:none!important}
+  #connectedShell.customer-mobile-bootstrap .cm-mobile-greeting{padding-right:105px!important}
+  #connectedShell.customer-mobile-bootstrap .cm-location{right:10px!important;max-width:104px!important;padding:0 7px!important}
+  #connectedShell.customer-mobile-bootstrap .cm-location b{max-width:60px!important;font-size:9px!important}
+  #connectedShell.customer-mobile-bootstrap .cm-quick-grid,
+  #connectedShell.worker-mobile-final .wm-quick-grid{gap:6px!important}
+  #connectedShell.customer-mobile-bootstrap .cm-quick-grid>button,
+  #connectedShell.worker-mobile-final .wm-quick-grid>button{min-height:106px!important;padding:8px 7px!important}
+  #connectedShell.customer-mobile-bootstrap .cm-quick-grid b,
+  #connectedShell.worker-mobile-final .wm-quick-grid b{font-size:10px!important}
+  #connectedShell.customer-mobile-bootstrap .cm-quick-grid small,
+  #connectedShell.worker-mobile-final .wm-quick-grid small{font-size:8.5px!important}
+  #connectedShell.customer-mobile-bootstrap .cm-next-card,
+  #connectedShell.worker-mobile-final .wm-next-card,
+  #connectedShell.customer-mobile-bootstrap .cm-support-card,
+  #connectedShell.worker-mobile-final .wm-trust-card{grid-template-columns:40px minmax(0,1fr) auto!important;gap:7px!important;padding:10px!important}
+  #connectedShell.customer-mobile-bootstrap .cm-next-card>button,
+  #connectedShell.worker-mobile-final .wm-next-card>button,
+  #connectedShell.customer-mobile-bootstrap .cm-support-card>button,
+  #connectedShell.worker-mobile-final .wm-trust-card>button{padding:0 7px!important;font-size:8.5px!important}
+  #connectedShell.customer-mobile-bootstrap .cm-home-journey span,
+  #connectedShell.worker-mobile-final .wm-home-journey span{width:25px!important;height:25px!important;font-size:8px!important}
+  #connectedShell.customer-mobile-bootstrap .cm-home-journey small,
+  #connectedShell.worker-mobile-final .wm-home-journey small{font-size:7.5px!important;max-width:40px!important}
+}
+
+@media(max-height:520px) and (orientation:landscape){
+  #connectedShell.customer-mobile-bootstrap .cm-location,
+  #connectedShell.worker-mobile-final .wm-location{display:none!important}
+  #connectedShell.customer-mobile-bootstrap .cm-mobile-greeting{padding-right:2px!important;min-height:0!important}
+}
