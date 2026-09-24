@@ -7,6 +7,13 @@
     COOPERATIVE_ADMIN: { icon: '🏢', label: 'Cooperative Admin' },
     FEDERATION_ADMIN: { icon: '🏛️', label: 'Federation Admin' }
   };
+  const REVIEW_ID_ROLE = {
+    customer: 'CUSTOMER',
+    'worker-a': 'WORKER',
+    'worker-b': 'WORKER',
+    'cooperative-admin': 'COOPERATIVE_ADMIN',
+    'federation-admin': 'FEDERATION_ADMIN'
+  };
 
   function selectedRole(root) {
     return root.querySelector('.spu-role.active')?.dataset?.spuRole || 'CUSTOMER';
@@ -27,9 +34,61 @@
     };
   }
 
+  function ensureReferenceLightTheme() {
+    if (document.getElementById('sanpaidLoginReferenceLight')) return;
+    const style = document.createElement('style');
+    style.id = 'sanpaidLoginReferenceLight';
+    style.textContent = `
+#sanpaidUnifiedAuthRoot.spu-root:not([hidden]){color-scheme:only light!important;background:#f8fcff!important;color:#00294f!important}
+#sanpaidUnifiedAuthRoot.spu-root:not([hidden]) .spu-shell,#sanpaidUnifiedAuthRoot.spu-root:not([hidden]) .spu-main{background:#fff!important;color:#00294f!important}
+#sanpaidUnifiedAuthRoot.spu-root:not([hidden]) .spu-role{background:#fff!important;color:#00294f!important;border-color:#d8e4ef!important}
+#sanpaidUnifiedAuthRoot.spu-root:not([hidden]) .spu-role.active{background:linear-gradient(135deg,rgba(0,169,141,.075),#fff)!important;border-color:#00a98d!important}
+#sanpaidUnifiedAuthRoot.spu-root:not([hidden]) :is(.spu-field input,.spu-current,.spu-status-card,.spu-demo-access){background:#fff!important;color:#00294f!important;border-color:#d8e4ef!important;color-scheme:only light!important}
+#sanpaidUnifiedAuthRoot.spu-root:not([hidden]) :is(.spu-field label,.spu-role b,#spuTitle){color:#00294f!important}
+#sanpaidUnifiedAuthRoot.spu-root:not([hidden]) :is(.spu-sub,.spu-login-demo-line,.spu-field input::placeholder){color:#7186a4!important}`;
+    document.head.appendChild(style);
+  }
+
+  function installReviewRoleSync() {
+    if (document.documentElement.dataset.sanpaidReviewRoleSync === '1') return;
+    document.documentElement.dataset.sanpaidReviewRoleSync = '1';
+    document.addEventListener('submit', event => {
+      const form = event.target;
+      if (!(form instanceof HTMLFormElement) || form.id !== 'spuLoginForm' || form.dataset.referenceRoleSynced === 'true') return;
+      const root = document.getElementById('sanpaidUnifiedAuthRoot');
+      if (!root || root.hidden) return;
+      const access = form.querySelector('#spuEmail');
+      const password = form.querySelector('#spuPassword');
+      const accessId = String(access?.value || '').trim().toLowerCase();
+      const expectedRole = REVIEW_ID_ROLE[accessId];
+      if (!expectedRole || !password) return;
+      const roleButton = root.querySelector(`[data-spu-role="${expectedRole}"]`);
+      if (!roleButton) return;
+
+      const passwordValue = password.value;
+      const rememberValue = Boolean(form.querySelector('#spuRemember')?.checked);
+      event.preventDefault();
+      event.stopImmediatePropagation();
+
+      roleButton.click();
+      const freshForm = root.querySelector('#spuLoginForm');
+      const freshAccess = freshForm?.querySelector('#spuEmail');
+      const freshPassword = freshForm?.querySelector('#spuPassword');
+      if (!freshForm || !freshAccess || !freshPassword) return;
+      freshAccess.value = accessId;
+      freshAccess.dataset.referenceUserEdited = 'true';
+      freshPassword.value = passwordValue;
+      const freshRemember = freshForm.querySelector('#spuRemember');
+      if (freshRemember) freshRemember.checked = rememberValue;
+      freshForm.dataset.referenceRoleSynced = 'true';
+      freshForm.requestSubmit();
+    }, true);
+  }
+
   function applyReferenceLogin() {
     const root = document.getElementById('sanpaidUnifiedAuthRoot');
     if (!root || root.hidden) return;
+    ensureReferenceLightTheme();
 
     const entryCustomer = root.querySelector('[data-spu-entry-role="CUSTOMER"]');
     if (entryCustomer && !root.querySelector('#spuLoginForm')) {
@@ -127,6 +186,7 @@
     });
   };
 
+  installReviewRoleSync();
   new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden'] });
   document.addEventListener('DOMContentLoaded', schedule, { once: true });
   schedule();
