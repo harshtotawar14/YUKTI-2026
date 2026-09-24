@@ -99,7 +99,14 @@
 
   async function refresh(){
     if(!shellOpen())return;const r=role();if(!['CUSTOMER','WORKER'].includes(r))return;if(refreshBusy){refreshQueued=true;return;}refreshBusy=true;
-    try{const data=r==='CUSTOMER'?await customerData():await workerData();const modules=collectModules(r);if(r==='CUSTOMER')renderCustomer(data,modules);else renderWorker(data,modules);}catch(error){fallback(r,error);}finally{refreshBusy=false;if(refreshQueued){refreshQueued=false;requestRefresh();}}
+    try{
+      const data=r==='CUSTOMER'?await customerData():await workerData();
+      // A role switch can happen while the previous role's requests are in flight.
+      // Never paint an old Customer response over a newly opened Worker workspace.
+      if(!shellOpen()||role()!==r)return;
+      const modules=collectModules(r);if(r==='CUSTOMER')renderCustomer(data,modules);else renderWorker(data,modules);
+    }catch(error){if(shellOpen()&&role()===r)fallback(r,error);}
+    finally{refreshBusy=false;if(refreshQueued){refreshQueued=false;requestRefresh();}}
   }
   let lastSnapshotRefresh=0;
   function requestRefresh(event){
@@ -111,7 +118,7 @@
       lastSnapshotRefresh=Date.now();
     }
     clearTimeout(refreshTimer);
-    refreshTimer=setTimeout(()=>{refreshTimer=0;refresh();},100);
+    refreshTimer=setTimeout(()=>{refreshTimer=0;refresh();},event?.detail?.source==='review-runtime-role-ready'?0:100);
   }
   function start(){
     requestRefresh();
