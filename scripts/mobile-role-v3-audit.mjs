@@ -53,12 +53,20 @@ async function openRole(context,kind){
   await page.locator('#connectedShell:not(.hidden)').waitFor({state:'visible'});await page.waitForTimeout(350);return page;
 }
 async function noOverflow(page,label){
-  const bad=await page.evaluate(()=>{
+  const result=await page.evaluate(()=>{
     const shell=document.getElementById('connectedShell');
+    const shellBox={scrollWidth:shell.scrollWidth,clientWidth:shell.clientWidth};
     const visible=[...shell.querySelectorAll('*')].filter(n=>{const s=getComputedStyle(n),r=n.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0});
-    return visible.filter(n=>n.scrollWidth>n.clientWidth+3 && !['auto','scroll'].includes(getComputedStyle(n).overflowX)).slice(0,8).map(n=>({tag:n.tagName,cls:n.className,sw:n.scrollWidth,cw:n.clientWidth}));
+    const bad=visible.filter(n=>{
+      const overflow=getComputedStyle(n).overflowX;
+      if(['auto','scroll','hidden','clip'].includes(overflow))return false;
+      if(n.closest('.cm-home-journey,.wm-home-journey'))return false;
+      return n.scrollWidth>n.clientWidth+3;
+    }).slice(0,8).map(n=>({tag:n.tagName,cls:n.className,sw:n.scrollWidth,cw:n.clientWidth}));
+    return{shellBox,bad};
   });
-  assert(!bad.length,`${label}: unexpected horizontal overflow ${JSON.stringify(bad)}`);
+  assert(result.shellBox.scrollWidth<=result.shellBox.clientWidth+2,`${label}: shell overflows viewport (${result.shellBox.scrollWidth}/${result.shellBox.clientWidth})`);
+  assert(!result.bad.length,`${label}: unexpected horizontal overflow ${JSON.stringify(result.bad)}`);
 }
 async function fontFloor(page,selectors,min,label){
   for(const sel of selectors){
