@@ -45,6 +45,10 @@ jobs:
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: node scripts/customer-mobile-ui-audit.mjs
+      - name: Verify deep Customer and Worker phone matrix
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: node scripts/mobile-role-v3-audit.mjs
       - name: Verify final Cooperative and Federation admin UI
         env:
           CHROME_BIN: /usr/bin/google-chrome
