@@ -75,6 +75,7 @@
 
   async function health(){
     const el=$('#judgeHealth',shell());
+    if(window.SanPaidReviewRuntime?.enabled){el.textContent='● Review Session';el.classList.remove('ok');return;}
     try{
       const result=await api('/api/connected/health');
       el.textContent=result.ok?'● Service Online':'● Service Unavailable';
@@ -211,9 +212,9 @@
       const checks=d.checks||{};
       const labels={customerActive:'Customer Account',workerAReady:'Worker Availability A',workerBReady:'Worker Availability B',cooperativeAdminActive:'Cooperative Administration',federationAdminActive:'Federation Oversight',unverifiedProofReady:'Verification Boundary',noStalePendingOffers:'Offer State Integrity'};
       root.innerHTML=`<div class="judge-card">
-        <span class="judge-badge ${d.ok?'':'demo'}">${d.ok?'CONNECTED SERVICES READY':'SERVICE ATTENTION REQUIRED'}</span>
+        <span class="judge-badge ${d.ok?'':'demo'}">${window.SanPaidReviewRuntime?.enabled?'REVIEW FLOW READY':d.ok?'CONNECTED SERVICES READY':'SERVICE ATTENTION REQUIRED'}</span>
         <h2 style="margin-top:10px">Runtime readiness</h2>
-        <p>These checks come from the connected backend state. They do not represent a production certification or government approval.</p>
+        <p>${window.SanPaidReviewRuntime?.enabled?'These checks describe this browser review session. Database availability is checked separately.':'These checks come from the connected backend state.'} They do not represent a production certification or government approval.</p>
         <div class="judge-checks">${Object.entries(checks).map(([key,value])=>`<div class="judge-check ${value?'ok':'no'}">${esc(labels[key]||human(key))}</div>`).join('')}</div>
       </div>`;
     }catch(error){errorBox(root,error,loadSystemStatus);}
