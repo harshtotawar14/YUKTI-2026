@@ -12,7 +12,7 @@ const publicFiles=[
   'index.html',
   'app-icon.svg','manifest.webmanifest','robots.txt','sitemap.xml','social-preview.svg',
   'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','master-v2.css','landing-pro.css','hero-clarity.css','landing-10-polish.css','dossier-redesign.css',
-  'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','login-reference.css','customer-worker-dashboard.css','customer-reference-dashboard.css','customer-mobile-reference.css','worker-mobile-final.css',
+  'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','login-reference.css','customer-worker-dashboard.css','customer-reference-dashboard.css','customer-mobile-reference.css','worker-mobile-final.css','mobile-role-stability.css',
   'admin-command-center.css','federation-govtech.css','federation-portal.css','cooperative-portal.css','admin-final.css','admin-final-guard.css','handover-evidence.css',
   'credibility-layer.css','workforce-intelligence.css',
   'app.js','landing-10-polish.js','mobile.js','connected-demo.js','connected-service-ui.js','connected-commerce-ui.js','connected-runtime-fix.js','review-runtime.js','selection-demo-runtime.js','selection-integrity-v2.js','selection-judge-integrity-v3.js','review-runtime-bridge.js',
@@ -32,6 +32,7 @@ function assertFinalRoleSources(){
   const selectionIntegrity=sourceText('selection-integrity-v2.js');
   const judgeIntegrity=sourceText('selection-judge-integrity-v3.js');
   const federation=sourceText('federation-portal.js');
+  const mobileStability=sourceText('mobile-role-stability.css');
   if(!customer.includes('SanPaidCustomerReference'))throw new Error('Canonical Customer renderer is missing.');
   if(worker.includes(`'\"':'&quot',`)||!worker.includes(`'\"':'&quot;',`))throw new Error('Worker mobile HTML escaping contract is incomplete.');
   if(!admin.includes('restoreMovedNodes')||!admin.includes('movedNodes'))throw new Error('Final Admin UI must restore borrowed operational modules during role changes.');
@@ -41,6 +42,7 @@ function assertFinalRoleSources(){
   if(!selectionIntegrity.includes('LOCAL_CAPACITY_EXHAUSTED')||!selectionIntegrity.includes('Human-reviewed forecasting (pilot)')||!selectionIntegrity.includes('Start Fresh Review'))throw new Error('Selection closed-loop integrity layer is incomplete.');
   if(!judgeIntegrity.includes('WORKER_CONSENT_REQUIRED')||!judgeIntegrity.includes('ESTIMATE_APPROVED')||!judgeIntegrity.includes('closed-loop-v3')||!judgeIntegrity.includes('Controlled 30-day review baseline'))throw new Error('Judge-grade end-to-end integrity layer is incomplete.');
   if(!federation.includes('async function api(path,opt={})')||!federation.includes('const human='))throw new Error('Federation governance actions must preserve HTTP options and status rendering.');
+  if(!mobileStability.includes('--sp-role-phone-max:560px')||!mobileStability.includes('role-mobile-keyboard'))throw new Error('Customer/Worker mobile stability layer is incomplete.');
 }
 
 function resolveCommit(){
@@ -108,7 +110,7 @@ writeFileSync(dashboardPath,dashboardSource.slice(0,dashboardEnd)+dashboardHook+
 const builtIndexPath=resolve(output,'index.html');
 const builtIndex=readFileSync(builtIndexPath,'utf8')
   .replaceAll('https://sahkriya.vercel.app',primaryProductionUrl)
-  .replace('</head>',`<meta name="color-scheme" content="light">\n<meta name="supported-color-schemes" content="light">\n<link rel="stylesheet" href="hero-clarity.css?v=${assetVersion}">\n<link rel="stylesheet" href="landing-10-polish.css?v=${assetVersion}">\n<link rel="stylesheet" href="login-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-mobile-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="worker-mobile-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final-guard.css?v=${assetVersion}">\n</head>`)
+  .replace('</head>',`<meta name="color-scheme" content="light">\n<meta name="supported-color-schemes" content="light">\n<link rel="stylesheet" href="hero-clarity.css?v=${assetVersion}">\n<link rel="stylesheet" href="landing-10-polish.css?v=${assetVersion}">\n<link rel="stylesheet" href="login-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-mobile-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="worker-mobile-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="mobile-role-stability.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final-guard.css?v=${assetVersion}">\n</head>`)
   .replace('</body>',`<script src="review-runtime.js?v=${assetVersion}"></script>\n<script src="selection-demo-runtime.js?v=${assetVersion}"></script>\n<script src="selection-integrity-v2.js?v=${assetVersion}"></script>\n<script src="selection-judge-integrity-v3.js?v=${assetVersion}"></script>\n<script src="customer-worker-dashboard.js?v=${assetVersion}"></script>\n<script src="review-runtime-bridge.js?v=${assetVersion}"></script>\n<script src="login-reference.js?v=${assetVersion}"></script>\n<script src="customer-reference-dashboard.js?v=${assetVersion}"></script>\n<script src="customer-mobile-bootstrap.js?v=${assetVersion}"></script>\n<script src="customer-mobile-reference.js?v=${assetVersion}"></script>\n<script src="worker-mobile-final.js?v=${assetVersion}"></script>\n<script src="admin-final.js?v=${assetVersion}"></script>\n<script src="selector-final-polish.js?v=${assetVersion}"></script>\n<script src="landing-10-polish.js?v=${assetVersion}"></script>\n</body>`);
 writeFileSync(builtIndexPath,builtIndex);
 
