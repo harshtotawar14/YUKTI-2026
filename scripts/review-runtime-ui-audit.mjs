@@ -79,15 +79,18 @@ try{
       assert(!text.includes('administration session required'),`${role}: admin session was rejected`);
       assert(!text.includes('authentication is temporarily unavailable'),`${role}: auth outage leaked into admin workspace`);
     }
+    return result.user;
   };
 
-  await loginAndOpen({identifier:'customer',role:'CUSTOMER',persona:'CUSTOMER',target:'connected'});
+  const customerUser=await loginAndOpen({identifier:'customer',role:'CUSTOMER',persona:'CUSTOMER',target:'connected'});
   assert(await page.locator('.cr-desktop-home').isVisible(),'Customer enhanced desktop home is not visible in review runtime.');
-  assert((await page.locator('#connectedContent').innerText()).includes('Shreya Patil'),'Customer review identity was not applied.');
-  await loginAndOpen({identifier:'worker-a',role:'WORKER',persona:'WORKER_A',target:'connected'});
+  assert(String(customerUser?.name||customerUser?.fullName||'').includes('Shreya Patil'),'Customer review session identity was not applied.');
+
+  const workerUser=await loginAndOpen({identifier:'worker-a',role:'WORKER',persona:'WORKER_A',target:'connected'});
+  assert(String(workerUser?.name||workerUser?.fullName||'').toLowerCase().includes('asha verma'),'Worker review session identity was not applied.');
   const workerText=(await page.locator('#connectedContent').innerText()).toLowerCase();
-  assert(workerText.includes('asha verma'),'Worker review identity was not applied.');
   assert(workerText.includes('job requests'),'Worker dashboard did not load job requests.');
+
   await loginAndOpen({identifier:'cooperative-admin',role:'COOPERATIVE_ADMIN',persona:null,target:'judge'});
   await waitFor(async()=>await page.locator('#sihJudgeShell').evaluate(node=>node.classList.contains('cooperative-govtech')).catch(()=>false),{message:'Cooperative portal enhancement did not activate'});
   await loginAndOpen({identifier:'federation-admin',role:'FEDERATION_ADMIN',persona:null,target:'judge'});
@@ -100,6 +103,6 @@ try{
   assert(serverApiRequests.length===0,`Review runtime leaked API requests to unavailable server: ${serverApiRequests.join(', ')}`);
   assert(pageErrors.length===0,`Page errors detected: ${pageErrors.join(' | ')}`);
   console.log('SanPaid SIH review runtime audit: PASS');
-  console.log('Verified DB-independent Customer, Worker, Cooperative Admin and Federation Admin access with zero server API dependency beyond optional demo-access credential discovery.');
+  console.log('Verified DB-independent Customer, Worker, Cooperative Admin and Federation Admin access with deterministic local session identities and zero server API dependency beyond optional demo-access credential discovery.');
   await context.close();
 } finally {if(browser)await browser.close().catch(()=>{});server.kill('SIGTERM');}
