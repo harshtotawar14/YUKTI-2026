@@ -253,6 +253,19 @@
 #connectedShell.customer-mobile-bootstrap .cm-mobile-metrics small,
 #connectedShell.worker-mobile-final .wm-metrics small{font-size:9px!important}
 
+/* Preserve the Worker reference header on narrow phones without letting brand/location/actions collide. */
+@media(min-width:341px) and (max-width:380px){
+  #connectedShell.worker-mobile-final .wm-mobile-header{gap:6px!important}
+  #connectedShell.worker-mobile-final .wm-brand{gap:7px!important;min-width:0!important;overflow:hidden!important}
+  #connectedShell.worker-mobile-final .wm-brand>div{min-width:0!important;overflow:hidden!important}
+  #connectedShell.worker-mobile-final .wm-brand img{width:38px!important;height:38px!important;flex-basis:38px!important}
+  #connectedShell.worker-mobile-final .wm-brand strong{font-size:20px!important}
+  #connectedShell.worker-mobile-final .wm-brand small{font-size:7.5px!important}
+  #connectedShell.worker-mobile-final .wm-header-actions{gap:4px!important}
+  #connectedShell.worker-mobile-final .wm-location{max-width:78px!important;padding:0 6px!important}
+  #connectedShell.worker-mobile-final .wm-location b{max-width:48px!important;font-size:8.5px!important}
+}
+
 @media(max-width:340px){
   #connectedShell.customer-mobile-bootstrap,
   #connectedShell.worker-mobile-final{--sp-page-pad:10px}
