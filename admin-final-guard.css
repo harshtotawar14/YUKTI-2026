@@ -38,3 +38,13 @@
 /* Final role-shell visibility guard. Loaded last so mobile readability rules cannot revive the legacy overview behind the final home. */
 #connectedShell.customer-mobile-bootstrap .cw-dashboard.customer [data-cw-view="overview"].cm-home-ready>:not(.cm-mobile-home),
 #connectedShell.worker-mobile-final .cw-dashboard.worker [data-cw-view="overview"].wm-home-ready>:not(.wm-mobile-home){display:none!important}
+
+/* 320px phone guard: keep nav labels readable without widening their button. */
+#connectedShell.customer-mobile-bootstrap>.cm-bottom-nav>button>span,
+#connectedShell.worker-mobile-final>.wm-bottom-nav>button>span{
+  max-width:100%!important;
+  white-space:normal!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  text-align:center!important;
+}
