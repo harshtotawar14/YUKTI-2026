@@ -1,0 +1,475 @@
+/* SanPaid Customer + Worker mobile stability patch.
+   Scope: mobile role workspaces only. No landing/admin/backend changes. */
+
+/* 1) Predictable sizing and a phone-width canvas even when Safari/Android reports a wide desktop-site viewport. */
+#connectedShell.customer-mobile-bootstrap,
+#connectedShell.worker-mobile-final{
+  --sp-role-phone-max:560px;
+}
+#connectedShell.customer-mobile-bootstrap *,
+#connectedShell.customer-mobile-bootstrap *::before,
+#connectedShell.customer-mobile-bootstrap *::after,
+#connectedShell.worker-mobile-final *,
+#connectedShell.worker-mobile-final *::before,
+#connectedShell.worker-mobile-final *::after{
+  box-sizing:border-box;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-main,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-main{
+  width:100%!important;
+  max-width:var(--sp-role-phone-max)!important;
+  margin:0 auto!important;
+  padding-bottom:calc(108px + env(safe-area-inset-bottom))!important;
+  min-width:0!important;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-view,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-view,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-panel,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-panel,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .connected-card,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .connected-card,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .wi-block,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .wi-block{
+  width:100%;
+  max-width:100%;
+  min-width:0!important;
+}
+
+
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-main,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-main,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-view,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-view{
+  overflow-x:hidden!important;
+}
+/* 2) Header: remove the squeeze that happens around 375–430px. */
+#connectedShell.customer-mobile-bootstrap .cm-mobile-header,
+#connectedShell.worker-mobile-final .wm-mobile-header{
+  width:auto;
+  max-width:none;
+  min-width:0;
+  padding-top:calc(12px + env(safe-area-inset-top));
+}
+#connectedShell.customer-mobile-bootstrap .cm-brand-lockup,
+#connectedShell.worker-mobile-final .wm-brand{
+  min-width:0;
+  flex:1 1 auto;
+}
+#connectedShell.customer-mobile-bootstrap .cm-brand-lockup>div,
+#connectedShell.worker-mobile-final .wm-brand>div{
+  min-width:0;
+}
+#connectedShell.customer-mobile-bootstrap .cm-header-actions,
+#connectedShell.worker-mobile-final .wm-header-actions{
+  min-width:0;
+  flex:0 0 auto;
+}
+#connectedShell.customer-mobile-bootstrap .cm-bell,
+#connectedShell.customer-mobile-bootstrap .cm-avatar,
+#connectedShell.worker-mobile-final .wm-icon-btn,
+#connectedShell.worker-mobile-final .wm-avatar{
+  min-width:40px;
+  width:40px;
+  height:40px;
+  flex:0 0 40px;
+}
+
+/* 3) Home cards keep readable text instead of squeezing into one line. */
+#connectedShell.customer-mobile-bootstrap .cm-next-card>button,
+#connectedShell.customer-mobile-bootstrap .cm-support-card button,
+#connectedShell.worker-mobile-final .wm-next-card>button,
+#connectedShell.worker-mobile-final .wm-trust-card button{
+  max-width:100%;
+  white-space:normal;
+  text-align:center;
+  justify-content:center;
+}
+#connectedShell.customer-mobile-bootstrap .cm-mobile-home,
+#connectedShell.worker-mobile-final .wm-mobile-home,
+#connectedShell.customer-mobile-bootstrap .cm-booking-card,
+#connectedShell.worker-mobile-final .wm-work-card{
+  min-width:0;
+  max-width:100%;
+}
+
+/* 4) Seven-stage journey: keep labels legible on 320–390px screens. */
+#connectedShell.customer-mobile-bootstrap .cm-home-journey,
+#connectedShell.worker-mobile-final .wm-home-journey{
+  grid-template-columns:repeat(7,minmax(54px,1fr))!important;
+  max-width:100%;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  padding-bottom:6px!important;
+  overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+#connectedShell.customer-mobile-bootstrap .cm-home-journey::-webkit-scrollbar,
+#connectedShell.worker-mobile-final .wm-home-journey::-webkit-scrollbar{display:none}
+#connectedShell.customer-mobile-bootstrap .cm-home-journey small,
+#connectedShell.worker-mobile-final .wm-home-journey small{
+  max-width:54px!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+}
+
+/* 5) Real sub-pages: collapse desktop rows, facts and action bars consistently. */
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-role-head,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-role-head{
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:12px!important;
+  padding:14px!important;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-role-badges,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-role-badges{
+  justify-content:flex-start!important;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-availability,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-availability{
+  width:100%!important;
+  min-width:0!important;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-next,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-next{
+  grid-template-columns:1fr!important;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-next>div+div,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-next>div+div{
+  border-left:0!important;
+  border-top:1px solid #dce7ef!important;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-two-col,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-metrics,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-service-catalog,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-trust-explainer,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-opportunity-facts,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-check-grid,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-two-col,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-metrics,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-service-catalog,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-trust-explainer,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-opportunity-facts,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-check-grid{
+  grid-template-columns:1fr!important;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-panel-head,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-panel-head,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .connected-offer-head,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .connected-offer-head,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .connected-actions,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .connected-actions,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .connected-offer-actions,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .connected-offer-actions,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .connected-meta,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .connected-meta,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-view-actions,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-view-actions,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-voice-schedule,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-voice-schedule{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:9px!important;
+  min-width:0!important;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .connected-actions .btn,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .connected-actions .btn,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .connected-offer-actions .btn,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .connected-offer-actions .btn,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-view-actions>*,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-view-actions>*,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-primary,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-primary,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-secondary,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-secondary{
+  width:100%!important;
+  min-width:0!important;
+  min-height:48px!important;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-history-list article,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-history-list article,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-notification-list article,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-notification-list article,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-trust-worker,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-trust-worker{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  align-items:start!important;
+  min-width:0!important;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-inline-facts,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-inline-facts{
+  max-width:100%;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-inline-facts span,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-inline-facts span,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-view p,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-view p,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-view small,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-view small{
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+
+/* 6) Forms, media and wide data must never push the phone canvas sideways. */
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer input,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer select,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer textarea,
+#connectedShell.worker-mobile-final .cw-dashboard.worker input,
+#connectedShell.worker-mobile-final .cw-dashboard.worker select,
+#connectedShell.worker-mobile-final .cw-dashboard.worker textarea{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  font-size:16px!important;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer img,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer video,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer canvas,
+#connectedShell.worker-mobile-final .cw-dashboard.worker img,
+#connectedShell.worker-mobile-final .cw-dashboard.worker video,
+#connectedShell.worker-mobile-final .cw-dashboard.worker canvas{
+  max-width:100%!important;
+  height:auto;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer audio,
+#connectedShell.worker-mobile-final .cw-dashboard.worker audio{
+  width:100%!important;
+  max-width:100%!important;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer table,
+#connectedShell.worker-mobile-final .cw-dashboard.worker table,
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .connected-stepper,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .connected-stepper{
+  max-width:100%!important;
+  overflow-x:auto!important;
+  -webkit-overflow-scrolling:touch;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer table,
+#connectedShell.worker-mobile-final .cw-dashboard.worker table{
+  display:block;
+  width:100%!important;
+  min-width:0!important;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .connected-card,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .connected-card{
+  overflow:hidden;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .connected-card table,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .connected-card table{
+  overflow-x:auto!important;
+}
+
+/* 7) Bottom navigation and profile sheet stay phone-sized in wide-touch / desktop-site mode. */
+#connectedShell.customer-mobile-bootstrap>.cm-bottom-nav,
+#connectedShell.worker-mobile-final>.wm-bottom-nav{
+  left:50%!important;
+  right:auto!important;
+  width:min(100%,var(--sp-role-phone-max))!important;
+  max-width:var(--sp-role-phone-max)!important;
+  transform:translateX(-50%);
+}
+#connectedShell.customer-mobile-bootstrap>.cm-profile-layer .cm-profile-sheet,
+#connectedShell.worker-mobile-final>.wm-profile-layer .wm-profile-sheet{
+  left:50%!important;
+  right:auto!important;
+  width:min(100%,var(--sp-role-phone-max))!important;
+  max-width:var(--sp-role-phone-max)!important;
+  transform:translateX(-50%);
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+
+@media(max-width:480px){
+  #connectedShell.customer-mobile-bootstrap .cm-location,
+  #connectedShell.worker-mobile-final .wm-location{display:none!important}
+
+  #connectedShell.customer-mobile-bootstrap .cm-mobile-header,
+  #connectedShell.worker-mobile-final .wm-mobile-header{
+    gap:6px!important;
+    min-height:76px!important;
+    padding-left:12px!important;
+    padding-right:12px!important;
+  }
+  #connectedShell.customer-mobile-bootstrap .cm-brand-lockup img,
+  #connectedShell.worker-mobile-final .wm-brand img{width:40px!important;height:40px!important}
+  #connectedShell.customer-mobile-bootstrap .cm-brand-lockup strong,
+  #connectedShell.worker-mobile-final .wm-brand strong{font-size:20px!important}
+
+  #connectedShell.customer-mobile-bootstrap .cm-mobile-greeting,
+  #connectedShell.worker-mobile-final .wm-greeting{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:8px!important;
+  }
+  #connectedShell.customer-mobile-bootstrap .cm-motto{justify-self:start!important;margin-top:0!important}
+  #connectedShell.worker-mobile-final .wm-duty{justify-items:start!important}
+
+  #connectedShell.customer-mobile-bootstrap .cm-next-card,
+  #connectedShell.worker-mobile-final .wm-next-card{
+    grid-template-columns:48px minmax(0,1fr)!important;
+  }
+  #connectedShell.customer-mobile-bootstrap .cm-next-card>button,
+  #connectedShell.worker-mobile-final .wm-next-card>button{
+    grid-column:2!important;
+    justify-self:start!important;
+    width:auto!important;
+    min-height:40px!important;
+    margin-top:3px!important;
+  }
+  #connectedShell.customer-mobile-bootstrap .cm-support-card,
+  #connectedShell.worker-mobile-final .wm-trust-card{
+    grid-template-columns:46px minmax(0,1fr)!important;
+  }
+  #connectedShell.customer-mobile-bootstrap .cm-support-card button,
+  #connectedShell.worker-mobile-final .wm-trust-card button{
+    grid-column:2!important;
+    justify-self:start!important;
+    width:auto!important;
+    margin-top:2px!important;
+  }
+}
+
+@media(max-width:370px){
+  #connectedShell.customer-mobile-bootstrap .cm-brand-lockup small,
+  #connectedShell.worker-mobile-final .wm-brand small{display:none!important}
+
+  #connectedShell.customer-mobile-bootstrap .cm-quick-grid,
+  #connectedShell.worker-mobile-final .wm-quick-grid{
+    grid-template-columns:1fr!important;
+  }
+  #connectedShell.customer-mobile-bootstrap .cm-quick-grid>button,
+  #connectedShell.worker-mobile-final .wm-quick-grid>button{
+    grid-template-columns:42px minmax(0,1fr) 18px!important;
+    grid-template-rows:auto auto!important;
+    min-height:72px!important;
+    align-items:center!important;
+  }
+  #connectedShell.customer-mobile-bootstrap .cm-quick-grid .cm-quick-icon,
+  #connectedShell.worker-mobile-final .wm-quick-grid .wm-quick-icon{grid-row:1/3!important}
+  #connectedShell.customer-mobile-bootstrap .cm-quick-grid b,
+  #connectedShell.worker-mobile-final .wm-quick-grid b{margin-top:2px!important}
+  #connectedShell.customer-mobile-bootstrap .cm-quick-grid small,
+  #connectedShell.worker-mobile-final .wm-quick-grid small{padding-right:0!important}
+  #connectedShell.customer-mobile-bootstrap .cm-mini-arrow,
+  #connectedShell.worker-mobile-final .wm-mini-arrow{
+    position:static!important;
+    grid-column:3!important;
+    grid-row:1/3!important;
+    align-self:center!important;
+  }
+  #connectedShell.customer-mobile-bootstrap .cm-mobile-metrics,
+  #connectedShell.worker-mobile-final .wm-metrics{grid-template-columns:1fr!important}
+}
+
+/* 8) Deep phone hardening: touch targets, long statuses and safe landscape padding. */
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer .cw-main,
+#connectedShell.worker-mobile-final .cw-dashboard.worker .cw-main{
+  padding-left:max(14px,env(safe-area-inset-left))!important;
+  padding-right:max(14px,env(safe-area-inset-right))!important;
+}
+#connectedShell.customer-mobile-bootstrap button,
+#connectedShell.worker-mobile-final button{
+  touch-action:manipulation;
+}
+#connectedShell.customer-mobile-bootstrap .cm-bell,
+#connectedShell.customer-mobile-bootstrap .cm-avatar,
+#connectedShell.worker-mobile-final .wm-icon-btn,
+#connectedShell.worker-mobile-final .wm-avatar,
+#connectedShell.customer-mobile-bootstrap .cm-profile-head>button,
+#connectedShell.worker-mobile-final .wm-profile-head>button{
+  width:44px!important;
+  min-width:44px!important;
+  height:44px!important;
+  min-height:44px!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-next-card>button,
+#connectedShell.customer-mobile-bootstrap .cm-support-card button,
+#connectedShell.worker-mobile-final .wm-next-card>button,
+#connectedShell.worker-mobile-final .wm-trust-card button,
+#connectedShell.customer-mobile-bootstrap .cm-booking-top button,
+#connectedShell.worker-mobile-final .wm-work-top button{
+  min-height:44px!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-booking-top,
+#connectedShell.worker-mobile-final .wm-work-top{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center!important;
+  gap:8px!important;
+  min-width:0!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-booking-top button,
+#connectedShell.worker-mobile-final .wm-work-top button{
+  max-width:100%!important;
+  white-space:normal!important;
+  text-align:right!important;
+}
+#connectedShell.customer-mobile-bootstrap .cm-status-chip,
+#connectedShell.worker-mobile-final .wm-status-chip{
+  max-width:100%!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer :is(h1,h2,h3,h4,b,strong,p,small,span,label),
+#connectedShell.worker-mobile-final .cw-dashboard.worker :is(h1,h2,h3,h4,b,strong,p,small,span,label){
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer :is(code,.cw-request-text),
+#connectedShell.worker-mobile-final .cw-dashboard.worker :is(code,.cw-request-text){
+  word-break:break-word;
+}
+
+/* 9) Keyboard safety: runtime guard adds .role-mobile-keyboard while a form control is focused. */
+#connectedShell.role-mobile-keyboard.customer-mobile-bootstrap>.cm-bottom-nav,
+#connectedShell.role-mobile-keyboard.worker-mobile-final>.wm-bottom-nav,
+#connectedShell.customer-mobile-bootstrap:has(input:focus,textarea:focus,select:focus)>.cm-bottom-nav,
+#connectedShell.worker-mobile-final:has(input:focus,textarea:focus,select:focus)>.wm-bottom-nav{
+  opacity:0!important;
+  pointer-events:none!important;
+  transform:translateX(-50%) translateY(110%)!important;
+}
+#connectedShell.customer-mobile-bootstrap input,
+#connectedShell.customer-mobile-bootstrap textarea,
+#connectedShell.customer-mobile-bootstrap select,
+#connectedShell.worker-mobile-final input,
+#connectedShell.worker-mobile-final textarea,
+#connectedShell.worker-mobile-final select{
+  scroll-margin-top:110px;
+  scroll-margin-bottom:150px;
+}
+
+/* 10) Strong focus visibility for touch + keyboard demos. */
+#connectedShell.customer-mobile-bootstrap button:focus-visible,
+#connectedShell.worker-mobile-final button:focus-visible,
+#connectedShell.customer-mobile-bootstrap input:focus-visible,
+#connectedShell.customer-mobile-bootstrap textarea:focus-visible,
+#connectedShell.customer-mobile-bootstrap select:focus-visible,
+#connectedShell.worker-mobile-final input:focus-visible,
+#connectedShell.worker-mobile-final textarea:focus-visible,
+#connectedShell.worker-mobile-final select:focus-visible{
+  outline:3px solid rgba(10,86,168,.22)!important;
+  outline-offset:2px!important;
+}
+
+@media(max-width:520px){
+  #connectedShell.customer-mobile-bootstrap .cm-location,
+  #connectedShell.worker-mobile-final .wm-location{display:none!important}
+}
+
+@media(max-height:520px) and (orientation:landscape){
+  #connectedShell.customer-mobile-bootstrap .cm-mobile-header,
+  #connectedShell.worker-mobile-final .wm-mobile-header{
+    position:sticky;
+    min-height:64px!important;
+    padding-top:max(8px,env(safe-area-inset-top))!important;
+    padding-bottom:8px!important;
+  }
+  #connectedShell.customer-mobile-bootstrap .cm-brand-lockup img,
+  #connectedShell.worker-mobile-final .wm-brand img{width:36px!important;height:36px!important}
+  #connectedShell.customer-mobile-bootstrap .cm-brand-lockup strong,
+  #connectedShell.worker-mobile-final .wm-brand strong{font-size:19px!important}
+  #connectedShell.customer-mobile-bootstrap .cm-brand-lockup small,
+  #connectedShell.worker-mobile-final .wm-brand small{display:none!important}
+}
