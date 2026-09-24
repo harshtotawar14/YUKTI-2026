@@ -47,7 +47,7 @@
     document.body.appendChild(root);root.querySelector('#connectedClose').onclick=close;return root;
   }
   function setHeaderSubtitle(text){const el=shell().querySelector('#connectedHeaderSubtitle');if(el)el.textContent=text;}
-  function setLiveState(state){const el=shell().querySelector('#connectedTopStatus');if(!el)return;const map={online:['● Live','#8ee2b5'],checking:['Checking…','#b8c6d8'],offline:['● Offline','#ff9b9b'],retry:['● Reconnecting…','#ffb66e']};const [text,color]=map[state]||map.checking;el.textContent=text;el.style.color=color;}
+  function setLiveState(state){const el=shell().querySelector('#connectedTopStatus');if(!el)return;const map={online:['● Live','#8ee2b5'],checking:['Checking…','#b8c6d8'],offline:['● Offline','#ff9b9b'],retry:['● Reconnecting…','#ffb66e']};const [text,color]=window.SanPaidReviewRuntime?.enabled?['● Review Session','#b8c6d8']:(map[state]||map.checking);el.textContent=text;el.style.color=color;}
   async function checkHealth(){try{const h=await request('/api/connected/health',{bearer:false});setLiveState(h.ok?'online':'offline');}catch{setLiveState('offline');}}
   function requestedRole(persona){return persona==='CUSTOMER'?'CUSTOMER':persona==='WORKER_A'||persona==='WORKER_B'?'WORKER':null;}
 

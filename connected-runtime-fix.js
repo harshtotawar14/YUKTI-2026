@@ -200,7 +200,7 @@
   function setConnectionState(state){
     const element=document.getElementById('connectedTopStatus');if(!element)return;
     const map={online:['● Live','#8ee2b5'],retry:['● Reconnecting…','#ffb66e'],offline:['● Offline','#ff9b9b']};
-    const [text,color]=map[state]||map.retry;element.textContent=text;element.style.color=color;
+    const [text,color]=window.SanPaidReviewRuntime?.enabled?['● Review Session','#b8c6d8']:(map[state]||map.retry);element.textContent=text;element.style.color=color;
   }
   function subscribe(listener){
     if(typeof listener!=='function')return()=>{};
