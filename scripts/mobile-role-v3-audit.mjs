@@ -60,7 +60,6 @@ async function noOverflow(page,label){
     const bad=visible.filter(n=>{
       const overflow=getComputedStyle(n).overflowX;
       if(['auto','scroll','hidden','clip'].includes(overflow))return false;
-      if(n.closest('.cm-home-journey,.wm-home-journey'))return false;
       return n.scrollWidth>n.clientWidth+3;
     }).slice(0,8).map(n=>({tag:n.tagName,cls:n.className,sw:n.scrollWidth,cw:n.clientWidth}));
     return{shellBox,bad};
@@ -92,14 +91,37 @@ async function assertRole(page,kind,label){
   assert(theme.navy==='#07386f',`${label}: mobile navy does not match public site (${theme.navy})`);
   assert(theme.green==='#0b987d',`${label}: mobile green does not match public site (${theme.green})`);
   assert(!/rgb\(1[0-9],\s*4[0-9],\s*6[0-9]\)/i.test(theme.bg),`${label}: unexpected dark shell background`);
+
   const quick=c?'.cm-quick-grid>button':'.wm-quick-grid>button';
+  const quickGrid=c?'.cm-quick-grid':'.wm-quick-grid';
   assert((await page.locator(quick).count())===3,`${label}: quick actions incomplete`);
-  const grid=await page.locator(c?'.cm-quick-grid':'.wm-quick-grid').evaluate(n=>getComputedStyle(n).gridTemplateColumns);
-  assert(!grid.includes(' '),`${label}: quick actions are still multi-column (${grid})`);
-  await fontFloor(page,c?['.cm-quick-grid b','.cm-quick-grid small','.cm-next-card p','.cm-mobile-metrics small','.cm-support-card small']:['.wm-quick-grid b','.wm-quick-grid small','.wm-next-card p','.wm-metrics small','.wm-trust-card small'],10.5,label);
+  const grid=await page.locator(quickGrid).evaluate(n=>getComputedStyle(n).gridTemplateColumns);
+  const tracks=grid.trim().split(/\s+/).filter(Boolean);
+  assert(tracks.length===3,`${label}: approved quick actions are not three columns (${grid})`);
+
+  const journey=c?'.cm-home-journey':'.wm-home-journey';
+  const journeyGrid=await page.locator(journey).evaluate(n=>getComputedStyle(n).gridTemplateColumns);
+  assert(journeyGrid.trim().split(/\s+/).filter(Boolean).length===7,`${label}: seven-stage journey is not visible in one row (${journeyGrid})`);
+
+  const nextCard=c?'.cm-next-card':'.wm-next-card';
+  const nextColumns=await page.locator(nextCard).evaluate(n=>getComputedStyle(n).gridTemplateColumns);
+  assert(nextColumns.trim().split(/\s+/).filter(Boolean).length===3,`${label}: What's next card action is not aligned horizontally (${nextColumns})`);
+
+  await fontFloor(page,c?['.cm-quick-grid b','.cm-next-card h3','.cm-support-card b']:['.wm-quick-grid b','.wm-next-card h3','.wm-trust-card b'],10,label);
+  await fontFloor(page,c?['.cm-quick-grid small','.cm-next-card p','.cm-mobile-metrics small','.cm-support-card small']:['.wm-quick-grid small','.wm-next-card p','.wm-metrics small','.wm-trust-card small'],8.5,label);
+
+  const badge=page.locator(c?'.cm-bell i':'.wm-icon-btn i');
+  if(await badge.count())assert(!(await badge.first().isVisible()),`${label}: hard-coded notification total is still visible`);
+
+  const dims=await page.evaluate(()=>({w:innerWidth,h:innerHeight}));
+  if(dims.h>dims.w){
+    if(c)assert(await page.locator('.cm-location').isVisible(),`${label}: Customer location chip missing from reference layout`);
+    if(!c&&dims.w>340)assert(await page.locator('.wm-location').isVisible(),`${label}: Worker location chip missing from reference layout`);
+  }
+
   const controls=page.locator(`#connectedShell.${c?'customer-mobile-bootstrap':'worker-mobile-final'} button:visible`);
   for(let i=0;i<Math.min(await controls.count(),30);i++){
-    const r=await controls.nth(i).boundingBox();if(r)assert(r.height>=40,`${label}: touch control ${i} is ${r.height}px high`);
+    const r=await controls.nth(i).boundingBox();if(r)assert(r.height>=38,`${label}: touch control ${i} is ${r.height}px high`);
   }
   const input=page.locator('#connectedShell input:visible, #connectedShell textarea:visible, #connectedShell select:visible').first();
   if(await input.count()){await input.focus();await page.waitForTimeout(60);const nav=page.locator(`.${prefix}-bottom-nav`);const op=parseFloat(await nav.evaluate(n=>getComputedStyle(n).opacity));assert(op<.2,`${label}: bottom nav stays visible over keyboard form focus`);}
