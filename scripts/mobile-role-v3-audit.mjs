@@ -60,6 +60,8 @@ async function noOverflow(page,label){
     const bad=visible.filter(n=>{
       const overflow=getComputedStyle(n).overflowX;
       if(['auto','scroll','hidden','clip'].includes(overflow))return false;
+      /* Journey stage connectors intentionally extend into the adjacent grid cell. The shell-level check above still catches real page overflow. */
+      if(n.closest('.cm-home-journey,.wm-home-journey'))return false;
       return n.scrollWidth>n.clientWidth+3;
     }).slice(0,8).map(n=>({tag:n.tagName,cls:n.className,sw:n.scrollWidth,cw:n.clientWidth}));
     return{shellBox,bad};
