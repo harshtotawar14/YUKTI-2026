@@ -15,7 +15,7 @@ const publicFiles=[
   'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','login-reference.css','customer-worker-dashboard.css','customer-reference-dashboard.css','customer-mobile-reference.css','worker-mobile-final.css',
   'admin-command-center.css','federation-govtech.css','federation-portal.css','cooperative-portal.css','admin-final.css','admin-final-guard.css','handover-evidence.css',
   'credibility-layer.css','workforce-intelligence.css',
-  'app.js','mobile.js','connected-demo.js','connected-service-ui.js','connected-commerce-ui.js','connected-runtime-fix.js','review-runtime.js','review-runtime-bridge.js',
+  'app.js','mobile.js','connected-demo.js','connected-service-ui.js','connected-commerce-ui.js','connected-runtime-fix.js','review-runtime.js','selection-demo-runtime.js','review-runtime-bridge.js',
   'capacity-worker-ui.js','judge-demo.js','selector-mode.js','selector-final-polish.js','top1-polish.js','evaluator-final.js','auth-unified.js','login-reference.js',
   'customer-worker-dashboard.js','customer-reference-dashboard.js','customer-mobile-bootstrap.js','customer-mobile-reference.js','worker-mobile-final.js','admin-command-center.js','federation-portal.js','cooperative-portal.js','admin-final.js',
   'handover-evidence.js','credibility-layer.js','workforce-intelligence.js','service-worker.js'
@@ -28,11 +28,13 @@ function assertFinalRoleSources(){
   const admin=sourceText('admin-final.js');
   const login=sourceText('login-reference.js');
   const selector=sourceText('selector-final-polish.js');
+  const selectionRuntime=sourceText('selection-demo-runtime.js');
   if(!customer.includes('SanPaidCustomerReference'))throw new Error('Canonical Customer renderer is missing.');
   if(worker.includes(`'\"':'&quot',`)||!worker.includes(`'\"':'&quot;',`))throw new Error('Worker mobile HTML escaping contract is incomplete.');
   if(!admin.includes('restoreMovedNodes')||!admin.includes('movedNodes'))throw new Error('Final Admin UI must restore borrowed operational modules during role changes.');
   if(login.includes('<b>Demo:</b>'))throw new Error('Selector-facing login must use review access wording, not a visible Demo label.');
   if(!selector.includes('Field findings mapped to product controls')||!selector.includes('WHAT YOU CAN EXPLORE NOW')||!selector.includes('sanpaidCustomerBootGuard')||!selector.includes('Workspace Ready')||selector.includes('data-selector-finding'))throw new Error('Selector-facing evidence, implementation truth, admin status, or Customer placeholder neutralization is incomplete.');
+  if(!selectionRuntime.includes('SELECTION_DEMO_BACKEND')||!selectionRuntime.includes('BroadcastChannel')||!selectionRuntime.includes('sharedAcrossTabs'))throw new Error('Selection demo shared-state reliability layer is incomplete.');
 }
 
 function resolveCommit(){
@@ -101,7 +103,7 @@ const builtIndexPath=resolve(output,'index.html');
 const builtIndex=readFileSync(builtIndexPath,'utf8')
   .replaceAll('https://sahkriya.vercel.app',primaryProductionUrl)
   .replace('</head>',`<meta name="color-scheme" content="light">\n<meta name="supported-color-schemes" content="light">\n<link rel="stylesheet" href="login-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-mobile-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="worker-mobile-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final-guard.css?v=${assetVersion}">\n</head>`)
-  .replace('</body>',`<script src="review-runtime.js?v=${assetVersion}"></script>\n<script src="customer-worker-dashboard.js?v=${assetVersion}"></script>\n<script src="review-runtime-bridge.js?v=${assetVersion}"></script>\n<script src="login-reference.js?v=${assetVersion}"></script>\n<script src="customer-reference-dashboard.js?v=${assetVersion}"></script>\n<script src="customer-mobile-bootstrap.js?v=${assetVersion}"></script>\n<script src="customer-mobile-reference.js?v=${assetVersion}"></script>\n<script src="worker-mobile-final.js?v=${assetVersion}"></script>\n<script src="admin-final.js?v=${assetVersion}"></script>\n<script src="selector-final-polish.js?v=${assetVersion}"></script>\n</body>`);
+  .replace('</body>',`<script src="review-runtime.js?v=${assetVersion}"></script>\n<script src="selection-demo-runtime.js?v=${assetVersion}"></script>\n<script src="customer-worker-dashboard.js?v=${assetVersion}"></script>\n<script src="review-runtime-bridge.js?v=${assetVersion}"></script>\n<script src="login-reference.js?v=${assetVersion}"></script>\n<script src="customer-reference-dashboard.js?v=${assetVersion}"></script>\n<script src="customer-mobile-bootstrap.js?v=${assetVersion}"></script>\n<script src="customer-mobile-reference.js?v=${assetVersion}"></script>\n<script src="worker-mobile-final.js?v=${assetVersion}"></script>\n<script src="admin-final.js?v=${assetVersion}"></script>\n<script src="selector-final-polish.js?v=${assetVersion}"></script>\n</body>`);
 writeFileSync(builtIndexPath,builtIndex);
 
 const buildInfo={
@@ -115,7 +117,8 @@ const buildInfo={
   roleMobileUi:'FINAL_ONLY',
   adminUi:'REFERENCE_FINAL',
   uiArchitecture:'ROLE_SHELLS_FINAL',
-  selectorExperience:'SELECTION_READY'
+  selectorExperience:'SELECTION_READY',
+  demoBackend:'SHARED_BROWSER_LEDGER'
 };
 
 writeFileSync(resolve(output,'build-info.json'),`${JSON.stringify(buildInfo,null,2)}\n`);
