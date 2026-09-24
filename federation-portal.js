@@ -5,6 +5,7 @@
   const $=(s,r=document)=>r.querySelector(s);
   const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const human=v=>String(v||'—').replaceAll('_',' ').toLowerCase().replace(/\b\w/g,m=>m.toUpperCase());
 
   let timer=0;
   let returnFocus=null;
@@ -13,11 +14,12 @@
 
   function isFederation(){return !!document.querySelector('#sihJudgeShell.federation-govtech:not(.judge-hidden)');}
   function token(){try{return sessionStorage.getItem(TOKEN_KEY)||''}catch{return ''}}
-  async function api(path){
-    const headers={};
+  async function api(path,opt={}){
+    const headers=new Headers(opt.headers||{});
     const t=token();
-    if(t)headers.Authorization=`Bearer ${t}`;
-    const r=await fetch(path,{credentials:'include',cache:'no-store',headers});
+    if(t)headers.set('Authorization',`Bearer ${t}`);
+    if(opt.body&&!headers.has('Content-Type'))headers.set('Content-Type','application/json');
+    const r=await fetch(path,{...opt,credentials:'include',cache:'no-store',headers});
     const data=await r.json().catch(()=>({}));
     if(!r.ok)throw Object.assign(new Error(data.message||data.error||`Request failed (${r.status})`),{status:r.status});
     return data;
@@ -229,7 +231,6 @@
       section.innerHTML='<div class="admin-health-error">Regional planning data could not be loaded. Open Planning & Intelligence to retry.</div>';
     }
   }
-
 
   async function renderCapacityGovernance(){
     const root=$('#fedCapacityGovernance');
