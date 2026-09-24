@@ -25,17 +25,22 @@ jobs:
       - name: Verify selection integrity runtime is shipped
         run: |
           test -s dist/selection-integrity-v2.js
+          test -s dist/selection-judge-integrity-v3.js
           grep -F 'LOCAL_CAPACITY_EXHAUSTED' dist/selection-integrity-v2.js
-          grep -F 'Human-reviewed forecasting (pilot)' dist/selection-integrity-v2.js
-          grep -F 'Start Fresh Review' dist/selection-integrity-v2.js
-          grep -F 'selection-integrity-v2.js?v=' dist/index.html
-          grep -F '"selectionIntegrity": "CLOSED_LOOP_V2"' dist/build-info.json
+          grep -F 'WORKER_CONSENT_REQUIRED' dist/selection-judge-integrity-v3.js
+          grep -F 'Controlled 30-day review baseline' dist/selection-judge-integrity-v3.js
+          grep -F 'selection-judge-integrity-v3.js?v=' dist/index.html
+          grep -F '"selectionIntegrity": "CLOSED_LOOP_V3"' dist/build-info.json
       - name: Install Playwright core without changing the repository
         run: npm install --no-save --package-lock=false playwright-core@1.55.0
       - name: Verify DB-independent SIH review runtime
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: node scripts/review-runtime-ui-audit.mjs
+      - name: Verify full local-first to cross-coop closed loop
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: node scripts/selection-closed-loop-audit.mjs
       - name: Verify final Customer and Worker role UI
         env:
           CHROME_BIN: /usr/bin/google-chrome
@@ -45,7 +50,6 @@ jobs:
           CHROME_BIN: /usr/bin/google-chrome
         run: node scripts/admin-final-ui-audit.mjs
       - name: Run broader Chromium button and dialog audit
-        continue-on-error: true
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: node scripts/browser-ui-audit.mjs
