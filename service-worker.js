@@ -1,8 +1,8 @@
-const CACHE_NAME='sanpaid-runtime-v71-selector-final3';
+const CACHE_NAME='sanpaid-runtime-v71-selector-final4';
 const FALLBACK_ASSETS=[
   './','./index.html','./styles.css','./mobile.css','./design-tokens.css','./master-v2.css','./dossier-redesign.css',
   './connected-demo.css','./judge-demo.css','./selector-mode.css','./auth-unified.css','./login-reference.css',
-  './customer-worker-dashboard.css','./customer-reference-dashboard.css','./customer-mobile-reference.css','./worker-mobile-final.css',
+  './customer-worker-dashboard.css','./customer-reference-dashboard.css','./customer-mobile-reference.css','./worker-mobile-final.css','./mobile-role-stability.css',
   './admin-final.css','./admin-final-guard.css','./admin-command-center.css','./cooperative-portal.css','./federation-portal.css','./federation-govtech.css',
   './app.js','./mobile.js','./evaluator-final.js','./top1-polish.js','./selector-final-polish.js','./auth-unified.js','./login-reference.js',
   './connected-demo.js','./connected-service-ui.js','./connected-commerce-ui.js','./connected-runtime-fix.js','./review-runtime.js','./review-runtime-bridge.js',
