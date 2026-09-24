@@ -155,7 +155,7 @@ test('first fold exposes both core USPs and field validation immediately',()=>{
     'USP 02',
     'Demand-to-Workforce Loop',
     'Stakeholder-informed design · Kolhapur',
-    '5 findings mapped to product controls'
+    'Field findings mapped to product controls'
   ];
   const missing=required.filter(phrase=>!html.includes(phrase));
   assert.deepEqual(missing,[],`First-fold differentiation/evidence missing: ${missing.join(', ')}`);

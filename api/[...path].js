@@ -273,6 +273,10 @@ module.exports=async function handler(req,res){
     const adminResult=await adminRoutes(req,res,user,path);if(adminResult!==false)return;
     throw httpError(404,'API route not found.','ROUTE_NOT_FOUND');
   }catch(error){
-    console.error('[sanpaid-api]',path,error.code||error.message);const status=Number(error.status)||500;return send(res,status,{ok:false,error:error.code||'INTERNAL_ERROR',message:status>=500&&process.env.NODE_ENV==='production'?'Service temporarily unavailable.':error.message});
+    console.error('[sanpaid-api]',path,error.code||error.message);
+    const resourcePressure=/^53/.test(String(error.code||''))||error.code==='57P03';
+    const status=Number(error.status)||(resourcePressure?503:500);
+    if(resourcePressure)res.setHeader('Retry-After','30');
+    return send(res,status,{ok:false,error:error.code||'INTERNAL_ERROR',message:status>=500&&process.env.NODE_ENV==='production'?'Service temporarily unavailable.':error.message});
   }
 };

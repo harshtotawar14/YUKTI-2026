@@ -48,9 +48,9 @@ try{
     if(target==='connected'){
       await page.locator('#connectedShell:not(.hidden)').waitFor({state:'visible'});
       assert(await page.locator('#connectedContent').getAttribute('data-connected-role')===role,`${role}: connected role surface mismatch`);
-      await page.waitForTimeout(1200);
       const selector=`.cw-dashboard.${role==='CUSTOMER'?'customer':'worker'}`;
-      if(await page.locator(selector).count()===0){
+      const rendered=await waitFor(async()=>await page.locator(selector).count()>0,{attempts:50,delay:100,message:`${role}: dashboard did not render within five seconds`}).then(()=>true,()=>false);
+      if(!rendered){
         const diagnostic=await page.evaluate(async()=>{
           const content=document.getElementById('connectedContent');
           let snapshot=null,services=null;
