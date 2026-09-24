@@ -29,6 +29,26 @@
   };
   const mobile=()=>narrowViewport()||phoneLikeTouch();
 
+  function ensureReferenceStyle(){
+    if(document.getElementById('sanpaidWorkerReferenceLock'))return;
+    const style=document.createElement('style');style.id='sanpaidWorkerReferenceLock';
+    style.textContent=`
+#connectedShell.worker-mobile-final{color-scheme:only light!important;background:#f6f9fc!important;color:#0b2c57!important}
+#connectedShell.worker-mobile-final .wm-quick-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
+#connectedShell.worker-mobile-final .wm-quick-grid>button{position:relative!important;display:grid!important;grid-template-columns:1fr!important;grid-template-rows:42px auto auto!important;align-content:start!important;min-width:0!important;min-height:116px!important;padding:10px 8px!important;border-radius:15px!important;text-align:left!important;background:#fff!important;color:#0b2c57!important}
+#connectedShell.worker-mobile-final .wm-quick-icon{grid-row:auto!important;grid-column:1!important;width:40px!important;height:40px!important;border-radius:12px!important}
+#connectedShell.worker-mobile-final .wm-quick-grid b{grid-column:1!important;margin:6px 14px 0 0!important;font-size:11.5px!important;line-height:1.15!important;color:#07386f!important}
+#connectedShell.worker-mobile-final .wm-quick-grid small{grid-column:1!important;margin:3px 14px 0 0!important;padding:0!important;font-size:9.5px!important;line-height:1.25!important;color:#69809a!important}
+#connectedShell.worker-mobile-final .wm-mini-arrow{position:absolute!important;grid-column:auto!important;grid-row:auto!important;right:6px!important;bottom:13px!important;align-self:auto!important;justify-self:auto!important}
+#connectedShell.worker-mobile-final .wm-next-card,#connectedShell.worker-mobile-final .wm-trust-card{grid-template-columns:48px minmax(0,1fr) auto!important;align-items:center!important}
+#connectedShell.worker-mobile-final .wm-next-card>button,#connectedShell.worker-mobile-final .wm-trust-card>button{grid-column:auto!important;justify-self:end!important;width:auto!important;min-width:0!important;min-height:40px!important;margin-top:0!important;white-space:nowrap!important}
+#connectedShell.worker-mobile-final .wm-metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#connectedShell.worker-mobile-final>.wm-bottom-nav>button>span{white-space:normal!important;text-align:center!important}
+@media(max-width:380px){#connectedShell.worker-mobile-final .wm-brand img{width:34px!important;height:34px!important;flex-basis:34px!important}#connectedShell.worker-mobile-final .wm-brand small{display:none!important}#connectedShell.worker-mobile-final .wm-location{padding:0 6px!important;font-size:9px!important}#connectedShell.worker-mobile-final .wm-header-actions{gap:4px!important}}
+@media(max-width:340px){#connectedShell.worker-mobile-final .wm-next-card,#connectedShell.worker-mobile-final .wm-trust-card{grid-template-columns:44px minmax(0,1fr)!important}#connectedShell.worker-mobile-final .wm-next-card>button,#connectedShell.worker-mobile-final .wm-trust-card>button{grid-column:1/-1!important;width:100%!important;justify-content:center!important}#connectedShell.worker-mobile-final .wm-quick-grid{gap:6px!important}#connectedShell.worker-mobile-final .wm-quick-grid>button{padding:9px 6px!important}#connectedShell.worker-mobile-final .wm-quick-grid b{font-size:10.5px!important}#connectedShell.worker-mobile-final .wm-quick-grid small{font-size:9px!important}}`;
+    document.head.appendChild(style);
+  }
+
   function currentUser(){try{return window.SanPaidAuth?.getCurrentUser?.()||{};}catch{return{};}}
   function workerName(){const u=currentUser();return String(u.fullName||u.name||'Worker').trim()||'Worker';}
   function workerEmail(){const u=currentUser();return String(u.email||u.loginId||u.username||'worker@sanpaid').trim();}
@@ -86,6 +106,7 @@
     const isWorker=!shell.classList.contains('hidden')&&String(content.dataset.connectedRole||'').toUpperCase()==='WORKER';
     const active=isWorker&&mobile();shell.dataset.workerMobileMode=active?'true':'false';
     if(!active){cleanup(shell);if(!shell.classList.contains('customer-mobile-bootstrap'))shell.classList.remove('role-mobile-final');return;}
+    ensureReferenceStyle();
     const dash=dashboard(),data=readDashboard(),main=dash?.querySelector('.cw-main');
     if(!dash||!data||!main){shell.classList.remove('worker-mobile-final','worker-mobile-ready');return;}
     renderHeader(ensureHeader(main));ensureHome(data.overview,data);const nav=ensureBottomNav(shell);syncBottomNav(nav,dash);
