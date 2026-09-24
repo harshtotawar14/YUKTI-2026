@@ -41,7 +41,7 @@
   function workerEstimateBlock(id,estimate){
     const previousItems=Array.isArray(estimate?.items)?estimate.items:[],primary=previousItems[0]||{},secondary=previousItems[1]||{};
     if(estimate?.status==='PENDING')return `<div class="connected-demo-note"><b>ESTIMATE SENT · CUSTOMER APPROVAL PENDING</b><br>${estimateItems(estimate)}<div class="connected-heading-row" style="margin-top:8px"><span>Total</span><b>${money(estimate.total)}</b></div></div>`;
-    if(estimate?.status==='APPROVED')return `<div class="connected-success"><b>ESTIMATE APPROVED ✓</b><br>Customer approved ${money(estimate.total)}. Identity / QR service-start verification is now unlocked.</div>`;
+    if(estimate?.status==='APPROVED')return `<div class="connected-success"><b>ESTIMATE APPROVED ✓</b><br>Customer approved ${money(estimate.total)}. One-time service verification is now unlocked.</div>`;
     const revision=estimate?.status==='REJECTED'?'<div class="connected-demo-note"><b>Customer rejected the previous estimate.</b> Revise the scope or amount and send a new estimate.</div>':'';
     return `${revision}<form id="connectedEstimateForm" class="connected-form" data-booking="${id}">
       <span class="connected-step-label">INSPECTION → ITEMIZED ESTIMATE</span>
@@ -168,7 +168,7 @@
     if(busy)return;busy=true;const old=button?.textContent;if(button){button.disabled=true;button.textContent=decision==='APPROVE'?'Approving estimate…':'Rejecting estimate…';}
     try{
       await post(`/api/connected/customer/bookings/${bookingId}/estimate/decision`,{decision});
-      message(decision==='APPROVE'?'Estimate approved. Worker identity / QR service-start verification is now unlocked.':'Estimate rejected. The worker can revise and send it again.');lastCustomerSignature='';signal('estimate-decision');
+      message(decision==='APPROVE'?'Estimate approved. One-time service verification is now unlocked.':'Estimate rejected. The worker can revise and send it again.');lastCustomerSignature='';signal('estimate-decision');
     }catch(e){message(friendly(e),'error');if(button){button.disabled=false;button.textContent=old;}}
     finally{busy=false;setTimeout(refresh,160);}
   }

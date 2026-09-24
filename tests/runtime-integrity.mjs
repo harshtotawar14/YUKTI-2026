@@ -75,7 +75,7 @@ assert.match(adminFinal,/restoreMovedNodes/,'Admin final UI does not restore ope
 assert.doesNotMatch(loginReference,/<b>Demo:<\/b>/,'Selector-facing login still exposes a Demo label');
 assert.match(loginReference,/Review Access:/,'Selector-facing login review access helper is missing');
 assert.match(selectorPolish,/sanpaidCustomerBootGuard/,'Selector polish does not neutralize the legacy Customer preparation placeholder');
-assert.match(selectorPolish,/5 validated priorities informing product controls/,'Selector evidence summary is not aligned with the five validated priorities');
+assert.match(selectorPolish,/Field findings mapped to product controls/,'Selector evidence summary must match the displayed field findings');
 assert.doesNotMatch(selectorPolish,/data-selector-finding/,'Selector polish must not invent an unsupported fifth research finding');
 assert.match(selectorPolish,/WHAT YOU CAN EXPLORE NOW/,'Selector-facing implementation boundary is missing');
 assert.match(selectorPolish,/Workspace Ready/,'Admin review workspace must avoid an unsupported live-network claim');

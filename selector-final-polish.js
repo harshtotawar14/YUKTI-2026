@@ -16,7 +16,7 @@
     if(!strip)return;
     [...strip.querySelectorAll('span')].forEach(node=>{
       if(node.textContent.trim()==='5 findings mapped to product controls'){
-        node.textContent='5 validated priorities informing product controls';
+        node.textContent='Field findings mapped to product controls';
       }
     });
   }

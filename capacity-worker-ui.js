@@ -24,7 +24,7 @@
   }
   function message(text,type='success'){const el=document.getElementById('connectedCapacityMessage');if(el)el.innerHTML=`<div class="${type==='error'?'connected-error':'connected-success'}">${esc(text)}</div>`;}
   async function respond(button,action){if(busy)return;busy=true;const id=button.dataset.capAccept||button.dataset.capReject;const old=button.textContent;button.disabled=true;button.textContent=action==='ACCEPT'?'Accepting…':'Declining…';try{const r=await post(`/api/connected/worker/capacity-offers/${id}/respond`,{action});message(r.message||(action==='ACCEPT'?'Consent recorded. Authorized approval is still required.':'Capacity offer declined.'));lastSignature='';}catch(e){message(friendly(e),'error');button.disabled=false;button.textContent=old;}finally{busy=false;setTimeout(()=>render(true),250);}}
-  function schedule(delay=7200){clearTimeout(timer);timer=setTimeout(async()=>{await render();schedule(document.hidden?12000:7200);},delay);}
+  function schedule(delay=45000){clearTimeout(timer);timer=setTimeout(async()=>{await render();schedule(document.hidden?90000:45000);},delay);}
   function start(){setTimeout(()=>render(true),900);schedule();document.addEventListener('visibilitychange',()=>{if(!document.hidden)render();});document.addEventListener('click',e=>{if(e.target.closest('[data-connected-persona],#connectedLogin,[data-open-connected]'))setTimeout(()=>render(true),800);},true);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();

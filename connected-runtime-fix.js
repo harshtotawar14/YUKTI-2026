@@ -10,6 +10,8 @@
   let lastSignature='';
   let lastSnapshot=null;
   const DEFAULT_TIMEOUT_MS=10000;
+  const SNAPSHOT_INTERVAL_MS=30000;
+  let consecutiveSyncFailures=0;
 
   function storageGet(key){try{return sessionStorage.getItem(key)||'';}catch{return '';}}
   function storageSet(key,value){try{value?sessionStorage.setItem(key,String(value)):sessionStorage.removeItem(key);}catch{}}
@@ -62,7 +64,8 @@
 
   async function request(input,options={}){
     const method=String(options.method||'GET').toUpperCase();
-    const canRetry=method==='GET'&&options.retry!==false;
+    // A 503 can mean a hard database quota. Avoid multiplying load while it is down.
+    const canRetry=method==='GET'&&options.retry===true;
     for(let attempt=0;attempt<(canRetry?2:1);attempt++){
       try{
         const response=await raw(input,options);
@@ -183,13 +186,15 @@
       const nextSignature=signature(snapshot),changed=nextSignature!==lastSignature;
       if(changed){lastSignature=nextSignature;emit(snapshot,true);}
       else if(force){lastSnapshot=snapshot;}
+      consecutiveSyncFailures=0;
       setConnectionState('online');
     }catch(error){
+      consecutiveSyncFailures=Math.min(consecutiveSyncFailures+1,5);
       setConnectionState(error?.status===401?'offline':'retry');
       if(error?.status===401){try{window.SanPaidAuth?.handleExpiredSession?.();}catch{}}
     }finally{
       syncInFlight=false;
-      schedule(document.hidden?45000:4000);
+      schedule(document.hidden?60000:SNAPSHOT_INTERVAL_MS*Math.min(2**Math.max(0,consecutiveSyncFailures-1),4));
     }
   }
   function setConnectionState(state){

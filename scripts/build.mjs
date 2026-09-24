@@ -32,7 +32,7 @@ function assertFinalRoleSources(){
   if(worker.includes(`'\"':'&quot',`)||!worker.includes(`'\"':'&quot;',`))throw new Error('Worker mobile HTML escaping contract is incomplete.');
   if(!admin.includes('restoreMovedNodes')||!admin.includes('movedNodes'))throw new Error('Final Admin UI must restore borrowed operational modules during role changes.');
   if(login.includes('<b>Demo:</b>'))throw new Error('Selector-facing login must use review access wording, not a visible Demo label.');
-  if(!selector.includes('5 validated priorities informing product controls')||!selector.includes('WHAT YOU CAN EXPLORE NOW')||!selector.includes('sanpaidCustomerBootGuard')||!selector.includes('Workspace Ready')||selector.includes('data-selector-finding'))throw new Error('Selector-facing evidence, implementation truth, admin status, or Customer placeholder neutralization is incomplete.');
+  if(!selector.includes('Field findings mapped to product controls')||!selector.includes('WHAT YOU CAN EXPLORE NOW')||!selector.includes('sanpaidCustomerBootGuard')||!selector.includes('Workspace Ready')||selector.includes('data-selector-finding'))throw new Error('Selector-facing evidence, implementation truth, admin status, or Customer placeholder neutralization is incomplete.');
 }
 
 function resolveCommit(){

@@ -10,7 +10,6 @@ let pool;
 let readyPromise;
 
 const RESOURCE_ERROR_CODES=new Set(['53000','53100','53200','53300','53400','57P03']);
-const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 
 function getPool(){
   const connectionString=process.env.DATABASE_URL;
@@ -122,10 +121,10 @@ async function query(text,params=[]){
   try{return await getPool().query(text,params);}
   catch(error){
     if(!isResourceError(error))throw error;
-    console.warn('[sanpaid-db-retry]',error.code,error.message);
-    await resetPool();
-    await sleep(250);
-    return getPool().query(text,params);
+    // Quota, memory and connection-slot errors will not recover in 250 ms.
+    // Retrying every browser request doubles pressure on the database.
+    console.warn('[sanpaid-db-resource]',error.code,error.message);
+    throw error;
   }
 }
 
