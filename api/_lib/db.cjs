@@ -8,8 +8,36 @@ const {PUBLIC_DEMO_PASSWORD,DEMO_ACCOUNTS,DEMO_WORKER_EMAILS}=require('./demo-ac
 
 let pool;
 let readyPromise;
+let resourceBlockedUntil=0;
+let lastResourceError=null;
 
 const RESOURCE_ERROR_CODES=new Set(['53000','53100','53200','53300','53400','57P03']);
+const TRANSIENT_TX_CODES=new Set(['40P01','40001']);
+const RESOURCE_COOLDOWN_MS=30_000;
+
+function resourceGuard(){
+  if(Date.now()>=resourceBlockedUntil)return;
+  const seconds=Math.max(1,Math.ceil((resourceBlockedUntil-Date.now())/1000));
+  throw Object.assign(new Error('Database is temporarily protecting itself after a resource-limit error.'),{
+    status:503,
+    code:'DATABASE_RESOURCE_COOLDOWN',
+    retryAfter:seconds,
+    cause:lastResourceError||undefined
+  });
+}
+
+function noteResourceError(error){
+  if(!RESOURCE_ERROR_CODES.has(String(error?.code||'')))return;
+  lastResourceError=error;
+  resourceBlockedUntil=Math.max(resourceBlockedUntil,Date.now()+RESOURCE_COOLDOWN_MS);
+}
+
+function noteDatabaseSuccess(){
+  if(Date.now()>=resourceBlockedUntil){
+    resourceBlockedUntil=0;
+    lastResourceError=null;
+  }
+}
 
 function getPool(){
   const connectionString=process.env.DATABASE_URL;
@@ -19,16 +47,24 @@ function getPool(){
     const managedRuntime=Boolean(process.env.VERCEL);
     pool=new Pool({
       connectionString,
-      // A serverless deployment can have many warm function instances. Keep each
-      // instance to one backend connection so a small managed Postgres plan is not
-      // exhausted by parallel pools during the SIH demo.
+      // Vercel can keep several warm function instances alive. One connection per
+      // instance avoids multiplying pressure on a small SIH/demo database.
       max:managedRuntime?1:5,
-      idleTimeoutMillis:managedRuntime?1500:10000,
-      connectionTimeoutMillis:managedRuntime?3000:5000,
+      // 1.5s caused needless reconnect churn between closely-spaced dashboard calls.
+      // Keep the single warm connection briefly, then let serverless scale it down.
+      idleTimeoutMillis:managedRuntime?10_000:10_000,
+      connectionTimeoutMillis:managedRuntime?2_500:5_000,
+      query_timeout:managedRuntime?10_000:15_000,
+      statement_timeout:managedRuntime?8_000:12_000,
+      idle_in_transaction_session_timeout:managedRuntime?10_000:20_000,
+      maxUses:managedRuntime?100:7500,
       allowExitOnIdle:true,
       ssl:local?false:{rejectUnauthorized:false}
     });
-    pool.on('error',error=>console.error('[sanpaid-db-pool]',error.code||'POOL_ERROR',error.message));
+    pool.on('error',error=>{
+      noteResourceError(error);
+      console.error('[sanpaid-db-pool]',error.code||'POOL_ERROR',error.message);
+    });
   }
   return pool;
 }
@@ -80,6 +116,7 @@ function shouldBootstrapDatabase(){
 }
 
 async function bootstrapDatabase(){
+  resourceGuard();
   const client=await getPool().connect();
   try{
     const schema=readFileSync(resolve(__dirname,'../../database/schema.sql'),'utf8');
@@ -90,7 +127,9 @@ async function bootstrapDatabase(){
     for(const migration of migrations)await client.query(migration.sql);
     await seed(client);
     await client.query('COMMIT');
+    noteDatabaseSuccess();
   }catch(error){
+    noteResourceError(error);
     await client.query('ROLLBACK').catch(()=>{});
     throw error;
   }finally{
@@ -99,6 +138,7 @@ async function bootstrapDatabase(){
 }
 
 async function ensureDatabase(){
+  resourceGuard();
   if(!readyPromise){
     // Production migrations are applied out of band. Do not spend an extra DB
     // connection/query on every new Vercel function instance before the real query.
@@ -108,37 +148,54 @@ async function ensureDatabase(){
   return readyPromise;
 }
 
-function isResourceError(error){return RESOURCE_ERROR_CODES.has(String(error?.code||''));}
+function isResourceError(error){return RESOURCE_ERROR_CODES.has(String(error?.code||''))||error?.code==='DATABASE_RESOURCE_COOLDOWN';}
 async function resetPool(){
   const current=pool;
   pool=undefined;
   readyPromise=undefined;
+  resourceBlockedUntil=0;
+  lastResourceError=null;
   if(current)await current.end().catch(()=>{});
 }
 
 async function query(text,params=[]){
   await ensureDatabase();
-  try{return await getPool().query(text,params);}
-  catch(error){
-    if(!isResourceError(error))throw error;
-    // Quota, memory and connection-slot errors will not recover in 250 ms.
-    // Retrying every browser request doubles pressure on the database.
-    console.warn('[sanpaid-db-resource]',error.code,error.message);
+  resourceGuard();
+  try{
+    const result=await getPool().query(text,params);
+    noteDatabaseSuccess();
+    return result;
+  }catch(error){
+    noteResourceError(error);
+    if(isResourceError(error))console.warn('[sanpaid-db-resource]',error.code,error.message);
     throw error;
   }
 }
 
 async function transaction(work){
   await ensureDatabase();
+  resourceGuard();
   const client=await getPool().connect();
   try{
-    await client.query('BEGIN');
-    const result=await work(client);
-    await client.query('COMMIT');
-    return result;
-  }catch(error){
-    await client.query('ROLLBACK').catch(()=>{});
-    throw error;
+    for(let attempt=1;attempt<=2;attempt+=1){
+      try{
+        await client.query('BEGIN');
+        // Avoid a blocked row lock holding the only serverless DB connection.
+        await client.query("SET LOCAL lock_timeout='2500ms'");
+        const result=await work(client);
+        await client.query('COMMIT');
+        noteDatabaseSuccess();
+        return result;
+      }catch(error){
+        await client.query('ROLLBACK').catch(()=>{});
+        noteResourceError(error);
+        if(TRANSIENT_TX_CODES.has(String(error?.code||''))&&attempt===1){
+          await new Promise(resolve=>setTimeout(resolve,75+Math.floor(Math.random()*125)));
+          continue;
+        }
+        throw error;
+      }
+    }
   }finally{
     client.release();
   }
