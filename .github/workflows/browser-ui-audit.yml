@@ -49,11 +49,7 @@ jobs:
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: node scripts/admin-final-ui-audit.mjs
-      - name: Run broader Chromium button and dialog audit
+      - name: Verify judge-facing release shell
         env:
           CHROME_BIN: /usr/bin/google-chrome
-        run: |
-          # The release intentionally removed the unsupported numeric evidence claim.
-          # Keep the legacy broad audit aligned with the current truth-safe copy.
-          sed -i "s/'5 findings mapped'/'field findings mapped'/" scripts/browser-ui-audit.mjs
-          node scripts/browser-ui-audit.mjs
+        run: node scripts/release-shell-audit.mjs
