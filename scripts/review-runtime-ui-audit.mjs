@@ -83,7 +83,7 @@ try{
   };
 
   const customerUser=await loginAndOpen({identifier:'customer',role:'CUSTOMER',persona:'CUSTOMER',target:'connected'});
-  assert(await page.locator('.cr-desktop-home').isVisible(),'Customer enhanced desktop home is not visible in review runtime.');
+  await waitFor(async()=>await page.locator('.cr-desktop-home').isVisible().catch(()=>false),{attempts:50,delay:100,message:'Customer enhanced desktop home is not visible in review runtime.'});
   assert(String(customerUser?.name||customerUser?.fullName||'').includes('Shreya Patil'),'Customer review session identity was not applied.');
 
   const workerUser=await loginAndOpen({identifier:'worker-a',role:'WORKER',persona:'WORKER_A',target:'connected'});

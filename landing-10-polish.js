@@ -78,10 +78,18 @@
     if(visual)visual.setAttribute('aria-label','Verified cooperative worker profile with identity, skill and local availability checks');
   }
 
+  function polishTruthCopy(){
+    const architecture=document.querySelector('#architecture .architecture-card>div p');
+    if(architecture)architecture.textContent='Role-based controls and an auditable data architecture keep service, payment, complaint and capacity decisions connected.';
+    const paymentStep=document.querySelector('#how .service-flow li:nth-child(3) small');
+    if(paymentStep)paymentStep.textContent='Approve the estimate, confirm the booked worker, complete service, use the review payment step and receive the invoice.';
+  }
+
   function start(){
     polishServiceTiles();
     wireSmoothNavigation();
     polishHeroCopy();
+    polishTruthCopy();
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});

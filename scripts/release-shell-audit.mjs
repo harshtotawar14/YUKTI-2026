@@ -30,8 +30,10 @@ try{
   assert(await page.evaluate(()=>document.documentElement.dataset.judgeIntegrity==='closed-loop-v3'),'Judge integrity v3 marker missing.');
   const body=(await page.locator('body').innerText()).toLowerCase();
   for(const phrase of ['cooperative capacity exchange','demand-to-workforce loop','stakeholder-informed design','field findings mapped to product controls'])assert(body.includes(phrase),`Landing missing judge-facing phrase: ${phrase}`);
-  for(const forbidden of ['human-reviewed ai','digital service passport with welfare status','postgresql-backed operations','postgresql + audit','controlled sandbox functions'])assert(!body.includes(forbidden),`Visible release copy still exposes overclaim/stale wording: ${forbidden}`);
+  for(const forbidden of ['human-reviewed ai','digital service passport with welfare status','postgresql-backed operations','postgresql + audit','controlled sandbox functions','auditable production data layer','pay securely in the review flow'])assert(!body.includes(forbidden),`Visible release copy still exposes overclaim/stale wording: ${forbidden}`);
   assert(body.includes('human-reviewed forecasting (pilot)'),'Truth-safe forecasting label is missing.');
+  assert(body.includes('auditable data architecture'),'Truth-safe architecture wording is missing.');
+  assert(body.includes('review payment step'),'Selection-stage payment wording is missing.');
   await noOverflow(page,'html','1440px landing');
 
   const platformButtons=page.locator('[data-platform-access]:visible');
