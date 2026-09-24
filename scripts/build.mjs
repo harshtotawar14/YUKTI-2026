@@ -11,7 +11,7 @@ const primaryProductionUrl='https://yukti-2026-brown.vercel.app';
 const publicFiles=[
   'index.html',
   'app-icon.svg','manifest.webmanifest','robots.txt','sitemap.xml','social-preview.svg',
-  'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','master-v2.css','landing-pro.css','dossier-redesign.css',
+  'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','master-v2.css','landing-pro.css','hero-clarity.css','dossier-redesign.css',
   'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','login-reference.css','customer-worker-dashboard.css','customer-reference-dashboard.css','customer-mobile-reference.css','worker-mobile-final.css',
   'admin-command-center.css','federation-govtech.css','federation-portal.css','cooperative-portal.css','admin-final.css','admin-final-guard.css','handover-evidence.css',
   'credibility-layer.css','workforce-intelligence.css',
@@ -108,7 +108,7 @@ writeFileSync(dashboardPath,dashboardSource.slice(0,dashboardEnd)+dashboardHook+
 const builtIndexPath=resolve(output,'index.html');
 const builtIndex=readFileSync(builtIndexPath,'utf8')
   .replaceAll('https://sahkriya.vercel.app',primaryProductionUrl)
-  .replace('</head>',`<meta name="color-scheme" content="light">\n<meta name="supported-color-schemes" content="light">\n<link rel="stylesheet" href="login-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-mobile-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="worker-mobile-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final-guard.css?v=${assetVersion}">\n</head>`)
+  .replace('</head>',`<meta name="color-scheme" content="light">\n<meta name="supported-color-schemes" content="light">\n<link rel="stylesheet" href="hero-clarity.css?v=${assetVersion}">\n<link rel="stylesheet" href="login-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-mobile-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="worker-mobile-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final-guard.css?v=${assetVersion}">\n</head>`)
   .replace('</body>',`<script src="review-runtime.js?v=${assetVersion}"></script>\n<script src="selection-demo-runtime.js?v=${assetVersion}"></script>\n<script src="selection-integrity-v2.js?v=${assetVersion}"></script>\n<script src="selection-judge-integrity-v3.js?v=${assetVersion}"></script>\n<script src="customer-worker-dashboard.js?v=${assetVersion}"></script>\n<script src="review-runtime-bridge.js?v=${assetVersion}"></script>\n<script src="login-reference.js?v=${assetVersion}"></script>\n<script src="customer-reference-dashboard.js?v=${assetVersion}"></script>\n<script src="customer-mobile-bootstrap.js?v=${assetVersion}"></script>\n<script src="customer-mobile-reference.js?v=${assetVersion}"></script>\n<script src="worker-mobile-final.js?v=${assetVersion}"></script>\n<script src="admin-final.js?v=${assetVersion}"></script>\n<script src="selector-final-polish.js?v=${assetVersion}"></script>\n</body>`);
 writeFileSync(builtIndexPath,builtIndex);
 
