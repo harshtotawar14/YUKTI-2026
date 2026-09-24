@@ -34,3 +34,7 @@
   .af-profile-copy small{display:none}
   .af-profile-menu{position:fixed;right:12px;top:70px;min-width:190px}
 }
+
+/* Final role-shell visibility guard. Loaded last so mobile readability rules cannot revive the legacy overview behind the final home. */
+#connectedShell.customer-mobile-bootstrap .cw-dashboard.customer [data-cw-view="overview"].cm-home-ready>:not(.cm-mobile-home),
+#connectedShell.worker-mobile-final .cw-dashboard.worker [data-cw-view="overview"].wm-home-ready>:not(.wm-mobile-home){display:none!important}
