@@ -1,7 +1,0 @@
-/* Root experience: the connected SanPaid customer dashboard is the main page. */
-html,body{background:#f8fbfd}
-body>#landing.reference-home{display:none!important}
-
-/* Do not expose the old public landing behind the dashboard/auth shell. */
-body:has(#connectedShell:not(.hidden))>#landing,
-body:has(#spUnifiedAuth:not(.hidden))>#landing{display:none!important}
