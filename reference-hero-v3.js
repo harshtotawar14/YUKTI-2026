@@ -77,6 +77,53 @@
       </div>
     </header>`;
 
+  function lockLandingPages(landing){
+    const nav=landing.querySelector('.sp-ref-nav');
+    const viewport=document.createElement('div');
+    viewport.className='sp-landing-viewport';
+    const canvas=document.createElement('div');
+    canvas.className='sp-landing-canvas';
+    [...landing.children].filter(node=>node!==nav).forEach(node=>canvas.appendChild(node));
+    viewport.appendChild(canvas);landing.appendChild(viewport);
+    landing.classList.add('sp-page-locked');
+    let active='home',frame=0;
+    function fitHome(){
+      cancelAnimationFrame(frame);
+      frame=requestAnimationFrame(()=>{
+        canvas.style.transform='none';
+        if(active!=='home')return;
+        const scale=Math.min(1,viewport.clientHeight/Math.max(1,canvas.scrollHeight));
+        canvas.style.transform=`scale(${scale})`;
+      });
+    }
+    function openPage(id){
+      const target=canvas.querySelector(`[id="${id}"]`);
+      if(!target)return;
+      active=id;landing.dataset.landingPage=id;
+      canvas.querySelectorAll('.sp-current-panel').forEach(node=>node.classList.remove('sp-current-panel'));
+      target.classList.add('sp-current-panel');
+      landing.querySelectorAll('.sp-ref-navlinks a').forEach(link=>{
+        const selected=link.getAttribute('href')===`#${id}`;
+        link.classList.toggle('sp-page-active',selected);
+        if(selected)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
+      });
+      viewport.scrollTop=0;canvas.style.transform='none';
+      window.SanPaidLanding?.closeMobileDrawer?.(false);
+      fitHome();
+    }
+    landing.addEventListener('click',event=>{
+      const link=event.target.closest('a[href^="#"]');
+      if(!link)return;
+      const id=link.getAttribute('href').slice(1);
+      if(!canvas.querySelector(`[id="${id}"]`))return;
+      event.preventDefault();event.stopImmediatePropagation();openPage(id);
+    },true);
+    window.addEventListener('resize',fitHome,{passive:true});
+    if('ResizeObserver' in window)new ResizeObserver(fitHome).observe(viewport);
+    document.fonts?.ready.then(fitHome);
+    openPage('home');
+  }
+
   function install(){
     const landing=document.querySelector('#landing.reference-home');
     if(!landing||landing.dataset.referenceHeroV3==='1')return;
@@ -105,6 +152,7 @@
       const button=event.target.closest('[data-mobile-service]');
       if(button)window.SanPaidLanding?.startBooking?.(button.dataset.mobileService);
     });
+    lockLandingPages(landing);
 
   }
 
