@@ -50,6 +50,12 @@ jobs:
           SANPAID_DEMO_PASSWORD: CIOnly@26089
         run: node scripts/database-contract-smoke.mjs
 
+      - name: Verify independent demo workspace isolation
+        env:
+          DATABASE_URL: postgresql://sanpaid:sanpaid_ci@127.0.0.1:5432/sanpaid_ci
+          SANPAID_DEMO_PASSWORD: CIOnly@26089
+        run: node --test tests/demo-workspace-isolation.test.mjs
+
       - name: Check critical JavaScript syntax
         run: |
           node --check app.js
@@ -77,6 +83,7 @@ jobs:
           node --check api/_lib/policy.cjs
           node --check api/_lib/security.cjs
           node --check api/_lib/demo-access.cjs
+          node --check api/_lib/demo-workspace.cjs
           find backend/src -type f -name '*.cjs' -print0 | xargs -0 -n1 node --check
 
       - name: Run repository test suite
