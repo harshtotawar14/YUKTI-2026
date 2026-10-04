@@ -10,6 +10,7 @@ const packageMetadata=JSON.parse(readFileSync(resolve(root,'package.json'),'utf8
 const primaryProductionUrl='https://yukti-2026-brown.vercel.app';
 
 const publicFiles=[
+  'assets/official-acknowledgement.jpeg','assets/mom-page-1.jpeg','assets/mom-page-2.jpeg',
   'index.html','reference-hero-v3.css','mobile-nav-right-fix.css','reference-hero-v3.js','dashboard-shell-lock.js',
   'app-icon.svg','manifest.webmanifest','robots.txt','sitemap.xml','social-preview.svg',
   'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','master-v2.css','landing-pro.css','hero-clarity.css','landing-10-polish.css','dossier-redesign.css',
@@ -59,6 +60,7 @@ const assetVersion=buildCommit==='LOCAL_BUILD'?'local':buildCommit.slice(0,12);
 assertFinalRoleSources();
 rmSync(output,{recursive:true,force:true});
 mkdirSync(output,{recursive:true});
+mkdirSync(resolve(output,'assets'),{recursive:true});
 
 for(const file of publicFiles){
   const source=resolve(root,file);
