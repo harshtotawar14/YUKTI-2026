@@ -63,7 +63,8 @@
     const currentStatus=current?.querySelector('h3')?.textContent?.trim()||'';
     const currentLine=parseCurrentLine(current?.querySelector('p')?.textContent?.trim());
     const metrics=[...overview.querySelectorAll('.cw-metrics>article')];
-    const bookingCode=metrics[0]?.querySelector('strong')?.textContent?.trim()||currentLine.code||'—';
+    const activeBookingLabel=metrics[0]?.querySelector('span')?.textContent?.trim()||'';
+    const bookingCode=metrics[0]?.querySelector('strong')?.textContent?.trim()||'—';
     const worker=metrics[1]?.querySelector('strong')?.textContent?.trim()||'Not assigned';
     const workerNote=metrics[1]?.querySelector('small')?.textContent?.trim()||'Shown after worker acceptance';
     const amount=metrics[2]?.querySelector('strong')?.textContent?.trim()||'—';
@@ -77,7 +78,7 @@
     const nextCopy=next?.querySelector('p')?.textContent?.trim()||'Choose a service, time and location.';
     const nextView=next?.querySelector('[data-cw-view-btn]')?.dataset?.cwViewBtn||'book';
     const journey=overview.querySelector('.cw-journey')?.innerHTML||'';
-    const activeBooking=!/^no active booking$/i.test(currentStatus)&&!!bookingCode&&bookingCode!=='—';
+    const activeBooking=/^active booking$/i.test(activeBookingLabel)&&!/^offline$/i.test(status)&&!/^no active booking$/i.test(currentStatus)&&!!bookingCode&&bookingCode!=='—';
     const notificationCount=dashboard.querySelectorAll('[data-cw-view="support"] .cw-notification-list>article').length;
     return {overview,status,bookingCode,worker,workerNote,amount,amountNote,serviceStart,service,bookingSummary,nextTitle,nextCopy,nextView,journey,activeBooking,notificationCount};
   }
