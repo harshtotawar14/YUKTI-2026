@@ -36,16 +36,17 @@
     return header;
   }
 
-  function renderHeader(header){
+  function renderHeader(header,data){
     const userName=name();
-    const signature=userName;
+    const notificationCount=Number(data?.notificationCount||0);
+    const signature=`${userName}|${notificationCount}`;
     if(header.dataset.signature===signature)return;
     header.dataset.signature=signature;
     header.innerHTML=`
       <div class="cm-brand-lockup"><img src="app-icon.svg" alt=""><div><strong>San<span>Paid</span></strong><small>Cooperative Workforce Network</small></div></div>
       <div class="cm-header-actions">
         <span class="cm-location">${ICONS.pin}<b>Kolhapur, MH</b><span aria-hidden="true">⌄</span></span>
-        <button type="button" class="cm-bell" aria-label="Open updates">${ICONS.bell}<i>3</i></button>
+        <button type="button" class="cm-bell" aria-label="Open updates">${ICONS.bell}${notificationCount?`<i>${Math.min(notificationCount,99)}</i>`:''}</button>
         <button type="button" class="cm-avatar" aria-label="Open profile">${esc(initials(userName))}</button>
       </div>`;
     header.querySelector('.cm-bell')?.addEventListener('click',()=>openView('support'));
@@ -86,7 +87,7 @@
   function ensureMobileHome(overview,data){
     let home=overview.querySelector(':scope>.cm-mobile-home');
     if(!home){home=document.createElement('div');home.className='cm-mobile-home';overview.appendChild(home);}
-    const signature=[name(),data.status,data.bookingCode,data.worker,data.amount,data.service,data.nextTitle,data.nextCopy,data.journey].join('|');
+    const signature=[name(),data.status,data.bookingCode,data.worker,data.amount,data.service,data.nextTitle,data.nextCopy,data.journey,data.notificationCount].join('|');
     if(home.dataset.signature!==signature){
       home.dataset.signature=signature;
       home.innerHTML=mobileHomeMarkup(data);
@@ -168,7 +169,7 @@
     const overview=data.overview;
     if(!main||!overview)return;
     const header=ensureHeader(main);
-    renderHeader(header);
+    renderHeader(header,data);
     ensureMobileHome(overview,data);
     const nav=ensureBottomNav(shell);
     syncBottomNav(nav,dash);
