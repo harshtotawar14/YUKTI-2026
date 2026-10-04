@@ -45,6 +45,10 @@ jobs:
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: node scripts/customer-mobile-ui-audit.mjs
+      - name: Verify fresh Customer truth and private state
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: node scripts/fresh-customer-state-audit.mjs
       - name: Verify deep Customer and Worker phone matrix
         env:
           CHROME_BIN: /usr/bin/google-chrome
