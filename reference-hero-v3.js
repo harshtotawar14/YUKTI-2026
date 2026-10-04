@@ -34,7 +34,7 @@
           <a href="#home">Home</a><a href="#services">Services</a><a href="#how">How it Works</a><a href="#difference">Why SanPaid</a><a href="#evidence">Field Proof</a>
         </div>
         <div class="sp-ref-actions">
-          <details class="sp-language"><summary>${icon('globe')}<span>English</span><span aria-hidden="true">⌄</span></summary><div class="sp-language-pop"><b>English</b><span>Language options are available inside the platform workspace.</span></div></details>
+          <details class="sp-language"><summary>${icon('globe')}<span class="sp-language-long">English</span><span class="sp-language-short">EN</span><span aria-hidden="true">⌄</span></summary><div class="sp-language-pop"><b>English</b><span>Language options are available inside the platform workspace.</span></div></details>
           <button class="sp-open-platform" id="getStarted" type="button">Open Platform&nbsp; →</button>
           <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileDrawer">☰</button>
         </div>
@@ -51,6 +51,7 @@
         <div class="sp-hero-copy">
           <div class="sp-kickers"><span class="sp-kicker-primary"><i aria-hidden="true"></i>A Cooperative Initiative</span><span class="sp-kicker-secondary">Stronger Communities&nbsp;&nbsp; | &nbsp;&nbsp;Skilled Local Workers&nbsp;&nbsp; | &nbsp;&nbsp;Trusted Services</span></div>
           <h1 class="sp-hero-title">Trusted Local Services<br>Through <span class="sp-blue">Cooperatives</span></h1>
+          <p class="sp-mobile-lead">Book verified local workers through your cooperative.</p>
           <p class="sp-hero-lead">SanPaid connects households and institutions with verified local workers through labour cooperative societies and federations for reliable, transparent and safe services.</p>
           <div class="sp-hero-actions">
             <button class="sp-hero-primary" type="button" data-open-connected="CUSTOMER">${icon('calendar')}<span>Book a Service</span><span aria-hidden="true">→</span></button>
@@ -64,6 +65,7 @@
           </div>
         </div>
         <div class="sp-hero-visual">
+          <div class="sp-mobile-worker" role="img" aria-label="SanPaid verified worker — Skilled, Local, Reliable"></div>
           <img src="/assets/sanpaid-reference-hero-right.webp" width="1128" height="555" fetchpriority="high" decoding="async" alt="SanPaid customer app beside a verified cooperative service worker helping a local household">
         </div>
       </div>
@@ -86,6 +88,24 @@
     nav.remove();
     hero.insertAdjacentHTML('beforebegin',heroMarkup());
     hero.remove();
+
+    const servicePaths={
+      Electrician:'M13 2 4 14h7l-1 8 10-13h-7Z',
+      Plumber:'M15 3a6 6 0 0 0-7 8L2 17a3 3 0 0 0 4 4l7-7a6 6 0 0 0 8-7l-4 4-4-4 4-4Z',
+      Carpenter:'m3 19 10-10 3 3L6 22Zm9-15 5-2 6 6-4 5-3-3-3-3-3-1Z',
+      Cleaner:'m14 2 3 1-4 11-3-1ZM6 12l9 3 3 6-5 1-1-5-2 5-4-1 1-5-3 4-3-2Z',
+      Gardener:'M21 2C8 2 2 7 5 15c3 7 15 5 16-13ZM3 22 16 9',
+      Caregiver:'M12 21 3 12C-3 5 6-1 12 6c6-7 15-1 9 6Z'
+    };
+    const mobileServices=document.createElement('div');
+    mobileServices.className='sp-mobile-services';
+    mobileServices.innerHTML=`<h2>Find your service</h2><div class="sp-mobile-service-grid">${Object.entries(servicePaths).map(([name,path])=>`<button type="button" data-mobile-service="${name}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${path}" fill="currentColor" stroke="currentColor" stroke-width=".8" stroke-linecap="round" stroke-linejoin="round"/></svg><b>${name}</b></button>`).join('')}</div><a class="sp-mobile-field-proof" href="#evidence"><span class="sp-mobile-proof-icon">${icon('document')}</span><span><b>Field-informed in Kolhapur</b><small>Stakeholder interaction</small><small>Signed &amp; stamped acknowledgement</small><strong>View Field Proof <span aria-hidden="true">→</span></strong></span></a>`;
+    landing.querySelector('#services .wrap').prepend(mobileServices);
+    mobileServices.addEventListener('click',event=>{
+      const button=event.target.closest('[data-mobile-service]');
+      if(button)window.SanPaidLanding?.startBooking?.(button.dataset.mobileService);
+    });
+
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
