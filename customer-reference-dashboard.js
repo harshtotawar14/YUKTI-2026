@@ -136,9 +136,23 @@
   function desktopHomeMarkup(data){
     const name=customerName();
     const workerAssigned=data.worker&&!/^not assigned$/i.test(data.worker);
-    const status=data.activeBooking?data.status:'Ready';
-    const bookingCode=data.activeBooking?data.bookingCode:'No active booking';
-    const service=data.activeBooking?data.service:'Book your first service';
+    const bookingPanel=data.activeBooking?`
+          <section class="cr-current-card">
+            <div class="cr-section-top"><h2>Current Booking</h2><span class="cr-status">${esc(data.status)}</span><button type="button" data-cr-view="booking">View Details ${ICONS.arrow}</button></div>
+            <div class="cr-booking-main">
+              <span class="cr-service-icon">${ICONS.overview}</span>
+              <div class="cr-booking-copy"><h3>${esc(data.service)}</h3><p>${esc(data.bookingCode)}</p><small>${esc(data.bookingSummary||'Kolhapur service request')}</small></div>
+              <div class="cr-booking-actions"><button type="button" class="primary" data-cr-view="${esc(data.nextView)}">Open Next Step ${ICONS.arrow}</button><button type="button" data-cr-view="support">Contact Support</button></div>
+            </div>
+            <div class="cw-journey cr-desktop-journey">${data.journey}</div>
+          </section>`:'';
+    const workerPanel=data.activeBooking?`
+          <section class="cr-side-card cr-worker-card">
+            <div class="cr-section-top"><h2>Assigned Worker</h2><button type="button" data-cr-view="verify">View Profile ${ICONS.arrow}</button></div>
+            <div class="cr-worker-profile"><span class="cr-worker-avatar">${esc(workerAssigned?initials(data.worker):'—')}</span><div><h3>${esc(workerAssigned?data.worker:'Assignment pending')}</h3><p>${esc(workerAssigned?data.workerNote:'A verified cooperative worker will appear here after acceptance.')}</p>${workerAssigned?'<b class="cr-verified">✓ Verified</b>':''}</div></div>
+            <div class="cr-worker-stats"><div><strong>${workerAssigned?'Verified':'Pending'}</strong><small>Trust status</small></div><div><strong>Local</strong><small>Cooperative network</small></div></div>
+          </section>
+          <section class="cr-side-card cr-amount-card"><div><span>Current Amount</span><strong>${esc(data.amount)}</strong><small>${esc(data.amountNote)}</small></div><button type="button" data-cr-view="payment">View Invoice ${ICONS.arrow}</button></section>`:'';
     return `
       <section class="cr-hero">
         <div><h1>Hello, ${esc(name)}! <span aria-hidden="true">👋</span></h1><p>Your service journey in one place.</p></div>
@@ -146,15 +160,7 @@
       </section>
       <div class="cr-home-grid">
         <div class="cr-home-primary">
-          <section class="cr-current-card">
-            <div class="cr-section-top"><h2>Current Booking</h2><span class="cr-status">${esc(status)}</span><button type="button" data-cr-view="booking">View Details ${ICONS.arrow}</button></div>
-            <div class="cr-booking-main">
-              <span class="cr-service-icon">${ICONS.overview}</span>
-              <div class="cr-booking-copy"><h3>${esc(service)}</h3><p>${esc(bookingCode)}</p><small>${esc(data.bookingSummary||'Kolhapur service request')}</small></div>
-              <div class="cr-booking-actions"><button type="button" class="primary" data-cr-view="${esc(data.nextView)}">Open Next Step ${ICONS.arrow}</button><button type="button" data-cr-view="support">Contact Support</button></div>
-            </div>
-            <div class="cw-journey cr-desktop-journey">${data.journey}</div>
-          </section>
+          ${bookingPanel}
           <section class="cr-shortcuts-card">
             <div class="cr-section-top"><h2>Service Actions</h2><span>Everything you need for this booking</span></div>
             <div class="cr-shortcuts">
@@ -166,12 +172,7 @@
           </section>
         </div>
         <aside class="cr-home-side">
-          <section class="cr-side-card cr-worker-card">
-            <div class="cr-section-top"><h2>Assigned Worker</h2><button type="button" data-cr-view="verify">View Profile ${ICONS.arrow}</button></div>
-            <div class="cr-worker-profile"><span class="cr-worker-avatar">${esc(workerAssigned?initials(data.worker):'—')}</span><div><h3>${esc(workerAssigned?data.worker:'Assignment pending')}</h3><p>${esc(workerAssigned?data.workerNote:'A verified cooperative worker will appear here after acceptance.')}</p>${workerAssigned?'<b class="cr-verified">✓ Verified</b>':''}</div></div>
-            <div class="cr-worker-stats"><div><strong>${workerAssigned?'Verified':'Pending'}</strong><small>Trust status</small></div><div><strong>Local</strong><small>Cooperative network</small></div></div>
-          </section>
-          <section class="cr-side-card cr-amount-card"><div><span>Current Amount</span><strong>${esc(data.amount)}</strong><small>${esc(data.amountNote)}</small></div><button type="button" data-cr-view="payment">View Invoice ${ICONS.arrow}</button></section>
+          ${workerPanel}
           <section class="cr-side-card cr-help-card"><span>${ICONS.support}</span><div><h3>Need Help?</h3><p>Our support team is here for you.</p></div><button type="button" data-cr-view="support">Contact Support ${ICONS.arrow}</button></section>
           <section class="cr-safety-card"><span>${ICONS.shield}</span><div><b>Your Safety Matters</b><small>Verify the booked worker and use the service-start confirmation before work begins.</small></div></section>
         </aside>
