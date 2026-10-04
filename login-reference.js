@@ -142,7 +142,6 @@
     if (access) {
       access.placeholder = 'Enter your ID';
       access.setAttribute('aria-label', 'Access ID');
-      if (!access.dataset.referenceUserEdited) access.value = '';
       access.addEventListener('input', () => { access.dataset.referenceUserEdited = 'true'; }, { once: true });
     }
     if (password) {
@@ -155,6 +154,12 @@
 
     root.querySelector('.spu-login-demo-line')?.remove();
     const credentials = referenceCredentials(root);
+    if (access && credentials.id) {
+      access.value = credentials.id;
+      access.dataset.referenceUserEdited = 'true';
+    }
+    if (password && credentials.password) password.value = credentials.password;
+
     const accessLine = document.createElement('div');
     accessLine.className = 'spu-login-demo-line';
     accessLine.setAttribute('role', credentials.password ? 'button' : 'status');
