@@ -5,7 +5,7 @@
   const STATUS_LABELS={
     REQUESTED:'Finding Verified Worker',VALIDATING:'Checking Eligibility',MATCHING:'Finding Verified Worker',OFFERING:'Waiting for Worker Response',PENDING_WORKER_ACCEPTANCE:'Waiting for Worker Response',FINDING_REPLACEMENT:'Finding Another Verified Worker',ASSIGNED:'Worker Assigned',ACCEPTED:'Worker Assigned',ON_THE_WAY:'Worker On The Way',TRAVELING:'Worker On The Way',ARRIVED:'Worker Arrived',IDENTITY_VERIFIED:'Worker Identity Verified',CUSTOMER_CONFIRMED:'Worker Confirmed',SERVICE_STARTED:'Service Started',IN_PROGRESS:'Service In Progress',AWAITING_CUSTOMER_CONFIRMATION:'Waiting for Completion Confirmation',COMPLETED:'Service Completed',PAYMENT_PENDING:'Payment Pending',PAID:'Payment Completed',CLOSED:'Closed',CANCELLED:'Cancelled',NO_WORKER_AVAILABLE:'No Eligible Worker Available'
   };
-  let currentUser=null,currentPersona=null,unsubscribeSync=null,activeBookingId=null;
+  let appGeneration=0,currentUser=null,currentPersona=null,unsubscribeSync=null,activeBookingId=null;
   let voiceMeta={source:'TEXT',language:'mr',transcript:'',message:null};
   let customerRecorder=null,customerVoiceStream=null,customerVoiceTimer=0,customerVoiceStartedAt=0,customerVoicePreviewUrl='',discardCustomerVoice=false;
   let problemPhotoMeta=null,customerPhotoPreviewUrl='';
@@ -69,6 +69,7 @@
   }
 
   function close({clearIntent=true}={}){
+    appGeneration++;activeBookingId=null;lastCustomerSignature='';lastWorkerSignature='';
     const root=document.getElementById('connectedShell');if(root)root.classList.add('hidden');document.body.style.overflow='';stopStream();closeDecisionModal();
     deleteCustomerVoice();deleteProblemPhoto();releaseWorkerVoiceUrls();releaseWorkerPhotoUrls();
     if(clearIntent)window.SanPaidAuth?.clearWorkspace?.();
@@ -188,13 +189,14 @@
   }
 
   async function loadLatestCustomerBooking(){
+    const generation=appGeneration;
     const saved=Number(sessionGet(BOOKING_KEY)||0);if(saved){activeBookingId=saved;await refreshCustomerBooking();return;}
-    try{const snapshot=await request('/api/connected/snapshot'),latest=snapshot.bookings?.[0];if(latest?.id){activeBookingId=Number(latest.id);sessionSet(BOOKING_KEY,activeBookingId);await refreshCustomerBooking();}}catch{}
+    try{const snapshot=await request('/api/connected/snapshot'),latest=snapshot.bookings?.[0];if(generation!==appGeneration)return;if(latest?.id){activeBookingId=Number(latest.id);sessionSet(BOOKING_KEY,activeBookingId);await refreshCustomerBooking();}}catch{}
   }
   async function refreshCustomerBooking(){
-    if(!activeBookingId)return;
-    try{const booking=await request(`/api/connected/customer/bookings/${activeBookingId}`);renderCustomerState(booking);}
-    catch(err){if(err.status===404||err.status===403){sessionSet(BOOKING_KEY,'');activeBookingId=null;lastCustomerSignature='';}else if(err.status===401)friendlyError(err);}
+    const generation=appGeneration,id=activeBookingId;if(!id)return;
+    try{const booking=await request(`/api/connected/customer/bookings/${id}`);if(generation!==appGeneration||currentUser?.role!=='CUSTOMER')return;renderCustomerState(booking);}
+    catch(err){if(generation!==appGeneration)return;if(err.status===404||err.status===403){sessionSet(BOOKING_KEY,'');activeBookingId=null;lastCustomerSignature='';}else if(err.status===401)friendlyError(err);}
   }
   function bookingStep(status){const value=String(status||'').toUpperCase();if(['PAID','CLOSED'].includes(value))return 6;if(['COMPLETED','PAYMENT_PENDING','SERVICE_STARTED','IN_PROGRESS','AWAITING_CUSTOMER_CONFIRMATION'].includes(value))return 5;if(['IDENTITY_VERIFIED','CUSTOMER_CONFIRMED'].includes(value))return 4;if(value==='ARRIVED')return 3;if(['ASSIGNED','ACCEPTED','ON_THE_WAY','TRAVELING'].includes(value))return 2;if(['OFFERING','PENDING_WORKER_ACCEPTANCE','FINDING_REPLACEMENT','NO_WORKER_AVAILABLE'].includes(value))return 1;return 0;}
   function stepper(status){const current=bookingStep(status),labels=['Request','Worker Match','Accepted','Arrival','Verification','Service','Payment'];return `<div class="connected-stepper">${labels.map((label,index)=>`<div class="connected-step ${index<current?'done':index===current?'active':''}"><span>${index<current?'✓':index+1}</span><small>${label}</small></div>`).join('')}</div>`;}
@@ -210,8 +212,9 @@
     wireHeader();document.getElementById('connectedRefreshOffers').onclick=()=>loadWorkerOffers(true);loadWorkerOffers(true);
   }
   async function loadWorkerOffers(force=false){
+    const generation=appGeneration;
     const root=document.getElementById('connectedWorkerOffers');if(!root)return;
-    try{const offers=await request('/api/connected/worker/offers'),signature=JSON.stringify((offers||[]).map(offer=>[offer.offerId,offer.offerStatus,offer.status,offer.bookingId,offer.emergency,offer.problem,offer.distance,offer.total,offer.scheduledAt,offer.voiceMessage?.available,offer.voiceMessage?.durationMs,offer.problemPhoto?.available,offer.problemPhoto?.size]));if(!force&&signature===lastWorkerSignature)return;lastWorkerSignature=signature;releaseWorkerVoiceUrls();releaseWorkerPhotoUrls();root.innerHTML=offers.length?offers.map(offerCard).join(''):'<div class="connected-empty"><b>No job requests right now</b><br>Stay available. Suitable opportunities will appear here.</div>';wireOfferActions();}
+    try{const offers=await request('/api/connected/worker/offers');if(generation!==appGeneration||currentUser?.role!=='WORKER')return;const signature=JSON.stringify((offers||[]).map(offer=>[offer.offerId,offer.offerStatus,offer.status,offer.bookingId,offer.emergency,offer.problem,offer.distance,offer.total,offer.scheduledAt,offer.voiceMessage?.available,offer.voiceMessage?.durationMs,offer.problemPhoto?.available,offer.problemPhoto?.size]));if(!force&&signature===lastWorkerSignature)return;lastWorkerSignature=signature;releaseWorkerVoiceUrls();releaseWorkerPhotoUrls();root.innerHTML=offers.length?offers.map(offerCard).join(''):'<div class="connected-empty"><b>No job requests right now</b><br>Stay available. Suitable opportunities will appear here.</div>';wireOfferActions();}
     catch(err){root.innerHTML=`<div class="connected-error">${esc(friendlyError(err,'offer'))}</div>`;}
   }
   function offerReason(code){const map={IDENTITY_VERIFIED:'Identity verified',SKILL_VERIFIED:'Skill verified',AVAILABLE:'Available now',WITHIN_RADIUS:'Within service radius',SCHEDULE_AVAILABLE:'Schedule available',DOCUMENTS_VALID:'Credentials valid'};return map[String(code||'').toUpperCase()]||String(code||'').replaceAll('_',' ').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());}

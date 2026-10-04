@@ -48,3 +48,28 @@ test('schedule command uses entered times and persists overlap changes',async()=
  assert.equal((await r.request('connected/worker/schedule/voice-intent',{text:'hello',date})).status,422);
  assert.equal((await r.request('connected/worker/schedule',{date,startTime:'17:00',endTime:'13:00',status:'AVAILABLE'})).status,422);
 });
+test('full customer/worker flow: estimate, service code, completion, invoice, rating, earnings',async()=>{
+ const r=runtime();r.role();const b=(await r.request('connected/bookings',booking)).data;r.role('WORKER_A');const offer=(await r.request('connected/worker/offers')).data[0];
+ await r.request(`connected/worker/offers/${offer.offerId}/respond`,{action:'ACCEPT'});
+ await r.request(`connected/jobs/${b.id}/travel`,{});await r.request(`connected/jobs/${b.id}/arrive`,{});
+ assert.equal((await r.request(`connected/worker/jobs/${b.id}/estimate`,{items:[{description:'Labour',amount:-5}]})).status,422);
+ await r.request(`connected/worker/jobs/${b.id}/estimate`,{items:[{description:'Labour',amount:499}]});
+ r.role();await r.request(`connected/customer/bookings/${b.id}/estimate/decision`,{decision:'APPROVE'});
+ r.role('WORKER_A');const code=(await r.request(`connected/jobs/${b.id}/identity`,{})).data.token;
+ assert.equal((await r.request(`connected/service-start/${code}/confirm`,{})).status,403);
+ r.role();await r.request(`connected/service-start/${code}/confirm`,{});
+ r.role('WORKER_A');await r.request(`connected/jobs/${b.id}/start`,{});await r.request(`connected/jobs/${b.id}/completion-request`,{});
+ r.role();await r.request(`connected/customer/bookings/${b.id}/complete`,{});assert.equal((await r.request(`connected/customer/bookings/${b.id}/pay`,{method:'SANDBOX'})).status,200);
+ assert.equal((await r.request(`connected/customer/bookings/${b.id}/pay`,{method:'SANDBOX'})).status,409);
+ assert.equal((await r.request(`connected/customer/bookings/${b.id}/rating`,{stars:0})).status,422);
+ assert.equal((await r.request(`connected/customer/bookings/${b.id}/rating`,{stars:5,feedback:'Test'})).status,200);
+ assert.ok((await r.request(`connected/customer/bookings/${b.id}/checkout`)).data.invoice.invoiceNumber);
+ r.role('WORKER_A');assert.equal((await r.request('connected/worker/dashboard')).data.earnings.total,499);assert.equal((await r.request('connected/worker/offers')).data.length,0);
+ r.role();assert.equal((await r.request('connected/bookings',booking)).status,200);r.role('WORKER_A');assert.equal((await r.request('connected/worker/dashboard')).data.earnings.total,499);
+});
+test('attachments and customer support do not allow arbitrary booking access',async()=>{
+ const r=runtime();r.role();assert.equal((await r.request('selection-demo/media/voice/18')).status,403);
+ assert.equal((await r.request('connected/customer/support',{description:'Too short'})).status,200);
+ assert.equal((await r.request('connected/customer/support',{description:'Actual test issue',bookingId:999})).status,404);
+ assert.equal((await r.request('connected/customer/support',{description:'x'})).status,422);
+});

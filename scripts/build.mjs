@@ -138,5 +138,4 @@ const buildInfo={
 
 writeFileSync(resolve(output,'build-info.json'),`${JSON.stringify(buildInfo,null,2)}\n`);
 console.log(`Built SanPaid ${buildInfo.version} (${buildInfo.commitSha}) into dist/ with ${publicFiles.length} allowlisted public assets, final-only role UI, and judge-grade closed-loop selector integrity.`);
-// Test-only harness emitted exclusively on the QA preview branch.
 if(process.env.VERCEL_GIT_COMMIT_REF==='codex/sanpaid-customer-worker-qa-20261004'){for(const f of ['qa.html','qa-bootstrap.js','qa-controls.js'])cpSync(resolve(root,f),resolve(output,f));writeFileSync(resolve(output,'qa-fixture.html'),readFileSync(builtIndexPath,'utf8').replace('</body>','<script src="/qa-bootstrap.js"></script></body>'));}
