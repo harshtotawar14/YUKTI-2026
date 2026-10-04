@@ -10,6 +10,8 @@ const packageMetadata=JSON.parse(readFileSync(resolve(root,'package.json'),'utf8
 const primaryProductionUrl='https://yukti-2026-brown.vercel.app';
 
 const publicFiles=[
+  ...Array.from({length:8},(_,i)=>`assets/landing-reference/service-${i+1}.webp`),
+  ...Array.from({length:6},(_,i)=>`assets/landing-reference/step-${i+1}.webp`),
   'assets/official-acknowledgement.jpeg','assets/mom-page-1.jpeg','assets/mom-page-2.jpeg',
   'index.html','reference-hero-v3.css','mobile-nav-right-fix.css','reference-hero-v3.js','dashboard-shell-lock.js',
   'app-icon.svg','manifest.webmanifest','robots.txt','sitemap.xml','social-preview.svg',

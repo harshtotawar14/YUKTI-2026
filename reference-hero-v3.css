@@ -116,3 +116,196 @@
  #landing.reference-home .popular-services{padding-top:66px!important}
 }
 @media(prefers-reduced-motion:reduce){#landing.reference-home *{scroll-behavior:auto!important;transition:none!important}}
+
+/* Approved reference sections: scoped to the public landing pages only. */
+#landing.reference-home.sp-page-locked:not([data-landing-page="home"]) .sp-landing-viewport{overflow:hidden!important}
+#landing.reference-home.sp-page-locked:not([data-landing-page="home"]) .sp-landing-canvas{height:100%;min-height:0}
+#landing.reference-home .sp-reference-page{height:100%;box-sizing:border-box;padding:22px 0 14px!important;overflow:hidden;background:linear-gradient(180deg,#f5fbff,#fff)!important;color:#071c49}
+#landing.reference-home .sp-reference-page .rp-page{width:min(1440px,calc(100% - 64px));height:100%;margin:auto;display:flex;flex-direction:column;gap:12px;min-height:0;font-family:'IBM Plex Sans',Arial,sans-serif}
+#landing.reference-home .rp-heading{text-align:center;flex:none}
+#landing.reference-home .rp-heading h2{font:700 clamp(30px,3.7vw,58px)/1.12 'IBM Plex Sans',Arial,sans-serif!important;margin:0 0 8px!important;letter-spacing:-1px;color:#071c49!important}
+#landing.reference-home .rp-heading p{font-size:clamp(16px,1.55vw,24px)!important;line-height:1.3;margin:0!important;color:#5c789c}
+#landing.reference-home .rp-grid{display:grid;gap:16px;min-height:0;flex:1;margin:0;padding:0;list-style:none}
+#landing.reference-home .rp-grid>*{min-width:0;min-height:0;box-sizing:border-box}
+#landing.reference-home .rp-services{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+#landing.reference-home .rp-service{position:relative;appearance:none;border:0;border-radius:18px;padding:14px 26px;display:flex;flex-direction:column;text-align:left;font:inherit;cursor:pointer;color:#071c49;background:#eaf4ff}
+#landing.reference-home .rp-service:nth-child(2),#landing.reference-home .rp-service:nth-child(7){background:#eaf9f3}#landing.reference-home .rp-service:nth-child(3){background:#fff7e7}#landing.reference-home .rp-service:nth-child(4){background:#fff0f5}#landing.reference-home .rp-service:nth-child(8){background:#f2f5f8}
+#landing.reference-home .rp-art{display:block;width:100%;height:0;min-height:0;flex:1;object-fit:contain;mix-blend-mode:multiply;margin:0 auto 8px}
+#landing.reference-home .rp-service h3,#landing.reference-home .rp-step h3,#landing.reference-home .rp-proof h3{font:700 clamp(17px,1.45vw,23px)/1.2 'IBM Plex Sans',Arial,sans-serif!important;color:#071c49!important;margin:0 0 6px!important;letter-spacing:-.3px}
+#landing.reference-home .rp-service p,#landing.reference-home .rp-step p,#landing.reference-home .rp-proof p{font-size:clamp(14px,1.23vw,19px)!important;line-height:1.35;color:#516e92;margin:0!important}
+#landing.reference-home .rp-service p{padding-right:32px}
+#landing.reference-home .rp-card-arrow{position:absolute;right:20px;bottom:24px;background:#fff;color:#006dff;border-radius:50%;width:36px;height:36px;display:grid;place-items:center;font-size:25px}
+#landing.reference-home .rp-search{display:flex;justify-content:center;gap:16px;flex:none}
+#landing.reference-home .rp-search label{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #d8e5f1;border-radius:13px;height:48px;padding:0 16px;min-width:0;width:min(600px,65%);box-sizing:border-box}
+#landing.reference-home .rp-search input{background:transparent;border:0;outline:none;min-width:0;width:100%;font:inherit;color:#17375f;padding:0;height:100%}
+#landing.reference-home .rp-search button{background:none;border:0;border-left:1px solid #d8e5f1;color:#006dff;display:grid;place-items:center;padding:0 0 0 14px;min-width:44px;height:44px;cursor:pointer}
+#landing.reference-home .rp-search svg{width:24px;height:24px;flex:none}
+#landing.reference-home .rp-search .rp-location{width:180px}
+#landing.reference-home .rp-search-status:empty{display:none}#landing.reference-home .rp-search-status{margin:0;color:#496584;font-size:14px;text-align:center}
+#landing.reference-home .rp-strip{display:flex;align-items:center;gap:20px;flex:none;padding:12px 22px;border:1px solid #cdeae0;border-radius:16px;background:#effbf6;font-size:16px;line-height:1.3;color:#416987}
+#landing.reference-home .rp-strip b{color:#00825f;white-space:nowrap}#landing.reference-home .rp-urgent{background:#fff2e4;border-color:#ffe5ce}#landing.reference-home .rp-urgent b{color:#071c49}#landing.reference-home .rp-strip small{font-size:13px}
+#landing.reference-home .rp-footer{text-align:center;flex:none;color:#4d6a8f;font-size:14px;line-height:1.3;background:#eaf5ff;border-radius:9px;padding:8px}
+#landing.reference-home .rp-steps{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+#landing.reference-home .rp-step{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid #d6e8f8;border-radius:18px;padding:16px 24px;box-shadow:0 5px 14px #07386f04}
+#landing.reference-home .rp-step .rp-art{padding:10px 40px 0;box-sizing:border-box}
+#landing.reference-home .rp-number{position:absolute;left:20px;top:16px;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:#eaf4ff;color:#0070ff;font-size:24px;font-weight:700}
+#landing.reference-home .rp-step:nth-child(even) .rp-number{color:#008c69;background:#eafaf2}
+#landing.reference-home .rp-badge{display:inline-block;align-self:flex-start;border-radius:100px;padding:5px 10px;font:600 12px/1.2 'IBM Plex Sans',Arial,sans-serif}
+#landing.reference-home .rp-badge.urgent{position:absolute;right:16px;top:16px;background:#ffe5e7;color:#dd2435}
+#landing.reference-home .rp-badge.fix{margin-top:6px;background:#099966;color:#fff;font-size:14px}
+#landing.reference-home .rp-fix-note{color:#178763;font-size:12px;margin-top:2px}
+#landing.reference-home .rp-short{display:none}
+#landing.reference-home .rp-why{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+#landing.reference-home .rp-why-card{padding:14px 20px;display:flex;flex-direction:column;border:1px solid #d9eafa;background:#fff;border-radius:17px;gap:10px}
+#landing.reference-home .rp-why-card h3{display:flex;align-items:center;gap:18px;font:700 clamp(18px,1.65vw,27px)/1.2 'IBM Plex Sans',Arial,sans-serif!important;margin:0!important;color:#071c49!important}
+#landing.reference-home .rp-why-card h3 i{display:grid;place-items:center;flex:none;border-radius:14px;width:48px;height:48px;background:#eaf9f3;font-style:normal}#landing.reference-home .rp-why-card svg{width:30px;height:30px}
+#landing.reference-home .rp-comparison{display:grid;grid-template-columns:1fr 34px 1.1fr;gap:12px;min-height:0;flex:1;align-items:stretch}
+#landing.reference-home .rp-comparison>div{background:#fff1ee;border-radius:12px;padding:12px 18px;display:flex;flex-direction:column;justify-content:center}
+#landing.reference-home .rp-comparison>div:last-child{background:#eaf5ff}
+#landing.reference-home .rp-comparison b{font-size:12px;color:#e73c25;margin-bottom:6px}#landing.reference-home .rp-comparison>div:last-child b{color:#006dff}
+#landing.reference-home .rp-comparison p{font-size:clamp(14px,1.25vw,20px)!important;line-height:1.35;margin:0!important;color:#17375f}
+#landing.reference-home .rp-comparison>span{align-self:center;color:#0070ff;font-size:34px}
+#landing.reference-home .rp-unique-title{font:700 clamp(19px,1.8vw,29px)/1.2 'IBM Plex Sans',Arial,sans-serif!important;color:#071c49!important;margin:0!important}
+#landing.reference-home .rp-unique{grid-template-columns:1fr 1fr;flex:none}
+#landing.reference-home .rp-feature{display:flex;gap:20px;border:1px solid #d1eade;background:#edfbf5;border-radius:14px;padding:14px 20px;text-align:left;font:inherit;cursor:pointer;color:#071c49}
+#landing.reference-home .rp-feature:last-child{background:#f3f3ff;border-color:#e0e3ff}
+#landing.reference-home .rp-feature>i{align-self:center;color:#008b63;font-style:normal;font-size:46px}#landing.reference-home .rp-feature:last-child>i{color:#6928cf}
+#landing.reference-home .rp-feature b{font-size:19px}#landing.reference-home .rp-feature p{font-size:16px!important;line-height:1.3;margin:5px 0!important;color:#516e92}#landing.reference-home .rp-feature small{font-size:13px;color:#516e92}
+#landing.reference-home .rp-feature em{font-style:normal;display:inline-block;border-radius:50px;padding:4px 10px;font-size:12px;color:#5822b7;background:#e1d9ff;margin-left:10px}
+#landing.reference-home .rp-context{text-align:center;margin:-6px 0 0!important;font-size:14px;color:#617fa3;flex:none}
+#landing.reference-home .rp-proofs{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+#landing.reference-home .rp-proof{display:flex;flex-direction:column;border:1px solid #d6e8f8;border-radius:16px;background:#fff;padding:12px;gap:4px}
+#landing.reference-home .rp-proof-media{position:relative;flex:1;min-height:0;overflow:hidden;border-radius:10px;background:#eef4fa}
+#landing.reference-home .rp-proof-media a{display:block;width:100%;height:100%}
+#landing.reference-home .rp-proof-media img,#landing.reference-home .rp-proof-media iframe{display:block;border:0;width:100%;height:100%;object-fit:contain;background:#eef4fa}
+#landing.reference-home .rp-proof h3{margin:2px 0 0!important;font-size:19px!important}
+#landing.reference-home .rp-proof p{font-size:15px!important}
+#landing.reference-home .rp-evidence-note{font-size:12px!important;color:#61758e;margin:0!important;text-align:center;flex:none}
+.rp-detail{width:min(1050px,calc(100vw - 32px));max-height:85dvh;border:1px solid #d8e8f6;border-radius:20px;padding:24px;background:#fff;color:#14375f;overflow:auto;box-sizing:border-box}.rp-detail::backdrop{background:#071c4980}.rp-close{position:sticky;top:0;display:block;margin-left:auto;min-height:44px;padding:0 18px;background:#006dff;border:0;border-radius:10px;color:#fff;cursor:pointer}.rp-detail>.wrap{width:100%}.rp-detail [data-reveal]{opacity:1;transform:none}.rp-detail .field-proof-findings{display:block!important}
+#landing.reference-home .rp-service[hidden]{display:none!important}
+#landing.reference-home .rp-service:focus-visible,#landing.reference-home .rp-feature:focus-visible{outline:3px solid #006dff;outline-offset:3px}
+@media(max-width:980px){
+ #landing.reference-home .sp-reference-page{padding:14px 0 10px!important}
+ #landing.reference-home .sp-reference-page .rp-page{width:calc(100% - 32px);gap:10px}
+ #landing.reference-home .rp-heading h2{font-size:34px!important}
+ #landing.reference-home .rp-grid{gap:10px}
+ #landing.reference-home .rp-service,#landing.reference-home .rp-step{padding:12px 14px}
+ #landing.reference-home .rp-strip{font-size:14px;gap:12px;padding:10px 14px}
+ #landing.reference-home .rp-why-card{padding:12px;gap:8px}
+ #landing.reference-home .rp-why-card h3{font-size:19px!important;gap:10px}
+ #landing.reference-home .rp-comparison{gap:6px;grid-template-columns:1fr 24px 1fr}
+ #landing.reference-home .rp-comparison>div{padding:10px}
+ #landing.reference-home .rp-feature{padding:10px 14px;gap:12px}
+ #landing.reference-home .rp-feature b{font-size:16px}#landing.reference-home .rp-feature p{font-size:14px!important}
+}
+@media(max-width:620px){
+ #landing.reference-home .sp-reference-page{padding:10px 0 8px!important}
+ #landing.reference-home .sp-reference-page .rp-page{width:calc(100% - 24px);gap:8px}
+ #landing.reference-home .rp-heading h2{font-size:27px!important;letter-spacing:-.6px;margin-bottom:4px!important}
+ #landing.reference-home .rp-heading p{font-size:13px!important;line-height:1.25}
+ #landing.reference-home .rp-grid{gap:8px}
+ #landing.reference-home .rp-services{grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,minmax(0,1fr))}
+ #landing.reference-home .rp-service{border-radius:12px;padding:8px 12px;display:grid;grid-template-columns:40px 1fr;grid-template-rows:auto auto;column-gap:10px;align-content:center}
+ #landing.reference-home .rp-service .rp-art{grid-row:1/3;align-self:center;width:40px;height:45px;margin:0;object-fit:contain}
+ #landing.reference-home .rp-service h3{font-size:14px!important;margin-bottom:3px!important;letter-spacing:-.2px}
+ #landing.reference-home .rp-service p{font-size:12px!important;padding-right:0;line-height:1.25}
+ #landing.reference-home .rp-card-arrow{display:none}
+ #landing.reference-home .rp-search{gap:8px}
+ #landing.reference-home .rp-search label{height:44px;flex:1;width:auto;padding:0 10px;gap:8px;font-size:14px}
+ #landing.reference-home .rp-search .rp-location{display:none}
+ #landing.reference-home .rp-strip{flex-wrap:wrap;gap:3px 10px;border-radius:11px;padding:8px 12px;font-size:13px;line-height:1.25}
+ #landing.reference-home .rp-strip small{font-size:12px}
+ #landing.reference-home .rp-footer{font-size:12px;padding:6px;line-height:1.25}
+ #landing.reference-home .rp-steps{grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,minmax(0,1fr))}
+ #landing.reference-home .rp-step{padding:8px 10px;border-radius:12px}
+ #landing.reference-home .rp-step .rp-art{padding:2px 20px 0;max-height:68px;margin-bottom:4px;min-height:24px}
+ #landing.reference-home .rp-step h3{font-size:14px!important;margin-bottom:4px!important}
+ #landing.reference-home .rp-step p{font-size:13px!important;line-height:1.25}
+ #landing.reference-home .rp-number{width:24px;height:24px;left:8px;top:8px;font-size:15px}
+ #landing.reference-home .rp-badge.urgent{position:static;order:5;font-size:10px;margin-top:4px;padding:3px 6px}
+ #landing.reference-home .rp-badge.fix{font-size:12px;padding:3px 7px;margin-top:4px}
+ #landing.reference-home .rp-fix-note{font-size:10px;line-height:1.2}
+ #landing.reference-home .rp-long{display:none}#landing.reference-home .rp-short{display:block}
+ #landing.reference-home .rp-why-card{padding:9px;border-radius:12px;gap:6px}
+ #landing.reference-home .rp-why-card h3{font-size:14px!important;line-height:1.2;gap:7px}
+ #landing.reference-home .rp-why-card h3 i{width:25px;height:25px;border-radius:7px}#landing.reference-home .rp-why-card svg{width:19px;height:19px}
+ #landing.reference-home .rp-comparison{display:flex;flex-direction:column;gap:4px}
+ #landing.reference-home .rp-comparison>span{display:none}
+ #landing.reference-home .rp-comparison>div{padding:5px 7px;border-radius:7px}
+ #landing.reference-home .rp-comparison b{font-size:9px;margin-bottom:2px}
+ #landing.reference-home .rp-comparison p{font-size:12px!important;line-height:1.23}
+ #landing.reference-home .rp-unique-title{font-size:16px!important}
+ #landing.reference-home .rp-unique{grid-template-columns:1fr;gap:6px}
+ #landing.reference-home .rp-feature{padding:8px 10px;gap:10px;border-radius:10px}
+ #landing.reference-home .rp-feature>i{font-size:27px}
+ #landing.reference-home .rp-feature b{font-size:14px}#landing.reference-home .rp-feature p{font-size:12px!important;margin:3px 0!important}
+ #landing.reference-home .rp-feature small{font-size:10px;line-height:1.2;display:block}
+ #landing.reference-home .rp-feature em{font-size:10px;padding:2px 5px;margin-left:3px}
+ #landing.reference-home .rp-proofs{grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,minmax(0,1fr))}
+ #landing.reference-home .rp-proof{padding:7px;border-radius:11px;gap:3px}
+ #landing.reference-home .rp-proof h3{font-size:13px!important;line-height:1.2}
+ #landing.reference-home .rp-proof p{font-size:12px!important;line-height:1.2}
+ #landing.reference-home .rp-context{font-size:12px;margin:0!important}
+ #landing.reference-home .rp-evidence-note{font-size:10px!important;line-height:1.2}
+}
+@media(max-width:620px) and (max-height:720px){
+ #landing.reference-home .rp-heading h2{font-size:24px!important}
+ #landing.reference-home .rp-step .rp-art{max-height:42px}
+ #landing.reference-home .rp-why-card h3 i{display:none}
+ #landing.reference-home .rp-comparison>div{padding:4px 6px}
+ #landing.reference-home .rp-comparison b{display:none}
+ #landing.reference-home .rp-why-card{gap:4px;padding:7px}
+ #landing.reference-home .rp-feature p{font-size:12px!important;line-height:1.2}
+ #landing.reference-home .rp-footer{font-size:10px}
+}
+/* Keep every card's contents inside its allotted viewport at shorter heights. */
+@media(min-width:621px) and (max-height:850px){
+ #landing.reference-home .rp-heading h2{font-size:42px!important}
+ #landing.reference-home .rp-heading p{font-size:18px!important}
+ #landing.reference-home .rp-why-card h3{font-size:21px!important;gap:10px}
+ #landing.reference-home .rp-why-card h3 i{width:32px;height:32px;border-radius:9px}
+ #landing.reference-home .rp-why-card svg{width:24px;height:24px}
+ #landing.reference-home .rp-comparison p{font-size:16px!important}
+ #landing.reference-home .rp-why-card{padding:10px 16px;gap:7px}
+ #landing.reference-home .rp-comparison>div{padding:9px 12px}
+ #landing.reference-home .rp-feature{padding:10px 14px}
+ #landing.reference-home .rp-feature b{font-size:17px}
+ #landing.reference-home .rp-feature p{font-size:14px!important;margin:3px 0!important}
+ #landing.reference-home .rp-feature>i{font-size:34px}
+ #landing.reference-home .rp-feature small{font-size:12px}
+ #landing.reference-home .rp-unique-title{font-size:24px!important}
+}
+@media(max-width:620px){
+ #landing.reference-home .rp-services{gap:7px}
+ #landing.reference-home .rp-service{grid-template-columns:28px 1fr;gap:3px 7px;padding:7px 8px}
+ #landing.reference-home .rp-service .rp-art{width:28px;height:36px}
+ #landing.reference-home .rp-service h3{font-size:13px!important;line-height:1.2}
+ #landing.reference-home .rp-service p{font-size:12px!important;line-height:1.2}
+ #landing.reference-home .rp-badge.urgent,#landing.reference-home .rp-fix-note{display:none}
+ #landing.reference-home .rp-why-card{cursor:pointer}
+ #landing.reference-home .rp-comparison>div:first-child{display:none}
+ #landing.reference-home .rp-comparison>div:last-child{flex:1;padding:7px}
+ #landing.reference-home .rp-comparison b{font-size:10px;display:block}
+ #landing.reference-home .rp-comparison p{font-size:13px!important;line-height:1.27}
+ #landing.reference-home .rp-why-card h3{font-size:14px!important}
+ #landing.reference-home .rp-steps .rp-step:last-child h3{font-size:13px!important}
+}
+@media(max-width:620px) and (max-height:720px){
+ #landing.reference-home .rp-step .rp-art{max-height:28px;min-height:0;padding:0 24px;flex:1}
+ #landing.reference-home .rp-step h3{font-size:13px!important;line-height:1.15;margin-bottom:3px!important}
+ #landing.reference-home .rp-step p{font-size:12px!important;line-height:1.2}
+ #landing.reference-home .rp-number{width:20px;height:20px;font-size:13px}
+ #landing.reference-home .rp-strip{font-size:12px}
+ #landing.reference-home .rp-step{padding:7px 8px}
+ #landing.reference-home .rp-why-card h3{font-size:13px!important}
+ #landing.reference-home .rp-comparison p{font-size:12px!important}
+ #landing.reference-home .rp-comparison b{display:none}
+}
+#landing.reference-home .rp-video-preview{width:100%;height:100%;border:0;background:radial-gradient(circle at 50% 20%,#e2f2ff,#eff5fb);color:#14375f;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font:inherit;padding:8px}
+#landing.reference-home .rp-video-preview b{font-size:15px}#landing.reference-home .rp-video-preview small{font-size:12px;color:#5e7898}
+#landing.reference-home .rp-video-symbol{display:grid;place-items:center;width:56px;height:56px;color:#006dff;background:#fff;border-radius:50%;box-shadow:0 4px 15px #006dff10}#landing.reference-home .rp-video-symbol svg{width:34px;height:34px}
+.rp-video-dialog iframe{width:100%;aspect-ratio:16/9;border:0;display:block;margin:12px 0}.rp-video-dialog>a{color:#006dff}
+.rp-detail .rp-comparison{display:grid;grid-template-columns:1fr 34px 1fr;gap:12px;margin:16px 0}.rp-detail .rp-comparison>div{padding:16px;background:#fff1ee;border-radius:12px}.rp-detail .rp-comparison>div:last-child{background:#eaf5ff}.rp-detail .rp-comparison p{font-size:16px;line-height:1.4}.rp-detail .rp-comparison>span{align-self:center;color:#006dff;font-size:30px}.rp-detail .rp-why-card h3{display:flex;align-items:center;gap:10px}.rp-detail .rp-why-card svg{width:24px;height:24px}
+@media(max-width:620px){#landing.reference-home .rp-video-symbol{width:36px;height:36px}#landing.reference-home .rp-video-symbol svg{width:25px;height:25px}#landing.reference-home .rp-video-preview b{font-size:12px}#landing.reference-home .rp-video-preview small{font-size:10px}}
+@media(max-width:620px){#landing.reference-home.sp-page-locked[data-landing-page="home"] .sp-landing-canvas>.popular-services{display:none!important}#landing.reference-home #home>.sp-mobile-services{width:calc(100% - 24px);margin:12px auto 0}}
+@media(max-width:620px){#landing.reference-home #home h1.sp-hero-title{white-space:normal!important;font-size:clamp(25px,7.3vw,32px)!important;line-height:1.15!important;letter-spacing:-.75px!important;max-width:100%!important;overflow-wrap:normal!important}}

@@ -188,11 +188,11 @@ test('final navigation is concise and platform access is available on mobile',()
   assert.match(html,/id="spMobileAccess"/,'Mobile navigation must expose unified platform access.');
 });
 
-test('tablet drawer JavaScript matches the 1020px navigation breakpoint',()=>{
+test('tablet drawer JavaScript matches the current 980px reference navigation breakpoint',()=>{
   const app=readFileSync(join(root,'app.js'),'utf8');
-  const css=readFileSync(join(root,'master-v2.css'),'utf8');
-  assert.match(css,/@media \(max-width:1020px\)[\s\S]*?\.master-v2 \.navlinks\{display:none\}/,'Tablet nav must switch to the menu at 1020px.');
-  assert.match(app,/window\.innerWidth>1020/,'Drawer behavior must remain enabled through the tablet navigation breakpoint.');
+  const css=readFileSync(join(root,'reference-hero-v3.css'),'utf8');
+  assert.match(css,/@media\(max-width:980px\)[\s\S]*?\.sp-ref-navlinks[^{}]*\{display:none\}/,'Reference navigation switches to the menu at 980px.');
+  assert.match(app,/window\.innerWidth>980/,'Drawer behavior must remain enabled through the tablet navigation breakpoint.');
   assert.doesNotMatch(app,/window\.innerWidth>768/,'Drawer behavior must not use the old 768px-only breakpoint.');
 });
 
