@@ -52,19 +52,19 @@ async function createSession(userId,remember=false){
 async function provisionDemoWorkspace(client,workspaceKey){
   const canonicalUsers=(await client.query('SELECT * FROM users WHERE email=ANY($1::text[]) AND active=true',[DEMO_EMAILS])).rows;
   if(canonicalUsers.length<DEMO_ACCOUNTS.length)throw httpError(503,'Public review accounts are not initialized.','DEMO_ACCOUNT_UNAVAILABLE');
-  const sourceByEmail=new Map(canonicalUsers.map(row=>[String(row.email).toLowerCase(),row]));
+  const sourceByEmail=Object.fromEntries(canonicalUsers.map(row=>[String(row.email).toLowerCase(),row]));
   const sourceCoop=(await client.query("SELECT id,region FROM cooperatives WHERE code='YUKTI-01' ORDER BY id LIMIT 1")).rows[0];
   if(!sourceCoop)throw httpError(503,'Demo cooperative is not initialized.','DEMO_COOPERATIVE_UNAVAILABLE');
   const workspaceCoop=(await client.query(`INSERT INTO cooperatives(name,code,region) VALUES($1,$2,$3)
     ON CONFLICT(code) DO UPDATE SET region=EXCLUDED.region RETURNING id`,[`YUKTI Kolhapur Services Cooperative · ${workspaceKey}`,`DWS-${workspaceKey}`,sourceCoop.region])).rows[0];
-  const users=new Map();
+  const users=Object.create(null);
   for(const account of DEMO_ACCOUNTS){
-    const source=sourceByEmail.get(account.email);
+    const source=sourceByEmail[account.email];
     const email=scopedDemoEmail(account.email,workspaceKey);
     const user=(await client.query(`INSERT INTO users(email,name,role,password_hash,cooperative_id,active) VALUES($1,$2,$3,$4,$5,true)
       ON CONFLICT(email) DO UPDATE SET name=EXCLUDED.name,role=EXCLUDED.role,password_hash=EXCLUDED.password_hash,cooperative_id=EXCLUDED.cooperative_id,active=true
       RETURNING *`,[email,account.name,account.role,source.password_hash,workspaceCoop.id])).rows[0];
-    users.set(account.email,user);
+    users[account.email]=user;
     if(account.role==='WORKER'){
       const sourceWorker=(await client.query('SELECT w.* FROM workers w WHERE w.user_id=$1',[source.id])).rows[0];
       if(!sourceWorker)throw httpError(503,'Demo worker profile is not initialized.','DEMO_WORKER_UNAVAILABLE');
@@ -88,7 +88,7 @@ async function createPublicDemoSession(req,res,canonicalEmail,remember=false){
   const user=await transaction(async client=>{
     await client.query('DELETE FROM sessions WHERE expires_at<=now()');
     const users=await provisionDemoWorkspace(client,workspaceKey);
-    const scoped=users.get(canonicalEmail);
+    const scoped=users[canonicalEmail];
     if(!scoped)throw httpError(503,'Public review account is unavailable in this workspace.','DEMO_ACCOUNT_UNAVAILABLE');
     await client.query("INSERT INTO sessions(user_id,token_hash,expires_at) VALUES($1,$2,now()+($3||' days')::interval)",[scoped.id,sha256(raw),String(days)]);
     return scoped;
