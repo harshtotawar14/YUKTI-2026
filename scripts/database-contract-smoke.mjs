@@ -16,8 +16,12 @@ assert.equal(cooperatives.rows.length,2,'Expected both seeded cooperative record
 assert.ok(cooperatives.rows.some(row=>row.code==='YUKTI-01'&&/Kolhapur/i.test(row.region)&&/YUKTI Kolhapur/i.test(row.name)),'Primary cooperative is not aligned with Kolhapur.');
 assert.ok(cooperatives.rows.some(row=>row.code==='NARMADA-02'&&/Panhala/i.test(row.region)&&/YUKTI Panhala/i.test(row.name)),'Secondary cooperative is not aligned with Panhala.');
 
-const admin=(await query("SELECT id FROM users WHERE role='COOPERATIVE_ADMIN' ORDER BY id LIMIT 1")).rows[0];
-assert.ok(admin?.id,'Seeded Cooperative Admin account is missing.');
+const seededAdmin=(await query("SELECT * FROM users WHERE role='COOPERATIVE_ADMIN' ORDER BY id LIMIT 1")).rows[0];
+assert.ok(seededAdmin?.id,'Seeded Cooperative Admin account is missing.');
+const admin=(await query(`INSERT INTO users(email,name,role,password_hash,cooperative_id,active)
+  VALUES('ci.cooperative.admin@sanpaid.test','CI Cooperative Admin','COOPERATIVE_ADMIN',$1,$2,true)
+  ON CONFLICT(email) DO UPDATE SET password_hash=EXCLUDED.password_hash,cooperative_id=EXCLUDED.cooperative_id,active=true
+  RETURNING id`,[seededAdmin.password_hash,seededAdmin.cooperative_id])).rows[0];
 const token='sanpaid-ci-cooperative-workspace-token';
 await query("INSERT INTO sessions(user_id,token_hash,expires_at) VALUES($1,$2,now()+interval '30 minutes')",[admin.id,sha256(token)]);
 

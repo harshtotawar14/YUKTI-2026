@@ -5,11 +5,25 @@ const base=(process.env.SANPAID_PRODUCTION_URL||'https://yukti-2026-brown.vercel
 const password=process.env.SANPAID_E2E_PASSWORD||PUBLIC_DEMO_PASSWORD;
 
 function assert(condition,message){if(!condition)throw new Error(message);}
-async function request(path,{method='GET',token,body,expected}={}){
+function cookieHeader(jar){return [...jar.entries()].map(([key,value])=>`${key}=${value}`).join('; ');}
+function absorbCookies(jar,response){
+  const values=typeof response.headers.getSetCookie==='function'?response.headers.getSetCookie():[response.headers.get('set-cookie')].filter(Boolean);
+  for(const raw of values){
+    const pair=String(raw).split(';')[0],index=pair.indexOf('=');
+    if(index<1)continue;
+    const name=pair.slice(0,index),value=pair.slice(index+1);
+    if(value)jar.set(name,value);else jar.delete(name);
+  }
+}
+
+const workspaceA=new Map();
+async function request(path,{method='GET',token,body,expected,jar=workspaceA}={}){
   const headers={'accept':'application/json'};
+  const cookies=cookieHeader(jar);if(cookies)headers.cookie=cookies;
   if(token)headers.authorization=`Bearer ${token}`;
   if(body!==undefined)headers['content-type']='application/json';
   const response=await fetch(`${base}${path}`,{method,headers,body:body===undefined?undefined:JSON.stringify(body),redirect:'follow'});
+  absorbCookies(jar,response);
   let payload={};
   const text=await response.text();
   try{payload=text?JSON.parse(text):{};}catch{payload={raw:text};}
@@ -20,9 +34,10 @@ async function request(path,{method='GET',token,body,expected}={}){
   return {status:response.status,payload};
 }
 
-async function login(identifier,role){
-  const {payload}=await request('/api/auth/login',{method:'POST',body:{identifier,password,role},expected:200});
+async function login(identifier,role,jar=workspaceA){
+  const {payload}=await request('/api/auth/login',{method:'POST',jar,body:{identifier,password,role},expected:200});
   assert(payload.ok===true&&payload.demoToken,`Login failed for ${role}`);
+  assert(payload.authentication==='ISOLATED_DEMO_WORKSPACE_SESSION',`Expected isolated demo session for ${role}`);
   return payload.demoToken;
 }
 
@@ -37,12 +52,26 @@ assert(proof.ok===true&&Number(proof.workers)>=2&&Number(proof.cooperatives)>=1,
 await request('/api/connected/snapshot',{expected:401});
 console.log('Public contracts + auth guard: PASS');
 
-const customer=await login('customer.connected@sanpaid.demo','CUSTOMER');
-const worker1=await login('worker1.connected@sanpaid.demo','WORKER');
-const worker2=await login('worker2.connected@sanpaid.demo','WORKER');
-const admin=await login('admin.connected@sanpaid.demo','COOPERATIVE_ADMIN');
-const federation=await login('federation.connected@sanpaid.demo','FEDERATION_ADMIN');
-console.log('All role logins: PASS');
+const accessA=(await request('/api/auth/demo-access',{expected:200})).payload;
+assert(accessA.mode==='ISOLATED_VISITOR_WORKSPACE'&&workspaceA.has('sanpaid_demo_workspace'),'Workspace A was not initialized.');
+const workspaceB=new Map();
+const accessB=(await request('/api/auth/demo-access',{jar:workspaceB,expected:200})).payload;
+assert(accessB.mode==='ISOLATED_VISITOR_WORKSPACE'&&workspaceB.has('sanpaid_demo_workspace'),'Workspace B was not initialized.');
+assert(workspaceA.get('sanpaid_demo_workspace')!==workspaceB.get('sanpaid_demo_workspace'),'Independent visitors received the same workspace.');
+
+const customer=await login('customer','CUSTOMER');
+const customerB=await login('customer','CUSTOMER',workspaceB);
+const initialA=(await request('/api/connected/snapshot',{token:customer,expected:200})).payload;
+const initialB=(await request('/api/connected/snapshot',{jar:workspaceB,token:customerB,expected:200})).payload;
+assert(Array.isArray(initialA.bookings)&&initialA.bookings.length===0,'Fresh Visitor A inherited private booking activity.');
+assert(Array.isArray(initialB.bookings)&&initialB.bookings.length===0,'Fresh Visitor B inherited private booking activity.');
+console.log('Independent fresh visitor workspaces start empty: PASS');
+
+const worker1=await login('worker-a','WORKER');
+const worker2=await login('worker-b','WORKER');
+const admin=await login('cooperative-admin','COOPERATIVE_ADMIN');
+const federation=await login('federation-admin','FEDERATION_ADMIN');
+console.log('All role logins share Visitor A workspace: PASS');
 
 await request('/api/connected/worker/availability',{method:'POST',token:worker1,body:{available:true},expected:200});
 await request('/api/connected/worker/availability',{method:'POST',token:worker2,body:{available:true},expected:200});
@@ -51,7 +80,20 @@ const scheduledAt=new Date(Date.now()+10*60*1000).toISOString();
 const created=(await request('/api/connected/bookings',{method:'POST',token:customer,body:{service:'Electrician',zone:'YUKTI E2E Zone',address:'SIH production E2E test address',problem:'Production E2E electrical service validation',scheduledAt,requestSource:'TEXT',requestLanguage:'en',emergency:false},expected:201})).payload;
 const bookingId=Number(created.id);
 assert(bookingId>0&&created.status==='OFFERING','Booking creation contract invalid.');
-console.log(`Booking created: ${created.bookingCode}`);
+const snapshotA=(await request('/api/connected/snapshot',{token:customer,expected:200})).payload;
+const snapshotB=(await request('/api/connected/snapshot',{jar:workspaceB,token:customerB,expected:200})).payload;
+assert(snapshotA.bookings.some(x=>Number(x.id)===bookingId),'Visitor A cannot recover its booking.');
+assert(!snapshotB.bookings.some(x=>Number(x.id)===bookingId),'Visitor B can see Visitor A booking.');
+await request(`/api/connected/customer/bookings/${bookingId}`,{jar:workspaceB,token:customerB,expected:403});
+console.log('A booking is invisible and unreadable from Visitor B: PASS');
+
+const workerB=await login('worker-a','WORKER',workspaceB);
+const offersB=(await request('/api/connected/worker/offers',{jar:workspaceB,token:workerB,expected:200})).payload;
+assert(!offersB.some(x=>Number(x.bookingId)===bookingId),'Visitor B worker can see Visitor A offer.');
+const adminB=await login('cooperative-admin','COOPERATIVE_ADMIN',workspaceB);
+const adminBWorkspace=(await request('/api/cooperative-admin/workspace',{jar:workspaceB,token:adminB,expected:200})).payload;
+assert(!adminBWorkspace.services.some(x=>Number(x.id)===bookingId),'Visitor B admin can see Visitor A booking.');
+console.log('Worker/Admin cross-workspace isolation: PASS');
 
 const offers1=(await request('/api/connected/worker/offers',{token:worker1,expected:200})).payload;
 const offers2=(await request('/api/connected/worker/offers',{token:worker2,expected:200})).payload;
@@ -78,6 +120,7 @@ assert(customerEstimate.estimate?.status==='PENDING','Customer cannot see the pe
 const approvedEstimate=(await request(`/api/connected/customer/bookings/${bookingId}/estimate/decision`,{method:'POST',token:customer,body:{decision:'APPROVE'},expected:200})).payload;
 assert(approvedEstimate.estimate?.status==='APPROVED','Customer estimate approval failed.');
 console.log('Arrival -> itemized estimate -> customer approval: PASS');
+
 const identity=(await request(`/api/connected/jobs/${bookingId}/identity`,{method:'POST',token:acceptingToken,body:{},expected:200})).payload;
 assert(identity.token,'Identity step did not return a one-time token.');
 await request(`/api/connected/service-start/${encodeURIComponent(identity.token)}`,{token:customer,expected:200});
@@ -110,14 +153,17 @@ for(const required of ['OFFERING','FINDING_REPLACEMENT','ACCEPTED','ON_THE_WAY',
 console.log('Persistent booking timeline: PASS');
 
 const adminWorkspace=(await request('/api/cooperative-admin/workspace',{token:admin,expected:200})).payload;
-assert(adminWorkspace.ok===true&&adminWorkspace.bookings.some(x=>Number(x.id)===bookingId),'Cooperative Admin cannot see E2E booking.');
+assert(adminWorkspace.ok===true&&adminWorkspace.services.some(x=>Number(x.id)===bookingId),'Cooperative Admin cannot see E2E booking.');
 const readiness=(await request('/api/connected/judge/readiness',{token:federation,expected:200})).payload;
 assert(readiness.ok===true&&readiness.ready===true,'Federation/judge readiness failed.');
-await request('/api/connected/judge/overview',{token:federation,expected:200});
+const federationOverview=(await request('/api/connected/judge/overview',{token:federation,expected:200})).payload;
+assert(Number(federationOverview.metrics?.bookings)===1,'Federation demo scope contains unrelated workspace bookings.');
 await request('/api/connected/judge/planning',{token:federation,expected:200});
 await request('/api/connected/judge/workforce-intelligence',{token:federation,expected:200});
-console.log('Cooperative Admin + Federation/Judge views: PASS');
+console.log('Cooperative Admin + Federation scoped views: PASS');
 
-for(const token of [customer,worker1,worker2,admin,federation])await request('/api/auth/logout',{method:'POST',token,body:{},expected:200});
+for(const [token,jar] of [[customer,workspaceA],[worker1,workspaceA],[worker2,workspaceA],[admin,workspaceA],[federation,workspaceA],[customerB,workspaceB],[workerB,workspaceB],[adminB,workspaceB]]){
+  await request('/api/auth/logout',{method:'POST',jar,token,body:{},expected:200});
+}
 console.log('Logout/session cleanup: PASS');
-console.log('FULL SANPAID PRODUCTION E2E: PASS');
+console.log('FULL SANPAID PRODUCTION E2E + WORKSPACE ISOLATION: PASS');

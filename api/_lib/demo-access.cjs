@@ -29,10 +29,10 @@ function isPublicDemoCredential(identifier,password){
 function publicDemoPayload(){
   return {
     ok:true,
-    mode:'SHARED_PLATFORM_ACCESS',
+    mode:'ISOLATED_VISITOR_WORKSPACE',
     password:PUBLIC_DEMO_PASSWORD,
     accounts:DEMO_ACCOUNTS.map(({accessId,name,role,persona})=>({accessId,name,role,persona})),
-    warning:'Shared access credentials are limited to isolated platform-review accounts.'
+    warning:'Each browser session receives an isolated demo workspace. Role switching stays inside that workspace.'
   };
 }
 

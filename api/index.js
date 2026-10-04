@@ -2,6 +2,8 @@
 
 const handler=require('./[...path].js');
 const auth=require('../backend/src/auth/routes.cjs');
+const snapshotRoutes=require('../backend/src/demo/snapshot-routes.cjs');
+const judgeScopeRoutes=require('../backend/src/demo/judge-scope-routes.cjs');
 const matchingRoutes=require('../backend/src/matching/connected-routes.cjs');
 const publicProof=require('../backend/src/proof/public-summary.cjs');
 const judgeTruth=require('../backend/src/judge/truth-routes.cjs');
@@ -10,6 +12,8 @@ const cooperativeWorkspace=require('../backend/src/cooperative/workspace-routes.
 const complaints=require('../backend/src/complaints/routes.cjs');
 const billing=require('../backend/src/billing/routes.cjs');
 const capacity=require('../backend/src/capacity/routes.cjs');
+const {authenticate}=require('../backend/src/shared/auth-context.cjs');
+const {bearerToken}=require('./_lib/security.cjs');
 
 function isDatabaseResourceError(error){return /^53/.test(String(error?.code||''))||String(error?.code||'')==='57P03';}
 
@@ -21,14 +25,17 @@ module.exports=async function stableApiEntrypoint(req,res){
   req.url=`/api/${rawPath}${suffix?`?${suffix}`:''}`;
   try{
     if(await auth.handle(req,res,rawPath))return;
+    if(await snapshotRoutes.handle(req,res,rawPath))return;
     if(await publicProof.handle(req,res,rawPath))return;
     if(await matchingRoutes.handle(req,res,rawPath))return;
+    if(await judgeScopeRoutes.handle(req,res,rawPath))return;
     if(await judgeTruth.handle(req,res,rawPath))return;
     if(await workerProfile.handle(req,res,rawPath))return;
     if(await cooperativeWorkspace.handle(req,res,rawPath))return;
     if(await complaints.handle(req,res,rawPath))return;
     if(await billing.handle(req,res,rawPath))return;
     if(await capacity.handle(req,res,rawPath))return;
+    if(bearerToken(req))await authenticate(req);
   }catch(error){
     const resourcePressure=isDatabaseResourceError(error);
     console.error('[sanpaid-api-adapter]',rawPath,error.code||'INTERNAL_ERROR',error.message||'Unknown error');
