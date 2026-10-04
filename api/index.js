@@ -3,6 +3,7 @@
 const handler=require('./[...path].js');
 const auth=require('../backend/src/auth/routes.cjs');
 const snapshotRoutes=require('../backend/src/demo/snapshot-routes.cjs');
+const judgeScopeRoutes=require('../backend/src/demo/judge-scope-routes.cjs');
 const matchingRoutes=require('../backend/src/matching/connected-routes.cjs');
 const publicProof=require('../backend/src/proof/public-summary.cjs');
 const judgeTruth=require('../backend/src/judge/truth-routes.cjs');
@@ -27,14 +28,13 @@ module.exports=async function stableApiEntrypoint(req,res){
     if(await snapshotRoutes.handle(req,res,rawPath))return;
     if(await publicProof.handle(req,res,rawPath))return;
     if(await matchingRoutes.handle(req,res,rawPath))return;
+    if(await judgeScopeRoutes.handle(req,res,rawPath))return;
     if(await judgeTruth.handle(req,res,rawPath))return;
     if(await workerProfile.handle(req,res,rawPath))return;
     if(await cooperativeWorkspace.handle(req,res,rawPath))return;
     if(await complaints.handle(req,res,rawPath))return;
     if(await billing.handle(req,res,rawPath))return;
     if(await capacity.handle(req,res,rawPath))return;
-    // The legacy fallback router has its own authenticator. Preflight any supplied
-    // session here so retired globally-shared demo sessions cannot reach it.
     if(bearerToken(req))await authenticate(req);
   }catch(error){
     const resourcePressure=isDatabaseResourceError(error);
