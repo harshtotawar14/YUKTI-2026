@@ -1,0 +1,4 @@
+/* Mobile-only navigation alignment fix: keep the hamburger at the far right. */
+@media (max-width:980px){
+  #landing.reference-home .sp-ref-actions{grid-column:3;justify-self:end}
+}
