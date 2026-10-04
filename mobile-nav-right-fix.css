@@ -62,3 +62,22 @@
  #landing.reference-home .sp-mobile-service-grid>button{height:110px}
  #landing.reference-home .sp-mobile-services h2{font-size:34px}
 }
+
+/* Homepage is a fixed screen; navigation opens one existing panel at a time. */
+html:has(#landing.sp-page-locked:not(.hidden)),body:has(#landing.sp-page-locked:not(.hidden)){overflow:hidden!important;overscroll-behavior:none}
+#landing.reference-home.sp-page-locked:not(.hidden){height:100dvh!important;max-height:100dvh;display:flex;flex-direction:column;overflow:hidden!important}
+#landing.sp-page-locked>.sp-ref-nav{flex:0 0 auto;position:relative!important}
+#landing.sp-page-locked .sp-landing-viewport{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+#landing.sp-page-locked[data-landing-page="home"] .sp-landing-viewport{overflow:hidden}
+#landing.sp-page-locked .sp-landing-canvas{transform-origin:top center;display:flow-root;width:100%}
+#landing.sp-page-locked .sp-landing-canvas>*{display:none!important}
+#landing.sp-page-locked .sp-landing-canvas>main{display:contents!important}
+#landing.sp-page-locked .sp-landing-canvas>main>*{display:none!important}
+#landing.sp-page-locked .sp-landing-canvas>.sp-current-panel,#landing.sp-page-locked .sp-landing-canvas>main>.sp-current-panel{display:block!important}
+#landing.reference-home.sp-page-locked .sp-ref-navlinks a:first-child{color:#17375f}
+#landing.reference-home.sp-page-locked .sp-ref-navlinks a:first-child:after{display:none}
+#landing.reference-home.sp-page-locked .sp-ref-navlinks a.sp-page-active{color:#086cff}
+#landing.reference-home.sp-page-locked .sp-ref-navlinks a.sp-page-active:after{content:"";display:block;position:absolute;left:0;right:0;bottom:16px;height:3px;border-radius:99px;background:#086cff}
+@media(max-width:620px){
+ #landing.sp-page-locked[data-landing-page="home"] .sp-landing-canvas>.popular-services{display:block!important}
+}
