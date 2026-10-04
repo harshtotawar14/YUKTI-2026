@@ -83,9 +83,10 @@ test('worker demo selector uses an explicit DOM collection before forEach',()=>{
   assert.doesNotMatch(ui,/\$\('\[data-spu-worker-demo\]'[^\n]*\.forEach/);
 });
 
-test('public access payload exposes role access IDs without internal demo emails',()=>{
+test('public access payload exposes isolated role access IDs without internal demo emails',()=>{
   const payload=demo.publicDemoPayload();
-  assert.equal(payload.mode,'SHARED_PLATFORM_ACCESS');
+  assert.equal(payload.mode,'ISOLATED_VISITOR_WORKSPACE');
+  assert.match(payload.warning,/isolated demo workspace/i);
   assert.equal(payload.accounts.length,5);
   for(const account of payload.accounts){
     assert.ok(account.accessId);
