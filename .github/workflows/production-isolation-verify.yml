@@ -1,0 +1,41 @@
+name: SanPaid Production Isolation Verification
+
+concurrency:
+  group: sanpaid-production-isolation
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  production-isolation-e2e:
+    name: Live A/B isolation and booking journey
+    runs-on: ubuntu-latest
+    env:
+      SANPAID_PRODUCTION_URL: https://yukti-2026-brown.vercel.app
+      SANPAID_E2E_PASSWORD: ${{ secrets.SANPAID_E2E_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Wait for this exact commit on production
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 36); do
+            body="$(curl -fsS --max-time 10 "$SANPAID_PRODUCTION_URL/build-info.json?commit=$GITHUB_SHA" || true)"
+            live_sha="$(printf '%s' "$body" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{process.stdout.write(JSON.parse(s).commitSha||'')}catch{}})" || true)"
+            if [ "$live_sha" = "$GITHUB_SHA" ]; then
+              echo "Production is serving $GITHUB_SHA"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Production did not reach the tested commit."
+          exit 1
+
+      - name: Run live A/B isolation and full sandbox journey
+        run: node scripts/production-e2e.mjs
