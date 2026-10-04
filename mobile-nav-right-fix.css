@@ -129,3 +129,41 @@ html:has(#landing.sp-page-locked:not(.hidden)),body:has(#landing.sp-page-locked:
 #landing.reference-home #evidence th,#landing.reference-home #evidence td{padding:12px 8px;text-align:left;vertical-align:top;overflow-wrap:anywhere;border-bottom:1px solid #d7e2ef}
 #landing.reference-home #evidence th{color:#102a4c;font-weight:700}
 #landing.reference-home #evidence tr:last-child td{border-bottom:0}
+
+/* Keep every proof visible together in one fixed-height evidence screen. */
+#landing.reference-home.sp-page-locked[data-landing-page="evidence"] .sp-landing-viewport{overflow:hidden!important}
+#landing.reference-home.sp-page-locked[data-landing-page="evidence"] .sp-landing-canvas{height:100%;min-height:0}
+#landing.reference-home.sp-page-locked #evidence{height:100%;min-height:0;box-sizing:border-box;padding:18px 0!important;overflow:hidden!important}
+#landing.reference-home #evidence .field-proof-gallery{height:100%;display:grid;grid-template-rows:auto minmax(0,.9fr) minmax(0,1.2fr) auto;gap:12px;width:calc(100% - 40px);max-width:1160px;margin:auto;min-height:0}
+#landing.reference-home #evidence .field-proof-intro{margin:0;max-width:none}
+#landing.reference-home #evidence .field-proof-intro .tag,#landing.reference-home #evidence .field-proof-intro p,#landing.reference-home #evidence .field-proof-findings{display:none}
+#landing.reference-home #evidence h2{font-size:clamp(18px,2.3vw,28px)!important;line-height:1.15!important;margin:0 0 5px!important}
+#landing.reference-home #evidence .field-proof-context{font-size:12px;line-height:1.3;display:block}
+#landing.reference-home #evidence .field-proof-videos,#landing.reference-home #evidence .field-proof-documents{min-height:0;height:100%;align-items:stretch;gap:12px;margin:0;grid-template-rows:minmax(0,1fr)}
+#landing.reference-home #evidence .field-proof-videos{grid-template-columns:repeat(2,minmax(0,1fr))}
+#landing.reference-home #evidence .field-proof-documents{grid-template-columns:repeat(3,minmax(0,1fr))}
+#landing.reference-home #evidence .field-proof-card{height:100%;min-height:0;display:flex;flex-direction:column;border-radius:12px;box-sizing:border-box}
+#landing.reference-home #evidence .field-proof-caption{padding:9px 12px;flex:0 0 auto}
+#landing.reference-home #evidence .field-proof-caption>span{font-size:9px;letter-spacing:.04em;line-height:1.2;display:block}
+#landing.reference-home #evidence h3{font-family:'IBM Plex Sans',Arial,sans-serif!important;font-size:14px!important;line-height:1.2!important;margin:4px 0 0!important;color:#102a4c!important}
+#landing.reference-home #evidence .field-proof-caption p{display:none}
+#landing.reference-home #evidence .field-proof-player{flex:1 1 0;min-height:0;height:0;aspect-ratio:auto;width:100%}
+#landing.reference-home #evidence .field-proof-scan{flex:1 1 0;min-height:0;height:0;width:100%;object-fit:contain;background:#edf2f7;padding:4px;box-sizing:border-box}
+#landing.reference-home #evidence .field-proof-note{font-size:10px;line-height:1.35;margin:0}
+@media(max-width:620px){
+ #landing.reference-home.sp-page-locked #evidence{padding:12px 0!important}
+ #landing.reference-home #evidence .field-proof-gallery{width:calc(100% - 24px);gap:9px;grid-template-rows:auto minmax(0,.9fr) minmax(0,1.2fr) auto}
+ #landing.reference-home #evidence .field-proof-videos,#landing.reference-home #evidence .field-proof-documents{gap:7px}
+ #landing.reference-home #evidence .field-proof-caption{padding:7px}
+ #landing.reference-home #evidence h3{font-size:11px!important}
+ #landing.reference-home #evidence .field-proof-caption>span{font-size:8px}
+ #landing.reference-home #evidence .field-proof-context{font-size:10px}
+}
+@media(max-height:500px){
+ #landing.reference-home.sp-page-locked #evidence{padding:7px 0!important}
+ #landing.reference-home #evidence .field-proof-gallery{gap:6px}
+ #landing.reference-home #evidence h2{font-size:18px!important}
+ #landing.reference-home #evidence .field-proof-caption{padding:5px 8px}
+ #landing.reference-home #evidence .field-proof-caption>span,#landing.reference-home #evidence .field-proof-note{display:none}
+ #landing.reference-home #evidence h3{font-size:11px!important;margin:0!important}
+}
