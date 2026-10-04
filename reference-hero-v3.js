@@ -55,7 +55,7 @@
           </div>
         </div>
         <div class="sp-hero-visual">
-          <img src="/assets/sanpaid-reference-hero-right.webp" width="600" height="295" fetchpriority="high" decoding="async" alt="SanPaid customer app beside a verified cooperative service worker helping a local household">
+          <img src="/assets/sanpaid-reference-hero-right-hq.webp" width="1148" height="565" fetchpriority="high" decoding="async" alt="SanPaid customer app beside a verified cooperative service worker helping a local household">
         </div>
       </div>
       <div class="sp-proof-strip" aria-label="SanPaid field validation summary">
