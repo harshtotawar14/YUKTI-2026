@@ -2,6 +2,7 @@
 
 const {query}=require('../../../api/_lib/db.cjs');
 const {authenticate,allow,send,httpError}=require('../shared/auth-context.cjs');
+const {isScopedDemoEmail,canonicalDemoEmail}=require('../../../api/_lib/demo-workspace.cjs');
 
 const ACTIVE_BOOKING_STATES=['OFFERING','FINDING_REPLACEMENT','ACCEPTED','ON_THE_WAY','ARRIVED','IDENTITY_VERIFIED','CUSTOMER_CONFIRMED','IN_PROGRESS','AWAITING_CUSTOMER_CONFIRMATION','COMPLETED','PAYMENT_PENDING'];
 const OPEN_COMPLAINT_STATES=['OPEN','IN_REVIEW','ESCALATED'];
@@ -9,6 +10,8 @@ const OPEN_COMPLAINT_STATES=['OPEN','IN_REVIEW','ESCALATED'];
 function method(req,expected){if(req.method!==expected)throw httpError(405,`Use ${expected} for this endpoint.`,'METHOD_NOT_ALLOWED');}
 function clean(value,max=500){return String(value??'').trim().slice(0,max);}
 function body(req){if(req.body&&typeof req.body==='object')return req.body;if(!req.body)return{};try{return JSON.parse(req.body);}catch{throw httpError(400,'Request body must be valid JSON.','INVALID_JSON');}}
+function displayCooperativeName(name){return String(name||'').replace(/ · [a-f0-9]{20}$/i,'');}
+function displayWorkerEmail(email){return isScopedDemoEmail(email)?canonicalDemoEmail(email):email;}
 
 async function workspace(req,res,user){
   method(req,'GET');
@@ -54,6 +57,7 @@ async function workspace(req,res,user){
 
   const cooperative=coop.rows[0];
   if(!cooperative)throw httpError(404,'Cooperative not found.','COOPERATIVE_NOT_FOUND');
+  const scopedDemo=isScopedDemoEmail(user.email);
   const skillsByWorker=new Map();
   for(const row of skillRows.rows){
     const list=skillsByWorker.get(Number(row.worker_id))||[];
@@ -62,7 +66,7 @@ async function workspace(req,res,user){
   }
 
   const workers=workerRows.rows.map(row=>({
-    id:Number(row.id),name:row.name,email:row.email,
+    id:Number(row.id),name:row.name,email:displayWorkerEmail(row.email),
     verificationStatus:row.identity_status,availability:row.availability_status,
     jobsCompleted:Number(row.completed_jobs||0),rating:Number(row.rating||0),
     pendingDocuments:0,expiredDocuments:0,currentJobs:Number(row.current_jobs||0),
@@ -79,7 +83,7 @@ async function workspace(req,res,user){
 
   return send(res,200,{
     ok:true,source:'DATABASE_AGGREGATION',
-    cooperative:{id:cooperativeId,name:cooperative.name,code:cooperative.code,city:String(cooperative.region||'').split(',')[0].trim()||cooperative.region,region:cooperative.region},
+    cooperative:{id:cooperativeId,name:displayCooperativeName(cooperative.name),code:scopedDemo?'YUKTI-01':cooperative.code,city:String(cooperative.region||'').split(',')[0].trim()||cooperative.region,region:cooperative.region},
     metrics:{
       totalWorkers:workers.length,
       verifiedWorkers:workers.filter(w=>w.verificationStatus==='VERIFIED').length,
