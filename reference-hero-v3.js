@@ -149,6 +149,15 @@
     landing.dataset.referenceHeroV3='1';
     nav.insertAdjacentHTML('beforebegin',navMarkup());
     nav.remove();
+    const desktopAccess=landing.querySelector('#getStarted.sp-open-platform');
+    const mobileHeader=window.matchMedia('(max-width:980px)');
+    const syncHeaderAccess=()=>{
+      if(!desktopAccess)return;
+      if(mobileHeader.matches)desktopAccess.remove();
+      else if(!desktopAccess.isConnected)landing.querySelector('.sp-ref-actions #menuBtn')?.before(desktopAccess);
+    };
+    syncHeaderAccess();
+    mobileHeader.addEventListener('change',syncHeaderAccess);
     hero.insertAdjacentHTML('beforebegin',heroMarkup());
     hero.remove();
 
