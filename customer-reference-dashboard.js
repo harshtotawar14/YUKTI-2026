@@ -16,7 +16,7 @@
 
   const NAV_LABELS={overview:'Dashboard',book:'Book Service',booking:'My Bookings',verify:'Verified Workers',payment:'Payments & Invoice',support:'Support'};
   const $=(s,r=document)=>r.querySelector(s);
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
 
   function currentUser(){
     try{return window.SanPaidAuth?.getCurrentUser?.()||{};}catch{return {};}
@@ -32,6 +32,9 @@
   function initials(name){
     const parts=String(name||'C').trim().split(/\s+/).filter(Boolean);
     return (parts.length>1?parts[0][0]+parts.at(-1)[0]:parts[0]?.slice(0,1)||'C').toUpperCase();
+  }
+  function clearCustomerPrivateSessionState(){
+    try{sessionStorage.removeItem('sanpaid_connected_booking_id');}catch{}
   }
 
   function installCustomerBootGuard(){
@@ -74,7 +77,8 @@
     const nextView=next?.querySelector('[data-cw-view-btn]')?.dataset?.cwViewBtn||'book';
     const journey=overview.querySelector('.cw-journey')?.innerHTML||'';
     const activeBooking=bookingCode&&bookingCode!=='—';
-    return {overview,status,bookingCode,worker,workerNote,amount,amountNote,serviceStart,service,bookingSummary,nextTitle,nextCopy,nextView,journey,activeBooking};
+    const notificationCount=dashboard.querySelectorAll('[data-cw-view="support"] .cw-notification-list>article').length;
+    return {overview,status,bookingCode,worker,workerNote,amount,amountNote,serviceStart,service,bookingSummary,nextTitle,nextCopy,nextView,journey,activeBooking,notificationCount};
   }
 
   function openView(dashboard,view){
@@ -123,12 +127,13 @@
     }
     const name=customerName();
     const email=customerEmail();
-    const signature=`${name}|${email}`;
+    const notificationCount=Number(readDashboard(dashboard)?.notificationCount||0);
+    const signature=`${name}|${email}|${notificationCount}`;
     if(tools.dataset.signature===signature)return;
     tools.dataset.signature=signature;
     tools.innerHTML=`
       <div class="cr-location">${ICONS.pin}<span>Kolhapur, MH</span><b aria-hidden="true">⌄</b></div>
-      <button type="button" class="cr-bell" aria-label="Open support and updates">${ICONS.bell}<i>3</i></button>
+      <button type="button" class="cr-bell" aria-label="Open support and updates">${ICONS.bell}${notificationCount?`<i>${Math.min(notificationCount,99)}</i>`:''}</button>
       <div class="cr-profile-chip"><span>${esc(initials(name))}</span><div><b>${esc(name)}</b><small>Customer</small></div><em title="${esc(email)}">✓</em></div>`;
     tools.querySelector('.cr-bell')?.addEventListener('click',()=>openView(dashboard,'support'));
   }
@@ -136,6 +141,7 @@
   function desktopHomeMarkup(data){
     const name=customerName();
     const workerAssigned=data.worker&&!/^not assigned$/i.test(data.worker);
+    const actionSubtitle=data.activeBooking?'Everything you need for this booking':'Start or manage your service journey';
     const bookingPanel=data.activeBooking?`
           <section class="cr-current-card">
             <div class="cr-section-top"><h2>Current Booking</h2><span class="cr-status">${esc(data.status)}</span><button type="button" data-cr-view="booking">View Details ${ICONS.arrow}</button></div>
@@ -162,7 +168,7 @@
         <div class="cr-home-primary">
           ${bookingPanel}
           <section class="cr-shortcuts-card">
-            <div class="cr-section-top"><h2>Service Actions</h2><span>Everything you need for this booking</span></div>
+            <div class="cr-section-top"><h2>Service Actions</h2><span>${esc(actionSubtitle)}</span></div>
             <div class="cr-shortcuts">
               <button type="button" data-cr-view="book"><span>${ICONS.book}</span><div><b>Book Service</b><small>Start a new request</small></div>${ICONS.arrow}</button>
               <button type="button" data-cr-view="booking"><span>${ICONS.booking}</span><div><b>My Bookings</b><small>Track service progress</small></div>${ICONS.arrow}</button>
@@ -182,6 +188,7 @@
   function ensureDesktopHome(dashboard){
     const data=readDashboard(dashboard);
     if(!data)return;
+    if(!data.activeBooking)clearCustomerPrivateSessionState();
     const overview=data.overview;
     let home=overview.querySelector(':scope>.cr-desktop-home');
     if(!home){
@@ -189,7 +196,7 @@
       home.className='cr-desktop-home';
       overview.appendChild(home);
     }
-    const signature=[customerName(),data.status,data.bookingCode,data.worker,data.amount,data.nextTitle,data.nextCopy,data.service,data.journey].join('|');
+    const signature=[customerName(),data.status,data.bookingCode,data.worker,data.amount,data.nextTitle,data.nextCopy,data.service,data.journey,data.notificationCount].join('|');
     if(home.dataset.signature!==signature){
       home.dataset.signature=signature;
       home.innerHTML=desktopHomeMarkup(data);
@@ -239,6 +246,10 @@
   };
 
   installCustomerBootGuard();
+  document.addEventListener('click',event=>{
+    const target=event.target instanceof Element?event.target.closest('#connectedLogout'):null;
+    if(target)clearCustomerPrivateSessionState();
+  },true);
   new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','hidden','data-connected-role']});
   window.addEventListener('sanpaid:connected-sync',schedule);
   document.addEventListener('DOMContentLoaded',schedule,{once:true});
