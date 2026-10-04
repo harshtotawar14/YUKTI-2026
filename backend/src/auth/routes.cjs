@@ -5,7 +5,7 @@ const {sha256,randomToken,verifyPassword,bearerToken,sessionCookie,clearSessionC
 const {normalizeRole,publicUser}=require('../../../api/_lib/policy.cjs');
 const {authenticate,allow,send,httpError}=require('../shared/auth-context.cjs');
 const {DEMO_ACCOUNTS,DEMO_EMAILS,resolveLoginIdentifier,isPublicDemoCredential,publicDemoPayload}=require('../../../api/_lib/demo-access.cjs');
-const {ensureWorkspaceToken,workspaceKeyFromToken,scopedDemoEmail,canonicalDemoEmail,isScopedDemoEmail,appendSetCookie}=require('../../../api/_lib/demo-workspace.cjs');
+const {ensureWorkspaceToken,workspaceKeyFromToken,scopedDemoEmail,canonicalDemoEmail,isScopedDemoEmail,appendSetCookie,clearWorkspaceCookie}=require('../../../api/_lib/demo-workspace.cjs');
 
 const MAX_FAILURES=8;
 const WINDOW_MINUTES=15;
@@ -134,7 +134,12 @@ async function login(req,res){
 
 async function me(req,res){method(req,'GET');const user=await authenticate(req);return send(res,200,{ok:true,user:isScopedDemoEmail(user.email)?publicDemoUser(user):publicUser(user)});}
 async function logout(req,res){
-  method(req,'POST');const token=bearerToken(req);if(token)await query('DELETE FROM sessions WHERE token_hash=$1',[sha256(token)]);res.setHeader('Set-Cookie',clearSessionCookie());return send(res,200,{ok:true});
+  method(req,'POST');
+  const token=bearerToken(req);
+  if(token)await query('DELETE FROM sessions WHERE token_hash=$1',[sha256(token)]);
+  res.setHeader('Set-Cookie',clearSessionCookie());
+  appendSetCookie(res,clearWorkspaceCookie());
+  return send(res,200,{ok:true});
 }
 async function bridge(req,res){
   method(req,'POST');const user=await authenticate(req);allow(user,['COOPERATIVE_ADMIN','FEDERATION_ADMIN']);const session=await createSession(user.id,false);return send(res,200,{ok:true,demoToken:session.raw,user:isScopedDemoEmail(user.email)?publicDemoUser(user):publicUser(user)});
