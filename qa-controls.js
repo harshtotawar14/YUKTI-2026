@@ -1,0 +1,1 @@
+document.querySelectorAll('[data-width]').forEach(b=>b.onclick=()=>document.querySelector('iframe').style.width=b.dataset.width+'px');document.querySelectorAll('[data-role]').forEach(b=>b.onclick=()=>document.querySelector('iframe').src='qa-fixture.html?role='+b.dataset.role);

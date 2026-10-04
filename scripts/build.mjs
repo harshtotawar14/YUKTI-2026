@@ -1,4 +1,5 @@
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -9,7 +10,7 @@ const packageMetadata=JSON.parse(readFileSync(resolve(root,'package.json'),'utf8
 const primaryProductionUrl='https://yukti-2026-brown.vercel.app';
 
 const publicFiles=[
-  'index.html',
+  'index.html','reference-hero-v3.css','mobile-nav-right-fix.css','reference-hero-v3.js','dashboard-shell-lock.js',
   'app-icon.svg','manifest.webmanifest','robots.txt','sitemap.xml','social-preview.svg',
   'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','master-v2.css','landing-pro.css','hero-clarity.css','landing-10-polish.css','dossier-redesign.css',
   'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','login-reference.css','customer-worker-dashboard.css','customer-reference-dashboard.css','customer-mobile-reference.css','worker-mobile-final.css','mobile-role-stability.css',
@@ -112,7 +113,12 @@ const builtIndex=readFileSync(builtIndexPath,'utf8')
   .replaceAll('https://sahkriya.vercel.app',primaryProductionUrl)
   .replace('</head>',`<meta name="color-scheme" content="light">\n<meta name="supported-color-schemes" content="light">\n<link rel="stylesheet" href="hero-clarity.css?v=${assetVersion}">\n<link rel="stylesheet" href="landing-10-polish.css?v=${assetVersion}">\n<link rel="stylesheet" href="login-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-reference-dashboard.css?v=${assetVersion}">\n<link rel="stylesheet" href="customer-mobile-reference.css?v=${assetVersion}">\n<link rel="stylesheet" href="worker-mobile-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="mobile-role-stability.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final.css?v=${assetVersion}">\n<link rel="stylesheet" href="admin-final-guard.css?v=${assetVersion}">\n</head>`)
   .replace('</body>',`<script src="review-runtime.js?v=${assetVersion}"></script>\n<script src="selection-demo-runtime.js?v=${assetVersion}"></script>\n<script src="selection-integrity-v2.js?v=${assetVersion}"></script>\n<script src="selection-judge-integrity-v3.js?v=${assetVersion}"></script>\n<script src="customer-worker-dashboard.js?v=${assetVersion}"></script>\n<script src="review-runtime-bridge.js?v=${assetVersion}"></script>\n<script src="login-reference.js?v=${assetVersion}"></script>\n<script src="customer-reference-dashboard.js?v=${assetVersion}"></script>\n<script src="customer-mobile-bootstrap.js?v=${assetVersion}"></script>\n<script src="customer-mobile-reference.js?v=${assetVersion}"></script>\n<script src="worker-mobile-final.js?v=${assetVersion}"></script>\n<script src="admin-final.js?v=${assetVersion}"></script>\n<script src="selector-final-polish.js?v=${assetVersion}"></script>\n<script src="landing-10-polish.js?v=${assetVersion}"></script>\n</body>`);
-writeFileSync(builtIndexPath,builtIndex);
+const heroBase64=readdirSync(resolve(root,'build-assets')).filter(name=>/^hero-final-.*\.b64$/.test(name)).sort().map(name=>readFileSync(resolve(root,'build-assets',name),'utf8')).join('').replace(/\s/g,'');
+const hero=Buffer.from(heroBase64,'base64');
+if(createHash('sha1').update(hero).digest('hex')!=='17abdde5a97579324679e2d9bb81cfae2a0da180')throw new Error('Existing hero asset checksum failed.');
+mkdirSync(resolve(output,'assets'),{recursive:true});
+writeFileSync(resolve(output,'assets/sanpaid-reference-hero-right.webp'),hero);
+writeFileSync(builtIndexPath,builtIndex.replace('</head>','<link rel="preload" as="image" href="/assets/sanpaid-reference-hero-right.webp"><link rel="stylesheet" href="/reference-hero-v3.css"><link rel="stylesheet" href="/mobile-nav-right-fix.css"><script defer src="/reference-hero-v3.js"></script><script defer src="/dashboard-shell-lock.js"></script></head>'));
 
 const buildInfo={
   product:'SanPaid',
@@ -132,3 +138,5 @@ const buildInfo={
 
 writeFileSync(resolve(output,'build-info.json'),`${JSON.stringify(buildInfo,null,2)}\n`);
 console.log(`Built SanPaid ${buildInfo.version} (${buildInfo.commitSha}) into dist/ with ${publicFiles.length} allowlisted public assets, final-only role UI, and judge-grade closed-loop selector integrity.`);
+// Test-only harness emitted exclusively on the QA preview branch.
+if(process.env.VERCEL_GIT_COMMIT_REF==='codex/sanpaid-customer-worker-qa-20261004'){for(const f of ['qa.html','qa-bootstrap.js','qa-controls.js'])cpSync(resolve(root,f),resolve(output,f));writeFileSync(resolve(output,'qa-fixture.html'),readFileSync(builtIndexPath,'utf8').replace('</body>','<script src="/qa-bootstrap.js"></script></body>'));}

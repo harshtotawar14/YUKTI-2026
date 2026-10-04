@@ -47,6 +47,11 @@
     try {
       const envelope = safeParse(localStorage.getItem(SHARED_STATE_KEY), null);
       if (!envelope || !validState(envelope.state)) return null;
+      const state=envelope.state;
+      if(Number(state.booking.id)===17&&state.booking.problem==='Switchboard sparking intermittently near the living room.'&&state.history?.length===1&&state.timeline?.length===1){
+        const fresh=window.SanPaidReviewRuntime.state();
+        if(Number(fresh.booking.id)===0){envelope.state=fresh;envelope.revision=fresh.revision;localStorage.setItem(SHARED_STATE_KEY,JSON.stringify(envelope));}
+      }
       return envelope;
     } catch { return null; }
   }
@@ -276,7 +281,12 @@
     if (!url) return legacyFetch(input, options);
 
     const mediaMatch = url.pathname.match(/^\/api\/selection-demo\/media\/(photo|voice)\/(\d+)$/);
-    if (mediaMatch && String(options.method || input?.method || 'GET').toUpperCase() === 'GET') return mediaResponse(mediaMatch[1], Number(mediaMatch[2]));
+    if (mediaMatch && String(options.method || input?.method || 'GET').toUpperCase() === 'GET') {
+      const token=sessionStorage.getItem('sanpaid_sih_review_active_token_v1')||'',account=safeParse(sessionStorage.getItem('sanpaid_sih_review_sessions_v1'),{})[token],state=currentState();
+      const allowed=account?.role==='WORKER'&&Number(state?.booking?.id)===Number(mediaMatch[2])&&state.offers.some(o=>o.workerPersona===account.persona&&['PENDING','ACCEPTED'].includes(o.offerStatus));
+      if(!allowed)return new Response(JSON.stringify({ok:false,message:'This attachment is not available to this account.'}),{status:403,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
+      return mediaResponse(mediaMatch[1], Number(mediaMatch[2]));
+    }
 
     // Keep each browser tab's auth session independent, but always hydrate the
     // shared business ledger before an API call so separate role tabs see one flow.

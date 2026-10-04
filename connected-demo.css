@@ -40,3 +40,18 @@ body.readiness-open{overflow:hidden}
 .connected-payment-method select{min-height:48px;border:1px solid #C8D6DF;border-radius:10px;background:#fff;color:#10283A;padding:10px 11px;font:inherit}
 .connected-choice-list label:has(input:checked){border-color:#7FA8C9;background:#F1F6FB}
 @media(max-width:560px){.connected-payment-actions{display:grid;grid-template-columns:1fr}.connected-payment-actions>*{width:100%}.connected-reason-tags{display:grid;grid-template-columns:1fr}.connected-reason-tags span{justify-content:center}}
+
+/* Recorder children must shrink with the existing role shell, including native audio controls. */
+#connectedShell .connected-voice-recorder,
+#connectedShell .connected-voice-preview,
+#connectedShell .connected-voice-player,
+#connectedShell #cdVoicePreview{min-width:0;max-width:100%}
+#connectedShell .connected-voice-recorder [hidden],
+#connectedShell .connected-photo-uploader [hidden]{display:none!important}
+#connectedShell .connected-voice-preview audio,
+#connectedShell .connected-voice-player audio{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+@media(max-width:560px){
+  #connectedShell .connected-voice-recorder .connected-actions{display:grid;grid-template-columns:minmax(0,1fr)}
+  #connectedShell .connected-voice-recorder .btn{width:100%;min-width:0;min-height:48px;white-space:normal;overflow-wrap:anywhere}
+  #connectedShell .connected-check input{width:18px!important;max-width:18px!important;min-width:18px!important}
+}
