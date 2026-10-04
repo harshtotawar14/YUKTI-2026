@@ -2,7 +2,7 @@
 
 const {query}=require('../../../api/_lib/db.cjs');
 const {normalizeRole}=require('../../../api/_lib/policy.cjs');
-const {authenticate,send}=require('../shared/auth-context.cjs');
+const {authenticate,send,httpError}=require('../shared/auth-context.cjs');
 const {isScopedDemoEmail}=require('../../../api/_lib/demo-workspace.cjs');
 
 const bookingSelect=`SELECT b.*,s.name AS service,s.icon AS service_icon,u.name AS customer_name,
@@ -19,7 +19,8 @@ async function snapshot(req,res,user){
   else if(role==='WORKER')result=await query(`${bookingSelect} WHERE b.assigned_worker_id=$1 OR EXISTS(SELECT 1 FROM booking_offers o WHERE o.booking_id=b.id AND o.worker_id=$1 AND o.status='PENDING') ORDER BY b.created_at DESC LIMIT 20`,[user.worker_id]);
   else if(role==='COOPERATIVE_ADMIN')result=await query(`${bookingSelect} WHERE b.cooperative_id=$1 ORDER BY b.created_at DESC LIMIT 50`,[user.cooperative_id]);
   else if(role==='FEDERATION_ADMIN'&&isScopedDemoEmail(user.email))result=await query(`${bookingSelect} WHERE b.cooperative_id=$1 ORDER BY b.created_at DESC LIMIT 50`,[user.cooperative_id]);
-  else result=await query(`${bookingSelect} ORDER BY b.created_at DESC LIMIT 50`);
+  else if(role==='FEDERATION_ADMIN')result=await query(`${bookingSelect} ORDER BY b.created_at DESC LIMIT 50`);
+  else throw httpError(403,'This snapshot is not available for this role.','ROLE_FORBIDDEN');
   return send(res,200,{ok:true,role,bookings:result.rows.map(bookingJson),syncedAt:new Date().toISOString()});
 }
 
