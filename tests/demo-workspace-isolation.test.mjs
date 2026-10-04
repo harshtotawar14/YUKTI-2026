@@ -124,4 +124,31 @@ test('independent demo visitors cannot read or process each other bookings',asyn
   assert.deepEqual(emptyC.payload.bookings,[]);
 });
 
+test('logout clears the demo workspace so the same browser starts with an empty booking history',async()=>{
+  assert.ok(process.env.DATABASE_URL,'DATABASE_URL is required for the integration test.');
+  const jar=await bootstrapVisitor();
+  const firstWorkspace=jar.get('sanpaid_demo_workspace');
+  const token=await login(jar,'customer','CUSTOMER');
+  const scheduledAt=new Date(Date.now()+30*60*1000).toISOString();
+  const created=await call('connected/bookings',{method:'POST',jar,token,body:{service:'Electrician',zone:'Logout Reset',address:'Same browser address',problem:'Logout reset regression',scheduledAt,requestSource:'TEXT',requestLanguage:'en',emergency:false}});
+  assert.equal(created.status,201,JSON.stringify(created.payload));
+  const beforeLogout=await call('connected/snapshot',{jar,token});
+  assert.equal(beforeLogout.payload.bookings.length,1);
+
+  const logout=await call('connected/auth/logout',{method:'POST',jar,token});
+  assert.equal(logout.status,200,JSON.stringify(logout.payload));
+  assert.equal(jar.has('sanpaid_demo_workspace'),false,'Logout left the isolated demo workspace cookie behind.');
+
+  const access=await call('auth/demo-access',{jar});
+  assert.equal(access.status,200);
+  const secondWorkspace=jar.get('sanpaid_demo_workspace');
+  assert.ok(secondWorkspace);
+  assert.notEqual(secondWorkspace,firstWorkspace,'Logout reused the previous isolated workspace.');
+
+  const freshToken=await login(jar,'customer','CUSTOMER');
+  const afterRelogin=await call('connected/snapshot',{jar,token:freshToken});
+  assert.equal(afterRelogin.status,200);
+  assert.deepEqual(afterRelogin.payload.bookings,[],'Old booking reappeared after logout and login in the same browser.');
+});
+
 test.after(async()=>{await resetPool();});
