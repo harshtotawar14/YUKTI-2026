@@ -4,7 +4,7 @@
   "private": true,
   "description": "SanPaid SIH 2026 cooperative workforce operating network",
   "scripts": {
-    "build": "node scripts/build.mjs && mkdir -p dist/assets && cp sanpaid-hero-carousel.webp dist/assets/sanpaid-hero-carousel.webp",
+    "build": "node scripts/build.mjs && mkdir -p dist/assets && cp carousel-repair.js dist/carousel-repair.js && cp assets/hero-*.svg dist/assets/ && sed -i 's#</body>#<script src=\"carousel-repair.js\"></script></body>#' dist/index.html",
     "test": "node tests/runtime-integrity.mjs && node --test tests/backend-policy.test.mjs tests/matching-policy.test.mjs tests/public-proof-truth.test.mjs tests/judge-truth.test.mjs tests/worker-truth.test.mjs tests/complaints-sla.test.mjs tests/billing-policy.test.mjs tests/auth-security.test.mjs tests/capacity-governance.test.mjs tests/ui-contract.test.mjs",
     "check": "npm test",
     "migrate": "node scripts/migrate.mjs"
