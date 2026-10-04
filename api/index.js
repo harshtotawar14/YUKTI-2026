@@ -5,6 +5,7 @@ const auth=require('../backend/src/auth/routes.cjs');
 const snapshotRoutes=require('../backend/src/demo/snapshot-routes.cjs');
 const judgeScopeRoutes=require('../backend/src/demo/judge-scope-routes.cjs');
 const matchingRoutes=require('../backend/src/matching/connected-routes.cjs');
+const contact=require('../backend/src/contact/routes.cjs');
 const publicProof=require('../backend/src/proof/public-summary.cjs');
 const judgeTruth=require('../backend/src/judge/truth-routes.cjs');
 const workerProfile=require('../backend/src/worker/profile-routes.cjs');
@@ -28,6 +29,7 @@ module.exports=async function stableApiEntrypoint(req,res){
     if(await snapshotRoutes.handle(req,res,rawPath))return;
     if(await publicProof.handle(req,res,rawPath))return;
     if(await matchingRoutes.handle(req,res,rawPath))return;
+    if(await contact.handle(req,res,rawPath))return;
     if(await judgeScopeRoutes.handle(req,res,rawPath))return;
     if(await judgeTruth.handle(req,res,rawPath))return;
     if(await workerProfile.handle(req,res,rawPath))return;
