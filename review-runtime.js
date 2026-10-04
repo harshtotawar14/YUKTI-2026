@@ -56,8 +56,7 @@
       support:[],notifications:[],
       workerAvailability:{WORKER_A:true,WORKER_B:true},
       schedules:{},
-      capacityRequests:[{id:1,requestCode:'CAP-2026-001',service:'AC Repair',zone:'Panhala',workersRequired:2,requestingCooperative:'YUKTI Panhala Worker Cooperative',providingCooperative:'YUKTI Kolhapur Services Cooperative',status:'AWAITING_WORKER_CONSENT',offeredWorkers:2,acceptedWorkers:1,approvedAssignments:0,requestedAt:iso(-180)}],
-      capacityOffers:[{offerId:501,workerPersona:'WORKER_A',offerStatus:'OFFERED',requestId:1,requestCode:'CAP-2026-001',service:'AC Repair',zone:'Panhala',requestingCooperative:'YUKTI Panhala Worker Cooperative',providingCooperative:'YUKTI Kolhapur Services Cooperative'}],
+      capacityRequests:[],capacityOffers:[],
       workers:[
         {id:11,persona:'WORKER_A',name:'Asha Verma',verificationStatus:'VERIFIED',availability:'AVAILABLE',rating:4.9,jobsCompleted:28,currentJobs:0,complaintCount:0,zone:'Kolhapur',pendingDocuments:0,expiredDocuments:0,skills:[{service:'Electrician',verified:true},{service:'AC Repair',verified:true},{service:'Appliance Repair',verified:true}]},
         {id:12,persona:'WORKER_B',name:'Ravi Kumar',verificationStatus:'VERIFIED',availability:'AVAILABLE',rating:4.7,jobsCompleted:21,currentJobs:0,complaintCount:1,zone:'Panhala',pendingDocuments:0,expiredDocuments:0,skills:[{service:'Electrician',verified:true},{service:'Plumber',verified:true}]},
