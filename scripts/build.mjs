@@ -118,6 +118,8 @@ const hero=Buffer.from(heroBase64,'base64');
 if(createHash('sha1').update(hero).digest('hex')!=='17abdde5a97579324679e2d9bb81cfae2a0da180')throw new Error('Existing hero asset checksum failed.');
 mkdirSync(resolve(output,'assets'),{recursive:true});
 writeFileSync(resolve(output,'assets/sanpaid-reference-hero-right.webp'),hero);
+const mobileReference=Buffer.from(readFileSync(resolve(root,'build-assets/mobile-home-reference.b64'),'utf8').trim(),'base64');
+writeFileSync(resolve(output,'assets/sanpaid-mobile-home-reference.png'),mobileReference);
 writeFileSync(builtIndexPath,builtIndex.replace('</head>','<link rel="preload" as="image" href="/assets/sanpaid-reference-hero-right.webp"><link rel="stylesheet" href="/reference-hero-v3.css"><link rel="stylesheet" href="/mobile-nav-right-fix.css"><script defer src="/reference-hero-v3.js"></script><script defer src="/dashboard-shell-lock.js"></script></head>'));
 
 const buildInfo={
