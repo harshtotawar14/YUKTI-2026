@@ -641,7 +641,9 @@
     installCaptureGuards();
     updateAccessUI();
     await Promise.allSettled([loadDemoAccess(), restoreSession()]);
-    await resumeWorkspace();
+    // Keep the signed-in account, but enter a role workspace only when the
+    // visitor chooses Open Platform or a service from the home screen.
+    clearWorkspace();
     [400, 1000, 2200].forEach(ms => setTimeout(() => { publish(); updateAccessUI(); }, ms));
   }
 

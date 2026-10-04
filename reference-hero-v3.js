@@ -1,6 +1,15 @@
 (() => {
   'use strict';
 
+  // Every new visit starts at the branded home screen. Section links still
+  // work normally when the visitor uses the navigation after opening the site.
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  if (location.hash) history.replaceState(history.state, '', location.pathname + location.search);
+  const showHome = () => window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  showHome();
+  window.addEventListener('load', showHome, { once: true });
+  window.addEventListener('pageshow', showHome, { once: true });
+
   const icon=(name)=>({
     calendar:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     play:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="m10 8 6 4-6 4Z" fill="currentColor"/></svg>',
