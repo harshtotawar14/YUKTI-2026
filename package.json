@@ -4,7 +4,7 @@
   "private": true,
   "description": "SanPaid SIH 2026 cooperative workforce operating network",
   "scripts": {
-    "build": "node scripts/build.mjs && mkdir -p dist/assets && cp reference-hero-v3.css dist/reference-hero-v3.css && cp reference-hero-v3.js dist/reference-hero-v3.js && cp assets/sanpaid-reference-hero-right.webp dist/assets/sanpaid-reference-hero-right.webp && cp assets/sanpaid-reference-hero-right-hq.svg dist/assets/sanpaid-reference-hero-right-hq.svg && sed -i 's#</head>#<link rel=\"preload\" as=\"image\" href=\"/assets/sanpaid-reference-hero-right-hq.svg\"><link rel=\"stylesheet\" href=\"/reference-hero-v3.css\"><script defer src=\"/reference-hero-v3.js\"></script></head>#' dist/index.html",
+    "build": "node scripts/build.mjs && mkdir -p dist/assets && cp reference-hero-v3.css dist/reference-hero-v3.css && cp reference-hero-v3.js dist/reference-hero-v3.js && cp assets/sanpaid-reference-hero-right.webp dist/assets/sanpaid-reference-hero-right.webp && base64 -d build-assets/hero-hq-00.b64 > dist/assets/sanpaid-reference-hero-right-hq.webp && sed -i 's#</head>#<link rel=\"preload\" as=\"image\" href=\"/assets/sanpaid-reference-hero-right-hq.webp\"><link rel=\"stylesheet\" href=\"/reference-hero-v3.css\"><script defer src=\"/reference-hero-v3.js\"></script></head>#' dist/index.html",
     "test": "node tests/runtime-integrity.mjs && node --test tests/backend-policy.test.mjs tests/matching-policy.test.mjs tests/public-proof-truth.test.mjs tests/judge-truth.test.mjs tests/worker-truth.test.mjs tests/complaints-sla.test.mjs tests/billing-policy.test.mjs tests/auth-security.test.mjs tests/capacity-governance.test.mjs tests/ui-contract.test.mjs",
     "check": "npm test",
     "migrate": "node scripts/migrate.mjs"
