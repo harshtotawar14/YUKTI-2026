@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD={release:'editorial-network-redesign',runtime:'v71',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
+  const BUILD={release:'reference-hero-v3',runtime:'v71',source:'harshtotawar14/YUKTI-2026',branch:'main',loadedAt:new Date().toISOString()};
   window.__SANPAID_BUILD__=Object.freeze(BUILD);
 
   const FALLBACK_SERVICES=[
@@ -30,14 +30,10 @@
 
   function normalizedCatalog(rows){
     return (Array.isArray(rows)?rows:[]).filter(item=>item?.name).map(item=>({
-      id:Number(item.id||0)||null,
-      name:String(item.name),
-      icon:String(item.icon||iconFor(item.name)),
+      id:Number(item.id||0)||null,name:String(item.name),icon:String(item.icon||iconFor(item.name)),
       basePrice:Number.isFinite(Number(item.basePrice))?Number(item.basePrice):null,
       emergencyCharge:Number.isFinite(Number(item.emergencyCharge))?Number(item.emergencyCharge):null,
-      description:String(item.description||''),
-      category:String(item.category||''),
-      averageDurationMinutes:Number(item.averageDurationMinutes||0)||null
+      description:String(item.description||''),category:String(item.category||''),averageDurationMinutes:Number(item.averageDurationMinutes||0)||null
     }));
   }
 
@@ -46,66 +42,36 @@
     const grid=$('#serviceGrid');
     if(grid){
       grid.innerHTML=services.map(service=>{
-        const price=service.basePrice!==null&&service.basePrice!==undefined
-          ?`<span class="price">Configured base ${money(service.basePrice)}</span>`
-          :'<span class="price">Current pricing loads after connection</span>';
+        const price=service.basePrice!==null&&service.basePrice!==undefined?`<span class="price">Configured base ${money(service.basePrice)}</span>`:'<span class="price">Current pricing loads after connection</span>';
         return `<button class="card service-card" type="button" data-service="${esc(service.name)}"><span class="service-icon" aria-hidden="true">${esc(service.icon||iconFor(service.name))}</span><strong>${esc(service.name)}</strong>${price}</button>`;
       }).join('');
       grid.dataset.catalogSource=catalogSource;
-    }
-    const hero=$('#heroService');
-    if(hero){
-      const selected=hero.value;
-      hero.innerHTML=services.map(service=>`<option value="${esc(service.name)}">${esc(service.name)}</option>`).join('');
-      if(selected&&services.some(service=>service.name===selected))hero.value=selected;
     }
     const status=$('#catalogStatus');
     const retry=$('#catalogRetry');
     if(status){
       status.dataset.state=catalogSource.toLowerCase();
-      status.textContent=catalogSource==='DATABASE_CONFIGURATION'
-        ?`${services.length} connected services loaded from database configuration.`
-        :catalogSource==='LOADING'
-          ?'Checking connected service catalog…'
-          :'Connected catalog is temporarily unavailable. Service names are shown without current pricing.';
+      status.textContent=catalogSource==='DATABASE_CONFIGURATION'?`${services.length} connected services loaded from database configuration.`:catalogSource==='LOADING'?'Checking connected service catalog…':'Connected catalog is temporarily unavailable. Service names are shown without current pricing.';
     }
-    if(retry){
-      retry.hidden=catalogSource!=='STATIC_NAMES_ONLY';
-      retry.disabled=catalogLoading;
-    }
+    if(retry){retry.hidden=catalogSource!=='STATIC_NAMES_ONLY';retry.disabled=catalogLoading;}
   }
 
   async function loadServiceCatalog(){
     if(catalogLoading)return;
-    catalogLoading=true;
-    catalogSource='LOADING';
-    renderServices();
-    const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),8000);
+    catalogLoading=true;catalogSource='LOADING';renderServices();
+    const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
     try{
       if(!window.SanPaidApi?.get)throw new Error('api_client_unavailable');
       const data=await window.SanPaidApi.get('/api/public/services',{bearer:false,headers:{Accept:'application/json'},signal:controller.signal,timeoutMs:8000});
       if(!Array.isArray(data.services))throw new Error(data.message||'catalog_unavailable');
-      catalog=normalizedCatalog(data.services);
-      if(!catalog.length)throw new Error('empty_catalog');
-      catalogSource='DATABASE_CONFIGURATION';
-    }catch(error){
-      catalog=[];
-      catalogSource='STATIC_NAMES_ONLY';
-      console.warn('[SanPaid catalog] connected service catalog unavailable; displaying service names without current pricing claim.',error?.message||error);
-    }finally{
-      clearTimeout(timeout);
-      catalogLoading=false;
-    }
-    renderServices();
-    window.dispatchEvent(new CustomEvent('sanpaid:service-catalog',{detail:{source:catalogSource,services:catalog.length?catalog:FALLBACK_SERVICES}}));
+      catalog=normalizedCatalog(data.services);if(!catalog.length)throw new Error('empty_catalog');catalogSource='DATABASE_CONFIGURATION';
+    }catch(error){catalog=[];catalogSource='STATIC_NAMES_ONLY';console.warn('[SanPaid catalog] connected service catalog unavailable; displaying service names without current pricing claim.',error?.message||error);}
+    finally{clearTimeout(timeout);catalogLoading=false;}
+    renderServices();window.dispatchEvent(new CustomEvent('sanpaid:service-catalog',{detail:{source:catalogSource,services:catalog.length?catalog:FALLBACK_SERVICES}}));
   }
 
   async function waitForAuth(attempts=50){
-    for(let index=0;index<attempts;index++){
-      if(window.SanPaidAuth?.open&&window.SanPaidAuth?.openRoleWorkspace)return window.SanPaidAuth;
-      await new Promise(resolve=>setTimeout(resolve,80));
-    }
+    for(let index=0;index<attempts;index++){if(window.SanPaidAuth?.open&&window.SanPaidAuth?.openRoleWorkspace)return window.SanPaidAuth;await new Promise(resolve=>setTimeout(resolve,80));}
     return null;
   }
 
@@ -113,17 +79,12 @@
     const auth=await waitForAuth();
     if(!auth){toast('Login workspace is still loading. Please retry.','warn');return false;}
     if(auth.getRole?.()===role&&auth.isAuthenticated?.())return auth.openRoleWorkspace(role,role);
-    auth.open(role,role);
-    return true;
+    auth.open(role,role);return true;
   }
 
   function rememberService(service){try{service?sessionStorage.setItem(PREFILL_SERVICE_KEY,String(service)):sessionStorage.removeItem(PREFILL_SERVICE_KEY);}catch{}}
   function rememberArea(area){try{area?sessionStorage.setItem(PREFILL_AREA_KEY,String(area)):sessionStorage.removeItem(PREFILL_AREA_KEY);}catch{}}
-
-  async function startBooking(service){
-    rememberService(service||$('#heroService')?.value||catalog[0]?.name||FALLBACK_SERVICES[0].name);
-    return openRoleAccess('CUSTOMER');
-  }
+  async function startBooking(service){rememberService(service||catalog[0]?.name||FALLBACK_SERVICES[0].name);return openRoleAccess('CUSTOMER');}
 
   function ensureDrawerStructure(){
     const drawer=$('#mobileDrawer');
@@ -132,219 +93,30 @@
     const title=document.createElement('div');title.className='drawer-title';title.innerHTML='<strong>SanPaid Menu</strong><button type="button" class="drawer-close" aria-label="Close menu">×</button>';
     drawer.insertBefore(title,drawer.firstChild);title.querySelector('.drawer-close').addEventListener('click',()=>closeMobileDrawer(true));return drawer;
   }
-
-  function ensureDrawerScrim(){
-    let scrim=$('#mobileDrawerScrim');if(scrim)return scrim;
-    scrim=document.createElement('div');scrim.id='mobileDrawerScrim';scrim.className='mobile-drawer-scrim hidden';scrim.setAttribute('aria-hidden','true');scrim.addEventListener('click',()=>closeMobileDrawer(true));document.body.appendChild(scrim);return scrim;
-  }
-
+  function ensureDrawerScrim(){let scrim=$('#mobileDrawerScrim');if(scrim)return scrim;scrim=document.createElement('div');scrim.id='mobileDrawerScrim';scrim.className='mobile-drawer-scrim hidden';scrim.setAttribute('aria-hidden','true');scrim.addEventListener('click',()=>closeMobileDrawer(true));document.body.appendChild(scrim);return scrim;}
   function drawerFocusable(drawer){return [...drawer.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter(element=>element.getClientRects().length);}
-
-  function setDrawerOpenState(open){
-    const drawer=$('#mobileDrawer'),button=$('#menuBtn'),scrim=ensureDrawerScrim();if(!drawer||!button)return;
-    drawer.classList.toggle('hidden',!open);drawer.setAttribute('aria-hidden',open?'false':'true');button.setAttribute('aria-expanded',open?'true':'false');button.setAttribute('aria-label',open?'Close menu':'Open menu');scrim.classList.toggle('hidden',!open);scrim.setAttribute('aria-hidden',open?'false':'true');document.body.classList.toggle('mobile-drawer-open',open);
-  }
-  function openMobileDrawer(){const drawer=ensureDrawerStructure(),button=$('#menuBtn');if(!drawer||!button||window.innerWidth>1020)return;mobileDrawerReturnFocus=document.activeElement;setDrawerOpenState(true);requestAnimationFrame(()=>drawer.querySelector('.drawer-close')?.focus());}
+  function setDrawerOpenState(open){const drawer=$('#mobileDrawer'),button=$('#menuBtn'),scrim=ensureDrawerScrim();if(!drawer||!button)return;drawer.classList.toggle('hidden',!open);drawer.setAttribute('aria-hidden',open?'false':'true');button.setAttribute('aria-expanded',open?'true':'false');button.setAttribute('aria-label',open?'Close menu':'Open menu');scrim.classList.toggle('hidden',!open);scrim.setAttribute('aria-hidden',open?'false':'true');document.body.classList.toggle('mobile-drawer-open',open);}
+  function openMobileDrawer(){const drawer=ensureDrawerStructure(),button=$('#menuBtn');if(!drawer||!button||window.innerWidth>980)return;mobileDrawerReturnFocus=document.activeElement;setDrawerOpenState(true);requestAnimationFrame(()=>drawer.querySelector('.drawer-close')?.focus());}
   function closeMobileDrawer(restoreFocus=true){const drawer=$('#mobileDrawer');if(!drawer)return;setDrawerOpenState(false);const target=mobileDrawerReturnFocus;mobileDrawerReturnFocus=null;if(restoreFocus&&target?.isConnected)requestAnimationFrame(()=>target.focus());}
-  function recoverDrawerState(){const drawer=$('#mobileDrawer');if(!drawer)return;const closed=drawer.classList.contains('hidden')||drawer.getAttribute('aria-hidden')==='true'||window.innerWidth>1020;if(closed)setDrawerOpenState(false);}
+  function recoverDrawerState(){const drawer=$('#mobileDrawer');if(!drawer)return;const closed=drawer.classList.contains('hidden')||drawer.getAttribute('aria-hidden')==='true'||window.innerWidth>980;if(closed)setDrawerOpenState(false);}
   function toggleMobileDrawer(){const drawer=ensureDrawerStructure();if(drawer)drawer.classList.contains('hidden')?openMobileDrawer():closeMobileDrawer(true);}
 
   function wireMobileNavigation(){
     const drawer=ensureDrawerStructure(),button=$('#menuBtn');if(!drawer||!button)return;ensureDrawerScrim();button.addEventListener('click',toggleMobileDrawer);
     drawer.addEventListener('click',event=>{const action=event.target.closest('a[href^="#"],button');if(action&&!action.classList.contains('drawer-close'))queueMicrotask(()=>closeMobileDrawer(false));});
     document.addEventListener('keydown',event=>{if(drawer.classList.contains('hidden'))return;if(event.key==='Escape'){event.preventDefault();closeMobileDrawer(true);return;}if(event.key!=='Tab')return;const nodes=drawerFocusable(drawer);if(!nodes.length)return;const first=nodes[0],last=nodes[nodes.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}});
-    window.addEventListener('resize',()=>{if(window.innerWidth>1020)closeMobileDrawer(false);},{passive:true});window.addEventListener('pageshow',recoverDrawerState,{passive:true});window.addEventListener('orientationchange',()=>setTimeout(recoverDrawerState,120),{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)recoverDrawerState();});
+    window.addEventListener('resize',()=>{if(window.innerWidth>980)closeMobileDrawer(false);},{passive:true});window.addEventListener('pageshow',recoverDrawerState,{passive:true});
   }
 
   function wireLandingUtilities(){
-    $('#bookServiceHero')?.addEventListener('click',()=>startBooking($('#heroService')?.value));
-    $('#joinWorker')?.addEventListener('click',()=>openRoleAccess('WORKER'));
-    $('#heroSearch')?.addEventListener('click',()=>{const area=$('#heroArea')?.value.trim();if(!area){toast('Enter your area first.','error');return;}rememberArea(area);startBooking($('#heroService')?.value);});
-    document.addEventListener('click',event=>{const card=event.target.closest?.('#serviceGrid [data-service]');if(!card)return;event.preventDefault();startBooking(card.dataset.service);});
+    document.addEventListener('click',event=>{
+      const service=event.target.closest?.('#serviceGrid [data-service]');if(service){event.preventDefault();startBooking(service.dataset.service);return;}
+      const primary=event.target.closest?.('.sp-hero-primary');if(primary){event.preventDefault();startBooking();return;}
+    });
     $('#catalogRetry')?.addEventListener('click',loadServiceCatalog);
   }
 
-  function start(){
-    renderServices();wireMobileNavigation();wireLandingUtilities();recoverDrawerState();loadServiceCatalog();
-  }
-
-  window.SanPaidLanding={
-    get services(){return catalog.length?catalog:FALLBACK_SERVICES;},
-    get catalogSource(){return catalogSource;},
-    reloadServiceCatalog:loadServiceCatalog,startBooking,openRoleAccess,openMobileDrawer,closeMobileDrawer,recoverDrawerState
-  };
-
+  function start(){renderServices();wireMobileNavigation();wireLandingUtilities();recoverDrawerState();loadServiceCatalog();}
+  window.SanPaidLanding={get services(){return catalog.length?catalog:FALLBACK_SERVICES;},get catalogSource(){return catalogSource;},reloadServiceCatalog:loadServiceCatalog,startBooking,openRoleAccess,openMobileDrawer,closeMobileDrawer,recoverDrawerState,rememberArea};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-})();
-
-
-/* Landing V3 motion layer: progressive enhancement only. */
-(() => {
-  'use strict';
-
-  function revealCards(){
-    const cards=[...document.querySelectorAll('.landing-v3 .reveal-card')];
-    if(!cards.length)return;
-    if(!('IntersectionObserver' in window)){
-      cards.forEach(card=>card.classList.add('is-visible'));
-      return;
-    }
-    const observer=new IntersectionObserver(entries=>{
-      entries.forEach(entry=>{
-        if(!entry.isIntersecting)return;
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      });
-    },{threshold:.12,rootMargin:'0px 0px -6% 0px'});
-    cards.forEach((card,index)=>{
-      card.style.transitionDelay=`${Math.min(index%5,4)*55}ms`;
-      observer.observe(card);
-    });
-  }
-
-  function wireHeroDepth(){
-    const stage=document.querySelector('.landing-v3 .phone-stage');
-    const visual=document.querySelector('.landing-v3 .hero-visual');
-    if(!stage||!visual||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-    let frame=0;
-    const move=event=>{
-      if(window.innerWidth<=720)return;
-      const rect=visual.getBoundingClientRect();
-      const x=(event.clientX-rect.left)/rect.width-.5;
-      const y=(event.clientY-rect.top)/rect.height-.5;
-      cancelAnimationFrame(frame);
-      frame=requestAnimationFrame(()=>{
-        stage.style.transform=`rotateY(${x*4}deg) rotateX(${-y*4}deg) translate3d(${x*5}px,${y*5}px,0)`;
-      });
-    };
-    const reset=()=>{
-      cancelAnimationFrame(frame);
-      frame=requestAnimationFrame(()=>{stage.style.transform='';});
-    };
-    visual.addEventListener('pointermove',move,{passive:true});
-    visual.addEventListener('pointerleave',reset,{passive:true});
-  }
-
-  function startLandingMotion(){
-    revealCards();
-    wireHeroDepth();
-  }
-
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startLandingMotion,{once:true});
-  else startLandingMotion();
-})();
-
-/* SanPaid homepage hero carousel — five approved project visuals, 1 second each. */
-(() => {
-  'use strict';
-
-  const labels=[
-    'Trusted local services from cooperative workers',
-    'Book a service easily',
-    'Verified cooperative workers',
-    'Local first with cooperative support',
-    'Simple, safe and transparent service journey'
-  ];
-
-  function installHeroCarousel(){
-    const hero=document.querySelector('#landing.reference-home #home .eval-hero-copy');
-    if(!hero||hero.dataset.sanpaidCarousel==='1')return;
-    hero.dataset.sanpaidCarousel='1';
-
-    const original=document.createElement('div');
-    original.className='sanpaid-hero-original-copy';
-    original.hidden=true;
-    while(hero.firstChild)original.appendChild(hero.firstChild);
-    hero.appendChild(original);
-
-    const frame=document.createElement('div');
-    frame.className='sanpaid-hero-carousel-frame';
-    frame.dataset.slide='0';
-    frame.setAttribute('role','img');
-    frame.setAttribute('aria-label',labels[0]);
-    hero.appendChild(frame);
-
-    const dots=document.createElement('div');
-    dots.className='sanpaid-hero-carousel-dots';
-    dots.setAttribute('aria-hidden','true');
-    labels.forEach((_,index)=>{
-      const dot=document.createElement('span');
-      if(index===0)dot.className='is-active';
-      dots.appendChild(dot);
-    });
-    hero.appendChild(dots);
-
-    const style=document.createElement('style');
-    style.id='sanpaidHeroCarouselStyles';
-    style.textContent=`
-      #landing.reference-home #home .eval-hero-copy[data-sanpaid-carousel="1"]{
-        min-width:0!important;
-        padding:18px 0 30px!important;
-      }
-      #landing.reference-home #home .sanpaid-hero-carousel-frame{
-        width:100%;
-        aspect-ratio:16/9;
-        overflow:hidden;
-        border:1px solid #dbe6f0;
-        border-radius:24px;
-        background-image:url('/assets/sanpaid-hero-carousel.webp');
-        background-repeat:no-repeat;
-        background-size:100% 500%;
-        background-position:center 0%;
-        box-shadow:0 22px 54px rgba(7,56,111,.13);
-      }
-      #landing.reference-home #home .sanpaid-hero-carousel-frame[data-slide="0"]{background-position:center 0%}
-      #landing.reference-home #home .sanpaid-hero-carousel-frame[data-slide="1"]{background-position:center 25%}
-      #landing.reference-home #home .sanpaid-hero-carousel-frame[data-slide="2"]{background-position:center 50%}
-      #landing.reference-home #home .sanpaid-hero-carousel-frame[data-slide="3"]{background-position:center 75%}
-      #landing.reference-home #home .sanpaid-hero-carousel-frame[data-slide="4"]{background-position:center 100%}
-      #landing.reference-home #home .sanpaid-hero-carousel-dots{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        gap:7px;
-        margin-top:12px;
-        min-height:8px;
-      }
-      #landing.reference-home #home .sanpaid-hero-carousel-dots span{
-        width:7px;
-        height:7px;
-        border-radius:999px;
-        background:#c4d3e2;
-        transition:width .18s ease,background .18s ease;
-      }
-      #landing.reference-home #home .sanpaid-hero-carousel-dots span.is-active{
-        width:22px;
-        background:#0b987d;
-      }
-      @media(max-width:1020px){
-        #landing.reference-home #home .eval-hero-copy[data-sanpaid-carousel="1"]{padding:12px 0 20px!important}
-        #landing.reference-home #home .sanpaid-hero-carousel-frame{border-radius:18px;box-shadow:0 18px 42px rgba(7,56,111,.12)}
-      }
-      @media(max-width:640px){
-        #landing.reference-home #home .sanpaid-hero-carousel-frame{border-radius:14px;box-shadow:0 13px 30px rgba(7,56,111,.11)}
-        #landing.reference-home #home .sanpaid-hero-carousel-dots{margin-top:9px}
-      }
-    `;
-    document.head.appendChild(style);
-
-    const dotNodes=[...dots.children];
-    let index=0;
-    const render=()=>{
-      frame.dataset.slide=String(index);
-      frame.setAttribute('aria-label',labels[index]);
-      dotNodes.forEach((dot,dotIndex)=>dot.classList.toggle('is-active',dotIndex===index));
-    };
-    render();
-
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-    window.setInterval(()=>{
-      if(document.hidden)return;
-      index=(index+1)%labels.length;
-      render();
-    },1000);
-  }
-
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installHeroCarousel,{once:true});
-  else installHeroCarousel();
 })();
