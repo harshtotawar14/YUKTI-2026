@@ -4,7 +4,8 @@ const {query,transaction}=require('../../../api/_lib/db.cjs');
 const {sha256,randomToken,verifyPassword,bearerToken,sessionCookie,clearSessionCookie}=require('../../../api/_lib/security.cjs');
 const {normalizeRole,publicUser}=require('../../../api/_lib/policy.cjs');
 const {authenticate,allow,send,httpError}=require('../shared/auth-context.cjs');
-const {DEMO_ACCOUNTS,resolveLoginIdentifier,isPublicDemoCredential,publicDemoPayload}=require('../../../api/_lib/demo-access.cjs');
+const {DEMO_ACCOUNTS,DEMO_EMAILS,resolveLoginIdentifier,isPublicDemoCredential,publicDemoPayload}=require('../../../api/_lib/demo-access.cjs');
+const {ensureWorkspaceToken,workspaceKeyFromToken,scopedDemoEmail,canonicalDemoEmail,isScopedDemoEmail,appendSetCookie}=require('../../../api/_lib/demo-workspace.cjs');
 
 const MAX_FAILURES=8;
 const WINDOW_MINUTES=15;
@@ -48,24 +49,57 @@ async function createSession(userId,remember=false){
   return {raw,maxAge};
 }
 
-async function createPublicDemoSession(identifier,remember=false){
+async function provisionDemoWorkspace(client,workspaceKey){
+  const canonicalUsers=(await client.query('SELECT * FROM users WHERE email=ANY($1::text[]) AND active=true',[DEMO_EMAILS])).rows;
+  if(canonicalUsers.length<DEMO_ACCOUNTS.length)throw httpError(503,'Public review accounts are not initialized.','DEMO_ACCOUNT_UNAVAILABLE');
+  const sourceByEmail=new Map(canonicalUsers.map(row=>[String(row.email).toLowerCase(),row]));
+  const sourceCoop=(await client.query("SELECT id,region FROM cooperatives WHERE code='YUKTI-01' ORDER BY id LIMIT 1")).rows[0];
+  if(!sourceCoop)throw httpError(503,'Demo cooperative is not initialized.','DEMO_COOPERATIVE_UNAVAILABLE');
+  const workspaceCoop=(await client.query(`INSERT INTO cooperatives(name,code,region) VALUES($1,$2,$3)
+    ON CONFLICT(code) DO UPDATE SET region=EXCLUDED.region RETURNING id`,[`YUKTI Kolhapur Services Cooperative · ${workspaceKey}`,`DWS-${workspaceKey}`,sourceCoop.region])).rows[0];
+  const users=new Map();
+  for(const account of DEMO_ACCOUNTS){
+    const source=sourceByEmail.get(account.email);
+    const email=scopedDemoEmail(account.email,workspaceKey);
+    const user=(await client.query(`INSERT INTO users(email,name,role,password_hash,cooperative_id,active) VALUES($1,$2,$3,$4,$5,true)
+      ON CONFLICT(email) DO UPDATE SET name=EXCLUDED.name,role=EXCLUDED.role,password_hash=EXCLUDED.password_hash,cooperative_id=EXCLUDED.cooperative_id,active=true
+      RETURNING *`,[email,account.name,account.role,source.password_hash,workspaceCoop.id])).rows[0];
+    users.set(account.email,user);
+    if(account.role==='WORKER'){
+      const sourceWorker=(await client.query('SELECT w.* FROM workers w WHERE w.user_id=$1',[source.id])).rows[0];
+      if(!sourceWorker)throw httpError(503,'Demo worker profile is not initialized.','DEMO_WORKER_UNAVAILABLE');
+      const worker=(await client.query(`INSERT INTO workers(user_id,cooperative_id,identity_status,availability_status,rating,completed_jobs,demo_distance_km)
+        VALUES($1,$2,$3,$4,$5,0,$6)
+        ON CONFLICT(user_id) DO UPDATE SET cooperative_id=EXCLUDED.cooperative_id,identity_status=EXCLUDED.identity_status,availability_status=EXCLUDED.availability_status,rating=EXCLUDED.rating,demo_distance_km=EXCLUDED.demo_distance_km,updated_at=now()
+        RETURNING id`,[user.id,workspaceCoop.id,sourceWorker.identity_status,sourceWorker.availability_status,sourceWorker.rating,sourceWorker.demo_distance_km])).rows[0];
+      await client.query(`INSERT INTO worker_skills(worker_id,service_id,status)
+        SELECT $1,ws.service_id,ws.status FROM worker_skills ws WHERE ws.worker_id=$2
+        ON CONFLICT(worker_id,service_id) DO UPDATE SET status=EXCLUDED.status`,[worker.id,sourceWorker.id]);
+    }
+  }
+  return users;
+}
+
+async function createPublicDemoSession(req,res,canonicalEmail,remember=false){
+  const workspaceToken=ensureWorkspaceToken(req,res);
+  const workspaceKey=workspaceKeyFromToken(workspaceToken);
+  if(!workspaceKey)throw httpError(500,'Demo workspace could not be established.','DEMO_WORKSPACE_ERROR');
   const raw=randomToken(32),days=remember?7:1,maxAge=days*86400;
-  // Shared review credentials are already published by /auth/demo-access. Keep
-  // their sign-in path to one atomic SQL round trip instead of throttle lookup,
-  // user lookup, throttle cleanup and a separate session transaction.
-  const result=await query(`WITH expired AS (
-      DELETE FROM sessions WHERE expires_at<=now()
-    ), selected AS (
-      SELECT * FROM users WHERE email=$1 AND active=true
-    ), created AS (
-      INSERT INTO sessions(user_id,token_hash,expires_at)
-      SELECT id,$2,now()+($3||' days')::interval FROM selected
-      RETURNING user_id
-    )
-    SELECT selected.* FROM selected JOIN created ON created.user_id=selected.id`,[identifier,sha256(raw),String(days)]);
-  const user=result.rows[0];
-  if(!user)throw httpError(503,'Shared review account is not initialized.','DEMO_ACCOUNT_UNAVAILABLE');
-  return {raw,maxAge,user};
+  const user=await transaction(async client=>{
+    await client.query('DELETE FROM sessions WHERE expires_at<=now()');
+    const users=await provisionDemoWorkspace(client,workspaceKey);
+    const scoped=users.get(canonicalEmail);
+    if(!scoped)throw httpError(503,'Public review account is unavailable in this workspace.','DEMO_ACCOUNT_UNAVAILABLE');
+    await client.query("INSERT INTO sessions(user_id,token_hash,expires_at) VALUES($1,$2,now()+($3||' days')::interval)",[scoped.id,sha256(raw),String(days)]);
+    return scoped;
+  });
+  return {raw,maxAge,user,workspaceKey};
+}
+
+function publicDemoUser(row){
+  const out=publicUser(row);
+  if(isScopedDemoEmail(row?.email))out.email=canonicalDemoEmail(row.email)||out.email;
+  return out;
 }
 
 async function login(req,res){
@@ -78,9 +112,9 @@ async function login(req,res){
     const account=DEMO_ACCOUNTS.find(item=>item.email===identifier);
     if(!account)throw httpError(401,'Access ID or password is incorrect.','INVALID_CREDENTIALS');
     if(requestedRole&&normalizeRole(account.role)!==requestedRole)throw httpError(403,'This account does not have the selected role.','ROLE_MISMATCH');
-    const session=await createPublicDemoSession(identifier,Boolean(data.remember));
-    res.setHeader('Set-Cookie',sessionCookie(session.raw,session.maxAge));
-    return send(res,200,{ok:true,user:publicUser(session.user),demoToken:session.raw,authentication:'SHARED_PLATFORM_SESSION'});
+    const session=await createPublicDemoSession(req,res,identifier,Boolean(data.remember));
+    appendSetCookie(res,sessionCookie(session.raw,session.maxAge));
+    return send(res,200,{ok:true,user:publicDemoUser(session.user),demoToken:session.raw,authentication:'ISOLATED_DEMO_WORKSPACE_SESSION'});
   }
 
   const keyHash=throttleKey(req,identifier);
@@ -98,18 +132,18 @@ async function login(req,res){
   return send(res,200,{ok:true,user:publicUser(user),demoToken:session.raw,authentication:'EVENT_SCOPED_SESSION'});
 }
 
-async function me(req,res){method(req,'GET');const user=await authenticate(req);return send(res,200,{ok:true,user:publicUser(user)});}
+async function me(req,res){method(req,'GET');const user=await authenticate(req);return send(res,200,{ok:true,user:isScopedDemoEmail(user.email)?publicDemoUser(user):publicUser(user)});}
 async function logout(req,res){
   method(req,'POST');const token=bearerToken(req);if(token)await query('DELETE FROM sessions WHERE token_hash=$1',[sha256(token)]);res.setHeader('Set-Cookie',clearSessionCookie());return send(res,200,{ok:true});
 }
 async function bridge(req,res){
-  method(req,'POST');const user=await authenticate(req);allow(user,['COOPERATIVE_ADMIN','FEDERATION_ADMIN']);const session=await createSession(user.id,false);return send(res,200,{ok:true,demoToken:session.raw,user:publicUser(user)});
+  method(req,'POST');const user=await authenticate(req);allow(user,['COOPERATIVE_ADMIN','FEDERATION_ADMIN']);const session=await createSession(user.id,false);return send(res,200,{ok:true,demoToken:session.raw,user:isScopedDemoEmail(user.email)?publicDemoUser(user):publicUser(user)});
 }
 
 async function handle(req,res,path){
   const supported=['auth/demo-access','auth/login','auth/me','connected/auth/me','auth/logout','connected/auth/logout','auth/session-bridge'].includes(path);
   if(!supported)return false;
-  if(path==='auth/demo-access'){method(req,'GET');send(res,200,publicDemoPayload());return true;}
+  if(path==='auth/demo-access'){method(req,'GET');ensureWorkspaceToken(req,res);send(res,200,publicDemoPayload());return true;}
   if(path==='auth/login'){await login(req,res);return true;}
   if(path==='auth/me'||path==='connected/auth/me'){await me(req,res);return true;}
   if(path==='auth/logout'||path==='connected/auth/logout'){await logout(req,res);return true;}
@@ -117,4 +151,4 @@ async function handle(req,res,path){
   return false;
 }
 
-module.exports={handle,throttleKey,clientAddress,MAX_FAILURES,WINDOW_MINUTES,BLOCK_MINUTES};
+module.exports={handle,throttleKey,clientAddress,MAX_FAILURES,WINDOW_MINUTES,BLOCK_MINUTES,provisionDemoWorkspace};
