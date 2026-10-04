@@ -25,6 +25,10 @@ function workspaceCookie(token){
   return `${DEMO_WORKSPACE_COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Lax`;
 }
 
+function clearWorkspaceCookie(){
+  return `${DEMO_WORKSPACE_COOKIE}=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`;
+}
+
 function ensureWorkspaceToken(req,res){
   const current=parseCookies(req.headers?.cookie||'')[DEMO_WORKSPACE_COOKIE]||'';
   if(WORKSPACE_TOKEN_PATTERN.test(current))return current.toLowerCase();
@@ -74,5 +78,6 @@ module.exports={
   isLegacySharedDemoEmail,
   isScopedDemoEmail,
   demoAccountForEmail,
-  appendSetCookie
+  appendSetCookie,
+  clearWorkspaceCookie
 };
