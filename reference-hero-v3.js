@@ -91,8 +91,23 @@
       cancelAnimationFrame(frame);
       frame=requestAnimationFrame(()=>{
         canvas.style.transform='none';
+        canvas.style.width='100%';
         if(active!=='home')return;
-        const scale=Math.min(1,viewport.clientHeight/Math.max(1,canvas.scrollHeight));
+        const mobile=window.matchMedia('(max-width:620px)').matches;
+        let scale=Math.min(1,viewport.clientHeight/Math.max(1,canvas.scrollHeight));
+        if(mobile){
+          // Compensate the layout width before scaling so the mobile screen
+          // stays full-width rather than becoming a narrow centered column.
+          for(let iteration=0;iteration<10;iteration++){
+            canvas.style.width=`${100/scale}%`;
+            const next=Math.min(1,viewport.clientHeight/Math.max(1,canvas.scrollHeight));
+            if(Math.abs(next-scale)<.002){scale=next;break;}
+            scale=(scale+next)/2;
+          }
+          canvas.style.width=`${100/scale}%`;
+          scale=Math.min(scale,viewport.clientHeight/Math.max(1,canvas.scrollHeight));
+          canvas.style.width=`${100/scale}%`;
+        }
         canvas.style.transform=`scale(${scale})`;
       });
     }
@@ -107,7 +122,7 @@
         link.classList.toggle('sp-page-active',selected);
         if(selected)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
       });
-      viewport.scrollTop=0;canvas.style.transform='none';
+      viewport.scrollTop=0;canvas.style.transform='none';canvas.style.width='100%';
       window.SanPaidLanding?.closeMobileDrawer?.(false);
       fitHome();
     }
@@ -119,6 +134,7 @@
       event.preventDefault();event.stopImmediatePropagation();openPage(id);
     },true);
     window.addEventListener('resize',fitHome,{passive:true});
+    window.visualViewport?.addEventListener('resize',fitHome,{passive:true});
     if('ResizeObserver' in window)new ResizeObserver(fitHome).observe(viewport);
     document.fonts?.ready.then(fitHome);
     openPage('home');
