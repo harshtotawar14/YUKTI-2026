@@ -52,6 +52,20 @@ try{
   await page.locator('.cw-dashboard.customer').waitFor({state:'visible'});
   await page.waitForTimeout(1500);
 
+  const debugState=await page.evaluate(()=>{
+    const dashboard=document.querySelector('.cw-dashboard.customer');
+    const overview=dashboard?.querySelector('[data-cw-view="overview"]');
+    const read=window.SanPaidCustomerReference?.readDashboard?.(dashboard)||null;
+    return {
+      read:read?{status:read.status,bookingCode:read.bookingCode,activeBooking:read.activeBooking,nextTitle:read.nextTitle}:null,
+      currentStatus:overview?.querySelector('.cw-next>div:first-child h3')?.textContent?.trim()||'',
+      activeMetric:overview?.querySelector('.cw-metrics>article:first-child strong')?.textContent?.trim()||'',
+      cardCount:document.querySelectorAll('.cr-current-card').length,
+      cardHtml:document.querySelector('.cr-current-card')?.outerHTML?.slice(0,500)||''
+    };
+  });
+  console.log('FRESH_CUSTOMER_DEBUG',JSON.stringify(debugState));
+
   assert(await page.locator('.cr-current-card').count()===0,'Fresh desktop Customer shows a Current Booking card.');
   assert(await page.locator('.cr-worker-card').count()===0,'Fresh desktop Customer shows an Assigned Worker card.');
   assert(await page.locator('.cr-amount-card').count()===0,'Fresh desktop Customer shows a Current Amount card.');
