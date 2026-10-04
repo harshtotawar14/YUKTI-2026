@@ -47,25 +47,16 @@
   }
 
   function freshState(){
-    const booking=initialBooking();
+    const booking={id:0,bookingCode:'',status:'READY',service:'',total:0,workerId:null};
     return {
       revision:1,nextBookingId:18,nextOfferId:103,nextSupportId:2,nextChargeId:2,nextCapacityId:2,
-      booking,history:[clone(booking)],
-      timeline:[{status:'OFFERING',note:'Request created and eligibility checks completed. First suitable worker opportunity sent.',at:booking.createdAt}],
-      offers:[
-        {offerId:101,workerPersona:'WORKER_A',offerStatus:'PENDING',rank:1,distance:3.2,score:94.6},
-        {offerId:102,workerPersona:'WORKER_B',offerStatus:'QUEUED',rank:2,distance:6.4,score:89.8}
-      ],
-      estimate:null,charges:[],payment:null,invoice:null,rating:null,serviceStartToken:'',
-      support:[{id:1,referenceCode:'SP-SUP-001',bookingId:17,category:'Service Support',description:'Sample governed support record for workflow review.',status:'RESOLVED',createdAt:iso(-1440)}],
-      notifications:[
-        {id:1,title:'Request created',message:'Your Electrician request is being offered to eligible cooperative workers.',priority:'NORMAL',createdAt:iso(-34)},
-        {id:2,title:'Worker choice protected',message:'The worker can accept or decline without an assignment penalty.',priority:'NORMAL',createdAt:iso(-33)}
-      ],
+      booking,history:[],
+      timeline:[],offers:[],
+      estimate:null,charges:[],payment:null,invoice:null,rating:null,serviceStartToken:'',earningsLedger:[],contactPhones:{},
+      support:[],notifications:[],
       workerAvailability:{WORKER_A:true,WORKER_B:true},
       schedules:{},
-      capacityRequests:[{id:1,requestCode:'CAP-2026-001',service:'AC Repair',zone:'Panhala',workersRequired:2,requestingCooperative:'YUKTI Panhala Worker Cooperative',providingCooperative:'YUKTI Kolhapur Services Cooperative',status:'AWAITING_WORKER_CONSENT',offeredWorkers:2,acceptedWorkers:1,approvedAssignments:0,requestedAt:iso(-180)}],
-      capacityOffers:[{offerId:501,workerPersona:'WORKER_A',offerStatus:'OFFERED',requestId:1,requestCode:'CAP-2026-001',service:'AC Repair',zone:'Panhala',requestingCooperative:'YUKTI Panhala Worker Cooperative',providingCooperative:'YUKTI Kolhapur Services Cooperative'}],
+      capacityRequests:[],capacityOffers:[],
       workers:[
         {id:11,persona:'WORKER_A',name:'Asha Verma',verificationStatus:'VERIFIED',availability:'AVAILABLE',rating:4.9,jobsCompleted:28,currentJobs:0,complaintCount:0,zone:'Kolhapur',pendingDocuments:0,expiredDocuments:0,skills:[{service:'Electrician',verified:true},{service:'AC Repair',verified:true},{service:'Appliance Repair',verified:true}]},
         {id:12,persona:'WORKER_B',name:'Ravi Kumar',verificationStatus:'VERIFIED',availability:'AVAILABLE',rating:4.7,jobsCompleted:21,currentJobs:0,complaintCount:1,zone:'Panhala',pendingDocuments:0,expiredDocuments:0,skills:[{service:'Electrician',verified:true},{service:'Plumber',verified:true}]},
@@ -79,6 +70,7 @@
   function state(){
     let current=readSession(STATE_KEY,null);
     if(!current||!current.booking){current=freshState();writeSession(STATE_KEY,current);}
+    if(Number(current.booking.id)===17&&current.booking.problem===initialBooking().problem&&current.history?.length===1&&current.timeline?.length===1){current=freshState();writeSession(STATE_KEY,current);}
     return current;
   }
   function save(next){next.revision=Number(next.revision||0)+1;writeSession(STATE_KEY,next);return next;}
@@ -134,6 +126,34 @@
     return next.schedules[key];
   }
 
+  function scheduleIntent(body){
+    const text=String(body.text||'').trim().toLowerCase();
+    const unavailable=/not available|unavailable|off duty|नहीं|नाही/.test(text);
+    if(!/available|unavailable|off duty|उपलब्ध/.test(text))throw apiError(422,'SCHEDULE_INTENT','Describe availability and a time range, for example: unavailable tomorrow from 1 PM to 5 PM.');
+    const range=text.match(/(?:from\s+)?(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*(?:to|until|[-–])\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/);
+    if(!range)throw apiError(422,'SCHEDULE_INTENT','Include a clear time range, such as 1 PM to 5 PM.');
+    const convert=(h,m,part)=>{h=Number(h);m=Number(m||0);if(m>59||h>23||(part&&(h<1||h>12)))throw apiError(422,'SCHEDULE_TIME','Enter valid times.');if(part)h=h%12+(part==='pm'?12:0);return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;};
+    const startTime=convert(range[1],range[2],range[3]||range[6]),endTime=convert(range[4],range[5],range[6]||range[3]);
+    if(startTime>=endTime)throw apiError(422,'SCHEDULE_TIME','End time must be after start time on the same day.');
+    let date=body.date;
+    if(/tomorrow|उद्या/.test(text)){const d=new Date();d.setDate(d.getDate()+1);date=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+    else if(/today|आज/.test(text)){const d=new Date();date=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date||'')))throw apiError(422,'SCHEDULE_DATE','Select a valid date.');
+    const status=unavailable?'UNAVAILABLE':'AVAILABLE';return {ok:true,date,startTime,endTime,status,summary:`${date} · ${startTime}–${endTime} · ${status==='AVAILABLE'?'Available':'Unavailable'}`};
+  }
+  function updateSchedule(next,account,body){
+    const {date,startTime,endTime,status}=body;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date||''))||![startTime,endTime].every(t=>/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(String(t)))||startTime>=endTime||!['AVAILABLE','UNAVAILABLE'].includes(status))throw apiError(422,'SCHEDULE_INPUT','Choose a valid date, time range and availability.');
+    const slots=scheduleFor(date,account,next),updated=[];
+    for(const slot of slots){
+      if(slot.endTime<=startTime||slot.startTime>=endTime){updated.push(slot);continue;}
+      if(slot.startTime<startTime)updated.push({...slot,endTime:startTime});
+      if(slot.endTime>endTime)updated.push({...slot,startTime:endTime});
+    }
+    updated.push({startTime,endTime,baseStatus:status,status,displayStatus:status});
+    next.schedules[`${account.persona}:${date}`]=updated.sort((a,b)=>a.startTime.localeCompare(b.startTime)).map((slot,i)=>({...slot,id:i+1}));save(next);return {ok:true,date,startTime,endTime,status};
+  }
+
   function overview(next){
     const active=['OFFERING','FINDING_REPLACEMENT','ACCEPTED','ON_THE_WAY','ARRIVED','IDENTITY_VERIFIED','CUSTOMER_CONFIRMED','IN_PROGRESS','AWAITING_CUSTOMER_CONFIRMATION','COMPLETED','PAYMENT_PENDING'].includes(String(next.booking?.status||''));
     return {
@@ -174,7 +194,7 @@
   function clearSession(token=''){const all=sessions();if(token)delete all[token];else Object.keys(all).forEach(key=>delete all[key]);saveSessions(all);writeText(ACTIVE_TOKEN_KEY,'');}
 
   async function handle(path,method,options){
-    const next=state();
+    const next=state();next.contactPhones??={};
 
     if(path==='/api/auth/login'&&method==='POST'){
       const body=await requestBody(options);const identifier=String(body.identifier||'').trim().toLowerCase(),account=ACCOUNTS[identifier];
@@ -192,24 +212,55 @@
     if(path==='/api/public/services'&&method==='GET')return {ok:true,source:'SANDBOX_CONFIGURATION',services:clone(SERVICES)};
     if(path==='/api/public-proof/summary'&&method==='GET'){const wi=workforceIntelligence(next);return {ok:true,source:MODE,services:SERVICES.length,workers:next.workers.length,cooperatives:3,fairOpportunity:wi.opportunity,workerTrust:{workers:wi.passports.map(p=>({...p,credential:p.credentials[0]}))},capacityMap:wi.capacity,pilot:wi.pilot};}
 
+    if(path.startsWith('/api/connected/customer/')||path.startsWith('/api/connected/worker/')||path==='/api/connected/workforce/passport'){
+      const account=requireAccount(options),expected=path.includes('/customer/')?'CUSTOMER':'WORKER';
+      if(account.role!==expected)throw apiError(403,'ROLE_FORBIDDEN','This action is not available for this role.');
+    }
+    const scoped=path.match(/^\/api\/connected\/(?:customer\/bookings|worker\/jobs|jobs|bookings)\/(\d+)(.*)$/);
+    if(scoped&&!(method==='GET'&&scoped[2]===''&&path.includes('/customer/bookings/'))){
+      const account=requireAccount(options);
+      if(Number(scoped[1])!==Number(next.booking.id)||!Number(next.booking.id))throw apiError(404,'BOOKING_NOT_FOUND','Booking not found.');
+      if((path.includes('/jobs/')||path.includes('/worker/jobs/'))&&(account.role!=='WORKER'||workerFor(account,next).id!==next.booking.workerId))throw apiError(403,'ASSIGNMENT_REQUIRED','Only the assigned worker can perform this action.');
+    }
+
+    if(path==='/api/connected/contact/me'){
+      const account=requireAccount(options),key=account.persona||account.accessId;
+      if(method==='PATCH'){const body=await requestBody(options),phone=String(body.phone||'').replace(/[\s()-]/g,'');if(!/^\+?[1-9]\d{7,14}$/.test(phone))throw apiError(422,'CONTACT_INPUT','Enter a valid mobile number with country code.');next.contactPhones[key]=phone;save(next);}
+      else if(method!=='GET')throw apiError(405,'METHOD_NOT_ALLOWED','Use GET or PATCH.');
+      return {ok:true,phone:next.contactPhones[key]||null,configured:!!next.contactPhones[key]};
+    }
+    const contact=path.match(/^\/api\/connected\/bookings\/(\d+)\/contact$/);
+    if(contact&&method==='GET'){
+      const account=requireAccount(options),b=next.booking;
+      if(Number(contact[1])!==Number(b.id)||!b.workerId)throw apiError(404,'CONTACT_NOT_AVAILABLE','Contact is available after worker acceptance.');
+      if(!['ACCEPTED','ON_THE_WAY','ARRIVED','IDENTITY_VERIFIED','CUSTOMER_CONFIRMED','IN_PROGRESS','AWAITING_CUSTOMER_CONFIRMATION'].includes(b.status))return {ok:true,available:false};
+      if(account.role==='WORKER'&&workerFor(account,next).id!==b.workerId)throw apiError(403,'ASSIGNMENT_REQUIRED','This booking is not assigned to you.');
+      if(!['CUSTOMER','WORKER'].includes(account.role))throw apiError(403,'ROLE_FORBIDDEN','Contact is private to the booking.');
+      const other=account.role==='CUSTOMER'?(b.workerId===11?'WORKER_A':'WORKER_B'):'CUSTOMER',phone=next.contactPhones[other]||null;
+      return {ok:true,available:!!phone,counterpart:{phone,name:account.role==='CUSTOMER'?b.workerName:'Customer',role:account.role==='CUSTOMER'?'WORKER':'CUSTOMER'}};
+    }
+
     if(path==='/api/connected/snapshot'&&method==='GET'){
-      const account=requireAccount(options);const offers=account.role==='WORKER'?next.offers.filter(o=>o.workerPersona===account.persona&&o.offerStatus!=='QUEUED').map(o=>offerShape(next,o)):[];
-      return {ok:true,role:account.role,revision:String(next.revision),bookings:next.booking?[bookingShape(next)]:[],offers};
+      const account=requireAccount(options);const offers=account.role==='WORKER'?next.offers.filter(o=>o.workerPersona===account.persona&&['PENDING','ACCEPTED'].includes(o.offerStatus)&&!['PAID','CLOSED','CANCELLED'].includes(next.booking.status)).map(o=>offerShape(next,o)):[];
+      return {ok:true,role:account.role,revision:String(next.revision),bookings:Number(next.booking?.id)>0?[bookingShape(next),...next.history.filter(b=>b.id!==next.booking.id)].map(clone):[],offers};
     }
 
     if(path==='/api/connected/customer/services'&&method==='GET'){requireAccount(options);return {ok:true,services:clone(SERVICES)};}
     if(path==='/api/connected/customer/notifications'&&method==='GET'){requireAccount(options);return {ok:true,notifications:clone(next.notifications)};}
     if(path==='/api/connected/customer/support'&&method==='GET'){requireAccount(options);return {ok:true,requests:clone(next.support)};}
-    if(path==='/api/connected/customer/support'&&method==='POST'){requireAccount(options);const body=await requestBody(options);const request={id:next.nextSupportId++,referenceCode:`SP-SUP-${String(next.nextSupportId).padStart(3,'0')}`,bookingId:body.bookingId||null,category:body.category||'Service Support',description:String(body.description||''),status:'OPEN',createdAt:new Date().toISOString()};next.support.unshift(request);save(next);return {ok:true,request:clone(request)};}
+    if(path==='/api/connected/customer/support'&&method==='POST'){requireAccount(options);const body=await requestBody(options);if(String(body.description||'').trim().length<8)throw apiError(422,'SUPPORT_INPUT','Describe the issue in at least 8 characters.');if(body.bookingId&&!next.history.some(b=>Number(b.id)===Number(body.bookingId)))throw apiError(404,'BOOKING_NOT_FOUND','Booking not found.');const request={id:next.nextSupportId++,referenceCode:`SP-SUP-${String(next.nextSupportId).padStart(3,'0')}`,bookingId:body.bookingId||null,category:body.category||'Service Support',description:String(body.description||''),status:'OPEN',createdAt:new Date().toISOString()};next.support.unshift(request);save(next);return {ok:true,request:clone(request)};}
 
     if(path==='/api/connected/bookings'&&method==='POST'){
-      const account=requireAccount(options);if(account.role!=='CUSTOMER')throw apiError(403,'ROLE_FORBIDDEN','This action is not available for this role.');const body=await requestBody(options),service=SERVICES.find(s=>s.name===body.service)||SERVICES[0];
-      const id=next.nextBookingId++;next.booking={id,bookingCode:`SP-2026-${String(id).padStart(6,'0')}`,customerId:1,service:service.name,serviceIcon:service.icon,status:'OFFERING',zone:String(body.zone||'Kolhapur'),address:String(body.address||'Kolhapur'),problem:String(body.problem||body.voiceTranscript||'Customer service request'),requestSource:body.requestSource||'TEXT',requestLanguage:body.requestLanguage||'en',voiceTranscript:body.voiceTranscript||null,scheduledAt:body.scheduledAt||tomorrowAt(11),emergency:Boolean(body.emergency),total:Number(service.basePrice),workerId:null,workerName:null,workerVerification:null,distance:null,cooperative:'YUKTI Kolhapur Services Cooperative',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),voiceMessage:{available:false},problemPhoto:{available:false}};
+      const account=requireAccount(options);if(account.role!=='CUSTOMER')throw apiError(403,'ROLE_FORBIDDEN','This action is not available for this role.');const body=await requestBody(options),service=SERVICES.find(s=>s.name===body.service);
+      if(!service||!String(body.zone||'').trim()||!String(body.address||'').trim()||(!String(body.problem||'').trim()&&!body.voiceMessage&&!body.problemPhoto))throw apiError(422,'BOOKING_INPUT','Choose a service, location, address and problem details.');
+      if(Number(next.booking.id)>0&&!['PAID','CLOSED','CANCELLED'].includes(next.booking.status))throw apiError(409,'ACTIVE_BOOKING','Finish the current service request before creating another.');
+      const when=body.emergency?new Date():new Date(body.scheduledAt);if(!Number.isFinite(when.getTime())||when.getTime()<Date.now()-60000)throw apiError(422,'PAST_SCHEDULE','Choose a current or future service time.');
+      const id=next.nextBookingId++;next.booking={id,bookingCode:`SP-2026-${String(id).padStart(6,'0')}`,customerId:1,service:service.name,serviceIcon:service.icon,status:'OFFERING',zone:String(body.zone||'Kolhapur'),address:String(body.address||'Kolhapur'),problem:String(body.problem||body.voiceTranscript||'Customer service request'),requestSource:body.requestSource||'TEXT',requestLanguage:body.requestLanguage||'en',voiceTranscript:body.voiceTranscript||null,scheduledAt:when.toISOString(),emergency:Boolean(body.emergency),total:Number(service.basePrice),workerId:null,workerName:null,workerVerification:null,distance:null,cooperative:'YUKTI Kolhapur Services Cooperative',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),voiceMessage:{available:false},problemPhoto:{available:false}};
       next.history.unshift(clone(next.booking));next.timeline=[{status:'OFFERING',note:'Request created. Eligibility gate passed and the first worker opportunity was sent.',at:new Date().toISOString()}];next.offers=[{offerId:next.nextOfferId++,workerPersona:'WORKER_A',offerStatus:'PENDING',rank:1,distance:3.2,score:94.6},{offerId:next.nextOfferId++,workerPersona:'WORKER_B',offerStatus:'QUEUED',rank:2,distance:6.4,score:89.8}];next.estimate=null;next.charges=[];next.payment=null;next.invoice=null;next.rating=null;next.serviceStartToken='';save(next);return bookingShape(next);
     }
 
     let match=path.match(/^\/api\/connected\/customer\/bookings\/(\d+)$/);
-    if(match&&method==='GET'){requireAccount(options);if(Number(match[1])!==Number(next.booking?.id))throw apiError(404,'BOOKING_NOT_FOUND','Booking not found.');return bookingShape(next);}
+    if(match&&method==='GET'){requireAccount(options);const booking=next.history.find(b=>Number(b.id)===Number(match[1]));if(!booking)throw apiError(404,'BOOKING_NOT_FOUND','Booking not found.');return clone(booking);}
     match=path.match(/^\/api\/connected\/customer\/bookings\/(\d+)\/timeline$/);
     if(match&&method==='GET'){requireAccount(options);return {ok:true,timeline:clone(next.timeline)};}
     match=path.match(/^\/api\/connected\/customer\/bookings\/(\d+)\/checkout$/);
@@ -220,19 +271,20 @@
     if(match&&method==='GET'){requireAccount(options);return {ok:true,estimate:clone(next.estimate)};}
 
     if(path==='/api/connected/worker/offers'&&method==='GET'){
-      const account=requireAccount(options);if(account.role!=='WORKER')throw apiError(403,'ROLE_FORBIDDEN','This action is not available for this role.');return next.offers.filter(o=>o.workerPersona===account.persona&&o.offerStatus!=='QUEUED').map(o=>offerShape(next,o));
+      const account=requireAccount(options);if(account.role!=='WORKER')throw apiError(403,'ROLE_FORBIDDEN','This action is not available for this role.');return next.offers.filter(o=>o.workerPersona===account.persona&&['PENDING','ACCEPTED'].includes(o.offerStatus)&&!['PAID','CLOSED','CANCELLED'].includes(next.booking.status)).map(o=>offerShape(next,o));
     }
     match=path.match(/^\/api\/connected\/worker\/offers\/(\d+)\/respond$/);
     if(match&&method==='POST'){
-      const account=requireAccount(options),offer=next.offers.find(o=>Number(o.offerId)===Number(match[1])&&o.workerPersona===account.persona);if(!offer)throw apiError(404,'OFFER_NOT_FOUND','Worker opportunity not found.');const body=await requestBody(options),action=String(body.action||'').toUpperCase();
-      if(action==='ACCEPT'){offer.offerStatus='ACCEPTED';next.offers.filter(o=>o.offerId!==offer.offerId).forEach(o=>{if(o.offerStatus==='PENDING')o.offerStatus='CANCELLED';});const w=workerFor(account,next);next.booking.workerId=w.id;next.booking.workerName=w.name;next.booking.workerVerification='VERIFIED';next.booking.distance=offer.distance;touch(next,'ACCEPTED','Worker accepted the opportunity. Customer notified.');save(next);return {ok:true,accepted:true,bookingId:next.booking.id,nextWorker:false};}
+      const account=requireAccount(options),offer=next.offers.find(o=>Number(o.offerId)===Number(match[1])&&o.workerPersona===account.persona);if(!offer)throw apiError(404,'OFFER_NOT_FOUND','Worker opportunity not found.');if(offer.offerStatus!=='PENDING')throw apiError(409,'OFFER_ALREADY_RESPONDED','This opportunity already has a response.');const body=await requestBody(options),action=String(body.action||'').toUpperCase();
+      if(!['ACCEPT','REJECT'].includes(action))throw apiError(422,'INVALID_OFFER_ACTION','Choose Accept or Decline.');
+      if(action==='ACCEPT'){offer.offerStatus='ACCEPTED';next.offers.filter(o=>o.offerId!==offer.offerId).forEach(o=>{if(['PENDING','QUEUED'].includes(o.offerStatus))o.offerStatus='CANCELLED';});const w=workerFor(account,next);next.booking.workerId=w.id;next.booking.workerName=w.name;next.booking.workerVerification='VERIFIED';next.booking.distance=offer.distance;touch(next,'ACCEPTED','Worker accepted the opportunity. Customer notified.');save(next);return {ok:true,accepted:true,bookingId:next.booking.id,nextWorker:false};}
       offer.offerStatus='REJECTED';const queued=next.offers.find(o=>o.offerStatus==='QUEUED');if(queued){queued.offerStatus='PENDING';touch(next,'FINDING_REPLACEMENT','Worker declined by choice. The same booking moved to the next eligible worker.');save(next);return {ok:true,accepted:false,nextWorker:true,bookingId:next.booking.id};}
       touch(next,'NO_WORKER_AVAILABLE','No additional eligible worker is currently available.');save(next);return {ok:true,accepted:false,nextWorker:false,bookingId:next.booking.id};
     }
 
     if(path==='/api/connected/worker/dashboard'&&method==='GET'){
-      const account=requireAccount(options),w=workerFor(account,next),accepted=next.offers.some(o=>o.workerPersona===account.persona&&o.offerStatus==='ACCEPTED'),payments=next.payment&&next.booking.workerId===w.id?[{service:next.booking.service,bookingCode:next.booking.bookingCode,amount:next.payment.amount,createdAt:next.payment.createdAt}]:[];
-      return {ok:true,profile:{id:w.id,name:w.name,available:next.workerAvailability[account.persona]!==false,availabilityStatus:next.workerAvailability[account.persona]!==false?'AVAILABLE':'OFF_DUTY',rating:w.rating},jobs:{active:accepted&&!['PAID','CLOSED','CANCELLED'].includes(next.booking.status)?1:0},earnings:{today:payments.reduce((s,p)=>s+p.amount,0),week:payments.reduce((s,p)=>s+p.amount,0)+2450,total:payments.reduce((s,p)=>s+p.amount,0)+18750,payments}};
+      const account=requireAccount(options),w=workerFor(account,next),accepted=next.offers.some(o=>o.workerPersona===account.persona&&o.offerStatus==='ACCEPTED'),payments=(next.earningsLedger||[]).filter(p=>p.workerId===w.id),today=new Date().toDateString(),weekStart=Date.now()-7*86400000;
+      return {ok:true,profile:{id:w.id,name:w.name,available:next.workerAvailability[account.persona]!==false,availabilityStatus:next.workerAvailability[account.persona]!==false?'AVAILABLE':'OFF_DUTY',rating:w.rating},jobs:{active:accepted&&!['PAID','CLOSED','CANCELLED'].includes(next.booking.status)?1:0},earnings:{today:payments.filter(p=>new Date(p.createdAt).toDateString()===today).reduce((s,p)=>s+p.amount,0),week:payments.filter(p=>new Date(p.createdAt).getTime()>=weekStart).reduce((s,p)=>s+p.amount,0),total:payments.reduce((s,p)=>s+p.amount,0),payments}};
     }
     if(path==='/api/connected/workforce/passport'&&method==='GET'){const account=requireAccount(options);return {ok:true,passport:passportFor(account,next)};}
     if(path==='/api/connected/worker/notifications'&&method==='GET'){const account=requireAccount(options);return {ok:true,notifications:[{title:'Opportunity control',message:'Only eligible jobs appear here. Accept or decline remains your choice.',priority:'NORMAL',createdAt:iso(-20)},{title:'Trust passport active',message:`${account.name}, your cooperative verification record is available.`,priority:'NORMAL',createdAt:iso(-60)}]};}
@@ -240,11 +292,11 @@
       const account=requireAccount(options),url=new URL(path,location.origin),date=url.searchParams.get('date')||new Date().toISOString().slice(0,10);return {ok:true,date,slots:clone(scheduleFor(date,account,next))};
     }
     if(path==='/api/connected/worker/availability'&&method==='POST'){const account=requireAccount(options),body=await requestBody(options);next.workerAvailability[account.persona]=Boolean(body.available);const w=workerFor(account,next);w.availability=body.available?'AVAILABLE':'UNAVAILABLE';save(next);return {ok:true,available:Boolean(body.available)};}
-    if(path==='/api/connected/worker/schedule/voice-intent'&&method==='POST'){const body=await requestBody(options);return {ok:true,date:body.date||new Date().toISOString().slice(0,10),startTime:'13:00',endTime:'17:00',status:'UNAVAILABLE',summary:'Mark 1 PM to 5 PM as unavailable.'};}
-    if(path==='/api/connected/worker/schedule'&&method==='POST'){const account=requireAccount(options),body=await requestBody(options),slots=scheduleFor(body.date,account,next),slot=slots.find(x=>x.startTime===body.startTime&&x.endTime===body.endTime);if(slot){slot.status=body.status;slot.baseStatus=body.status;slot.displayStatus=body.status;}save(next);return {ok:true};}
+    if(path==='/api/connected/worker/schedule/voice-intent'&&method==='POST'){return scheduleIntent(await requestBody(options));}
+    if(path==='/api/connected/worker/schedule'&&method==='POST'){return updateSchedule(next,requireAccount(options),await requestBody(options));}
 
     match=path.match(/^\/api\/connected\/worker\/jobs\/(\d+)\/estimate$/);
-    if(match&&method==='POST'){requireAccount(options);const body=await requestBody(options),items=(body.items||[]).map((x,i)=>({id:i+1,description:String(x.description||''),amount:Number(x.amount||0)})),total=items.reduce((s,x)=>s+x.amount,0);next.estimate={id:1,status:'PENDING',items,total,note:String(body.note||''),createdAt:new Date().toISOString()};save(next);return {ok:true,estimate:clone(next.estimate)};}
+    if(match&&method==='POST'){requireAccount(options);const body=await requestBody(options),items=(body.items||[]).map((x,i)=>({id:i+1,description:String(x.description||''),amount:Number(x.amount||0)})),total=items.reduce((s,x)=>s+x.amount,0);if(!items.length||items.some(x=>!x.description.trim()||!Number.isFinite(x.amount)||x.amount<=0)||total>1000000)throw apiError(422,'ESTIMATE_INPUT','Enter item descriptions and valid positive amounts.');next.estimate={id:1,status:'PENDING',items,total,note:String(body.note||''),createdAt:new Date().toISOString()};save(next);return {ok:true,estimate:clone(next.estimate)};}
     match=path.match(/^\/api\/connected\/customer\/bookings\/(\d+)\/estimate\/decision$/);
     if(match&&method==='POST'){requireAccount(options);if(!next.estimate)throw apiError(404,'ESTIMATE_NOT_FOUND','Estimate not found.');const body=await requestBody(options);next.estimate.status=String(body.decision||'').toUpperCase()==='APPROVE'?'APPROVED':'REJECTED';save(next);return {ok:true,estimate:clone(next.estimate)};}
 
@@ -256,18 +308,18 @@
     match=path.match(/^\/api\/connected\/service-start\/([^/]+)$/);
     if(match&&method==='GET'){requireAccount(options);if(decodeURIComponent(match[1])!==next.serviceStartToken||!next.serviceStartToken)throw apiError(404,'TOKEN_NOT_FOUND','Verification code not found.');const w=assignedAccount(next);return {ok:true,bookingId:next.booking.id,bookingCode:next.booking.bookingCode,service:next.booking.service,workerName:w?.name||next.booking.workerName,workerVerification:'VERIFIED',cooperative:next.booking.cooperative};}
     match=path.match(/^\/api\/connected\/service-start\/([^/]+)\/confirm$/);
-    if(match&&method==='POST'){requireAccount(options);if(decodeURIComponent(match[1])!==next.serviceStartToken)throw apiError(404,'TOKEN_NOT_FOUND','Verification code not found.');touch(next,'CUSTOMER_CONFIRMED','Customer confirmed the booked worker. Service start unlocked.');save(next);return {ok:true,status:'CUSTOMER_CONFIRMED'};}
+    if(match&&method==='POST'){if(requireAccount(options).role!=='CUSTOMER')throw apiError(403,'ROLE_FORBIDDEN','Only the customer can confirm the booked worker.');if(!next.serviceStartToken||decodeURIComponent(match[1])!==next.serviceStartToken)throw apiError(404,'TOKEN_NOT_FOUND','Verification code not found.');touch(next,'CUSTOMER_CONFIRMED','Customer confirmed the booked worker. Service start unlocked.');save(next);return {ok:true,status:'CUSTOMER_CONFIRMED'};}
     match=path.match(/^\/api\/connected\/customer\/bookings\/(\d+)\/complete$/);
     if(match&&method==='POST'){requireAccount(options);touch(next,'COMPLETED','Customer confirmed service completion.');save(next);return {ok:true,status:'COMPLETED'};}
 
     match=path.match(/^\/api\/connected\/worker\/jobs\/(\d+)\/extra-charge$/);
-    if(match&&method==='POST'){requireAccount(options);const body=await requestBody(options),charge={id:next.nextChargeId++,workItem:String(body.workItem||'Additional work'),reason:String(body.reason||''),amount:Number(body.amount||0),status:'PENDING'};next.charges.push(charge);save(next);return {ok:true,charge:clone(charge)};}
+    if(match&&method==='POST'){requireAccount(options);const body=await requestBody(options),charge={id:next.nextChargeId++,workItem:String(body.workItem||'Additional work'),reason:String(body.reason||''),amount:Number(body.amount||0),status:'PENDING'};if(!charge.workItem.trim()||!charge.reason.trim()||!Number.isFinite(charge.amount)||charge.amount<=0||charge.amount>1000000)throw apiError(422,'CHARGE_INPUT','Enter the work, reason and a valid positive charge.');next.charges.push(charge);save(next);return {ok:true,charge:clone(charge)};}
     match=path.match(/^\/api\/connected\/customer\/charges\/(\d+)\/decision$/);
     if(match&&method==='POST'){requireAccount(options);const charge=next.charges.find(x=>Number(x.id)===Number(match[1]));if(!charge)throw apiError(404,'CHARGE_NOT_FOUND','Additional charge not found.');const body=await requestBody(options);charge.status=String(body.decision||'').toUpperCase()==='APPROVE'?'APPROVED':'REJECTED';save(next);return {ok:true,charge:clone(charge)};}
     match=path.match(/^\/api\/connected\/customer\/bookings\/(\d+)\/pay$/);
-    if(match&&method==='POST'){requireAccount(options);const body=await requestBody(options),c=checkout(next);next.payment={amount:c.finalAmount,paymentMethod:String(body.method||'SANDBOX'),transactionReference:`SPTX-${Date.now().toString(36).toUpperCase()}`,createdAt:new Date().toISOString()};next.invoice={invoiceNumber:`SPI-2026-${String(next.booking.id).padStart(5,'0')}`,amount:c.finalAmount,createdAt:next.payment.createdAt};touch(next,'PAID','Sandbox payment and invoice recorded.');save(next);return {ok:true,payment:clone(next.payment),invoice:clone(next.invoice)};}
+    if(match&&method==='POST'){requireAccount(options);const body=await requestBody(options),c=checkout(next);next.payment={amount:c.finalAmount,paymentMethod:String(body.method||'SANDBOX'),transactionReference:`SPTX-${Date.now().toString(36).toUpperCase()}`,createdAt:new Date().toISOString()};next.earningsLedger??=[];next.earningsLedger.push({workerId:next.booking.workerId,service:next.booking.service,bookingCode:next.booking.bookingCode,amount:next.payment.amount,createdAt:next.payment.createdAt});next.invoice={invoiceNumber:`SPI-2026-${String(next.booking.id).padStart(5,'0')}`,amount:c.finalAmount,createdAt:next.payment.createdAt};touch(next,'PAID','Sandbox payment and invoice recorded.');save(next);return {ok:true,payment:clone(next.payment),invoice:clone(next.invoice)};}
     match=path.match(/^\/api\/connected\/customer\/bookings\/(\d+)\/rating$/);
-    if(match&&method==='POST'){requireAccount(options);const body=await requestBody(options);next.rating={stars:Number(body.stars||5),feedback:String(body.feedback||''),createdAt:new Date().toISOString()};save(next);return {ok:true,rating:clone(next.rating)};}
+    if(match&&method==='POST'){requireAccount(options);const body=await requestBody(options);if(!Number.isInteger(Number(body.stars))||Number(body.stars)<1||Number(body.stars)>5)throw apiError(422,'RATING_INPUT','Choose a rating from 1 to 5.');next.rating={stars:Number(body.stars),feedback:String(body.feedback||''),createdAt:new Date().toISOString()};save(next);return {ok:true,rating:clone(next.rating)};}
 
     if(path==='/api/connected/worker/capacity-offers'&&method==='GET'){const account=requireAccount(options);return clone(next.capacityOffers.filter(x=>x.workerPersona===account.persona));}
     match=path.match(/^\/api\/connected\/worker\/capacity-offers\/(\d+)\/respond$/);
