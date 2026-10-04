@@ -60,7 +60,3 @@
   #landing.reference-home .reference-worker-card::before{font-size:10.5px!important}
   #landing.reference-home .reference-worker-card::after{font-size:7.5px!important}
 }
-
-/* Preserve the approved previous layout; only render the same hero artwork from the HQ asset. */
-#landing.reference-home .sp-hero-visual{background:url('/assets/sanpaid-reference-hero-right-hq.svg') center/cover no-repeat!important}
-#landing.reference-home .sp-hero-visual img{opacity:0!important}
