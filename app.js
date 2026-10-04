@@ -233,3 +233,118 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startLandingMotion,{once:true});
   else startLandingMotion();
 })();
+
+/* SanPaid homepage hero carousel — five approved project visuals, 1 second each. */
+(() => {
+  'use strict';
+
+  const labels=[
+    'Trusted local services from cooperative workers',
+    'Book a service easily',
+    'Verified cooperative workers',
+    'Local first with cooperative support',
+    'Simple, safe and transparent service journey'
+  ];
+
+  function installHeroCarousel(){
+    const hero=document.querySelector('#landing.reference-home #home .eval-hero-copy');
+    if(!hero||hero.dataset.sanpaidCarousel==='1')return;
+    hero.dataset.sanpaidCarousel='1';
+
+    const original=document.createElement('div');
+    original.className='sanpaid-hero-original-copy';
+    original.hidden=true;
+    while(hero.firstChild)original.appendChild(hero.firstChild);
+    hero.appendChild(original);
+
+    const frame=document.createElement('div');
+    frame.className='sanpaid-hero-carousel-frame';
+    frame.dataset.slide='0';
+    frame.setAttribute('role','img');
+    frame.setAttribute('aria-label',labels[0]);
+    hero.appendChild(frame);
+
+    const dots=document.createElement('div');
+    dots.className='sanpaid-hero-carousel-dots';
+    dots.setAttribute('aria-hidden','true');
+    labels.forEach((_,index)=>{
+      const dot=document.createElement('span');
+      if(index===0)dot.className='is-active';
+      dots.appendChild(dot);
+    });
+    hero.appendChild(dots);
+
+    const style=document.createElement('style');
+    style.id='sanpaidHeroCarouselStyles';
+    style.textContent=`
+      #landing.reference-home #home .eval-hero-copy[data-sanpaid-carousel="1"]{
+        min-width:0!important;
+        padding:18px 0 30px!important;
+      }
+      #landing.reference-home #home .sanpaid-hero-carousel-frame{
+        width:100%;
+        aspect-ratio:16/9;
+        overflow:hidden;
+        border:1px solid #dbe6f0;
+        border-radius:24px;
+        background-image:url('/assets/sanpaid-hero-carousel.webp');
+        background-repeat:no-repeat;
+        background-size:100% 500%;
+        background-position:center 0%;
+        box-shadow:0 22px 54px rgba(7,56,111,.13);
+      }
+      #landing.reference-home #home .sanpaid-hero-carousel-frame[data-slide="0"]{background-position:center 0%}
+      #landing.reference-home #home .sanpaid-hero-carousel-frame[data-slide="1"]{background-position:center 25%}
+      #landing.reference-home #home .sanpaid-hero-carousel-frame[data-slide="2"]{background-position:center 50%}
+      #landing.reference-home #home .sanpaid-hero-carousel-frame[data-slide="3"]{background-position:center 75%}
+      #landing.reference-home #home .sanpaid-hero-carousel-frame[data-slide="4"]{background-position:center 100%}
+      #landing.reference-home #home .sanpaid-hero-carousel-dots{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:7px;
+        margin-top:12px;
+        min-height:8px;
+      }
+      #landing.reference-home #home .sanpaid-hero-carousel-dots span{
+        width:7px;
+        height:7px;
+        border-radius:999px;
+        background:#c4d3e2;
+        transition:width .18s ease,background .18s ease;
+      }
+      #landing.reference-home #home .sanpaid-hero-carousel-dots span.is-active{
+        width:22px;
+        background:#0b987d;
+      }
+      @media(max-width:1020px){
+        #landing.reference-home #home .eval-hero-copy[data-sanpaid-carousel="1"]{padding:12px 0 20px!important}
+        #landing.reference-home #home .sanpaid-hero-carousel-frame{border-radius:18px;box-shadow:0 18px 42px rgba(7,56,111,.12)}
+      }
+      @media(max-width:640px){
+        #landing.reference-home #home .sanpaid-hero-carousel-frame{border-radius:14px;box-shadow:0 13px 30px rgba(7,56,111,.11)}
+        #landing.reference-home #home .sanpaid-hero-carousel-dots{margin-top:9px}
+      }
+    `;
+    document.head.appendChild(style);
+
+    const dotNodes=[...dots.children];
+    let index=0;
+    const render=()=>{
+      frame.dataset.slide=String(index);
+      frame.setAttribute('aria-label',labels[index]);
+      dotNodes.forEach((dot,dotIndex)=>dot.classList.toggle('is-active',dotIndex===index));
+    };
+    render();
+
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    window.setInterval(()=>{
+      if(document.hidden)return;
+      index=(index+1)%labels.length;
+      render();
+    },1000);
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installHeroCarousel,{once:true});
+  else installHeroCarousel();
+})();
