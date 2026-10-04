@@ -2,6 +2,7 @@
   'use strict';
 
   const STYLE_ID = 'sanpaidDashboardShellLockStyles';
+  let wasOpen = false;
 
   function ensureStyles() {
     if (document.getElementById(STYLE_ID)) return;
@@ -44,9 +45,29 @@
     document.head.appendChild(style);
   }
 
+  function setDashboardAsMain(shell) {
+    const dashboard = shell.querySelector('#cwDashboard');
+    if (!dashboard) return;
+
+    const role = String(shell.querySelector('#connectedContent')?.dataset.connectedRole || dashboard.dataset.role || '').toLowerCase();
+    if (role === 'customer' || role === 'worker') {
+      try { sessionStorage.setItem(`sanpaid_dashboard_view_${role}`, 'overview'); } catch {}
+    }
+
+    const overview = dashboard.querySelector('[data-cw-view-btn="overview"]');
+    if (overview && !overview.classList.contains('active')) overview.click();
+
+    const main = shell.querySelector(':scope>.connected-main');
+    if (main) main.scrollTop = 0;
+    shell.scrollTop = 0;
+  }
+
   function sync() {
     const shell = document.getElementById('connectedShell');
-    if (!shell) return;
+    if (!shell) {
+      wasOpen = false;
+      return;
+    }
 
     const dashboard = shell.querySelector('#cwDashboard');
     const open = !shell.classList.contains('hidden') && !!dashboard;
@@ -55,10 +76,12 @@
     document.documentElement.classList.toggle('sanpaid-dashboard-open', open);
     document.body.classList.toggle('sanpaid-dashboard-open', open);
 
-    if (!open) return;
+    if (open && !wasOpen) {
+      requestAnimationFrame(() => setDashboardAsMain(shell));
+    }
 
-    // Keep the outer app shell fixed. Navigation changes only the active dashboard view.
-    shell.scrollTop = 0;
+    if (open) shell.scrollTop = 0;
+    wasOpen = open;
   }
 
   function install() {
