@@ -53,12 +53,19 @@
   }
 
   function mobileHomeMarkup(data){
-    const userName=name();
     const workerAssigned=data.worker&&!/^not assigned$/i.test(data.worker);
     const active=data.activeBooking;
-    const status=active?data.status:'Ready';
-    const code=active?data.bookingCode:'No active booking';
-    const service=active?data.service:'Service request';
+    const bookingPanel=active?`
+      <section class="cm-booking-card">
+        <div class="cm-booking-top"><span class="cm-status-chip">${esc(data.status)}</span><button type="button" data-cm-view="booking">View Details ${ICONS.arrow}</button></div>
+        <div class="cm-booking-main"><span class="cm-service-icon">${ICONS.home}</span><div class="cm-booking-copy"><h2>${esc(data.service)}</h2><b>${esc(data.bookingCode)}</b><small>${esc(data.bookingSummary||'Current service request')}</small>${workerAssigned?`<div class="cm-worker-inline"><span>${esc(initials(data.worker))}</span><div><strong>${esc(data.worker)}</strong><small>Verified cooperative worker</small></div><em>✓</em></div>`:''}</div></div>
+        <div class="cw-journey cm-home-journey">${data.journey}</div>
+      </section>`:'';
+    const bookingMetrics=active?`
+      <section class="cm-mobile-metrics">
+        <button type="button" data-cm-view="verify"><span>Booked Worker</span><strong>${esc(workerAssigned?data.worker:'Not assigned')}</strong><small>${esc(workerAssigned?data.workerNote:'Shown after worker acceptance')}</small>${ICONS.arrow}</button>
+        <button type="button" data-cm-view="payment"><span>Estimated Amount</span><strong>${esc(data.amount)}</strong><small>${esc(data.amountNote)}</small>${ICONS.arrow}</button>
+      </section>`:'';
     return `
       <section class="cm-mobile-greeting">
         <div><span>Hello,</span><h1>Welcome back!</h1><p>Your service journey in one place.</p></div>
@@ -70,16 +77,9 @@
         <button type="button" data-cm-view="verify"><span class="cm-quick-icon">${ICONS.users}</span><b>Verified Workers</b><small>Trusted professionals</small><span class="cm-mini-arrow">${ICONS.arrow}</span></button>
         <button type="button" data-cm-view="payment"><span class="cm-quick-icon">${ICONS.card}</span><b>Payments</b><small>View invoices</small><span class="cm-mini-arrow">${ICONS.arrow}</span></button>
       </section>
-      <section class="cm-booking-card">
-        <div class="cm-booking-top"><span class="cm-status-chip">${esc(status)}</span><button type="button" data-cm-view="booking">View Details ${ICONS.arrow}</button></div>
-        <div class="cm-booking-main"><span class="cm-service-icon">${ICONS.home}</span><div class="cm-booking-copy"><h2>${esc(service)}</h2><b>${esc(code)}</b><small>${active?esc(data.bookingSummary||'Current service request'):'Book a service to begin'}</small>${workerAssigned?`<div class="cm-worker-inline"><span>${esc(initials(data.worker))}</span><div><strong>${esc(data.worker)}</strong><small>Verified cooperative worker</small></div><em>✓</em></div>`:''}</div></div>
-        <div class="cw-journey cm-home-journey">${data.journey}</div>
-      </section>
+      ${bookingPanel}
       <section class="cm-next-card"><span class="cm-next-icon">${ICONS.next}</span><div><small>WHAT'S NEXT?</small><h3>${esc(data.nextTitle)}</h3><p>${esc(data.nextCopy)}</p></div><button type="button" data-cm-view="${esc(data.nextView)}">${active?'View Booking':'Open'} ${ICONS.arrow}</button></section>
-      <section class="cm-mobile-metrics">
-        <button type="button" data-cm-view="verify"><span>Booked Worker</span><strong>${esc(workerAssigned?data.worker:'Not assigned')}</strong><small>${esc(workerAssigned?data.workerNote:'Shown after worker acceptance')}</small>${ICONS.arrow}</button>
-        <button type="button" data-cm-view="payment"><span>Estimated Amount</span><strong>${esc(data.amount)}</strong><small>${esc(data.amountNote)}</small>${ICONS.arrow}</button>
-      </section>
+      ${bookingMetrics}
       <section class="cm-support-card"><span class="cm-support-icon">${ICONS.support}</span><div><b>Need Help?</b><small>Our support team is here for you.</small></div><button type="button" data-cm-view="support">Contact Support</button></section>`;
   }
 
