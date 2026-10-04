@@ -16,7 +16,7 @@
 
   const NAV_LABELS={overview:'Dashboard',book:'Book Service',booking:'My Bookings',verify:'Verified Workers',payment:'Payments & Invoice',support:'Support'};
   const $=(s,r=document)=>r.querySelector(s);
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   function currentUser(){
     try{return window.SanPaidAuth?.getCurrentUser?.()||{};}catch{return {};}
@@ -60,6 +60,7 @@
     const status=roleHead?.querySelector(':scope>.cw-status')?.textContent?.trim()||'Ready';
     const current=overview.querySelector('.cw-next>div:first-child');
     const next=overview.querySelector('.cw-next>div+div');
+    const currentStatus=current?.querySelector('h3')?.textContent?.trim()||'';
     const currentLine=parseCurrentLine(current?.querySelector('p')?.textContent?.trim());
     const metrics=[...overview.querySelectorAll('.cw-metrics>article')];
     const bookingCode=metrics[0]?.querySelector('strong')?.textContent?.trim()||currentLine.code||'—';
@@ -76,7 +77,7 @@
     const nextCopy=next?.querySelector('p')?.textContent?.trim()||'Choose a service, time and location.';
     const nextView=next?.querySelector('[data-cw-view-btn]')?.dataset?.cwViewBtn||'book';
     const journey=overview.querySelector('.cw-journey')?.innerHTML||'';
-    const activeBooking=bookingCode&&bookingCode!=='—';
+    const activeBooking=!/^no active booking$/i.test(currentStatus)&&!!bookingCode&&bookingCode!=='—';
     const notificationCount=dashboard.querySelectorAll('[data-cw-view="support"] .cw-notification-list>article').length;
     return {overview,status,bookingCode,worker,workerNote,amount,amountNote,serviceStart,service,bookingSummary,nextTitle,nextCopy,nextView,journey,activeBooking,notificationCount};
   }
