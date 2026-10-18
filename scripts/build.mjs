@@ -15,7 +15,7 @@ const publicFiles=[
   'assets/official-acknowledgement.jpeg','assets/mom-page-1.jpeg','assets/mom-page-2.jpeg',
   'index.html','reference-hero-v3.css','mobile-nav-right-fix.css','reference-hero-v3.js','dashboard-shell-lock.js',
   'app-icon.svg','manifest.webmanifest','robots.txt','sitemap.xml','social-preview.svg',
-  'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','master-v2.css','landing-pro.css','hero-clarity.css','landing-10-polish.css','dossier-redesign.css',
+  'design-tokens.css','styles.css','mobile.css','connected-demo.css','judge-demo.css','selector-mode.css','landing-pro.css','hero-clarity.css','landing-10-polish.css','dossier-redesign.css',
   'selection-ready-v3.css','workspace-ui.css','color-system-v5.css','auth-unified.css','login-reference.css','customer-worker-dashboard.css','customer-reference-dashboard.css','customer-mobile-reference.css','worker-mobile-final.css','mobile-role-stability.css',
   'admin-command-center.css','federation-govtech.css','federation-portal.css','cooperative-portal.css','admin-final.css','admin-final-guard.css','handover-evidence.css',
   'credibility-layer.css','workforce-intelligence.css',
